@@ -1,35 +1,31 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Dashboard extends CI_Controller
+class Dashboard extends MY_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
-        // Check if user is logged in
-        if (!$this->session->userdata('logged_in')) {
-            redirect('auth');
-        }
     }
 
     public function index()
     {
-        $data['title'] = 'Dashboard';
-        $data['page'] = 'dashboard';
+        // Set title
+        $this->data['title'] = 'Dashboard';
 
         // Get summary data from API
-        $data['summary'] = $this->api_model->request('GET', 'summary');
+        $summary = $this->Api_model->request('GET', 'barang', ['action' => 'summary']);
+        $this->data['summary'] = $summary['success'] ? $summary['data'] : [];
 
         // Get recent transactions
-        $data['recent_transactions'] = $this->api_model->request('GET', 'transactions/recent');
+        $transactions = $this->Api_model->get_transaksi(['limit' => 5]);
+        $this->data['recent_transactions'] = $transactions['success'] ? $transactions['data'] : [];
 
         // Get low stock items
-        $data['low_stock'] = $this->api_model->request('GET', 'items/lowstock');
+        $low_stock = $this->Api_model->get_barang(['action' => 'low_stock', 'limit' => 5]);
+        $this->data['low_stock_items'] = $low_stock['success'] ? $low_stock['data'] : [];
 
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/dashboard', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/dashboard');
     }
 }

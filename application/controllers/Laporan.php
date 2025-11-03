@@ -1,213 +1,203 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Laporan extends CI_Controller
+class Laporan extends MY_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
-        // Check if user is logged in
-        if (!$this->session->userdata('logged_in')) {
-            redirect('auth');
-        }
-
-        // Check if user has permission to access reports
-        $role = $this->session->userdata('role');
-        if ($role != 'admin' && $role != 'supervisor') {
-            $this->session->set_flashdata('error', 'Anda tidak memiliki akses ke halaman ini');
-            redirect('dashboard');
-        }
     }
 
     public function index()
     {
-        $data['title'] = 'Laporan';
-        $data['page'] = 'laporan';
+        // Set title
+        $this->data['title'] = 'Laporan';
 
-        // Get warehouses from API
-        $data['warehouses'] = $this->api_model->request('GET', 'warehouses');
-
-        // Get items from API
-        $data['items'] = $this->api_model->request('GET', 'items');
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/laporan', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/laporan/index');
     }
 
-    public function stock()
+    public function stok()
     {
-        $data['title'] = 'Laporan Stok';
-        $data['page'] = 'laporan';
+        // Set title
+        $this->data['title'] = 'Laporan Stok';
 
-        $warehouse_id = $this->input->get('warehouse_id');
-        $item_id = $this->input->get('item_id');
-
-        $params = [];
-        if ($warehouse_id)
-            $params['warehouse_id'] = $warehouse_id;
-        if ($item_id)
-            $params['item_id'] = $item_id;
+        // Get parameters from filter
+        $params = [
+            'category' => $this->input->get('category'),
+            'warehouse_id' => $this->input->get('warehouse_id'),
+            'status' => $this->input->get('status')
+        ];
 
         // Get stock report from API
-        $data['stock_report'] = $this->api_model->request('GET', 'reports/stock', $params);
+        $response = $this->Api_model->get_laporan_stok($params);
+        $this->data['stock_report'] = $response['success'] ? $response['data'] : [];
+
+        // Get categories from API
+        $categories = $this->Api_model->get_barang(['action' => 'categories']);
+        $this->data['categories'] = $categories['success'] ? $categories['data'] : [];
 
         // Get warehouses from API
-        $data['warehouses'] = $this->api_model->request('GET', 'warehouses');
+        $warehouses = $this->Api_model->get_gudang();
+        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
-        // Get items from API
-        $data['items'] = $this->api_model->request('GET', 'items');
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/laporan_stok', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/laporan/stok');
     }
 
-    public function transaction_in()
+    public function masuk()
     {
-        $data['title'] = 'Laporan Barang Masuk';
-        $data['page'] = 'laporan';
+        // Set title
+        $this->data['title'] = 'Laporan Barang Masuk';
 
-        $start_date = $this->input->get('start_date');
-        $end_date = $this->input->get('end_date');
-        $warehouse_id = $this->input->get('warehouse_id');
-        $item_id = $this->input->get('item_id');
+        // Get parameters from filter
+        $params = [
+            'date_from' => $this->input->get('date_from'),
+            'date_to' => $this->input->get('date_to'),
+            'item_id' => $this->input->get('item_id'),
+            'warehouse_id' => $this->input->get('warehouse_id')
+        ];
 
-        $params = [];
-        if ($start_date)
-            $params['start_date'] = $start_date;
-        if ($end_date)
-            $params['end_date'] = $end_date;
-        if ($warehouse_id)
-            $params['warehouse_id'] = $warehouse_id;
-        if ($item_id)
-            $params['item_id'] = $item_id;
+        // Get in report from API
+        $response = $this->Api_model->get_laporan_masuk($params);
+        $this->data['in_report'] = $response['success'] ? $response['data'] : [];
 
-        // Get transaction in report from API
-        $data['transaction_report'] = $this->api_model->request('GET', 'reports/transactions/in', $params);
+        // Get items from API
+        $items = $this->Api_model->get_barang();
+        $this->data['items'] = $items['success'] ? $items['data'] : [];
 
         // Get warehouses from API
-        $data['warehouses'] = $this->api_model->request('GET', 'warehouses');
+        $warehouses = $this->Api_model->get_gudang();
+        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
-        // Get items from API
-        $data['items'] = $this->api_model->request('GET', 'items');
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/laporan_masuk', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/laporan/masuk');
     }
 
-    public function transaction_out()
+    public function keluar()
     {
-        $data['title'] = 'Laporan Barang Keluar';
-        $data['page'] = 'laporan';
+        // Set title
+        $this->data['title'] = 'Laporan Barang Keluar';
 
-        $start_date = $this->input->get('start_date');
-        $end_date = $this->input->get('end_date');
-        $warehouse_id = $this->input->get('warehouse_id');
-        $item_id = $this->input->get('item_id');
+        // Get parameters from filter
+        $params = [
+            'date_from' => $this->input->get('date_from'),
+            'date_to' => $this->input->get('date_to'),
+            'item_id' => $this->input->get('item_id'),
+            'warehouse_id' => $this->input->get('warehouse_id')
+        ];
 
-        $params = [];
-        if ($start_date)
-            $params['start_date'] = $start_date;
-        if ($end_date)
-            $params['end_date'] = $end_date;
-        if ($warehouse_id)
-            $params['warehouse_id'] = $warehouse_id;
-        if ($item_id)
-            $params['item_id'] = $item_id;
+        // Get out report from API
+        $response = $this->Api_model->get_laporan_keluar($params);
+        $this->data['out_report'] = $response['success'] ? $response['data'] : [];
 
-        // Get transaction out report from API
-        $data['transaction_report'] = $this->api_model->request('GET', 'reports/transactions/out', $params);
+        // Get items from API
+        $items = $this->Api_model->get_barang();
+        $this->data['items'] = $items['success'] ? $items['data'] : [];
 
         // Get warehouses from API
-        $data['warehouses'] = $this->api_model->request('GET', 'warehouses');
+        $warehouses = $this->Api_model->get_gudang();
+        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
-        // Get items from API
-        $data['items'] = $this->api_model->request('GET', 'items');
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/laporan_keluar', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/laporan/keluar');
     }
 
-    public function export_stock()
+    public function export_stok()
     {
-        $warehouse_id = $this->input->get('warehouse_id');
-        $item_id = $this->input->get('item_id');
-
-        $params = [];
-        if ($warehouse_id)
-            $params['warehouse_id'] = $warehouse_id;
-        if ($item_id)
-            $params['item_id'] = $item_id;
+        // Get parameters from filter
+        $params = [
+            'category' => $this->input->get('category'),
+            'warehouse_id' => $this->input->get('warehouse_id'),
+            'status' => $this->input->get('status')
+        ];
 
         // Get stock report from API
-        $data['stock_report'] = $this->api_model->request('GET', 'reports/stock', $params);
+        $response = $this->Api_model->get_laporan_stok($params);
 
-        // Load the export library
-        $this->load->library('export');
+        if ($response['success']) {
+            // Create CSV content
+            $csv_content = "Kode Barang,Nama Barang,Kategori,Satuan,Stok,Stok Minimum,Gudang\n";
 
-        // Export to Excel
-        $this->export->to_excel($data['stock_report'], 'laporan_stok_' . date('Y-m-d'));
+            foreach ($response['data'] as $item) {
+                $csv_content .= "{$item['code']},{$item['name']},{$item['category']},{$item['unit']},{$item['current_stock']},{$item['min_stock']},{$item['warehouse_name']}\n";
+            }
+
+            // Set headers for download
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="laporan_stok_' . date('Y-m-d') . '.csv"');
+
+            echo $csv_content;
+            exit;
+        } else {
+            $this->session->set_flashdata('error', 'Gagal mengekspor laporan stok!');
+            redirect('laporan/stok');
+        }
     }
 
-    public function export_transaction_in()
+    public function export_masuk()
     {
-        $start_date = $this->input->get('start_date');
-        $end_date = $this->input->get('end_date');
-        $warehouse_id = $this->input->get('warehouse_id');
-        $item_id = $this->input->get('item_id');
+        // Get parameters from filter
+        $params = [
+            'date_from' => $this->input->get('date_from'),
+            'date_to' => $this->input->get('date_to'),
+            'item_id' => $this->input->get('item_id'),
+            'warehouse_id' => $this->input->get('warehouse_id')
+        ];
 
-        $params = [];
-        if ($start_date)
-            $params['start_date'] = $start_date;
-        if ($end_date)
-            $params['end_date'] = $end_date;
-        if ($warehouse_id)
-            $params['warehouse_id'] = $warehouse_id;
-        if ($item_id)
-            $params['item_id'] = $item_id;
+        // Get in report from API
+        $response = $this->Api_model->get_laporan_masuk($params);
 
-        // Get transaction in report from API
-        $data['transaction_report'] = $this->api_model->request('GET', 'reports/transactions/in', $params);
+        if ($response['success']) {
+            // Create CSV content
+            $csv_content = "Tanggal,Kode Barang,Nama Barang,Jumlah,Gudang,Catatan\n";
 
-        // Load the export library
-        $this->load->library('export');
+            foreach ($response['data'] as $item) {
+                $csv_content .= "{$item['date']},{$item['item_code']},{$item['item_name']},{$item['quantity']},{$item['warehouse_name']},{$item['notes']}\n";
+            }
 
-        // Export to Excel
-        $this->export->to_excel($data['transaction_report'], 'laporan_barang_masuk_' . date('Y-m-d'));
+            // Set headers for download
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="laporan_barang_masuk_' . date('Y-m-d') . '.csv"');
+
+            echo $csv_content;
+            exit;
+        } else {
+            $this->session->set_flashdata('error', 'Gagal mengekspor laporan barang masuk!');
+            redirect('laporan/masuk');
+        }
     }
 
-    public function export_transaction_out()
+    public function export_keluar()
     {
-        $start_date = $this->input->get('start_date');
-        $end_date = $this->input->get('end_date');
-        $warehouse_id = $this->input->get('warehouse_id');
-        $item_id = $this->input->get('item_id');
+        // Get parameters from filter
+        $params = [
+            'date_from' => $this->input->get('date_from'),
+            'date_to' => $this->input->get('date_to'),
+            'item_id' => $this->input->get('item_id'),
+            'warehouse_id' => $this->input->get('warehouse_id')
+        ];
 
-        $params = [];
-        if ($start_date)
-            $params['start_date'] = $start_date;
-        if ($end_date)
-            $params['end_date'] = $end_date;
-        if ($warehouse_id)
-            $params['warehouse_id'] = $warehouse_id;
-        if ($item_id)
-            $params['item_id'] = $item_id;
+        // Get out report from API
+        $response = $this->Api_model->get_laporan_keluar($params);
 
-        // Get transaction out report from API
-        $data['transaction_report'] = $this->api_model->request('GET', 'reports/transactions/out', $params);
+        if ($response['success']) {
+            // Create CSV content
+            $csv_content = "Tanggal,Kode Barang,Nama Barang,Jumlah,Gudang,Catatan\n";
 
-        // Load the export library
-        $this->load->library('export');
+            foreach ($response['data'] as $item) {
+                $csv_content .= "{$item['date']},{$item['item_code']},{$item['item_name']},{$item['quantity']},{$item['warehouse_name']},{$item['notes']}\n";
+            }
 
-        // Export to Excel
-        $this->export->to_excel($data['transaction_report'], 'laporan_barang_keluar_' . date('Y-m-d'));
+            // Set headers for download
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="laporan_barang_keluar_' . date('Y-m-d') . '.csv"');
+
+            echo $csv_content;
+            exit;
+        } else {
+            $this->session->set_flashdata('error', 'Gagal mengekspor laporan barang keluar!');
+            redirect('laporan/keluar');
+        }
     }
 }

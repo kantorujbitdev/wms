@@ -1,168 +1,106 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Gudang extends CI_Controller
+class Gudang extends MY_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
-        // Check if user is logged in
-        if (!$this->session->userdata('logged_in')) {
-            redirect('auth');
-        }
     }
 
     public function index()
     {
-        $data['title'] = 'Daftar Gudang';
-        $data['page'] = 'gudang';
+        // Set title
+        $this->data['title'] = 'Gudang';
 
-        // Get warehouses data from API
-        $data['warehouses'] = $this->api_model->request('GET', 'warehouses');
+        // Get warehouses from API
+        $response = $this->Api_model->get_gudang();
+        $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
 
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/gudang_list', $data);
-        $this->load->view('layouts/footer', $data);
-    }
-
-    public function detail($id)
-    {
-        $data['title'] = 'Detail Gudang';
-        $data['page'] = 'gudang';
-
-        // Get warehouse detail from API
-        $data['warehouse'] = $this->api_model->request('GET', 'warehouses/' . $id);
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/gudang_detail', $data);
-        $this->load->view('layouts/footer', $data);
-    }
-
-    public function stok($id)
-    {
-        $data['title'] = 'Stok Gudang';
-        $data['page'] = 'gudang';
-
-        // Get warehouse detail from API
-        $data['warehouse'] = $this->api_model->request('GET', 'warehouses/' . $id);
-
-        // Get stock items in warehouse from API
-        $data['stock_items'] = $this->api_model->request('GET', 'warehouses/' . $id . '/stock');
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/stok_gudang', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/gudang/index');
     }
 
     public function add()
     {
-        $data['title'] = 'Tambah Gudang';
-        $data['page'] = 'gudang';
+        // Set title
+        $this->data['title'] = 'Tambah Gudang';
 
-        if ($this->input->post()) {
-            $this->form_validation->set_rules('name', 'Nama Gudang', 'required');
-            $this->form_validation->set_rules('code', 'Kode Gudang', 'required|is_unique[warehouses.code]');
-            $this->form_validation->set_rules('address', 'Alamat', 'required');
-            $this->form_validation->set_rules('capacity', 'Kapasitas', 'required|numeric');
-
-            if ($this->form_validation->run() == FALSE) {
-                $this->load->view('layouts/header', $data);
-                $this->load->view('layouts/sidebar', $data);
-                $this->load->view('pages/gudang_form', $data);
-                $this->load->view('layouts/footer', $data);
-            } else {
-                $warehouse_data = [
-                    'name' => $this->input->post('name'),
-                    'code' => $this->input->post('code'),
-                    'address' => $this->input->post('address'),
-                    'city' => $this->input->post('city'),
-                    'province' => $this->input->post('province'),
-                    'postal_code' => $this->input->post('postal_code'),
-                    'capacity' => $this->input->post('capacity'),
-                    'description' => $this->input->post('description')
-                ];
-
-                $response = $this->api_model->request('POST', 'warehouses', $warehouse_data);
-
-                if (isset($response['success']) && $response['success'] === true) {
-                    $this->session->set_flashdata('success', 'Gudang berhasil ditambahkan');
-                    redirect('gudang');
-                } else {
-                    $this->session->set_flashdata('error', 'Gagal menambah gudang: ' . $response['message']);
-                    redirect('gudang/add');
-                }
-            }
-        } else {
-            $this->load->view('layouts/header', $data);
-            $this->load->view('layouts/sidebar', $data);
-            $this->load->view('pages/gudang_form', $data);
-            $this->load->view('layouts/footer', $data);
-        }
+        // Render view
+        $this->render_view('pages/gudang/form');
     }
 
     public function edit($id)
     {
-        $data['title'] = 'Edit Gudang';
-        $data['page'] = 'gudang';
+        // Set title
+        $this->data['title'] = 'Edit Gudang';
 
-        // Get warehouse detail from API
-        $data['warehouse'] = $this->api_model->request('GET', 'warehouses/' . $id);
+        // Get warehouse data from API
+        $warehouse = $this->Api_model->get_gudang(['id' => $id]);
+        $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
 
-        if ($this->input->post()) {
-            $this->form_validation->set_rules('name', 'Nama Gudang', 'required');
-            $this->form_validation->set_rules('code', 'Kode Gudang', 'required');
-            $this->form_validation->set_rules('address', 'Alamat', 'required');
-            $this->form_validation->set_rules('capacity', 'Kapasitas', 'required|numeric');
+        // Render view
+        $this->render_view('pages/gudang/form');
+    }
 
-            if ($this->form_validation->run() == FALSE) {
-                $this->load->view('layouts/header', $data);
-                $this->load->view('layouts/sidebar', $data);
-                $this->load->view('pages/gudang_form', $data);
-                $this->load->view('layouts/footer', $data);
-            } else {
-                $warehouse_data = [
-                    'name' => $this->input->post('name'),
-                    'code' => $this->input->post('code'),
-                    'address' => $this->input->post('address'),
-                    'city' => $this->input->post('city'),
-                    'province' => $this->input->post('province'),
-                    'postal_code' => $this->input->post('postal_code'),
-                    'capacity' => $this->input->post('capacity'),
-                    'description' => $this->input->post('description')
-                ];
+    public function save()
+    {
+        $id = $this->input->post('id');
+        $data = [
+            'name' => $this->input->post('name'),
+            'code' => $this->input->post('code'),
+            'address' => $this->input->post('address'),
+            'capacity' => $this->input->post('capacity'),
+            'manager' => $this->input->post('manager'),
+            'phone' => $this->input->post('phone')
+        ];
 
-                $response = $this->api_model->request('PUT', 'warehouses/' . $id, $warehouse_data);
-
-                if (isset($response['success']) && $response['success'] === true) {
-                    $this->session->set_flashdata('success', 'Gudang berhasil diupdate');
-                    redirect('gudang');
-                } else {
-                    $this->session->set_flashdata('error', 'Gagal update gudang: ' . $response['message']);
-                    redirect('gudang/edit/' . $id);
-                }
-            }
+        if ($id) {
+            // Update existing warehouse
+            $response = $this->Api_model->update_gudang($id, $data);
+            $message = 'Gudang berhasil diperbarui!';
         } else {
-            $this->load->view('layouts/header', $data);
-            $this->load->view('layouts/sidebar', $data);
-            $this->load->view('pages/gudang_form', $data);
-            $this->load->view('layouts/footer', $data);
+            // Add new warehouse
+            $response = $this->Api_model->add_gudang($data);
+            $message = 'Gudang berhasil ditambahkan!';
         }
+
+        if ($response['success']) {
+            $this->session->set_flashdata('success', $message);
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menyimpan data gudang!');
+        }
+
+        redirect('gudang');
     }
 
     public function delete($id)
     {
-        $response = $this->api_model->request('DELETE', 'warehouses/' . $id);
+        $response = $this->Api_model->delete_gudang($id);
 
-        if (isset($response['success']) && $response['success'] === true) {
-            $this->session->set_flashdata('success', 'Gudang berhasil dihapus');
+        if ($response['success']) {
+            $this->session->set_flashdata('success', 'Gudang berhasil dihapus!');
         } else {
-            $this->session->set_flashdata('error', 'Gagal hapus gudang: ' . $response['message']);
+            $this->session->set_flashdata('error', 'Gagal menghapus gudang!');
         }
 
         redirect('gudang');
+    }
+
+    public function stock($id)
+    {
+        // Set title
+        $this->data['title'] = 'Stok Gudang';
+
+        // Get warehouse data from API
+        $warehouse = $this->Api_model->get_gudang(['id' => $id]);
+        $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
+
+        // Get stock data from API
+        $stock = $this->Api_model->get_stok_gudang($id);
+        $this->data['stock_items'] = $stock['success'] ? $stock['data'] : [];
+
+        // Render view
+        $this->render_view('pages/gudang/stock');
     }
 }

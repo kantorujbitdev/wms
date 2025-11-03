@@ -55,17 +55,17 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 // API Configuration
-$config['api_base_url'] = 'https://200.192.100.214';
-$config['endpoin_login'] = $config['api_base_url'] . '/inventory/api/auth.php';
-$config['endpoin_barang'] = $config['api_base_url'] . '/inventory/api/barang.php';
-$config['endpoin_gudang'] = $config['api_base_url'] . '/inventory/api/gudang.php';
-$config['endpoin_transaksi'] = $config['api_base_url'] . '/inventory/api/transaksi.php';
-$config['endpoin_laporan'] = $config['api_base_url'] . '/inventory/api/laporan.php';
-$config['endpoin_user'] = $config['api_base_url'] . '/inventory/api/user.php';
+$config['api_base_url'] = 'http://200.192.100.214';
+$config['endpoint_login'] = $config['api_base_url'] . '/inventory/api/auth.php';
+$config['endpoint_barang'] = $config['api_base_url'] . '/inventory/api/barang.php';
+$config['endpoint_gudang'] = $config['api_base_url'] . '/inventory/api/gudang.php';
+$config['endpoint_transaksi'] = $config['api_base_url'] . '/inventory/api/transaksi.php';
+$config['endpoint_laporan'] = $config['api_base_url'] . '/inventory/api/laporan.php';
+$config['endpoint_user'] = $config['api_base_url'] . '/inventory/api/user.php';
 $config['endpoin_pengaturan'] = $config['api_base_url'] . '/inventory/api/pengaturan.php';
 $config['api_timeout'] = 30;
 
 // App Configuration
 $config['app_name'] = 'Warehouse Management System';
-$config['app_logo'] = 'assets/mantis/images/logo.png';
+$config['app_logo'] = 'assets/img/logo_warehouse.png';
 $config['items_per_page'] = 10;

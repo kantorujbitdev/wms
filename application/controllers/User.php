@@ -1,175 +1,105 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class User extends CI_Controller
+class User extends MY_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
-        // Check if user is logged in
-        if (!$this->session->userdata('logged_in')) {
-            redirect('auth');
-        }
 
-        // Check if user has permission to access user management
-        $role = $this->session->userdata('role');
-        if ($role != 'admin') {
-            $this->session->set_flashdata('error', 'Anda tidak memiliki akses ke halaman ini');
+        // Check if user is admin
+        if ($this->user['role'] != 'Admin') {
+            $this->session->set_flashdata('error', 'You do not have permission to access this page.');
             redirect('dashboard');
         }
     }
 
     public function index()
     {
-        $data['title'] = 'Daftar User';
-        $data['page'] = 'user';
+        // Set title
+        $this->data['title'] = 'User Management';
 
-        // Get users data from API
-        $data['users'] = $this->api_model->request('GET', 'users');
+        // Get users from API
+        $response = $this->Api_model->get_user();
+        $this->data['users'] = $response['success'] ? $response['data'] : [];
 
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/user_list', $data);
-        $this->load->view('layouts/footer', $data);
-    }
-
-    public function detail($id)
-    {
-        $data['title'] = 'Detail User';
-        $data['page'] = 'user';
-
-        // Get user detail from API
-        $data['user'] = $this->api_model->request('GET', 'users/' . $id);
-
-        // Get user activity logs
-        $data['activity_logs'] = $this->api_model->request('GET', 'users/' . $id . '/logs');
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/user_detail', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/user/index');
     }
 
     public function add()
     {
-        $data['title'] = 'Tambah User';
-        $data['page'] = 'user';
+        // Set title
+        $this->data['title'] = 'Tambah User';
 
-        if ($this->input->post()) {
-            $this->form_validation->set_rules('name', 'Nama Lengkap', 'required');
-            $this->form_validation->set_rules('username', 'Username', 'required|is_unique[users.username]');
-            $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]');
-            $this->form_validation->set_rules('password', 'Password', 'required|min_length[6]');
-            $this->form_validation->set_rules('confirm_password', 'Konfirmasi Password', 'required|matches[password]');
-            $this->form_validation->set_rules('role', 'Role', 'required');
+        // Get roles from API
+        $roles = $this->Api_model->get_user(['action' => 'roles']);
+        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Admin', 'Supervisor', 'Staff'];
 
-            if ($this->form_validation->run() == FALSE) {
-                $this->load->view('layouts/header', $data);
-                $this->load->view('layouts/sidebar', $data);
-                $this->load->view('pages/user_form', $data);
-                $this->load->view('layouts/footer', $data);
-            } else {
-                $user_data = [
-                    'name' => $this->input->post('name'),
-                    'username' => $this->input->post('username'),
-                    'email' => $this->input->post('email'),
-                    'password' => $this->input->post('password'),
-                    'role' => $this->input->post('role'),
-                    'phone' => $this->input->post('phone'),
-                    'address' => $this->input->post('address')
-                ];
-
-                $response = $this->api_model->request('POST', 'users', $user_data);
-
-                if (isset($response['success']) && $response['success'] === true) {
-                    $this->session->set_flashdata('success', 'User berhasil ditambahkan');
-                    redirect('user');
-                } else {
-                    $this->session->set_flashdata('error', 'Gagal menambah user: ' . $response['message']);
-                    redirect('user/add');
-                }
-            }
-        } else {
-            $this->load->view('layouts/header', $data);
-            $this->load->view('layouts/sidebar', $data);
-            $this->load->view('pages/user_form', $data);
-            $this->load->view('layouts/footer', $data);
-        }
+        // Render view
+        $this->render_view('pages/user/form');
     }
 
     public function edit($id)
     {
-        $data['title'] = 'Edit User';
-        $data['page'] = 'user';
+        // Set title
+        $this->data['title'] = 'Edit User';
 
-        // Get user detail from API
-        $data['user'] = $this->api_model->request('GET', 'users/' . $id);
+        // Get user data from API
+        $user = $this->Api_model->get_user(['id' => $id]);
+        $this->data['user_data'] = $user['success'] ? $user['data'] : [];
 
-        if ($this->input->post()) {
-            $this->form_validation->set_rules('name', 'Nama Lengkap', 'required');
-            $this->form_validation->set_rules('username', 'Username', 'required');
-            $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-            $this->form_validation->set_rules('role', 'Role', 'required');
+        // Get roles from API
+        $roles = $this->Api_model->get_user(['action' => 'roles']);
+        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Admin', 'Supervisor', 'Staff'];
 
-            // Only validate password if it's provided
-            if ($this->input->post('password')) {
-                $this->form_validation->set_rules('password', 'Password', 'min_length[6]');
-                $this->form_validation->set_rules('confirm_password', 'Konfirmasi Password', 'matches[password]');
-            }
+        // Render view
+        $this->render_view('pages/user/form');
+    }
 
-            if ($this->form_validation->run() == FALSE) {
-                $this->load->view('layouts/header', $data);
-                $this->load->view('layouts/sidebar', $data);
-                $this->load->view('pages/user_form', $data);
-                $this->load->view('layouts/footer', $data);
-            } else {
-                $user_data = [
-                    'name' => $this->input->post('name'),
-                    'username' => $this->input->post('username'),
-                    'email' => $this->input->post('email'),
-                    'role' => $this->input->post('role'),
-                    'phone' => $this->input->post('phone'),
-                    'address' => $this->input->post('address')
-                ];
+    public function save()
+    {
+        $id = $this->input->post('id');
+        $data = [
+            'username' => $this->input->post('username'),
+            'name' => $this->input->post('name'),
+            'email' => $this->input->post('email'),
+            'role' => $this->input->post('role'),
+            'status' => $this->input->post('status')
+        ];
 
-                // Add password if provided
-                if ($this->input->post('password')) {
-                    $user_data['password'] = $this->input->post('password');
-                }
-
-                $response = $this->api_model->request('PUT', 'users/' . $id, $user_data);
-
-                if (isset($response['success']) && $response['success'] === true) {
-                    $this->session->set_flashdata('success', 'User berhasil diupdate');
-                    redirect('user');
-                } else {
-                    $this->session->set_flashdata('error', 'Gagal update user: ' . $response['message']);
-                    redirect('user/edit/' . $id);
-                }
-            }
-        } else {
-            $this->load->view('layouts/header', $data);
-            $this->load->view('layouts/sidebar', $data);
-            $this->load->view('pages/user_form', $data);
-            $this->load->view('layouts/footer', $data);
+        // Add password if it's not empty
+        if (!empty($this->input->post('password'))) {
+            $data['password'] = $this->input->post('password');
         }
+
+        if ($id) {
+            // Update existing user
+            $response = $this->Api_model->update_user($id, $data);
+            $message = 'User berhasil diperbarui!';
+        } else {
+            // Add new user
+            $response = $this->Api_model->add_user($data);
+            $message = 'User berhasil ditambahkan!';
+        }
+
+        if ($response['success']) {
+            $this->session->set_flashdata('success', $message);
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menyimpan data user!');
+        }
+
+        redirect('user');
     }
 
     public function delete($id)
     {
-        // Prevent self-deletion
-        if ($id == $this->session->userdata('user_id')) {
-            $this->session->set_flashdata('error', 'Anda tidak dapat menghapus akun sendiri');
-            redirect('user');
-        }
+        $response = $this->Api_model->delete_user($id);
 
-        $response = $this->api_model->request('DELETE', 'users/' . $id);
-
-        if (isset($response['success']) && $response['success'] === true) {
-            $this->session->set_flashdata('success', 'User berhasil dihapus');
+        if ($response['success']) {
+            $this->session->set_flashdata('success', 'User berhasil dihapus!');
         } else {
-            $this->session->set_flashdata('error', 'Gagal hapus user: ' . $response['message']);
+            $this->session->set_flashdata('error', 'Gagal menghapus user!');
         }
 
         redirect('user');

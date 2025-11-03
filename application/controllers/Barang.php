@@ -1,150 +1,104 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Barang extends CI_Controller
+class Barang extends MY_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
-        // Check if user is logged in
-        if (!$this->session->userdata('logged_in')) {
-            redirect('auth');
-        }
     }
 
     public function index()
     {
-        $data['title'] = 'Daftar Barang';
-        $data['page'] = 'barang';
+        // Set title
+        $this->data['title'] = 'Barang';
 
-        // Get items data from API
-        $response = $this->api_model->get_barang();
+        // Get items from API
+        $response = $this->Api_model->get_barang();
+        $this->data['items'] = $response['success'] ? $response['data'] : [];
 
-        if ($response['success']) {
-            $data['items'] = $response;
-        } else {
-            $data['items'] = ['data' => []];
-            $this->session->set_flashdata('error', $response['message']);
-        }
-
-        $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/sidebar', $data);
-        $this->load->view('pages/barang_list', $data);
-        $this->load->view('layouts/footer', $data);
+        // Render view
+        $this->render_view('pages/barang/index');
     }
 
     public function add()
     {
-        $data['title'] = 'Tambah Barang';
-        $data['page'] = 'barang';
+        // Set title
+        $this->data['title'] = 'Tambah Barang';
 
-        if ($this->input->post()) {
-            $this->form_validation->set_rules('name', 'Nama Barang', 'required');
-            $this->form_validation->set_rules('code', 'Kode Barang', 'required');
-            $this->form_validation->set_rules('category_id', 'Kategori', 'required');
-            $this->form_validation->set_rules('unit', 'Satuan', 'required');
-            $this->form_validation->set_rules('price', 'Harga', 'required|numeric');
+        // Get categories from API
+        $categories = $this->Api_model->get_barang(['action' => 'categories']);
+        $this->data['categories'] = $categories['success'] ? $categories['data'] : [];
 
-            if ($this->form_validation->run() == FALSE) {
-                $this->load->view('layouts/header', $data);
-                $this->load->view('layouts/sidebar', $data);
-                $this->load->view('pages/barang_form', $data);
-                $this->load->view('layouts/footer', $data);
-            } else {
-                $item_data = [
-                    'name' => $this->input->post('name'),
-                    'code' => $this->input->post('code'),
-                    'category_id' => $this->input->post('category_id'),
-                    'description' => $this->input->post('description'),
-                    'unit' => $this->input->post('unit'),
-                    'price' => $this->input->post('price'),
-                    'min_stock' => $this->input->post('min_stock')
-                ];
+        // Get units from API
+        $units = $this->Api_model->get_barang(['action' => 'units']);
+        $this->data['units'] = $units['success'] ? $units['data'] : [];
 
-                $response = $this->api_model->add_barang($item_data);
-
-                if ($response['success']) {
-                    $this->session->set_flashdata('success', 'Barang berhasil ditambahkan');
-                    redirect('barang');
-                } else {
-                    $this->session->set_flashdata('error', 'Gagal menambah barang: ' . $response['message']);
-                    redirect('barang/add');
-                }
-            }
-        } else {
-            $this->load->view('layouts/header', $data);
-            $this->load->view('layouts/sidebar', $data);
-            $this->load->view('pages/barang_form', $data);
-            $this->load->view('layouts/footer', $data);
-        }
+        // Render view
+        $this->render_view('pages/barang/form');
     }
 
     public function edit($id)
     {
-        $data['title'] = 'Edit Barang';
-        $data['page'] = 'barang';
+        // Set title
+        $this->data['title'] = 'Edit Barang';
 
-        // Get item detail from API
-        $response = $this->api_model->get_barang(['id' => $id]);
+        // Get item data from API
+        $item = $this->Api_model->get_barang(['id' => $id]);
+        $this->data['item'] = $item['success'] ? $item['data'] : [];
+
+        // Get categories from API
+        $categories = $this->Api_model->get_barang(['action' => 'categories']);
+        $this->data['categories'] = $categories['success'] ? $categories['data'] : [];
+
+        // Get units from API
+        $units = $this->Api_model->get_barang(['action' => 'units']);
+        $this->data['units'] = $units['success'] ? $units['data'] : [];
+
+        // Render view
+        $this->render_view('pages/barang/form');
+    }
+
+    public function save()
+    {
+        $id = $this->input->post('id');
+        $data = [
+            'name' => $this->input->post('name'),
+            'code' => $this->input->post('code'),
+            'description' => $this->input->post('description'),
+            'category' => $this->input->post('category'),
+            'unit' => $this->input->post('unit'),
+            'price' => $this->input->post('price'),
+            'min_stock' => $this->input->post('min_stock')
+        ];
+
+        if ($id) {
+            // Update existing item
+            $response = $this->Api_model->update_barang($id, $data);
+            $message = 'Barang berhasil diperbarui!';
+        } else {
+            // Add new item
+            $response = $this->Api_model->add_barang($data);
+            $message = 'Barang berhasil ditambahkan!';
+        }
 
         if ($response['success']) {
-            $data['item'] = $response['data'][0];
+            $this->session->set_flashdata('success', $message);
         } else {
-            $this->session->set_flashdata('error', $response['message']);
-            redirect('barang');
+            $this->session->set_flashdata('error', 'Gagal menyimpan data barang!');
         }
 
-        if ($this->input->post()) {
-            $this->form_validation->set_rules('name', 'Nama Barang', 'required');
-            $this->form_validation->set_rules('code', 'Kode Barang', 'required');
-            $this->form_validation->set_rules('category_id', 'Kategori', 'required');
-            $this->form_validation->set_rules('unit', 'Satuan', 'required');
-            $this->form_validation->set_rules('price', 'Harga', 'required|numeric');
-
-            if ($this->form_validation->run() == FALSE) {
-                $this->load->view('layouts/header', $data);
-                $this->load->view('layouts/sidebar', $data);
-                $this->load->view('pages/barang_form', $data);
-                $this->load->view('layouts/footer', $data);
-            } else {
-                $item_data = [
-                    'id' => $id,
-                    'name' => $this->input->post('name'),
-                    'code' => $this->input->post('code'),
-                    'category_id' => $this->input->post('category_id'),
-                    'description' => $this->input->post('description'),
-                    'unit' => $this->input->post('unit'),
-                    'price' => $this->input->post('price'),
-                    'min_stock' => $this->input->post('min_stock')
-                ];
-
-                $response = $this->api_model->update_barang($id, $item_data);
-
-                if ($response['success']) {
-                    $this->session->set_flashdata('success', 'Barang berhasil diupdate');
-                    redirect('barang');
-                } else {
-                    $this->session->set_flashdata('error', 'Gagal update barang: ' . $response['message']);
-                    redirect('barang/edit/' . $id);
-                }
-            }
-        } else {
-            $this->load->view('layouts/header', $data);
-            $this->load->view('layouts/sidebar', $data);
-            $this->load->view('pages/barang_form', $data);
-            $this->load->view('layouts/footer', $data);
-        }
+        redirect('barang');
     }
 
     public function delete($id)
     {
-        $response = $this->api_model->delete_barang($id);
+        $response = $this->Api_model->delete_barang($id);
 
         if ($response['success']) {
-            $this->session->set_flashdata('success', 'Barang berhasil dihapus');
+            $this->session->set_flashdata('success', 'Barang berhasil dihapus!');
         } else {
-            $this->session->set_flashdata('error', 'Gagal hapus barang: ' . $response['message']);
+            $this->session->set_flashdata('error', 'Gagal menghapus barang!');
         }
 
         redirect('barang');

@@ -1,1 +1,0 @@
-<!-- This file is intentionally left empty as the sidebar is included in the header.php -->
