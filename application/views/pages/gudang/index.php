@@ -15,8 +15,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered datatable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="text-center align-middle">
                         <tr>
                             <th>Kode</th>
                             <th>Nama</th>

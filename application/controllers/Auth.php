@@ -10,6 +10,9 @@ class Auth extends CI_Controller
         $this->load->library('session');
         $this->load->helper('url');
         $this->load->library('form_validation');
+
+        include(APPPATH . 'views/layouts/wording.php'); // hasilnya $wording array
+        $this->data['wording'] = $wording;
     }
 
     public function index()
@@ -18,9 +21,9 @@ class Auth extends CI_Controller
         if ($this->session->userdata('logged_in')) {
             redirect('dashboard');
         }
+        $this->data['title'] = 'Login';
 
-        $data['title'] = 'Login - ' . $this->config->item('app_name');
-        $this->load->view('pages/login', $data);
+        $this->load->view('pages/login', $this->data);
     }
 
     public function login()
@@ -62,7 +65,7 @@ class Auth extends CI_Controller
                 log_message('debug', 'Login successful for user: ' . $username);
 
                 // Set flash message
-                $this->session->set_flashdata('success', 'Login berhasil! Selamat datang ' . $response['data']['name']);
+                $this->session->set_flashdata('success', 'Login berhasil! Selamat datang ' . $username);
 
                 redirect('dashboard');
             } else {
@@ -72,11 +75,6 @@ class Auth extends CI_Controller
                 // Set error message
                 $error_message = isset($response['message']) ? $response['message'] : 'Username atau password salah';
                 $this->session->set_flashdata('error', $error_message);
-
-                // For debugging purposes, let's show the raw response
-                if (ENVIRONMENT == 'development') {
-                    $this->session->set_flashdata('debug_info', 'Debug Info: ' . json_encode($response));
-                }
 
                 redirect('auth');
             }

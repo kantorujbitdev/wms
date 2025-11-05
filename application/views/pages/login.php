@@ -4,16 +4,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - <?php echo $this->config->item('app_name'); ?></title>
+    <title><?= isset($title) ? $title . ' - ' . $wording['app_name'] : $wording['app_name']; ?></title>
 
     <!-- Bootstrap 5 CSS -->
-    <link href="<?php echo base_url('assets/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link href="<?php echo base_url('assets/css/all.min.css'); ?>" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <link href="<?php echo base_url('assets/css/login_style.css'); ?>" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <style>
+    <!-- <style>
         body {
             background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
             height: 100vh;
@@ -149,15 +151,15 @@
                 margin: 12px;
             }
         }
-    </style>
+    </style> -->
 
-    <link rel="icon" href="<?php echo base_url('assets/img/logo_ujb_no_name_with.png'); ?>" type="image/x-icon">
+    <link rel="icon" href="<?php echo base_url('assets/images/logo_ujb_no_name_white.png'); ?>" type="image/x-icon">
 </head>
 
 <body>
     <div class="login-card">
         <div class="login-logo">
-            <img src="<?php echo base_url('assets/img/logo_ujb_no_name.png'); ?>" alt="Logo">
+            <img src="<?php echo base_url('assets/images/logo_ujb_no_name_blue.png'); ?>" alt="Logo">
             <h1>PT. Usaha Jayamas Bhakti</h1>
             <h2><?php echo $this->config->item('app_name'); ?></h2>
         </div>
@@ -166,26 +168,12 @@
         <?php if ($this->session->flashdata('error')): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <?php echo $this->session->flashdata('error'); ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
         <?php endif; ?>
 
         <?php if ($this->session->flashdata('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <?php echo $this->session->flashdata('success'); ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        <?php endif; ?>
-
-        <!-- Display debug info in development mode -->
-        <?php if ($this->session->flashdata('debug_info') && ENVIRONMENT == 'development'): ?>
-            <div class="debug-info">
-                <strong>Debug Information:</strong><br>
-                <?php echo $this->session->flashdata('debug_info'); ?>
             </div>
         <?php endif; ?>
 
@@ -212,17 +200,8 @@
         </div>
         <?php echo form_close(); ?>
 
-        <!-- Test API button in development mode
-        <?php if (ENVIRONMENT == 'development'): ?>
-            <div class="text-center mt-3">
-                <a href="<?php echo site_url('auth/test_api'); ?>" class="btn btn-sm btn-outline-info" target="_blank">
-                    <i class="fas fa-bug"></i> Test API Connection
-                </a>
-            </div>
-        <?php endif; ?> -->
-
         <div class="footer text-center py-3 mt-3">
-            <img src="<?php echo base_url('assets/img/logo_ujb_no_name.png'); ?>" alt="Logo"
+            <img src="<?php echo base_url('assets/images/logo_ujb_no_name_blue.png'); ?>" alt="Logo"
                 style="height: 28px; vertical-align: middle; margin-right: 8px;">
             &copy; <?php echo date('Y'); ?> Warehouse Management System<br>
             All Rights Reserved
@@ -231,8 +210,9 @@
     </div>
 
     <!-- JS -->
-    <script src="<?php echo base_url('assets/js/jquery.min.js'); ?>"></script>
-    <script src="<?php echo base_url('assets/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.min.js"> </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         (function () {
@@ -285,6 +265,13 @@
                 }
             }
         })();
+    </script>
+
+    <script>
+        // Auto hide alerts
+        setTimeout(function () {
+            $(".alert").fadeOut('slow');
+        }, 3000);
     </script>
 </body>
 

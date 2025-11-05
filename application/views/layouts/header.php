@@ -1,31 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>
-        <?php echo isset($title) ? $title . ' - ' . $this->config->item('app_name') : $this->config->item('app_name'); ?>
-    </title>
-
-    <!-- Favicon -->
-    <link rel="icon" href="<?php echo base_url('assets/img/logo_ujb_no_name_with.png'); ?>" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= isset($title) ? $title . ' - ' . $wording['app_name'] : $wording['app_name']; ?></title>
+    <link rel="icon" href="<?php echo base_url('assets/images/logo_ujb_no_name_white.png'); ?>" type="image/x-icon">
 
     <!-- Bootstrap 5 -->
-    <link href="<?php echo base_url('assets/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link href="<?php echo base_url('assets/css/all.min.css'); ?>" rel="stylesheet">
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-    <!-- DataTables -->
-    <link href="<?php echo base_url('assets/css/dataTables.bootstrap4.min.css'); ?>" rel="stylesheet">
-
-    <!-- SweetAlert2 -->
-    <link href="<?php echo base_url('assets/css/sweetalert2.min.css'); ?>" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="<?php echo base_url('assets/css/style.css'); ?>" rel="stylesheet">
+    <style>
+
+    </style>
+
+    <!-- SaaSpal Main CSS -->
+    <link href="<?php echo base_url('assets/temp/css/main.css'); ?>" rel="stylesheet">
+
+    <!-- jQuery (wajib untuk Select2 dan SweetAlert jika interaktif) -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
-    <div class="wrapper">
+    <div class="container-fluid p-0">
+        <div class="row g-0">

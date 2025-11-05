@@ -35,12 +35,12 @@
                             <select class="form-control" id="item_id" name="item_id">
                                 <option value="">Semua</option>
                                 <?php if (!empty($items)): ?>
-                                    <?php foreach ($items as $item): ?>
-                                        <option value="<?php echo $item['id']; ?>" 
-                                            <?php echo $this->input->get('item_id') == $item['id'] ? 'selected' : ''; ?>>
-                                            <?php echo $item['name']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                        <?php foreach ($items as $item): ?>
+                                                <option value="<?php echo $item['id']; ?>" 
+                                                    <?php echo $this->input->get('item_id') == $item['id'] ? 'selected' : ''; ?>>
+                                                    <?php echo $item['name']; ?>
+                                                </option>
+                                        <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                         </div>
@@ -51,12 +51,12 @@
                             <select class="form-control" id="warehouse_id" name="warehouse_id">
                                 <option value="">Semua</option>
                                 <?php if (!empty($warehouses)): ?>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?php echo $warehouse['id']; ?>" 
-                                            <?php echo $this->input->get('warehouse_id') == $warehouse['id'] ? 'selected' : ''; ?>>
-                                            <?php echo $warehouse['name']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                        <?php foreach ($warehouses as $warehouse): ?>
+                                                <option value="<?php echo $warehouse['id']; ?>" 
+                                                    <?php echo $this->input->get('warehouse_id') == $warehouse['id'] ? 'selected' : ''; ?>>
+                                                    <?php echo $warehouse['name']; ?>
+                                                </option>
+                                        <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                         </div>
@@ -81,8 +81,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered datatable" width="100%" cellspacing="0">
-                    <thead>
+                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="text-center align-middle">
                         <tr>
                             <th>Tanggal</th>
                             <th>Kode Barang</th>
@@ -94,20 +94,20 @@
                     </thead>
                     <tbody>
                         <?php if (!empty($in_report)): ?>
-                            <?php foreach ($in_report as $item): ?>
-                                <tr>
-                                    <td><?php echo date('d M Y', strtotime($item['date'])); ?></td>
-                                    <td><?php echo $item['item_code']; ?></td>
-                                    <td><?php echo $item['item_name']; ?></td>
-                                    <td><?php echo $item['quantity']; ?></td>
-                                    <td><?php echo $item['warehouse_name']; ?></td>
-                                    <td><?php echo $item['notes']; ?></td>
-                                </tr>
-                            <?php endforeach; ?>
+                                <?php foreach ($in_report as $item): ?>
+                                        <tr>
+                                            <td><?php echo date('d M Y', strtotime($item['date'])); ?></td>
+                                            <td><?php echo $item['item_code']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td><?php echo $item['warehouse_name']; ?></td>
+                                            <td><?php echo $item['notes']; ?></td>
+                                        </tr>
+                                <?php endforeach; ?>
                         <?php else: ?>
-                            <tr>
-                                <td colspan="6" class="text-center">No data found</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="6" class="text-center">No data found</td>
+                                </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>

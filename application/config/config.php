@@ -64,8 +64,3 @@ $config['endpoint_laporan'] = $config['api_base_url'] . '/inventory/api/laporan.
 $config['endpoint_user'] = $config['api_base_url'] . '/inventory/api/user.php';
 $config['endpoin_pengaturan'] = $config['api_base_url'] . '/inventory/api/pengaturan.php';
 $config['api_timeout'] = 30;
-
-// App Configuration
-$config['app_name'] = 'Warehouse Management System';
-$config['app_logo'] = 'assets/img/logo_warehouse.png';
-$config['items_per_page'] = 10;

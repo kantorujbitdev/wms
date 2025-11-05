@@ -13,7 +13,7 @@ class Transaksi extends MY_Controller
         // Set title
         $this->data['title'] = 'Riwayat Transaksi';
         $this->data['active_menu'] = 'transaksi';
-        $this->data['active_submenu'] = 'index';
+        $this->data['active_submenu'] = 'riwayat';
 
         // Get transactions from API
         $response = $this->Api_model->get_transaksi();

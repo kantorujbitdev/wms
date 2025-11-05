@@ -51,7 +51,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @link		https://codeigniter.com/userguide3/general/controllers.html
  */
 #[\AllowDynamicProperties]
-
 class CI_Controller
 {
 

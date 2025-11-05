@@ -1,68 +1,111 @@
-</div> <!-- end container-fluid -->
-</div> <!-- end content -->
-</div> <!-- end wrapper -->
+</div> <!-- end container -->
+</div> <!-- end content-wrapper -->
 
-<!-- jQuery -->
-<script src="<?php echo base_url('assets/js/jquery.min.js'); ?>"></script>
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Bootstrap Bundle -->
-<script src="<?php echo base_url('assets/js/bootstrap.bundle.min.js'); ?>"></script>
+<!-- Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<!-- DataTables -->
-<script src="<?php echo base_url('assets/js/jquery.dataTables.min.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/dataTables.bootstrap4.min.js'); ?>"></script>
+<!-- SaaSpal Main JS -->
+<script src="<?php echo base_url('assets/temp/js/main.js'); ?>"></script>
 
-<!-- SweetAlert2 -->
-<script src="<?php echo base_url('assets/js/sweetalert2.min.js'); ?>"></script>
+<!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Logout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin keluar dari sistem?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <a href="<?= site_url('auth/logout'); ?>" class="btn btn-danger">Ya, Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- Custom Script -->
-<script src="<?php echo base_url('assets/js/main.js'); ?>"></script>
-
+<!-- Custom Sidebar Toggle Script -->
 <script>
     $(document).ready(function () {
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
+        // Inisialisasi Select2 global
+        $('select').select2({
+            width: '100%'
         });
 
-        $('.datatable').DataTable({
-            responsive: true,
-            paging: true,
-            ordering: false,
-            info: true,
-            scrollX: true,
-            autoWidth: false,
-            pageLength: 5,
-            language: { url: "<?php echo base_url('assets/Indonesian.json'); ?>" }
+        // Mobile sidebar toggle functionality
+        $('#sidebarToggle').on('click', function () {
+            $('.sidebar').toggleClass('show');
         });
-    });
 
-    // SweetAlert Notif
-    document.addEventListener("DOMContentLoaded", function () {
-        <?php if ($this->session->flashdata('success')): ?>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: '<?= $this->session->flashdata('success'); ?>',
-                timer: 2000,
-                showConfirmButton: false,
-                timerProgressBar: true,
-                position: 'top-end',
-                toast: true
-            });
-        <?php endif; ?>
+        // Desktop sidebar toggle functionality
+        $('#sidebarToggleDesktop').on('click', function () {
+            $('.sidebar').toggleClass('collapsed');
+            $('.content-wrapper').toggleClass('expanded');
 
-        <?php if ($this->session->flashdata('error')): ?>
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: '<?= $this->session->flashdata('error'); ?>',
-                timer: 2000,
-                showConfirmButton: false,
-                timerProgressBar: true,
-                position: 'top-end',
-                toast: true
-            });
-        <?php endif; ?>
+            // Save sidebar state to localStorage
+            if ($('.sidebar').hasClass('collapsed')) {
+                localStorage.setItem('sidebarState', 'collapsed');
+            } else {
+                localStorage.setItem('sidebarState', 'expanded');
+            }
+        });
+
+        // Check saved sidebar state for desktop
+        if (window.innerWidth >= 992) {
+            if (localStorage.getItem('sidebarState') === 'collapsed') {
+                $('.sidebar').addClass('collapsed');
+                $('.content-wrapper').addClass('expanded');
+            }
+        }
+
+        // Close sidebar when clicking outside on mobile
+        $(document).on('click', function (e) {
+            if (window.innerWidth < 992) {
+                if (!$(e.target).closest('.sidebar').length &&
+                    !$(e.target).closest('#sidebarToggle').length &&
+                    $('.sidebar').hasClass('show')) {
+                    $('.sidebar').removeClass('show');
+                }
+            }
+        });
+
+        // Handle window resize
+        $(window).on('resize', function () {
+            if (window.innerWidth >= 992) {
+                // For desktop views
+                if (localStorage.getItem('sidebarState') !== 'collapsed') {
+                    $('.sidebar').removeClass('collapsed show');
+                    $('.content-wrapper').removeClass('expanded');
+                } else {
+                    $('.sidebar').addClass('collapsed');
+                    $('.content-wrapper').addClass('expanded');
+                }
+            } else {
+                // For mobile views
+                $('.sidebar').removeClass('collapsed');
+                $('.content-wrapper').removeClass('expanded');
+            }
+        });
+
+        // Add active class to submenu items
+        $('.sidebar-sublink').each(function () {
+            if ($(this).attr('href') === window.location.pathname) {
+                $(this).addClass('active');
+                $(this).closest('.collapse').addClass('show');
+                $(this).closest('.sidebar-item').addClass('active');
+            }
+        });
+
+        // Logout confirmation modal
+        $('#logoutBtn').on('click', function (e) {
+            e.preventDefault();
+            $('#logoutModal').modal('show');
+        });
     });
 </script>
 

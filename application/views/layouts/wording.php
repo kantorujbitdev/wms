@@ -2,7 +2,8 @@
 // Common wording and labels used throughout the application
 $wording = [
     // General
-    'app_name' => 'WMS - Warehouse Management System',
+    'app_name_full' => 'Warehouse Management System',
+    'app_name' => 'WMS',
     'dashboard' => 'Dashboard',
     'save' => 'Simpan',
     'cancel' => 'Batal',

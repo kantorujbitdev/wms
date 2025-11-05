@@ -11,6 +11,10 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
 
+        // Load wording file
+        include(APPPATH . 'views/layouts/wording.php'); // hasilnya $wording array
+        $this->data['wording'] = $wording;
+
         // Load model dan library yang diperlukan
         $this->load->model('Api_model');
         $this->load->library('session');
@@ -80,6 +84,7 @@ class MY_Controller extends CI_Controller
 
         // Load views
         $this->load->view('layouts/header', $data);
+        $this->load->view('layouts/notif', $data);
         $this->load->view('layouts/sidebar', $data);
         $this->load->view($view, $data);
         $this->load->view('layouts/footer', $data);

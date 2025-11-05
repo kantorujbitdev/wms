@@ -93,8 +93,8 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="text-center align-middle">
                                 <tr>
                                     <th>Date</th>
                                     <th>Type</th>
@@ -137,8 +137,8 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="text-center align-middle">
                                 <tr>
                                     <th>Item</th>
                                     <th>Current Stock</th>

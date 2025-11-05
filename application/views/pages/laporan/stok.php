@@ -21,12 +21,12 @@
                             <select class="form-control" id="category" name="category">
                                 <option value="">Semua</option>
                                 <?php if (!empty($categories)): ?>
-                                    <?php foreach ($categories as $category): ?>
-                                        <option value="<?php echo $category; ?>" 
-                                            <?php echo $this->input->get('category') == $category ? 'selected' : ''; ?>>
-                                            <?php echo $category; ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                        <?php foreach ($categories as $category): ?>
+                                                <option value="<?php echo $category; ?>" 
+                                                    <?php echo $this->input->get('category') == $category ? 'selected' : ''; ?>>
+                                                    <?php echo $category; ?>
+                                                </option>
+                                        <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                         </div>
@@ -37,12 +37,12 @@
                             <select class="form-control" id="warehouse_id" name="warehouse_id">
                                 <option value="">Semua</option>
                                 <?php if (!empty($warehouses)): ?>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?php echo $warehouse['id']; ?>" 
-                                            <?php echo $this->input->get('warehouse_id') == $warehouse['id'] ? 'selected' : ''; ?>>
-                                            <?php echo $warehouse['name']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                        <?php foreach ($warehouses as $warehouse): ?>
+                                                <option value="<?php echo $warehouse['id']; ?>" 
+                                                    <?php echo $this->input->get('warehouse_id') == $warehouse['id'] ? 'selected' : ''; ?>>
+                                                    <?php echo $warehouse['name']; ?>
+                                                </option>
+                                        <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                         </div>
@@ -78,8 +78,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered datatable" width="100%" cellspacing="0">
-                    <thead>
+                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="text-center align-middle">
                         <tr>
                             <th>Kode Barang</th>
                             <th>Nama Barang</th>
@@ -93,28 +93,28 @@
                     </thead>
                     <tbody>
                         <?php if (!empty($stock_report)): ?>
-                            <?php foreach ($stock_report as $item): ?>
-                                <tr>
-                                    <td><?php echo $item['code']; ?></td>
-                                    <td><?php echo $item['name']; ?></td>
-                                    <td><?php echo $item['category']; ?></td>
-                                    <td><?php echo $item['unit']; ?></td>
-                                    <td><?php echo $item['current_stock']; ?></td>
-                                    <td><?php echo $item['min_stock']; ?></td>
-                                    <td><?php echo $item['warehouse_name']; ?></td>
-                                    <td>
-                                        <?php if ($item['current_stock'] <= $item['min_stock']): ?>
-                                            <span class="badge badge-danger">Low Stock</span>
-                                        <?php else: ?>
-                                            <span class="badge badge-success">Available</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                                <?php foreach ($stock_report as $item): ?>
+                                        <tr>
+                                            <td><?php echo $item['code']; ?></td>
+                                            <td><?php echo $item['name']; ?></td>
+                                            <td><?php echo $item['category']; ?></td>
+                                            <td><?php echo $item['unit']; ?></td>
+                                            <td><?php echo $item['current_stock']; ?></td>
+                                            <td><?php echo $item['min_stock']; ?></td>
+                                            <td><?php echo $item['warehouse_name']; ?></td>
+                                            <td>
+                                                <?php if ($item['current_stock'] <= $item['min_stock']): ?>
+                                                        <span class="badge badge-danger">Low Stock</span>
+                                                <?php else: ?>
+                                                        <span class="badge badge-success">Available</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                <?php endforeach; ?>
                         <?php else: ?>
-                            <tr>
-                                <td colspan="8" class="text-center">No data found</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="8" class="text-center">No data found</td>
+                                </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>

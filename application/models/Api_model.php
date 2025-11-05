@@ -26,7 +26,7 @@ class Api_model extends CI_Model
 
         // Enable logging
         $this->load->library('session');
-        log_message('debug', 'Api_model initialized with base URL: ' . $this->baseUrl);
+        save_log('Api_model initialized with base URL: ' . $this->baseUrl);
     }
 
     /**
@@ -43,13 +43,13 @@ class Api_model extends CI_Model
         $token = $this->session->userdata('api_token');
 
         // Log request
-        log_message('debug', 'API Request: ' . $method . ' ' . $endpoint);
-        log_message('debug', 'Request data: ' . json_encode($data));
-        log_message('debug', 'Request params: ' . json_encode($params));
+        save_log('API Request: ' . $method . ' ' . $endpoint);
+        save_log('Request data: ' . json_encode($data));
+        save_log('Request params: ' . json_encode($params));
 
         // Cek endpoint
         if (!isset($this->endpoints[$endpoint])) {
-            log_message('error', 'Endpoint not found: ' . $endpoint);
+            save_log('Endpoint not found: ' . $endpoint);
             return [
                 'success' => false,
                 'message' => 'Endpoint not found',
@@ -58,12 +58,12 @@ class Api_model extends CI_Model
         }
 
         $url = $this->endpoints[$endpoint];
-        log_message('debug', 'API URL: ' . $url);
+        save_log('API URL: ' . $url);
 
         // Tambahkan parameter ke URL jika ada
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
-            log_message('debug', 'API URL with params: ' . $url);
+            save_log('API URL with params: ' . $url);
         }
 
         // Initialize cURL
@@ -86,13 +86,13 @@ class Api_model extends CI_Model
         // Add Authorization header if token exists (except for login)
         if ($token && $endpoint !== 'login') {
             $options[CURLOPT_HTTPHEADER][] = "Authorization: Bearer $token";
-            log_message('debug', 'Using token: ' . substr($token, 0, 10) . '...');
+            save_log('Using token: ' . substr($token, 0, 10) . '...');
         }
 
         // Add POST/PUT data if provided
         if (!empty($data) && in_array(strtoupper($method), ['POST', 'PUT'])) {
             $options[CURLOPT_POSTFIELDS] = json_encode($data);
-            log_message('debug', 'POST/PUT data: ' . json_encode($data));
+            save_log('POST/PUT data: ' . json_encode($data));
         }
 
         curl_setopt_array($curl, $options);
@@ -104,14 +104,14 @@ class Api_model extends CI_Model
         $errno = curl_errno($curl);
 
         // Log cURL info
-        log_message('debug', 'cURL info: ' . json_encode(curl_getinfo($curl)));
+        save_log('cURL info: ' . json_encode(curl_getinfo($curl)));
 
         // Close cURL
         curl_close($curl);
 
         // Handle cURL error
         if ($error) {
-            log_message('error', 'cURL Error #' . $errno . ': ' . $error);
+            save_log('cURL Error #' . $errno . ': ' . $error);
             return [
                 'success' => false,
                 'message' => 'cURL Error: ' . $error,
@@ -120,16 +120,16 @@ class Api_model extends CI_Model
         }
 
         // Log response
-        log_message('debug', 'API Response HTTP Code: ' . $http_code);
-        log_message('debug', 'API Response: ' . $response);
+        save_log('API Response HTTP Code: ' . $http_code);
+        save_log('API Response: ' . $response);
 
         // Decode JSON response
         $result = json_decode($response, true);
 
         // Handle JSON decode error
         if (json_last_error() !== JSON_ERROR_NONE) {
-            log_message('error', 'JSON Decode Error: ' . json_last_error_msg());
-            log_message('error', 'Raw Response: ' . $response);
+            save_log('JSON Decode Error: ' . json_last_error_msg());
+            save_log('Raw Response: ' . $response);
             return [
                 'success' => false,
                 'message' => 'JSON Decode Error: ' . json_last_error_msg(),
@@ -143,7 +143,7 @@ class Api_model extends CI_Model
 
         // Handle token expiration
         if ($http_code == 401 && $endpoint !== 'login') {
-            log_message('debug', 'Token expired, destroying session');
+            save_log('Token expired, destroying session');
             $this->session->sess_destroy();
             redirect('auth');
         }
@@ -165,7 +165,7 @@ class Api_model extends CI_Model
             'Password' => $password
         ];
 
-        log_message('debug', 'Attempting login with username: ' . $username);
+        save_log('Attempting login with username: ' . $username);
         return $this->request('POST', 'login', $data);
     }
 
@@ -176,7 +176,7 @@ class Api_model extends CI_Model
      */
     public function test_connection()
     {
-        log_message('debug', 'Testing API connection');
+        save_log('Testing API connection');
         return $this->request('GET', 'login');
     }
 
