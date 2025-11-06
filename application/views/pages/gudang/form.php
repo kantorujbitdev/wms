@@ -52,10 +52,29 @@
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button class="btn btn-primary" id="saveForm">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
                 <a href="<?php echo site_url('gudang'); ?>" class="btn btn-secondary">Batal</a>
             </div>
             <?php echo form_close(); ?>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#saveForm').on('click', function () {
+            showConfirmationModal({
+                title: 'Konfirmasi Simpan',
+                message: 'Apakah data yang Anda masukkan sudah benar?',
+                confirmText: 'Ya, Simpan',
+                confirmClass: 'btn-primary',
+                onConfirm: function () {
+                    // Submit form or do other actions
+                    $('#myForm').submit();
+                }
+            });
+        });
+    });
+</script>

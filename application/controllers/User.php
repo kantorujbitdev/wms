@@ -8,7 +8,7 @@ class User extends MY_Controller
         parent::__construct();
 
         // Check if user is admin
-        if ($this->user['role'] != 'Admin') {
+        if ($this->user['role'] != 'admin') {
             $this->session->set_flashdata('error', 'You do not have permission to access this page.');
             redirect('dashboard');
         }
@@ -34,7 +34,7 @@ class User extends MY_Controller
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
-        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Admin', 'Supervisor', 'Staff'];
+        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['admin', 'Supervisor', 'Staff'];
 
         // Render view
         $this->render_view('pages/user/form');
@@ -51,7 +51,7 @@ class User extends MY_Controller
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
-        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Admin', 'Supervisor', 'Staff'];
+        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['admin', 'Supervisor', 'Staff'];
 
         // Render view
         $this->render_view('pages/user/form');

@@ -9,27 +9,27 @@
 
 <!-- SaaSpal Main JS -->
 <script src="<?php echo base_url('assets/temp/js/main.js'); ?>"></script>
-
-<!-- Logout Confirmation Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true"
+<!-- Dynamic Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Logout</h5>
+                <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Apakah Anda yakin ingin keluar dari sistem?</p>
+                <p id="confirmationMessage">Apakah Anda yakin ingin melanjutkan?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <a href="<?= site_url('auth/logout'); ?>" class="btn btn-danger">Ya, Logout</a>
+                <button type="button" class="btn btn-danger" id="confirmButton">Ya</button>
             </div>
         </div>
     </div>
 </div>
-<!-- Custom Sidebar Toggle Script -->
+
+<!-- Custom Sidebar Toggle Script dan modal-->
 <script>
     $(document).ready(function () {
         // Inisialisasi Select2 global
@@ -114,6 +114,69 @@
                 // This ensures it works properly on mobile
             }
         });
+
+
+
+        // Fungsi untuk menampilkan modal konfirmasi
+        window.showConfirmationModal = function (options) {
+            // Set default values
+            const defaults = {
+                title: 'Konfirmasi',
+                message: 'Apakah Anda yakin ingin melanjutkan?',
+                confirmText: 'Ya',
+                confirmClass: 'btn-danger',
+                icon: 'fa-question-circle text-warning',
+                onConfirm: null,
+                confirmUrl: null
+            };
+
+            // Merge options with defaults
+            const settings = $.extend({}, defaults, options);
+
+            // Set modal content
+            $('#confirmationModalLabel').text(settings.title);
+            $('#confirmationMessage').text(settings.message);
+            $('#confirmButton').text(settings.confirmText);
+
+            // Set icon
+            $('#confirmationIcon').html(`<i class="fas ${settings.icon} fa-2x"></i>`);
+
+            // Set button class
+            $('#confirmButton').removeClass('btn-danger btn-success btn-primary btn-warning')
+                .addClass(settings.confirmClass);
+
+            // Remove previous event handlers
+            $('#confirmButton').off('click');
+
+            // Set confirm button action
+            if (settings.confirmUrl) {
+                // If URL is provided, redirect to that URL
+                $('#confirmButton').on('click', function () {
+                    window.location.href = settings.confirmUrl;
+                });
+            } else if (settings.onConfirm && typeof settings.onConfirm === 'function') {
+                // If callback function is provided, execute it
+                $('#confirmButton').on('click', function () {
+                    settings.onConfirm();
+                    $('#confirmationModal').modal('hide');
+                });
+            }
+
+            // Show the modal
+            $('#confirmationModal').modal('show');
+        };
+        // Example: Logout confirmation using the dynamic modal
+        $('#logoutBtn').on('click', function (e) {
+            e.preventDefault();
+            showConfirmationModal({
+                title: 'Konfirmasi Logout',
+                message: 'Apakah Anda yakin ingin keluar dari sistem?',
+                confirmText: 'Ya, Logout',
+                confirmClass: 'btn-danger',
+                confirmUrl: '<?= site_url('auth/logout'); ?>'
+            });
+        });
+
     });
 </script>
 

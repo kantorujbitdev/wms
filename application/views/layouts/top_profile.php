@@ -26,8 +26,7 @@ UserId= ' . $user_id
                     id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-user-circle user-icon"></i>
                     <div class="user-details ms-2 d-none d-sm-block">
-                        <span class="user-name d-block"><?php echo $usernames ?></span>
-                        <span class="user-role text-muted small">(<?php echo $role_id ?>)</span>
+                        <span class="user-name d-block"><?php echo $usernames ?> (<?php echo $role_id ?>)</span>
                     </div>
                     <!-- For mobile only - show username inline -->
                     <span class="user-name-mobile d-sm-none ms-2"><?php echo $usernames ?></span>

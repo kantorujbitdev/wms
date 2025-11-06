@@ -17,41 +17,37 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead class="text-center align-middle">
                         <tr>
+                            <th>No</th>
                             <th>Username</th>
-                            <th>Nama</th>
-                            <th>Email</th>
+                            <th>Nama Lengkap</th>
                             <th>Role</th>
-                            <th>Status</th>
+                            <th>Tanggal Dibuat</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!empty($users)): ?>
-                            <?php foreach ($users as $user): ?>
+                            <?php $no = 1;
+                            foreach ($users as $user): ?>
                                 <tr>
-                                    <td><?php echo $user['username']; ?></td>
-                                    <td><?php echo $user['name']; ?></td>
-                                    <td><?php echo $user['email']; ?></td>
-                                    <td>
+                                    <td class="text-center"><?php echo $no++; ?></td>
+                                    <td><?php echo $user['User_Name']; ?></td>
+                                    <td><?php echo !empty($user['Full_Name']) ? $user['Full_Name'] : '-'; ?></td>
+                                    <td class="text-center">
                                         <span
-                                            class="badge badge-<?php echo $user['role'] == 'Admin' ? 'danger' : ($user['role'] == 'Supervisor' ? 'warning' : 'info'); ?>">
-                                            <?php echo $user['role']; ?>
+                                            class="badge bg-<?php echo $user['User_Role'] == 'admin' ? 'danger' : ($user['User_Role'] == 'Supervisor' ? 'warning' : 'info'); ?>">
+                                            <?php echo ucfirst($user['User_Role']); ?>
                                         </span>
                                     </td>
-                                    <td>
-                                        <?php if ($user['status'] == 'Active'): ?>
-                                            <span class="badge badge-success">Active</span>
-                                        <?php else: ?>
-                                            <span class="badge badge-secondary">Inactive</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <a href="<?php echo site_url('user/edit/' . $user['id']); ?>"
+                                    <td><?php echo date('d-m-Y H:i:s', strtotime($user['CreatedAt'])); ?></td>
+                                    <td class="text-center">
+                                        <a href="<?php echo site_url('user/edit/' . $user['User_Id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="<?php echo $user['id']; ?>"
-                                            data-name="<?php echo $user['name']; ?>">
+                                        <button class="btn btn-danger btn-sm delete-btn"
+                                            data-id="<?php echo $user['User_Id']; ?>"
+                                            data-name="<?php echo $user['User_Name']; ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -59,7 +55,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" class="text-center">No users found</td>
+                                <td colspan="6" class="text-center">Tidak ada data user</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -71,23 +67,17 @@
 
 <script>
     $(document).ready(function () {
-        // Delete confirmation
+        // Delete confirmation using our dynamic modal
         $('.delete-btn').click(function () {
             var id = $(this).data('id');
             var name = $(this).data('name');
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '<?php echo site_url('user/delete/'); ?>' + id;
-                }
+            showConfirmationModal({
+                title: 'Konfirmasi Hapus',
+                message: `Apakah Anda yakin ingin menghapus user "${name}"?`,
+                confirmText: 'Ya, Hapus',
+                confirmClass: 'btn-danger',
+                confirmUrl: '<?php echo site_url('user/delete/'); ?>' + id
             });
         });
     });

@@ -90,7 +90,7 @@ $wording = [
     'pengaturan_token' => 'Token',
 
     // Roles
-    'role_admin' => 'Admin',
+    'role_admin' => 'admin',
     'role_supervisor' => 'Supervisor',
     'role_staff' => 'Staff',
 

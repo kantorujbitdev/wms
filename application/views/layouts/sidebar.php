@@ -10,6 +10,7 @@
     </div>
 
     <ul class="list-unstyled components mt-3 px-2">
+        <!-- Dashboard -->
         <li class="sidebar-item <?= ($active_menu == 'dashboard') ? 'active' : ''; ?>">
             <a href="<?= site_url('dashboard'); ?>" class="sidebar-link">
                 <i class="fas fa-tachometer-alt me-2"></i>
@@ -17,6 +18,7 @@
             </a>
         </li>
 
+        <!-- Barang -->
         <li class="sidebar-item <?= ($active_menu == 'barang') ? 'active' : ''; ?>">
             <a href="<?= site_url('barang'); ?>" class="sidebar-link">
                 <i class="fas fa-boxes me-2"></i>
@@ -24,6 +26,7 @@
             </a>
         </li>
 
+        <!-- Gudang -->
         <li class="sidebar-item <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
             <a href="<?= site_url('gudang'); ?>" class="sidebar-link">
                 <i class="fas fa-warehouse me-2"></i>
@@ -60,6 +63,7 @@
             </ul>
         </li>
 
+        <!-- Laporan -->
         <li class="sidebar-item <?= ($active_menu == 'laporan') ? 'active' : ''; ?>">
             <a href="<?= site_url('laporan'); ?>" class="sidebar-link">
                 <i class="fas fa-chart-bar me-2"></i>
@@ -67,30 +71,48 @@
             </a>
         </li>
 
-        <?php if (isset($user) && $user['role'] == 'Admin'): ?>
+        <!-- Admin Only -->
+        <?php if (isset($user) && $user['role'] == 'admin'): ?>
+            <!-- User Management -->
             <li class="sidebar-item <?= ($active_menu == 'user') ? 'active' : ''; ?>">
                 <a href="<?= site_url('user'); ?>" class="sidebar-link">
                     <i class="fas fa-users me-2"></i>
                     <span><?= $wording['user']; ?></span>
                 </a>
             </li>
+
+            <!-- Pengaturan Dropdown -->
             <li class="sidebar-item <?= ($active_menu == 'pengaturan') ? 'active' : ''; ?>">
-                <a href="<?= site_url('pengaturan'); ?>" class="sidebar-link">
+                <a href="#pengaturanSubmenu" data-bs-toggle="collapse"
+                    aria-expanded="<?= ($active_menu == 'pengaturan') ? 'true' : 'false'; ?>"
+                    class="sidebar-link dropdown-toggle">
                     <i class="fas fa-cog me-2"></i>
                     <span><?= $wording['pengaturan']; ?></span>
                 </a>
+                <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'pengaturan') ? 'show' : ''; ?>"
+                    id="pengaturanSubmenu">
+                    <li><a href="<?= site_url('pengaturan'); ?>"
+                            class="sidebar-sublink <?= ($active_submenu == 'web') ? 'active' : ''; ?>">
+                            <i class="fas fa-globe me-2"></i>Web</a>
+                    </li>
+                    <li><a href="<?= site_url('api'); ?>"
+                            class="sidebar-sublink <?= ($active_submenu == 'api') ? 'active' : ''; ?>">
+                            <i class="fas fa-plug me-2"></i>API</a>
+                    </li>
+                </ul>
             </li>
         <?php endif; ?>
 
         <hr class="sidebar-divider my-3">
+
         <!-- Sidebar Footer -->
         <li class="sidebar-item mt-auto mb-3">
             <div class="px-3 py-2 text-center small" style="color: #f8f9fa;">
                 &copy; <?= date('Y'); ?>
-                <span><?= $wording['app_name']; ?></span><br><span><?= $wording['app_name_full']; ?></span>
+                <span><?= $wording['app_name']; ?></span><br>
+                <span><?= $wording['app_name_full']; ?></span>
             </div>
         </li>
-
     </ul>
 </div>
 

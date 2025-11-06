@@ -6,45 +6,35 @@ class Pengaturan extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-
-        // Check if user is admin
-        if ($this->user['role'] != 'Admin') {
-            $this->session->set_flashdata('error', 'You do not have permission to access this page.');
-            redirect('dashboard');
-        }
+        $this->load->model('Pengaturan_model', 'Pengaturan_model');
     }
 
     public function index()
     {
-        // Set title
-        $this->data['title'] = 'Pengaturan';
-
-        // Get settings from API
-        $response = $this->Api_model->get_pengaturan();
-        $this->data['settings'] = $response['success'] ? $response['data'] : [];
-
-        // Render view
-        $this->render_view('pages/pengaturan/index');
+        $data['pengaturan'] = $this->Pengaturan_model->get_all();
+        $data['page_title'] = 'Pengaturan Aplikasi';
+        $data['active_menu'] = 'pengaturan';
+        $data['active_submenu'] = 'web';
+        $this->render_admin_view('pages/pengaturan/index', $data);
     }
 
-    public function save()
+    public function edit($id)
     {
-        $data = [
-            'api_base_url' => $this->input->post('api_base_url'),
-            'api_timeout' => $this->input->post('api_timeout'),
-            'items_per_page' => $this->input->post('items_per_page'),
-            'app_name' => $this->input->post('app_name'),
-            'app_logo' => $this->input->post('app_logo')
-        ];
+        $item = $this->Pengaturan_model->get_by_id($id);
+        if (!$item)
+            show_404();
 
-        $response = $this->Api_model->update_pengaturan($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Pengaturan berhasil disimpan!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan pengaturan!');
+        if ($this->input->post()) {
+            $data = [
+                'nama_pengaturan' => $this->input->post('nama_pengaturan'),
+                'value' => $this->input->post('value'),
+            ];
+            $this->Pengaturan_model->update($id, $data);
+            $this->session->set_flashdata('success', 'Pengaturan berhasil diperbarui');
+            redirect('pengaturan');
         }
 
-        redirect('pengaturan');
+        $data['item'] = $item;
+        $this->render_admin_view('pages/pengaturan/form', $data);
     }
 }

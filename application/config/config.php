@@ -61,6 +61,6 @@ $config['endpoint_barang'] = $config['api_base_url'] . '/inventory/api/barang.ph
 $config['endpoint_gudang'] = $config['api_base_url'] . '/inventory/api/gudang.php';
 $config['endpoint_transaksi'] = $config['api_base_url'] . '/inventory/api/transaksi.php';
 $config['endpoint_laporan'] = $config['api_base_url'] . '/inventory/api/laporan.php';
-$config['endpoint_user'] = $config['api_base_url'] . '/inventory/api/user.php';
+$config['endpoint_user'] = $config['api_base_url'] . '/inventory/api/user';
 $config['endpoin_pengaturan'] = $config['api_base_url'] . '/inventory/api/pengaturan.php';
 $config['api_timeout'] = 30;

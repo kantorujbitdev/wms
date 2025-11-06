@@ -51,25 +51,6 @@ class MY_Controller extends CI_Controller
     }
 
     /**
-     * Fungsi untuk set data umum yang akan digunakan di semua view
-     */
-    protected function set_common_data()
-    {
-        // Set title default
-        $this->data['title'] = $this->config->item('app_name');
-
-        // Set user data
-        $this->data['user'] = $this->user;
-
-        // Set active menu berdasarkan controller
-        $this->data['active_menu'] = strtolower($this->router->class);
-
-        // Set active submenu berdasarkan method
-        $this->data['active_submenu'] = strtolower($this->router->method);
-
-    }
-
-    /**
      * Fungsi untuk render view dengan layout
      * 
      * @param string $view Nama view yang akan ditampilkan
@@ -107,7 +88,7 @@ class MY_Controller extends CI_Controller
     protected function render_admin_view($view, $data = array(), $return = FALSE)
     {
         // Cek apakah user adalah admin
-        if ($this->user['role'] != 'Admin') {
+        if ($this->user['role'] != 'admin') {
             // Set flash message
             $this->session->set_flashdata('error', 'You do not have permission to access this page.');
 
@@ -148,5 +129,24 @@ class MY_Controller extends CI_Controller
         } else {
             return $this->user['role'] == $roles;
         }
+    }
+
+    /**
+     * Fungsi untuk set data umum yang akan digunakan di semua view
+     */
+    protected function set_common_data()
+    {
+        // Set title default
+        $this->data['title'] = $this->config->item('app_name');
+
+        // Set user data
+        $this->data['user'] = $this->user;
+
+        // Set active menu berdasarkan controller
+        $this->data['active_menu'] = strtolower($this->router->class);
+
+        // Set active submenu berdasarkan method
+        $this->data['active_submenu'] = strtolower($this->router->method);
+
     }
 }

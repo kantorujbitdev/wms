@@ -49,7 +49,7 @@
                                         <button class="btn btn-danger btn-sm delete-btn"
                                             data-id="<?php echo $warehouse['id']; ?>"
                                             data-name="<?php echo $warehouse['name']; ?>">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </td>
                                 </tr>
@@ -68,23 +68,16 @@
 
 <script>
     $(document).ready(function () {
-        // Delete confirmation
-        $('.delete-btn').click(function () {
-            var id = $(this).data('id');
-            var name = $(this).data('name');
+        $('.delete-btn').on('click', function () {
+            const id = $(this).data('id');
+            const name = $(this).data('name');
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '<?php echo site_url('gudang/delete/'); ?>' + id;
-                }
+            showConfirmationModal({
+                title: 'Konfirmasi Hapus',
+                message: `Apakah Anda yakin ingin menghapus data "${name}"?`,
+                confirmText: 'Ya, Hapus',
+                confirmClass: 'btn-danger',
+                confirmUrl: `<?= site_url('gudang/delete') ?>/${id}`
             });
         });
     });
