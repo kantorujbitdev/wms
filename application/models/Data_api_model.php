@@ -14,6 +14,19 @@ class Data_api_model extends CI_Model
     {
         return $this->db->get_where($this->table, ['id_api' => $id])->row_array();
     }
+    public function get_by_name($name)
+    {
+        $query = $this->db->select('endpoint')
+            ->from($this->table)
+            ->where('nama_api', $name)
+            ->get();
+
+        if ($query->num_rows() > 0) {
+            return $query->row()->endpoint; // kembalikan langsung string endpoint
+        }
+
+        return null; // kalau tidak ditemukan
+    }
 
     public function insert($data)
     {

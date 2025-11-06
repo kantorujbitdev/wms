@@ -14,6 +14,19 @@ class Pengaturan_model extends CI_Model
     {
         return $this->db->get_where($this->table, ['id_pengaturan' => $id])->row_array();
     }
+    public function get_by_name($name)
+    {
+        $query = $this->db->select('value')
+            ->from($this->table)
+            ->where('nama_pengaturan', $name)
+            ->get();
+
+        if ($query->num_rows() > 0) {
+            return $query->row()->value;
+        }
+
+        return null; // kalau tidak ditemukan
+    }
 
     public function update($id, $data)
     {

@@ -2,11 +2,6 @@
 $role_id = $this->session->userdata('role');
 $user_id = $this->session->userdata('user_id');
 $usernames = $this->session->userdata('username');
-save_log('Data session:
-Role= ' . $role_id . '
-Username= ' . $usernames . '
-UserId= ' . $user_id
-);
 ?>
 
 <!-- Top Navbar -->

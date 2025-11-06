@@ -53,14 +53,3 @@ $config['compress_output'] = FALSE;
 $config['time_reference'] = 'local';
 $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
-
-// API Configuration
-$config['api_base_url'] = 'http://200.192.100.214';
-$config['endpoint_login'] = $config['api_base_url'] . '/inventory/api/auth.php';
-$config['endpoint_barang'] = $config['api_base_url'] . '/inventory/api/barang.php';
-$config['endpoint_gudang'] = $config['api_base_url'] . '/inventory/api/gudang.php';
-$config['endpoint_transaksi'] = $config['api_base_url'] . '/inventory/api/transaksi.php';
-$config['endpoint_laporan'] = $config['api_base_url'] . '/inventory/api/laporan.php';
-$config['endpoint_user'] = $config['api_base_url'] . '/inventory/api/user';
-$config['endpoin_pengaturan'] = $config['api_base_url'] . '/inventory/api/pengaturan.php';
-$config['api_timeout'] = 30;

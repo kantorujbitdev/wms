@@ -17,6 +17,7 @@ class MY_Controller extends CI_Controller
 
         // Load model dan library yang diperlukan
         $this->load->model('Api_model');
+        $this->load->model('Data_api_model', 'data_api');
         $this->load->library('session');
         $this->load->helper('url');
 

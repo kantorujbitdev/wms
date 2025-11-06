@@ -5,38 +5,69 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * Custom simple log untuk CodeIgniter 3
  * Menyimpan log dengan format rapi dalam satu level (general purpose)
  */
-
 if (!function_exists('save_log')) {
     /**
+     * Menyimpan log aplikasi ke file dengan format rapi dan ikon indikator
+     * 
      * @param string $message Pesan log
-     * @param array|null $context Data tambahan opsional (misalnya array data)
+     * @param string $type Jenis log (info, success, warning, error)
      */
-    function save_log($message, $context = null)
+    function save_log($message, $type = 'info')
     {
         $CI =& get_instance();
-        $log_path = APPPATH . 'logs/data_log/';
 
-        // Buat folder log kalau belum ada
-        if (!is_dir($log_path)) {
-            mkdir($log_path, 0755, true);
+        // Siapkan direktori log
+        $logDir = APPPATH . 'logs/data_log/';
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0777, true);
         }
 
-        // Nama file log per hari
-        $filename = $log_path . 'log-' . date('Y-m-d') . '.log';
+        // Pilih ikon berdasarkan jenis log
+        $icons = [
+            'info' => 'ℹ️',
+            'success' => '✅',
+            'warning' => '⚠️',
+            'error' => '❌'
+        ];
 
-        // Format waktu
+        $icon = isset($icons[$type]) ? $icons[$type] : '🔹';
+
+        // Waktu log
         $timestamp = date('Y-m-d H:i:s');
 
-        // Format isi log
-        $log_entry = "[$timestamp] $message";
+        // Nama file log per tanggal
+        $filename = $logDir . 'app-log-' . date('Y-m-d') . '.log';
 
-        if (!empty($context)) {
-            $log_entry .= ' | DATA: ' . json_encode($context, JSON_PRETTY_PRINT);
+        // Format log
+        $logMessage = "[{$timestamp}] {$icon} [{$type}] {$message}" . PHP_EOL;
+
+        // Simpan ke file
+        file_put_contents($filename, $logMessage, FILE_APPEND);
+    }
+}
+
+/**
+ * Helper tambahan untuk logging hasil HTTP API
+ */
+if (!function_exists('log_http_response')) {
+    /**
+     * Log respons dari API dengan level otomatis berdasarkan kode HTTP
+     *
+     * @param int $http_code
+     * @param string $response
+     * @param string|null $prefix Pesan tambahan opsional (misal nama API)
+     */
+    function log_http_response($http_code, $response, $prefix = null)
+    {
+        $prefixText = $prefix ? "{$prefix} " : "";
+        $shortResponse = substr($response, 0, 500); // batasi isi log agar tidak terlalu panjang
+
+        if ($http_code >= 200 && $http_code < 300) {
+            save_log("✅ Response API - {$prefixText}-[{$http_code}]: {$shortResponse}", 'success');
+        } elseif ($http_code >= 300 && $http_code < 500) {
+            save_log("⚠️ Response API - {$prefixText}-[{$http_code}]: {$shortResponse}", 'warning');
+        } else {
+            save_log("❌ Response API - {$prefixText}-[{$http_code}]: {$shortResponse}", 'error');
         }
-
-        $log_entry .= PHP_EOL;
-
-        // Simpan ke file log
-        file_put_contents($filename, $log_entry, FILE_APPEND);
     }
 }

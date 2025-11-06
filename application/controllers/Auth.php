@@ -7,6 +7,8 @@ class Auth extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Api_model');
+        $this->load->model('Pengaturan_model', 'pengaturan');
+        $this->load->model('Data_api_model', 'data_api');
         $this->load->library('session');
         $this->load->helper('url');
         $this->load->library('form_validation');
@@ -35,11 +37,16 @@ class Auth extends CI_Controller
             $this->session->set_flashdata('error', 'Username dan password harus diisi');
             redirect('auth');
         } else {
+            load_appdata_to_session();
+
             $username = $this->input->post('username');
             $password = $this->input->post('password');
 
             // Log login attempt
             log_message('debug', 'Login attempt for username: ' . $username);
+
+            $api_base_url = $this->pengaturan->get_by_name('api_base_url');
+            log_message('debug', 'Login api_base_url : ' . $api_base_url);
 
             // Call API login
             $response = $this->Api_model->login($username, $password);
@@ -94,40 +101,8 @@ class Auth extends CI_Controller
 
         // Set flash message
         $this->session->set_flashdata('success', 'Anda telah berhasil logout');
+        clear_app_cache();
 
         redirect('auth');
-    }
-
-    /**
-     * Fungsi untuk test koneksi API
-     */
-    public function test_api()
-    {
-        // Only allow in development environment
-        if (ENVIRONMENT != 'development') {
-            show_404();
-        }
-
-        $response = $this->Api_model->test_connection();
-
-        echo '<pre>';
-        echo 'API Test Connection Result:<br>';
-        echo json_encode($response, JSON_PRETTY_PRINT);
-        echo '</pre>';
-
-        // Show logs
-        echo '<h3>Logs:</h3>';
-        echo '<pre>';
-        if (file_exists(APPPATH . 'logs/log-' . date('Y-m-d') . '.php')) {
-            $logs = file_get_contents(APPPATH . 'logs/log-' . date('Y-m-d') . '.php');
-            // Remove PHP opening tag and log prefix
-            $logs = str_replace('<?php defined("BASEPATH") OR exit("No direct script access allowed"); ?>', '', $logs);
-            $logs = preg_replace('/^.*?DEBUG - /m', '', $logs);
-            $logs = preg_replace('/^.*?ERROR - /m', '', $logs);
-            echo htmlspecialchars($logs);
-        } else {
-            echo 'No logs found for today.';
-        }
-        echo '</pre>';
     }
 }

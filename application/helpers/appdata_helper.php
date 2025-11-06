@@ -1,0 +1,120 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+if (!function_exists('load_appdata_to_session')) {
+    /**
+     * Muat data pengaturan dan API dari database ke session.
+     * Dipanggil saat login agar siap dipakai di seluruh aplikasi.
+     */
+    function load_appdata_to_session()
+    {
+        $CI =& get_instance();
+        $CI->load->database();
+        $CI->load->library('session');
+
+        // --- Load pengaturan ---
+        $pengaturan = $CI->db->get('pengaturan')->result_array();
+        $config = [];
+        foreach ($pengaturan as $row) {
+            $config[$row['nama_pengaturan']] = $row['value'];
+        }
+        $CI->session->set_userdata('app_config', $config);
+
+        // --- Load API ---
+        $api = $CI->db->where('status_aktif', 1)->get('api')->result_array();
+        $apis = [];
+        foreach ($api as $row) {
+            $apis[$row['nama_api']] = [
+                'endpoint' => $row['endpoint'],
+                'status_aktif' => $row['status_aktif']
+            ];
+        }
+        $CI->session->set_userdata('api_list', $apis);
+    }
+}
+
+/**
+ * Helper untuk cache data konfigurasi dan API ke dalam session.
+ * Mengurangi query berulang ke database.
+ */
+
+if (!function_exists('get_app_config')) {
+    /**
+     * Ambil semua data dari tabel pengaturan
+     * atau ambil berdasarkan nama_pengaturan
+     */
+    function get_app_config($key = null)
+    {
+        $CI =& get_instance();
+        $CI->load->library('session');
+
+        // Cek apakah data pengaturan sudah ada di session
+        $config = $CI->session->userdata('app_config');
+
+        if (!$config) {
+            // Jika belum, ambil dari database
+            $CI->load->database();
+            $query = $CI->db->get('pengaturan')->result_array();
+
+            $config = [];
+            foreach ($query as $row) {
+                $config[$row['nama_pengaturan']] = $row['value'];
+            }
+
+            // Simpan ke session
+            $CI->session->set_userdata('app_config', $config);
+        }
+
+        // Kalau $key dikasih, ambil satu value aja
+        return $key ? ($config[$key] ?? null) : $config;
+    }
+}
+
+if (!function_exists('get_api_list')) {
+    /**
+     * Ambil semua endpoint API yang aktif
+     */
+    function get_api_list($name = null)
+    {
+        $CI =& get_instance();
+        $CI->load->library('session');
+
+        $apis = $CI->session->userdata('api_list');
+
+        if (!$apis) {
+            // Ambil dari database
+            $CI->load->database();
+            $query = $CI->db
+                ->where('status_aktif', 1)
+                ->get('api')
+                ->result_array();
+
+            $apis = [];
+            foreach ($query as $row) {
+                $apis[$row['nama_api']] = [
+                    'endpoint' => $row['endpoint'],
+                    'status_aktif' => $row['status_aktif']
+                ];
+            }
+
+            // Simpan ke session
+            $CI->session->set_userdata('api_list', $apis);
+        }
+
+        // Kalau mau ambil satu nama API saja
+        return $name ? ($apis[$name]['endpoint'] ?? null) : $apis;
+    }
+}
+
+if (!function_exists('clear_app_cache')) {
+    /**
+     * Hapus cache dari session (misal setelah update pengaturan/API)
+     */
+    function clear_app_cache()
+    {
+        $CI =& get_instance();
+        $CI->load->library('session');
+        $CI->session->unset_userdata('app_config');
+        $CI->session->unset_userdata('api_list');
+    }
+}

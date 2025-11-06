@@ -5,145 +5,113 @@ class Api_model extends CI_Model
 {
     private $baseUrl;
     private $timeout;
-    private $endpoints;
+    private $endpoints = [];
 
     public function __construct()
     {
         parent::__construct();
-        $this->baseUrl = $this->config->item('api_base_url');
-        $this->timeout = $this->config->item('api_timeout');
-
-        // Load endpoints from config
-        $this->endpoints = [
-            'login' => $this->config->item('endpoint_login'),
-            'barang' => $this->config->item('endpoint_barang'),
-            'gudang' => $this->config->item('endpoint_gudang'),
-            'transaksi' => $this->config->item('endpoint_transaksi'),
-            'laporan' => $this->config->item('endpoint_laporan'),
-            'user' => $this->config->item('endpoint_user'),
-            'pengaturan' => $this->config->item('endpoin_pengaturan')
-        ];
-
-        // Enable logging
         $this->load->library('session');
-        save_log('Api_model initialized with base URL: ' . $this->baseUrl);
+
+        $config = get_app_config();
+        $this->baseUrl = $config['api_base_url'] ?? '';
+        $this->timeout = (int) ($config['api_timeout'] ?? 30);
+
+        $apiList = get_api_list();
+        if (!empty($apiList)) {
+            foreach ($apiList as $key => $row) {
+                $this->endpoints[strtolower($key)] = $row['endpoint'];
+            }
+        }
+        save_log("Api_model initialized | Base URL: {$this->baseUrl} | Endpoints loaded: " . count($this->endpoints), 'info');
     }
 
     /**
-     * Fungsi untuk melakukan request ke API
-     * 
-     * @param string $method Metode HTTP (GET, POST, PUT, DELETE)
-     * @param string $endpoint Endpoint API (login, barang, gudang, transaksi, laporan, user, pengaturan)
-     * @param array $data Data yang akan dikirim
-     * @param array $params Parameter tambahan untuk URL
-     * @return array Response dari API
+     * Mendapatkan URL lengkap dari endpoint.
+     */
+    private function getEndpoint($name)
+    {
+        $key = strtolower(trim($name));
+        if (isset($this->endpoints[$key])) {
+            return rtrim($this->baseUrl, '/') . '/' . ltrim($this->endpoints[$key], '/');
+        }
+
+        save_log("⚠️ Endpoint '{$name}' tidak ditemukan dalam daftar API.", 'warning');
+        return null;
+    }
+
+    /**
+     * Request umum ke API eksternal
      */
     public function request($method, $endpoint, $data = [], $params = [])
     {
-        $token = $this->session->userdata('api_token');
-
-        // Log request
-        save_log('API Request: ' . $method . ' ' . $endpoint);
-        save_log('Request data: ' . json_encode($data));
-        save_log('Request params: ' . json_encode($params));
-
-        // Cek endpoint
-        if (!isset($this->endpoints[$endpoint])) {
-            save_log('Endpoint not found: ' . $endpoint);
-            return [
-                'success' => false,
-                'message' => 'Endpoint not found',
-                'http_code' => 404
-            ];
+        $url = $this->getEndpoint($endpoint);
+        if (empty($url)) {
+            return $this->responseError("Endpoint '{$endpoint}' tidak ditemukan.", 404);
         }
 
-        $url = $this->endpoints[$endpoint];
-        save_log('API URL: ' . $url);
-
-        // Tambahkan parameter ke URL jika ada
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
-            save_log('API URL with params: ' . $url);
         }
 
-        // Initialize cURL
-        $curl = curl_init($url);
-
-        // Set cURL options
-        $options = [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => strtoupper($method),
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-                "Accept: application/json"
-            ],
-            CURLOPT_TIMEOUT => $this->timeout,
-            CURLOPT_VERBOSE => true, // Enable verbose logging
-            CURLOPT_SSL_VERIFYPEER => false, // Disable SSL verification for development
-            CURLOPT_SSL_VERIFYHOST => false
+        $token = $this->session->userdata('api_token');
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json'
         ];
 
-        // Add Authorization header if token exists (except for login)
-        if ($token && $endpoint !== 'login') {
-            $options[CURLOPT_HTTPHEADER][] = "Authorization: Bearer $token";
-            save_log('Using token: ' . substr($token, 0, 10) . '...');
+        if ($token && strtolower($endpoint) !== 'login') {
+            $headers[] = "Authorization: Bearer {$token}";
         }
 
-        // Add POST/PUT data if provided
-        if (!empty($data) && in_array(strtoupper($method), ['POST', 'PUT'])) {
-            $options[CURLOPT_POSTFIELDS] = json_encode($data);
-            save_log('POST/PUT data: ' . json_encode($data));
+        $method = strtoupper($method);
+        $payload = (!empty($data) && in_array($method, ['POST', 'PUT'])) ? json_encode($data) : null;
+
+        $options = [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_TIMEOUT => $this->timeout,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_HTTPHEADER => $headers
+        ];
+
+        if ($payload) {
+            $options[CURLOPT_POSTFIELDS] = $payload;
         }
 
+        $curl = curl_init();
         curl_setopt_array($curl, $options);
 
-        // Execute cURL request
+        save_log("🔗 Request {$method} → {$url}", 'info');
+        if (!empty($data))
+            save_log("Payload: " . json_encode($data), 'info');
+
         $response = curl_exec($curl);
         $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $error = curl_error($curl);
         $errno = curl_errno($curl);
-
-        // Log cURL info
-        save_log('cURL info: ' . json_encode(curl_getinfo($curl)));
-
-        // Close cURL
         curl_close($curl);
 
-        // Handle cURL error
         if ($error) {
-            save_log('cURL Error #' . $errno . ': ' . $error);
-            return [
-                'success' => false,
-                'message' => 'cURL Error: ' . $error,
-                'http_code' => 0
-            ];
+            $msg = "cURL Error #{$errno}: {$error}";
+            save_log($msg, 'error');
+            return $this->responseError($msg, 0);
         }
 
-        // Log response
-        save_log('API Response HTTP Code: ' . $http_code);
-        save_log('API Response: ' . $response);
-
-        // Decode JSON response
         $result = json_decode($response, true);
-
-        // Handle JSON decode error
         if (json_last_error() !== JSON_ERROR_NONE) {
-            save_log('JSON Decode Error: ' . json_last_error_msg());
-            save_log('Raw Response: ' . $response);
-            return [
-                'success' => false,
-                'message' => 'JSON Decode Error: ' . json_last_error_msg(),
-                'http_code' => $http_code,
-                'raw_response' => $response
-            ];
+            $msg = 'JSON Decode Error: ' . json_last_error_msg();
+            save_log($msg, 'error');
+            return $this->responseError($msg, $http_code, $response);
         }
 
-        // Add HTTP code to result
         $result['http_code'] = $http_code;
+        log_http_response($http_code, $response, strtoupper($endpoint));
 
-        // Handle token expiration
-        if ($http_code == 401 && $endpoint !== 'login') {
-            save_log('Token expired, destroying session');
+        // Handle token expired
+        if ($http_code === 401 && strtolower($endpoint) !== 'login') {
+            save_log('Token expired, destroying session', 'warning');
             $this->session->sess_destroy();
             redirect('auth');
         }
@@ -152,310 +120,131 @@ class Api_model extends CI_Model
     }
 
     /**
-     * Fungsi untuk melakukan login
-     * 
-     * @param string $username Username
-     * @param string $password Password
-     * @return array Response dari API
+     * Fungsi pembantu untuk membuat response error terstandarisasi
      */
+    private function responseError($message, $httpCode = 0, $raw = '')
+    {
+        return [
+            'success' => false,
+            'message' => $message,
+            'http_code' => $httpCode,
+            'raw_response' => $raw
+        ];
+    }
+
+    // ---------------------------------------------------------------------
+    // 🔹 Bagian berikut hanya pembungkus endpoint (lebih ringkas & DRY)
+    // ---------------------------------------------------------------------
+
     public function login($username, $password)
     {
-        $data = [
+        return $this->request('POST', 'login', [
             'Username' => $username,
             'Password' => $password
-        ];
-
-        save_log('Attempting login with username: ' . $username);
-        return $this->request('POST', 'login', $data);
+        ]);
     }
 
-    /**
-     * Fungsi untuk melakukan test koneksi ke API
-     * 
-     * @return array Response dari API
-     */
-    public function test_connection()
-    {
-        save_log('Testing API connection');
-        return $this->request('GET', 'login');
-    }
-
-    /**
-     * Fungsi untuk mendapatkan data barang
-     * 
-     * @param array $params Parameter tambahan
-     * @return array Response dari API
-     */
+    // ---- Barang ----
     public function get_barang($params = [])
     {
         return $this->request('GET', 'barang', [], $params);
     }
-
-    /**
-     * Fungsi untuk menambah barang
-     * 
-     * @param array $data Data barang
-     * @return array Response dari API
-     */
     public function add_barang($data)
     {
         return $this->request('POST', 'barang', $data);
     }
-
-    /**
-     * Fungsi untuk mengupdate barang
-     * 
-     * @param int $id ID barang
-     * @param array $data Data barang
-     * @return array Response dari API
-     */
     public function update_barang($id, $data)
     {
         return $this->request('PUT', 'barang', $data, ['id' => $id]);
     }
-
-    /**
-     * Fungsi untuk menghapus barang
-     * 
-     * @param int $id ID barang
-     * @return array Response dari API
-     */
     public function delete_barang($id)
     {
         return $this->request('DELETE', 'barang', [], ['id' => $id]);
     }
 
-    /**
-     * Fungsi untuk mendapatkan data gudang
-     * 
-     * @param array $params Parameter tambahan
-     * @return array Response dari API
-     */
+    // ---- Gudang ----
     public function get_gudang($params = [])
     {
         return $this->request('GET', 'gudang', [], $params);
     }
-
-    /**
-     * Fungsi untuk menambah gudang
-     * 
-     * @param array $data Data gudang
-     * @return array Response dari API
-     */
     public function add_gudang($data)
     {
         return $this->request('POST', 'gudang', $data);
     }
-
-    /**
-     * Fungsi untuk mengupdate gudang
-     * 
-     * @param int $id ID gudang
-     * @param array $data Data gudang
-     * @return array Response dari API
-     */
     public function update_gudang($id, $data)
     {
         return $this->request('PUT', 'gudang', $data, ['id' => $id]);
     }
-
-    /**
-     * Fungsi untuk menghapus gudang
-     * 
-     * @param int $id ID gudang
-     * @return array Response dari API
-     */
     public function delete_gudang($id)
     {
         return $this->request('DELETE', 'gudang', [], ['id' => $id]);
     }
-
-    /**
-     * Fungsi untuk mendapatkan stok di gudang
-     * 
-     * @param int $id ID gudang
-     * @return array Response dari API
-     */
     public function get_stok_gudang($id)
     {
         return $this->request('GET', 'gudang', [], ['action' => 'stok', 'id' => $id]);
     }
 
-    /**
-     * Fungsi untuk menambah transaksi barang masuk
-     * 
-     * @param array $data Data transaksi
-     * @return array Response dari API
-     */
+    // ---- Transaksi ----
     public function add_transaksi_masuk($data)
     {
         return $this->request('POST', 'transaksi', $data, ['action' => 'masuk']);
     }
-
-    /**
-     * Fungsi untuk menambah transaksi barang keluar
-     * 
-     * @param array $data Data transaksi
-     * @return array Response dari API
-     */
     public function add_transaksi_keluar($data)
     {
         return $this->request('POST', 'transaksi', $data, ['action' => 'keluar']);
     }
-
-    /**
-     * Fungsi untuk menambah transfer stok
-     * 
-     * @param array $data Data transfer
-     * @return array Response dari API
-     */
     public function add_transfer_stok($data)
     {
         return $this->request('POST', 'transaksi', $data, ['action' => 'transfer']);
     }
-
-    /**
-     * Fungsi untuk mendapatkan data transaksi
-     * 
-     * @param array $params Parameter tambahan
-     * @return array Response dari API
-     */
     public function get_transaksi($params = [])
     {
         return $this->request('GET', 'transaksi', [], $params);
     }
-
-    /**
-     * Fungsi untuk menghapus transaksi
-     * 
-     * @param int $id ID transaksi
-     * @return array Response dari API
-     */
     public function delete_transaksi($id)
     {
         return $this->request('DELETE', 'transaksi', [], ['id' => $id]);
     }
 
-    /**
-     * Fungsi untuk mendapatkan laporan stok
-     * 
-     * @param array $params Parameter tambahan
-     * @return array Response dari API
-     */
+    // ---- Laporan ----
     public function get_laporan_stok($params = [])
     {
         return $this->request('GET', 'laporan', [], array_merge(['action' => 'stok'], $params));
     }
-
-    /**
-     * Fungsi untuk mendapatkan laporan barang masuk
-     * 
-     * @param array $params Parameter tambahan
-     * @return array Response dari API
-     */
     public function get_laporan_masuk($params = [])
     {
         return $this->request('GET', 'laporan', [], array_merge(['action' => 'masuk'], $params));
     }
-
-    /**
-     * Fungsi untuk mendapatkan laporan barang keluar
-     * 
-     * @param array $params Parameter tambahan
-     * @return array Response dari API
-     */
     public function get_laporan_keluar($params = [])
     {
         return $this->request('GET', 'laporan', [], array_merge(['action' => 'keluar'], $params));
     }
 
-    /**
-     * Fungsi untuk mendapatkan data user
-     * 
-     * @param array $params Parameter tambahan
-     * @return array Response dari API
-     */
+    // ---- User ----
     public function get_user($params = [])
     {
         return $this->request('GET', 'user', [], $params);
     }
-
-    /**
-     * Fungsi untuk menambah user
-     * 
-     * @param array $data Data user
-     * @return array Response dari API
-     */
     public function add_user($data)
     {
         return $this->request('POST', 'user', $data);
     }
-
-    /**
-     * Fungsi untuk mengupdate user
-     * 
-     * @param int $id ID user
-     * @param array $data Data user
-     * @return array Response dari API
-     */
     public function update_user($id, $data)
     {
         return $this->request('PUT', 'user', $data, ['id' => $id]);
     }
-
-    /**
-     * Fungsi untuk menghapus user
-     * 
-     * @param int $id ID user
-     * @return array Response dari API
-     */
     public function delete_user($id)
     {
         return $this->request('DELETE', 'user', [], ['id' => $id]);
     }
 
-    /**
-     * Fungsi untuk mendapatkan pengaturan
-     * 
-     * @return array Response dari API
-     */
+    // ---- Pengaturan ----
     public function get_pengaturan()
     {
         return $this->request('GET', 'pengaturan');
     }
-
-    /**
-     * Fungsi untuk mengupdate pengaturan
-     * 
-     * @param array $data Data pengaturan
-     * @return array Response dari API
-     */
     public function update_pengaturan($data)
     {
         return $this->request('PUT', 'pengaturan', $data);
-    }
-
-    /**
-     * Fungsi untuk mendapatkan informasi cURL error
-     * 
-     * @param int $errno cURL error number
-     * @return string Error message
-     */
-    private function get_curl_error_message($errno)
-    {
-        $errors = [
-            CURLE_OK => 'No error',
-            CURLE_UNSUPPORTED_PROTOCOL => 'Unsupported protocol',
-            CURLE_FAILED_INIT => 'Failed init',
-            CURLE_URL_MALFORMAT => 'URL format error',
-            CURLE_COULDNT_RESOLVE_PROXY => 'Couldnt resolve proxy',
-            CURLE_COULDNT_RESOLVE_HOST => 'Couldnt resolve host',
-            CURLE_COULDNT_CONNECT => 'Couldnt connect',
-            CURLE_OPERATION_TIMEDOUT => 'Operation timed out',
-            CURLE_SSL_CONNECT_ERROR => 'SSL connect error',
-            CURLE_TOO_MANY_REDIRECTS => 'Too many redirects',
-        ];
-
-        return isset($errors[$errno]) ? $errors[$errno] : 'Unknown error';
     }
 }
