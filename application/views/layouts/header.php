@@ -17,11 +17,6 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <style>
-
-    </style>
-
     <!-- SaaSpal Main CSS -->
     <link href="<?php echo base_url('assets/temp/css/main.css'); ?>" rel="stylesheet">
 
