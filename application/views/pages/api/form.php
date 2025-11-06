@@ -1,6 +1,5 @@
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800"><?= isset($api) ? 'Edit API' : 'Tambah API'; ?></h1>
-
+        <h1 class="h3 mb-0 text-gray-800"><?= $title; ?></h1>
     <div class="card shadow mb-4">
         <div class="card-body">
             <form method="post">

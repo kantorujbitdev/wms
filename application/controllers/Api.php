@@ -12,8 +12,7 @@ class Api extends MY_Controller
     public function index()
     {
         $data['apis'] = $this->data_api_model->get_all();
-        $data['page_title'] = 'Manajemen API';
-
+        $data['title'] = 'Manajemen API';
         $data['active_menu'] = 'pengaturan';
         $data['active_submenu'] = 'api';
         $this->render_admin_view('pages/api/index', $data);
@@ -31,6 +30,9 @@ class Api extends MY_Controller
             $this->session->set_flashdata('success', 'API berhasil ditambahkan');
             redirect('api');
         }
+        $data['title'] = 'Manajemen API - Tambah API Baru';
+        $data['active_menu'] = 'pengaturan';
+        $data['active_submenu'] = 'api';
         $this->render_admin_view('pages/api/form');
     }
 
@@ -53,6 +55,9 @@ class Api extends MY_Controller
         }
 
         $data['api'] = $api;
+        $data['title'] = 'Manajemen API - Edit API';
+        $data['active_menu'] = 'pengaturan';
+        $data['active_submenu'] = 'api';
         $this->render_admin_view('pages/api/form', $data);
     }
 
