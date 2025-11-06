@@ -11,7 +11,8 @@
 <script src="<?php echo base_url('assets/temp/js/main.js'); ?>"></script>
 
 <!-- Logout Confirmation Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -28,7 +29,6 @@
         </div>
     </div>
 </div>
-
 <!-- Custom Sidebar Toggle Script -->
 <script>
     $(document).ready(function () {
@@ -105,6 +105,14 @@
         $('#logoutBtn').on('click', function (e) {
             e.preventDefault();
             $('#logoutModal').modal('show');
+        });
+
+        // Handle dropdown menu on mobile
+        $('.dropdown-toggle').on('click', function (e) {
+            if (window.innerWidth < 992) {
+                // Let Bootstrap handle the dropdown toggle
+                // This ensures it works properly on mobile
+            }
         });
     });
 </script>
