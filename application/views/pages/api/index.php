@@ -37,11 +37,6 @@
                                 <a href="<?= site_url('api/edit/' . $api['id_api']); ?>" class="btn btn-info btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <!-- <a href="<?= site_url('api/delete/' . $api['id_api']); ?>"
-                                    class="btn btn-danger btn-sm delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </a> -->
-
                                 <a href="<?= site_url('api/delete/' . $api['id_api']); ?>"
                                     data-id="<?php echo $api['id_api']; ?>" data-name="<?php echo $api['nama_api']; ?>"
                                     class="btn btn-danger btn-sm delete-btn">
