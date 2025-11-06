@@ -19,6 +19,7 @@ class Auth extends CI_Controller
 
     public function index()
     {
+        load_appdata_to_session();
         // If user is already logged in, redirect to dashboard
         if ($this->session->userdata('logged_in')) {
             redirect('dashboard');
@@ -37,7 +38,6 @@ class Auth extends CI_Controller
             $this->session->set_flashdata('error', 'Username dan password harus diisi');
             redirect('auth');
         } else {
-            load_appdata_to_session();
 
             $username = $this->input->post('username');
             $password = $this->input->post('password');

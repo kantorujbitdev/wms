@@ -1,3 +1,4 @@
+<?php $config = get_app_config(); ?>
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -5,10 +6,9 @@
             class="text-decoration-none text-white fw-bold fs-5 d-flex align-items-center">
             <img src="<?php echo base_url('assets/images/logo_ujb_no_name_white.png'); ?>" alt="Logo"
                 style="height: 28px; vertical-align: middle; margin-right: 8px;">
-            <span><?= $wording['app_name']; ?></span>
+            <span><?= $config['app_name']; ?></span>
         </a>
     </div>
-
     <ul class="list-unstyled components mt-3 px-2">
         <!-- Dashboard -->
         <li class="sidebar-item <?= ($active_menu == 'dashboard') ? 'active' : ''; ?>">
@@ -109,8 +109,8 @@
         <li class="sidebar-item mt-auto mb-3">
             <div class="px-3 py-2 text-center small" style="color: #f8f9fa;">
                 &copy; <?= date('Y'); ?>
-                <span><?= $wording['app_name']; ?></span><br>
-                <span><?= $wording['app_name_full']; ?></span>
+                <span><?= $config['app_name']; ?></span><br>
+                <span><?= $config['app_fullname']; ?></span>
             </div>
         </li>
     </ul>

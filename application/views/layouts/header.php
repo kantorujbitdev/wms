@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+<?php $config = get_app_config(); ?>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($title) ? $title . ' - ' . $wording['app_name'] : $wording['app_name']; ?></title>
+    <title><?= isset($title) ? $title . ' - ' . $config['app_name'] : $config['app_name']; ?></title>
     <link rel="icon" href="<?php echo base_url('assets/images/logo_ujb_no_name_white.png'); ?>" type="image/x-icon">
 
     <!-- Bootstrap 5 -->
