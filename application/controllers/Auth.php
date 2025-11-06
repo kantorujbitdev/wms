@@ -51,10 +51,10 @@ class Auth extends CI_Controller
             if (isset($response['success']) && $response['success'] === true) {
                 // Set session data
                 $user_data = [
-                    'user_id' => $response['data']['id'],
-                    'username' => $response['data']['username'],
+                    'user_id' => $response['data']['UserId'],
+                    'username' => $response['data']['Username'],
                     'name' => $response['data']['name'],
-                    'role' => $response['data']['role'],
+                    'role' => $response['data']['Role'],
                     'api_token' => $response['data']['token'],
                     'logged_in' => TRUE
                 ];

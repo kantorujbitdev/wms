@@ -1,3 +1,14 @@
+<?php
+$role_id = $this->session->userdata('role');
+$user_id = $this->session->userdata('user_id');
+$usernames = $this->session->userdata('username');
+save_log('Data session:
+Role= ' . $role_id . '
+Username= ' . $usernames . '
+UserId= ' . $user_id
+);
+?>
+
 <!-- Top Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm topbar sticky-top">
     <div class="container-fluid">
@@ -14,8 +25,8 @@
                     <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#"
                         id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user-circle me-1 fs-5"></i>
-                        <span
-                            class="d-none d-md-inline-block"><?= isset($user['name']) ? $user['name'] : 'User'; ?></span>
+                        <?php echo $usernames ?> (<?php echo $role_id ?>)</span>
+
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
