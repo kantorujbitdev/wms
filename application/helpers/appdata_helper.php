@@ -19,7 +19,6 @@ if (!function_exists('load_appdata_to_session')) {
         foreach ($pengaturan as $row) {
             $config[$row['nama_pengaturan']] = $row['value'];
         }
-        save_log('data config: ' . $config['app_pt_name'] . ' ' . $config['app_name']);
         $CI->session->set_userdata('app_config', $config);
 
         // --- Load API ---

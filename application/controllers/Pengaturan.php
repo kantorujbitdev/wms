@@ -7,6 +7,8 @@ class Pengaturan extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Pengaturan_model', 'Pengaturan_model');
+        $this->load->helper(array('form', 'url'));
+        $this->load->library('form_validation');
     }
 
     public function index()
@@ -25,10 +27,59 @@ class Pengaturan extends MY_Controller
             show_404();
 
         if ($this->input->post()) {
-            $data = [
-                'nama_pengaturan' => $this->input->post('nama_pengaturan'),
-                'value' => $this->input->post('value'),
-            ];
+            if ($item['is_image'] == 'true') {
+                // Handle image upload
+                if (!empty($_FILES['image']['name'])) {
+                    $config['upload_path'] = FCPATH . 'uploads/';
+                    $config['allowed_types'] = 'gif|jpg|jpeg|png|webp';
+                    $config['max_size'] = 2048; // 2MB
+                    $config['encrypt_name'] = TRUE;
+
+                    $this->load->library('upload', $config);
+
+                    if ($this->upload->do_upload('image')) {
+                        $upload_data = $this->upload->data();
+                        $image_path = 'uploads/' . $upload_data['file_name'];
+
+                        $data = [
+                            'value' => $image_path
+                        ];
+
+                        // Log perubahan
+                        $user = $this->session->userdata('username') ?? 'Unknown';
+                        save_log("🖼️ User {$user} memperbarui gambar pengaturan [{$item['nama_pengaturan']}] ke {$image_path}", 'success');
+                    } else {
+                        $this->session->set_flashdata('error', $this->upload->display_errors());
+                        redirect('pengaturan/edit/' . $id);
+                    }
+                } else {
+                    // Tidak ada gambar baru
+                    $data = [
+                        'value' => $this->input->post('current_image')
+                    ];
+                }
+            } else {
+                // Handle text value
+                $this->form_validation->set_rules('value', 'Value', 'required');
+
+                if ($this->form_validation->run() == FALSE) {
+                    $data['item'] = $item;
+                    $data['title'] = 'Pengaturan Aplikasi - Edit Pengaturan';
+                    $data['active_menu'] = 'pengaturan';
+                    $data['active_submenu'] = 'web';
+                    $this->render_admin_view('pages/pengaturan/form', $data);
+                    return;
+                }
+
+                $data = [
+                    'value' => $this->input->post('value')
+                ];
+
+                // Log perubahan text
+                $user = $this->session->userdata('username') ?? 'Unknown';
+                save_log("✏️ User {$user} memperbarui nilai pengaturan [{$item['nama_pengaturan']}] ke '{$data['value']}'", 'success');
+            }
+
             $this->Pengaturan_model->update($id, $data);
             $this->session->set_flashdata('success', 'Pengaturan berhasil diperbarui');
             redirect('pengaturan');
@@ -40,4 +91,6 @@ class Pengaturan extends MY_Controller
         $data['active_submenu'] = 'web';
         $this->render_admin_view('pages/pengaturan/form', $data);
     }
+
+
 }

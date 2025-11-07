@@ -17,10 +17,35 @@
                     <tbody>
                         <?php $no = 1;
                         foreach ($pengaturan as $row): ?>
-                            <tr>
+                            <tr class="<?= $row['is_image'] == 'true' ? 'table-image-row' : ''; ?>">
                                 <td class="text-center"><?= $no++; ?></td>
-                                <td><?= $row['nama_pengaturan']; ?></td>
-                                <td><?= $row['value']; ?></td>
+                                <td>
+                                    <?= $row['nama_pengaturan']; ?>
+                                    <?php if ($row['is_image'] == 'true'): ?>
+                                        <i class="fas fa-image text-primary ms-1" title="This setting contains an image"></i>
+                                    <?php endif; ?>
+                                </td>
+                                <td <?php if ($row['is_image'] === 'true'): ?> style="background-color: #f0f8ff;" <?php endif; ?>>
+                                    <?php if ($row['is_image'] === 'true'): ?>
+                                        <?php
+                                        // Pastikan path valid dan absolute (dari base_url)
+                                        $image_path = base_url($row['value']);
+                                        $local_path = FCPATH . ltrim($row['value'], '/'); // untuk validasi file lokal
+                                
+                                        if (file_exists($local_path)):
+                                            ?>
+                                            <img src="<?= $image_path; ?>"
+                                                alt="<?= htmlspecialchars($row['nama_pengaturan'], ENT_QUOTES); ?>"
+                                                class="img-thumbnail" style="max-height: 50px;"
+                                                onerror="this.onerror=null; this.src='<?= base_url('assets/temp/img/no-image.png'); ?>';">
+                                        <?php else: ?>
+                                            <span class="text-danger">Invalid image path</span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <?= htmlspecialchars($row['value'], ENT_QUOTES); ?>
+                                    <?php endif; ?>
+                                </td>
+
                                 <td class="text-center">
                                     <?php
                                     switch ($row['is_image']) {

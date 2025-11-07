@@ -36,7 +36,7 @@
                                     <td class="text-center">
                                         <span
                                             class="badge bg-<?php echo $user['User_Role'] == 'admin' ? 'danger' : ($user['User_Role'] == 'Supervisor' ? 'warning' : 'info'); ?>">
-                                            <?php echo ucfirst($user['User_Role']); ?>
+                                            <?php echo strtoupper($user['User_Role']); ?>
                                         </span>
                                     </td>
                                     <td><?php echo date('d-m-Y H:i:s', strtotime($user['CreatedAt'])); ?></td>
