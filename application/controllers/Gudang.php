@@ -46,17 +46,23 @@ class Gudang extends MY_Controller
     public function save()
     {
         $id = $this->input->post('id');
+
+        // Get current user ID from session
+        $user_id = $this->session->userdata('user_id');
+
+        // Prepare data according to API format
         $data = [
-            'name' => $this->input->post('name'),
             'code' => $this->input->post('code'),
-            'address' => $this->input->post('address'),
-            'capacity' => $this->input->post('capacity'),
-            'manager' => $this->input->post('manager'),
-            'phone' => $this->input->post('phone')
+            'name' => $this->input->post('name'),
+            'addr' => $this->input->post('addr'),
+            'contact' => $this->input->post('contact'),
+            'phone' => $this->input->post('phone'),
+            'actionby' => $user_id
         ];
 
         if ($id) {
-            // Update existing warehouse
+            // Update existing warehouse - add ID to data for PUT request
+            $data['id'] = $id;
             $response = $this->Api_model->update_gudang($id, $data);
             $message = 'Gudang berhasil diperbarui!';
         } else {
@@ -68,7 +74,7 @@ class Gudang extends MY_Controller
         if ($response['success']) {
             $this->session->set_flashdata('success', $message);
         } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data gudang!');
+            $this->session->set_flashdata('error', 'Gagal menyimpan data gudang: ' . $response['message']);
         }
 
         redirect('gudang');
@@ -76,12 +82,21 @@ class Gudang extends MY_Controller
 
     public function delete($id)
     {
-        $response = $this->Api_model->delete_gudang($id);
+        // Get current user ID from session
+        $user_id = $this->session->userdata('user_id');
+
+        // Prepare data according to API format
+        $data = [
+            'id' => $id,
+            'actionby' => $user_id
+        ];
+
+        $response = $this->Api_model->delete_gudang($data);
 
         if ($response['success']) {
             $this->session->set_flashdata('success', 'Gudang berhasil dihapus!');
         } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus gudang!');
+            $this->session->set_flashdata('error', 'Gagal menghapus gudang: ' . $response['message']);
         }
 
         redirect('gudang');

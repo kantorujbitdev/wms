@@ -175,9 +175,9 @@ class Api_model extends CI_Model
     {
         return $this->request('PUT', 'gudang', $data, ['id' => $id]);
     }
-    public function delete_gudang($id)
+    public function delete_gudang($data)
     {
-        return $this->request('DELETE', 'gudang', [], ['id' => $id]);
+        return $this->request('DELETE', 'gudang', $data);
     }
     public function get_stok_gudang($id)
     {

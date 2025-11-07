@@ -32,6 +32,9 @@
 <!-- Custom Sidebar Toggle Script dan modal-->
 <script>
     $(document).ready(function () {
+        // Inisialisasi Tabel
+        $('#dataTable').DataTable(); // aktifkan DataTables
+
         // Inisialisasi Select2 global
         $('select').select2({
             width: '100%'

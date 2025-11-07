@@ -18,45 +18,46 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead class="text-center align-middle">
                         <tr>
+                            <th>No</th>
                             <th>Kode</th>
                             <th>Nama</th>
                             <th>Alamat</th>
-                            <th>Kapasitas</th>
-                            <th>Manager</th>
+                            <th>Contact Person</th>
                             <th>Telepon</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!empty($warehouses)): ?>
-                            <?php foreach ($warehouses as $warehouse): ?>
+                            <?php $no = 1;
+                            foreach ($warehouses as $warehouse): ?>
                                 <tr>
-                                    <td><?php echo $warehouse['code']; ?></td>
-                                    <td><?php echo $warehouse['name']; ?></td>
-                                    <td><?php echo $warehouse['address']; ?></td>
-                                    <td><?php echo $warehouse['capacity']; ?></td>
-                                    <td><?php echo $warehouse['manager']; ?></td>
-                                    <td><?php echo $warehouse['phone']; ?></td>
-                                    <td>
-                                        <a href="<?php echo site_url('gudang/edit/' . $warehouse['id']); ?>"
+                                    <td class="text-center"><?php echo $no++; ?></td>
+                                    <td><?php echo $warehouse['Warehouse_Code']; ?></td>
+                                    <td><?php echo $warehouse['Warehouse_Name']; ?></td>
+                                    <td><?php echo $warehouse['Warehouse_Address']; ?></td>
+                                    <td><?php echo $warehouse['Contact_Person']; ?></td>
+                                    <td><?php echo !empty($warehouse['Phone']) ? $warehouse['Phone'] : '-'; ?></td>
+                                    <td class="text-center">
+                                        <a href="<?php echo site_url('gudang/edit/' . $warehouse['Warehouse_Id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="<?php echo site_url('gudang/stock/' . $warehouse['id']); ?>"
+                                        <a href="<?php echo site_url('gudang/stock/' . $warehouse['Warehouse_Id']); ?>"
                                             class="btn btn-success btn-sm">
                                             <i class="fas fa-boxes"></i>
                                         </a>
                                         <button class="btn btn-danger btn-sm delete-btn"
-                                            data-id="<?php echo $warehouse['id']; ?>"
-                                            data-name="<?php echo $warehouse['name']; ?>">
-                                            <i class="fas fa-trash"></i> Hapus
+                                            data-id="<?php echo $warehouse['Warehouse_Id']; ?>"
+                                            data-name="<?php echo $warehouse['Warehouse_Name']; ?>">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center">No warehouses found</td>
+                                <td colspan="6" class="text-center">Tidak ada data gudang</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

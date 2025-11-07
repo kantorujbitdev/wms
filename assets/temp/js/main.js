@@ -1,9 +1,31 @@
-/**
- * SaaSpal Main JavaScript
- * Custom JavaScript for the WMS application
- */
-
 $(document).ready(function () {
+	// Apply custom colors to DataTables if used
+	if (typeof $.fn.DataTable !== "undefined") {
+		$.extend(true, $.fn.dataTable.defaults, {
+			dom:
+				'<"row"<"col-sm-6"l><"col-sm-6"f>>' +
+				'<"row"<"col-sm-12"tr>>' +
+				'<"row"<"col-sm-5"i><"col-sm-7"p>>',
+			pageLength: 5,
+			lengthMenu: [
+				[5, 10, 25, 50, 100],
+				[5, 10, 25, 50, 100],
+			],
+			responsive: true,
+			language: {
+				search: "_INPUT_",
+				searchPlaceholder: "Search records...",
+				lengthMenu: "Show _MENU_ entries",
+				info: "Showing _START_ to _END_ of _TOTAL_ entries",
+				paginate: {
+					first: "First",
+					last: "Last",
+					next: "Next",
+					previous: "Previous",
+				},
+			},
+		});
+	}
 	// Initialize tooltips
 	var tooltipTriggerList = [].slice.call(
 		document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -53,30 +75,6 @@ $(document).ready(function () {
 			light: colorScheme.light,
 			dark: colorScheme.dark,
 		};
-	}
-
-	// Apply custom colors to DataTables if used
-	if (typeof $.fn.DataTable !== "undefined") {
-		$.extend(true, $.fn.dataTable.defaults, {
-			dom:
-				'<"row"<"col-sm-6"l><"col-sm-6"f>>' +
-				'<"row"<"col-sm-12"tr>>' +
-				'<"row"<"col-sm-5"i><"col-sm-7"p>>',
-			pageLength: 10,
-			responsive: true,
-			language: {
-				search: "_INPUT_",
-				searchPlaceholder: "Search records...",
-				lengthMenu: "Show _MENU_ entries",
-				info: "Showing _START_ to _END_ of _TOTAL_ entries",
-				paginate: {
-					first: "First",
-					last: "Last",
-					next: "Next",
-					previous: "Previous",
-				},
-			},
-		});
 	}
 
 	// Form validation styling
