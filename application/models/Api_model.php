@@ -64,7 +64,7 @@ class Api_model extends CI_Model
         }
 
         $method = strtoupper($method);
-        $payload = (!empty($data) && in_array($method, ['POST', 'PUT'])) ? json_encode($data) : null;
+        $payload = (!empty($data) && in_array($method, ['POST', 'PUT', 'GET', 'DELETE'])) ? json_encode($data) : null;
 
         $options = [
             CURLOPT_URL => $url,
@@ -225,17 +225,23 @@ class Api_model extends CI_Model
     {
         return $this->request('GET', 'user', [], $params);
     }
+    public function get_user_by_id($id)
+    {
+        return $this->request('GET', 'user', [
+            'id' => $id
+        ]);
+    }
     public function add_user($data)
     {
         return $this->request('POST', 'user', $data);
     }
-    public function update_user($id, $data)
+    public function update_user($data)
     {
-        return $this->request('PUT', 'user', $data, ['id' => $id]);
+        return $this->request('PUT', 'user', $data);
     }
-    public function delete_user($id)
+    public function delete_user($data)
     {
-        return $this->request('DELETE', 'user', [], ['id' => $id]);
+        return $this->request('DELETE', 'user', $data);
     }
 
     // ---- Pengaturan ----

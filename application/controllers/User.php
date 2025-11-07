@@ -46,8 +46,10 @@ class User extends MY_Controller
         $this->data['title'] = 'Edit User';
 
         // Get user data from API
-        $user = $this->Api_model->get_user(['id' => $id]);
+        $user = $this->Api_model->get_user_by_id($id);
         $this->data['user_data'] = $user['success'] ? $user['data'] : [];
+
+        save_log("Editing user ID: " . $id . " | Data found: " . ($user['success'] ? 'yes' : 'no'), 'info');
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
@@ -60,12 +62,12 @@ class User extends MY_Controller
     public function save()
     {
         $id = $this->input->post('id');
+
+        // Prepare data according to API format
         $data = [
             'username' => $this->input->post('username'),
-            'name' => $this->input->post('name'),
-            'email' => $this->input->post('email'),
-            'role' => $this->input->post('role'),
-            'status' => $this->input->post('status')
+            'fullname' => $this->input->post('fullname'),
+            'role' => $this->input->post('role')
         ];
 
         // Add password if it's not empty
@@ -74,8 +76,9 @@ class User extends MY_Controller
         }
 
         if ($id) {
-            // Update existing user
-            $response = $this->Api_model->update_user($id, $data);
+            // Update existing user - add ID to data for PUT request
+            $data['id'] = $id;
+            $response = $this->Api_model->update_user($data);
             $message = 'User berhasil diperbarui!';
         } else {
             // Add new user
@@ -86,7 +89,7 @@ class User extends MY_Controller
         if ($response['success']) {
             $this->session->set_flashdata('success', $message);
         } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data user!');
+            $this->session->set_flashdata('error', 'Gagal menyimpan data user: ' . $response['message']);
         }
 
         redirect('user');
@@ -94,12 +97,14 @@ class User extends MY_Controller
 
     public function delete($id)
     {
-        $response = $this->Api_model->delete_user($id);
+        // Prepare data according to API format
+        $data = ['id' => $id];
+        $response = $this->Api_model->delete_user($data);
 
         if ($response['success']) {
             $this->session->set_flashdata('success', 'User berhasil dihapus!');
         } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus user!');
+            $this->session->set_flashdata('error', 'Gagal menghapus user: ' . $response['message']);
         }
 
         redirect('user');

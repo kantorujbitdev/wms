@@ -36,19 +36,21 @@
                                     <td class="text-center">
                                         <span
                                             class="badge bg-<?php echo $user['User_Role'] == 'admin' ? 'danger' : ($user['User_Role'] == 'Supervisor' ? 'warning' : 'info'); ?>">
-                                            <?php echo strtoupper($user['User_Role']); ?>
+                                            <?php echo ucfirst($user['User_Role']); ?>
                                         </span>
                                     </td>
-                                    <td><?php echo date('d-m-Y H:i:s', strtotime($user['CreatedAt'])); ?></td>
+                                    <td><?php echo date('d-m-Y H:i', strtotime($user['CreatedAt'])); ?></td>
                                     <td class="text-center">
                                         <a href="<?php echo site_url('user/edit/' . $user['User_Id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
+                                            <?php save_log("Edit button rendered for user ID: " . $user['User_Id'], 'debug'); ?>
                                         </a>
                                         <button class="btn btn-danger btn-sm delete-btn"
                                             data-id="<?php echo $user['User_Id']; ?>"
                                             data-name="<?php echo $user['User_Name']; ?>">
                                             <i class="fas fa-trash"></i>
+                                            <?php save_log("Delete button rendered for user ID: " . $user['User_Id'], 'debug'); ?>
                                         </button>
                                     </td>
                                 </tr>

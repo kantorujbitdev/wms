@@ -113,7 +113,7 @@
         </div>
     </div>
 </div>
-
+<!-- 
 <script>
     $(document).ready(function () {
         // Delete confirmation
@@ -135,4 +135,4 @@
             });
         });
     });
-</script>
+</script> -->

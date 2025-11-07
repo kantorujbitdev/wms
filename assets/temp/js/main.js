@@ -90,29 +90,6 @@ $(document).ready(function () {
 		$(this).next(".custom-file-label").html(fileName);
 	});
 
-	// Confirmation for delete actions
-	$(".delete-btn").on("click", function (e) {
-		e.preventDefault();
-		var form = $(this).closest("form");
-		var title = $(this).data("title") || "Confirm Delete";
-		var text =
-			$(this).data("text") || "Are you sure you want to delete this item?";
-
-		Swal.fire({
-			title: title,
-			text: text,
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: colorScheme.danger,
-			cancelButtonColor: colorScheme.secondary,
-			confirmButtonText: "Yes, delete it!",
-		}).then((result) => {
-			if (result.isConfirmed) {
-				form.submit();
-			}
-		});
-	});
-
 	// Print button functionality
 	$(".print-btn").on("click", function () {
 		window.print();
@@ -183,11 +160,11 @@ $(document).ready(function () {
 			errorMessage = jqXHR.responseJSON.message;
 		}
 
-		Swal.fire({
-			icon: "error",
+		showConfirmationModal({
 			title: "Error",
-			text: errorMessage,
-			confirmButtonColor: colorScheme.primary,
+			message: errorMessage,
+			confirmText: "Ya, Hapus",
+			onfirmButtonColor: colorScheme.primary,
 		});
 	});
 
