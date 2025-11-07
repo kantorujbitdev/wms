@@ -4,7 +4,7 @@
     <div class="sidebar-header">
         <a href="<?= site_url('dashboard'); ?>"
             class="text-decoration-none text-white fw-bold fs-5 d-flex align-items-center">
-            <img src="<?php echo base_url('assets/images/logo_ujb_no_name_white.png'); ?>" alt="Logo"
+            <img src="<?php echo base_url($config['app_logo']); ?>" alt="Logo"
                 style="height: 28px; vertical-align: middle; margin-right: 8px;">
             <span><?= $config['app_name']; ?></span>
         </a>

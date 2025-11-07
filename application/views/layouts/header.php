@@ -6,7 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($title) ? $title . ' - ' . $config['app_name'] : $config['app_name']; ?></title>
-    <link rel="icon" href="<?php echo base_url('assets/images/logo_ujb_no_name_white.png'); ?>" type="image/x-icon">
+
+    <link rel="icon" href="<?php echo base_url($config['app_logo']); ?>" type="image/x-icon">
+    <!-- <link rel="icon" href="<?php $config['app_logo']; ?>" type="image/x-icon"> -->
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

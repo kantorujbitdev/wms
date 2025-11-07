@@ -15,15 +15,17 @@
 
     <link href="<?php echo base_url('assets/css/login_style.css'); ?>" rel="stylesheet">
 
-    <link rel="icon" href="<?php echo base_url('assets/images/logo_ujb_no_name_white.png'); ?>" type="image/x-icon">
+    <link rel="icon" href="<?php echo base_url(
+        $config['app_logo']
+    ); ?>" type="image/x-icon">
 </head>
 
 <body>
     <div class="login-card">
         <div class="login-logo">
-            <img src="<?php echo base_url('assets/images/logo_ujb_no_name_blue.png'); ?>" alt="Logo">
-            <h1>PT. Usaha Jayamas Bhakti</h1>
-            <h2><?php $config['app_name'] ?></h2>
+            <img src="<?php echo base_url($config['app_logo_blue']); ?>" alt="Logo">
+            <h1><?= $config['app_pt_name'] ?></h1>
+            <h2><?= $config['app_name'] ?></h2>
         </div>
 
         <!-- Display flash messages -->
@@ -58,16 +60,16 @@
         </div>
 
         <div class="d-grid">
-            <button type="submit" class="btn btn-primary mb-3">Sign In</button>
+            <button type="submit" class="btn btn-primary mb-3"><?= $wording['login'] ?></button>
         </div>
         <?php echo form_close(); ?>
 
         <div class="footer text-center py-3 mt-3">
-            <img src="<?php echo base_url('assets/images/logo_ujb_no_name_blue.png'); ?>" alt="Logo"
+            <img src="<?php echo base_url($config['app_logo_blue']); ?>" alt="Logo"
                 style="height: 28px; vertical-align: middle; margin-right: 8px;">
-            &copy; <?php echo date('Y');
-            $config['app_fullname'] ?> Warehouse Management System<br>
-            All Rights Reserved
+            &copy; <?php echo date('Y'); ?>
+            <?= ' ' . $config['app_fullname'] ?> <br>
+            <?= ' ' . $config['app_footer_text'] ?> <br>
         </div>
 
     </div>
