@@ -10,6 +10,7 @@
                             <th>No</th>
                             <th>Nama Pengaturan</th>
                             <th>Value</th>
+                            <th>Is Image</th>
                             <th width="100">Aksi</th>
                         </tr>
                     </thead>
@@ -20,6 +21,22 @@
                                 <td class="text-center"><?= $no++; ?></td>
                                 <td><?= $row['nama_pengaturan']; ?></td>
                                 <td><?= $row['value']; ?></td>
+                                <td class="text-center">
+                                    <?php
+                                    switch ($row['is_image']) {
+                                        case 'false':
+                                            $status_class = 'badge bg-secondary';
+                                            break;
+                                        case 'true':
+                                            $status_class = 'badge bg-info';
+                                            break;
+                                        default:
+                                            $status_class = 'badge bg-light';
+                                            break;
+                                    }
+                                    ?>
+                                    <span class="badge <?= $status_class; ?>"><?= strtoupper($row['is_image']); ?></span>
+                                </td>
                                 <td class="text-center">
                                     <a href="<?= site_url('pengaturan/edit/' . $row['id_pengaturan']); ?>"
                                         class="btn btn-info btn-sm">
