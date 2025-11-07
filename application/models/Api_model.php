@@ -147,20 +147,62 @@ class Api_model extends CI_Model
     // ---- Barang ----
     public function get_barang($params = [])
     {
-        return $this->request('GET', 'barang', [], $params);
+        return $this->request('GET', 'product', [], $params);
     }
     public function add_barang($data)
     {
-        return $this->request('POST', 'barang', $data);
+        return $this->request('POST', 'product', $data);
     }
-    public function update_barang($id, $data)
+    public function update_barang($data)
     {
-        return $this->request('PUT', 'barang', $data, ['id' => $id]);
+        return $this->request('PUT', 'product', $data);
     }
-    public function delete_barang($id)
+    public function delete_barang($data)
     {
-        return $this->request('DELETE', 'barang', [], ['id' => $id]);
+        return $this->request('DELETE', 'product', $data);
     }
+
+    // ---- Tipe Produk ----
+    public function get_product_type($params = [])
+    {
+        return $this->request('GET', 'Product Type', [], $params);
+    }
+    public function get_product_type_by_id($data)
+    {
+        return $this->request('GET', 'Product Type', $data);
+    }
+    public function add_product_type($data)
+    {
+        return $this->request('POST', 'Product Type', $data);
+    }
+    public function update_product_type($data)
+    {
+        return $this->request('PUT', 'Product Type', $data);
+    }
+    public function delete_product_type($data)
+    {
+        return $this->request('DELETE', 'Product Type', $data);
+    }
+
+
+    // ---- Tipe unit ----
+    public function get_unit_type($params = [])
+    {
+        return $this->request('GET', 'Unit Type', [], $params);
+    }
+    public function add_unit_type($data)
+    {
+        return $this->request('POST', 'Unit Type', $data);
+    }
+    public function update_unit_type($data)
+    {
+        return $this->request('PUT', 'Unit Type', $data);
+    }
+    public function delete_unit_type($data)
+    {
+        return $this->request('DELETE', 'Unit Type', $data);
+    }
+
 
     // ---- Gudang ----
     public function get_gudang($params = [])

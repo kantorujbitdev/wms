@@ -29,6 +29,7 @@ $wording = [
 
     // Barang
     'barang' => 'Barang',
+    'master_barang' => 'Master Barang',
     'barang_list' => 'Daftar Barang',
     'barang_add' => 'Tambah Barang',
     'barang_edit' => 'Edit Barang',
@@ -40,12 +41,12 @@ $wording = [
     'barang_description' => 'Deskripsi',
 
     // Gudang
-    'gudang' => 'Gudang',
-    'gudang_list' => 'Daftar Gudang',
-    'gudang_add' => 'Tambah Gudang',
-    'gudang_edit' => 'Edit Gudang',
-    'gudang_name' => 'Nama Gudang',
-    'gudang_code' => 'Kode Gudang',
+    'gudang' => 'Master Gudang',
+    'gudang_list' => 'Daftar Master Gudang',
+    'gudang_add' => 'Tambah Master Gudang',
+    'gudang_edit' => 'Edit Master Gudang',
+    'gudang_name' => 'Nama Master Gudang',
+    'gudang_code' => 'Kode Master Gudang',
     'gudang_address' => 'Alamat',
     'gudang_capacity' => 'Kapasitas',
     'gudang_stock' => 'Stok Gudang',

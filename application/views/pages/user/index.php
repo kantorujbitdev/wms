@@ -44,13 +44,11 @@
                                         <a href="<?php echo site_url('user/edit/' . $user['User_Id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
-                                            <?php save_log("Edit button rendered for user ID: " . $user['User_Id'], 'debug'); ?>
                                         </a>
                                         <button class="btn btn-danger btn-sm delete-btn"
                                             data-id="<?php echo $user['User_Id']; ?>"
                                             data-name="<?php echo $user['User_Name']; ?>">
                                             <i class="fas fa-trash"></i>
-                                            <?php save_log("Delete button rendered for user ID: " . $user['User_Id'], 'debug'); ?>
                                         </button>
                                     </td>
                                 </tr>

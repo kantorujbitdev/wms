@@ -19,12 +19,12 @@
         </li>
 
         <!-- Barang -->
-        <li class="sidebar-item <?= ($active_menu == 'barang') ? 'active' : ''; ?>">
+        <!-- <li class="sidebar-item <?= ($active_menu == 'barang') ? 'active' : ''; ?>">
             <a href="<?= site_url('barang'); ?>" class="sidebar-link">
                 <i class="fas fa-boxes me-2"></i>
                 <span><?= $wording['barang']; ?></span>
             </a>
-        </li>
+        </li> -->
 
         <!-- Gudang -->
         <li class="sidebar-item <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
@@ -32,6 +32,36 @@
                 <i class="fas fa-warehouse me-2"></i>
                 <span><?= $wording['gudang']; ?></span>
             </a>
+        </li>
+
+        <!-- Barang Dropdown -->
+        <li class="sidebar-item <?= ($active_menu == 'barang') ? 'active' : ''; ?>">
+            <a href="#barangSubmenu" data-bs-toggle="collapse"
+                aria-expanded="<?= ($active_menu == 'barang') ? 'true' : 'false'; ?>"
+                class="sidebar-link dropdown-toggle">
+                <i class="fas fa-boxes me-2"></i>
+                <span><?= $wording['master_barang']; ?></span>
+            </a>
+            <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'barang') ? 'show' : ''; ?>" id="barangSubmenu">
+                <li>
+                    <a href="<?= site_url('barang/tipe_produk'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'tipe_produk') ? 'active' : ''; ?>">
+                        <i class="fas fa-tags me-2"></i>Product Type
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= site_url('barang/tipe_satuan'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'tipe_satuan') ? 'active' : ''; ?>">
+                        <i class="fas fa-balance-scale me-2"></i>Unit Type
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= site_url('barang'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'produk') ? 'active' : ''; ?>">
+                        <i class="fas fa-box me-2"></i>Product
+                    </a>
+                </li>
+            </ul>
         </li>
 
         <!-- Transaksi Dropdown -->
