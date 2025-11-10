@@ -54,14 +54,28 @@ class Auth extends CI_Controller
             // Log response
             log_message('debug', 'Login response: ' . json_encode($response));
 
+            // staff
+            // admin wharehouse
+            // superadmin warehouse = 0
+            // tombol tambah type produk dihapus dan tampil hanya di sueradmin
+
+            // "UserId": "1",
+            // "Username": "andi",
+            // "FullName": "",
+            // "Role": "superadmin",
+            // "IsActive": "1",
+            // "WarehouseId": "0"
+
             // Check if login successful
             if (isset($response['success']) && $response['success'] === true) {
                 // Set session data
                 $user_data = [
                     'user_id' => $response['data']['UserId'],
                     'username' => $response['data']['Username'],
-                    'name' => $response['data']['name'],
+                    'name' => $response['data']['FullName'],
                     'role' => $response['data']['Role'],
+                    'is_active' => $response['data']['IsActive'],
+                    'warehouse_id' => $response['data']['WarehouseId'],
                     'api_token' => $response['data']['token'],
                     'logged_in' => TRUE
                 ];

@@ -288,15 +288,20 @@ class Barang extends MY_Controller
 
         // Prepare data according to API format
         $data = [
-            'name' => $this->input->post('name'),
+            'Name' => $this->input->post('name'),
             'code' => $this->input->post('code'),
             'description' => $this->input->post('description'),
-            'product_type_id' => $this->input->post('product_type_id'),
-            'unit_type_id' => $this->input->post('unit_type_id'),
+            'TypeId' => $this->input->post('product_type_id'),
+            'UnitId' => $this->input->post('unit_type_id'),
             'min_stock' => $this->input->post('min_stock'),
             'actionby' => $user_id
         ];
-
+        // code 1
+        // name 1
+        // product_type_id 1
+        // unit_type_id 1
+        // min_stock 1
+        // description 1
         if ($id) {
             // Update existing product - sesuaikan dengan nama fungsi di model
             $data['id'] = $id;

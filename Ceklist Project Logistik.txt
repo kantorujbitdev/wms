@@ -1,0 +1,15 @@
+Ceklist Project Logistik
+[DONE] 1. login
+2. logout
+[DONE] 3. product_type
+[DONE] 4. unit_type
+[DONE] 5. warehouse
+6. barang
+7. supplier
+8. customer
+
+Level User
+// staff
+// admin wharehouse
+// superadmin warehouse = 0
+// tombol tambah type produk dihapus dan tampil hanya di sueradmin

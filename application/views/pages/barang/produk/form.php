@@ -10,7 +10,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Form Produk</h6>
         </div>
         <div class="card-body">
-            <?php echo form_open('barang/save_produk', ['id' => 'productForm']); ?>
+            <?php echo form_open('barang/save_produk'); ?>
             <?php if (isset($product)): ?>
                 <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
             <?php endif; ?>
@@ -35,8 +35,8 @@
                         <option value="">-- Pilih Tipe Produk --</option>
                         <?php if (!empty($product_types)): ?>
                             <?php foreach ($product_types as $type): ?>
-                                <option value="<?php echo $type['id']; ?>" <?php echo (isset($product) && $product['product_type_id'] == $type['id']) ? 'selected' : ''; ?>>
-                                    <?php echo $type['name']; ?>
+                                <option value="<?php echo $type['Product_Type_Id']; ?>" <?php echo (isset($product) && $product['product_type_id'] == $type['Product_Type_Id']) ? 'selected' : ''; ?>>
+                                    <?php echo $type['Product_Type_Name']; ?>
                                 </option>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -48,8 +48,8 @@
                         <option value="">-- Pilih Tipe Satuan --</option>
                         <?php if (!empty($unit_types)): ?>
                             <?php foreach ($unit_types as $type): ?>
-                                <option value="<?php echo $type['id']; ?>" <?php echo (isset($product) && $product['unit_type_id'] == $type['id']) ? 'selected' : ''; ?>>
-                                    <?php echo $type['name']; ?>
+                                <option value="<?php echo $type['Unit_Id']; ?>" <?php echo (isset($product) && $product['id'] == $type['Unit_Id']) ? 'selected' : ''; ?>>
+                                    <?php echo $type['Unit_Name']; ?>
                                 </option>
                             <?php endforeach; ?>
                         <?php endif; ?>
