@@ -12,10 +12,14 @@
             <h6 class="m-0 font-weight-bold text-primary">Form Tipe Produk</h6>
         </div>
         <div class="card-body">
-            <?php echo form_open('barang/save_tipe_produk', ['Product_Type_Id' => 'productTypeForm']); ?>
+            <?php echo form_open('barang/save_tipe_produk'); ?>
             <?php if (isset($product_type)): ?>
                 <input type="hidden" name="id" value="<?php echo $product_type['Product_Type_Id']; ?>">
             <?php endif; ?>
+            <?php if (isset($user_data)): ?>
+                <input type="hidden" name="id" value="<?php echo $user_data['User_Id']; ?>">
+            <?php endif; ?>
+            <?php save_log('view save_tipe_produk called with ID: ' . $product_type['Product_Type_Id'], 'debug'); ?>
 
             <div class="mb-3">
                 <label for="name" class="form-label">Nama Tipe Produk</label>

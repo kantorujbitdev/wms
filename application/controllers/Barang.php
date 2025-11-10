@@ -53,15 +53,16 @@ class Barang extends MY_Controller
 
     public function save_tipe_produk()
     {
-        $id = $this->input->post('Product_Type_Id');
+        $id = $this->input->post('id');
 
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
-
+        save_log('save_tipe_produk called with ID: ' . $id, 'debug');
         if ($id) {
             // Update existing product type - sesuaikan dengan nama fungsi di model
             $data = [
-                $data['id'] = $id,
+                'id' => $id,
+                'code' => $this->input->post('name'),
                 'name' => $this->input->post('description'),
                 'actionby' => $user_id
             ];
