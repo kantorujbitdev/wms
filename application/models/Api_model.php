@@ -149,6 +149,10 @@ class Api_model extends CI_Model
     {
         return $this->request('GET', 'product', [], $params);
     }
+    public function get_barang_by_id($data)
+    {
+        return $this->request('GET', 'product', $data);
+    }
     public function add_barang($data)
     {
         return $this->request('POST', 'product', $data);
@@ -189,6 +193,10 @@ class Api_model extends CI_Model
     public function get_unit_type($params = [])
     {
         return $this->request('GET', 'Unit Type', [], $params);
+    }
+    public function get_unit_type_by_id($data)
+    {
+        return $this->request('GET', 'Unit Type', $data);
     }
     public function add_unit_type($data)
     {

@@ -57,7 +57,6 @@ class Barang extends MY_Controller
 
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
-        save_log('save_tipe_produk called with ID: ' . $id, 'debug');
         if ($id) {
             // Update existing product type - sesuaikan dengan nama fungsi di model
             $data = [
@@ -144,9 +143,10 @@ class Barang extends MY_Controller
         $this->data['title'] = 'Edit Tipe Satuan';
         $this->data['active_menu'] = 'barang';
         $this->data['active_submenu'] = 'tipe_satuan';
-
+        $data['id'] = $id;
+        save_log('edit_tipe_satuan called with ID: ' . $id, 'debug');
         // Get unit type data from API - sesuaikan dengan nama fungsi di model
-        $unit_type = $this->Api_model->get_unit_type(['id' => $id]);
+        $unit_type = $this->Api_model->get_unit_type_by_id($data);
         $this->data['unit_type'] = $unit_type['success'] ? $unit_type['data'] : [];
 
         // Render view
@@ -159,24 +159,26 @@ class Barang extends MY_Controller
 
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
-
-        // Prepare data according to API format
-        $data = [
-            'name' => $this->input->post('name'),
-            'description' => $this->input->post('description'),
-            'actionby' => $user_id
-        ];
-
         if ($id) {
-            // Update existing unit type - sesuaikan dengan nama fungsi di model
-            $data['id'] = $id;
+            // Update existing product type - sesuaikan dengan nama fungsi di model
+            $data = [
+                'id' => $id,
+                'code' => $this->input->post('name'),
+                'name' => $this->input->post('description'),
+                'actionby' => $user_id
+            ];
             $response = $this->Api_model->update_unit_type($data);
-            $message = 'Tipe satuan berhasil diperbarui!';
+            $message = 'Tipe produk berhasil diperbarui!';
         } else {
-            // Add new unit type - sesuaikan dengan nama fungsi di model
+            $data = [
+                'code' => $this->input->post('name'),
+                'name' => $this->input->post('description'),
+                'actionby' => $user_id
+            ];  // Add new product type - sesuaikan dengan nama fungsi di model
             $response = $this->Api_model->add_unit_type($data);
-            $message = 'Tipe satuan berhasil ditambahkan!';
+            $message = 'Tipe produk berhasil ditambahkan!';
         }
+
 
         if ($response['success']) {
             $this->session->set_flashdata('success', $message);

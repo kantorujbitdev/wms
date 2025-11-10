@@ -11,21 +11,22 @@
             <h6 class="m-0 font-weight-bold text-primary">Form Tipe Satuan</h6>
         </div>
         <div class="card-body">
-            <?php echo form_open('barang/save_tipe_satuan', ['id' => 'unitTypeForm']); ?>
+            <?php echo form_open('barang/save_tipe_satuan'); ?>
             <?php if (isset($unit_type)): ?>
-                <input type="hidden" name="id" value="<?php echo $unit_type['id']; ?>">
+                <input type="hidden" name="id" value="<?php echo $unit_type['Unit_Id']; ?>">
             <?php endif; ?>
 
             <div class="mb-3">
                 <label for="name" class="form-label">Nama Tipe Satuan</label>
                 <input type="text" class="form-control" id="name" name="name"
-                    value="<?php echo isset($unit_type) ? $unit_type['name'] : set_value('name'); ?>" required>
+                    value="<?php echo isset($unit_type) ? $unit_type['Unit_Code'] : set_value('Unit_Code'); ?>"
+                    required>
             </div>
 
             <div class="mb-3">
                 <label for="description" class="form-label">Deskripsi</label>
                 <textarea class="form-control" id="description" name="description"
-                    rows="3"><?php echo isset($unit_type) ? $unit_type['description'] : set_value('description'); ?></textarea>
+                    rows="3"><?php echo isset($unit_type) ? $unit_type['Unit_Name'] : set_value('Unit_Name'); ?></textarea>
             </div>
 
             <div class="mb-3">
