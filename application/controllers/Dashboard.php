@@ -14,7 +14,7 @@ class Dashboard extends MY_Controller
         $this->data['title'] = 'Dashboard';
 
         // Get summary data from API
-        $summary = $this->Api_model->request('GET', 'barang', ['action' => 'summary']);
+        $summary = api_request('GET', 'product', ['action' => 'summary']);
         $this->data['summary'] = $summary['success'] ? $summary['data'] : [];
 
         // Get recent transactions

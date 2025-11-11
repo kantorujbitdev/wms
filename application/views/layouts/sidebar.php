@@ -102,7 +102,7 @@
         </li>
 
         <!-- Admin Only -->
-        <?php if (isset($user) && $user['role'] == 'admin'): ?>
+        <?php if (isset($user) && in_array($user['role'], ['admin', 'superadmin'])): ?>
             <!-- User Management -->
             <li class="sidebar-item <?= ($active_menu == 'user') ? 'active' : ''; ?>">
                 <a href="<?= site_url('user'); ?>" class="sidebar-link">

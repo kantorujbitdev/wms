@@ -89,7 +89,7 @@ class MY_Controller extends CI_Controller
     protected function render_admin_view($view, $data = array(), $return = FALSE)
     {
         // Cek apakah user adalah admin
-        if ($this->user['role'] != 'admin') {
+        if ($this->user['role'] != 'superadmin') {
             // Set flash message
             $this->session->set_flashdata('error', 'You do not have permission to access this page.');
 

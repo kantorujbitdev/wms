@@ -48,8 +48,12 @@ class Auth extends CI_Controller
             $api_base_url = $this->pengaturan->get_by_name('api_base_url');
             log_message('debug', 'Login api_base_url : ' . $api_base_url);
 
+            $data = [
+                'Username' => $username,
+                'Password' => $password
+            ];
             // Call API login
-            $response = $this->Api_model->login($username, $password);
+            $response = $this->Api_model->login($data);
 
             // Log response
             log_message('debug', 'Login response: ' . json_encode($response));

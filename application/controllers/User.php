@@ -8,7 +8,7 @@ class User extends MY_Controller
         parent::__construct();
 
         // Check if user is admin
-        if ($this->user['role'] != 'admin') {
+        if ($this->user['role'] != 'admin' && $this->user['role'] != 'superadmin') {
             $this->session->set_flashdata('error', 'You do not have permission to access this page.');
             redirect('dashboard');
         }
