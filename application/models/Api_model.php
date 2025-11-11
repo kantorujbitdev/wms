@@ -22,7 +22,6 @@ class Api_model extends CI_Model
                 $this->endpoints[strtolower($key)] = $row['endpoint'];
             }
         }
-        save_log("Api_model initialized | Base URL: {$this->baseUrl} | Endpoints loaded: " . count($this->endpoints), 'info');
     }
 
     /**
