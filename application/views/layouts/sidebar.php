@@ -9,6 +9,7 @@
             <span><?= $config['app_name']; ?></span>
         </a>
     </div>
+
     <ul class="list-unstyled components mt-3 px-2">
         <!-- Dashboard -->
         <li class="sidebar-item <?= ($active_menu == 'dashboard') ? 'active' : ''; ?>">
@@ -17,14 +18,6 @@
                 <span><?= $wording['dashboard']; ?></span>
             </a>
         </li>
-
-        <!-- Barang -->
-        <!-- <li class="sidebar-item <?= ($active_menu == 'barang') ? 'active' : ''; ?>">
-            <a href="<?= site_url('barang'); ?>" class="sidebar-link">
-                <i class="fas fa-boxes me-2"></i>
-                <span><?= $wording['barang']; ?></span>
-            </a>
-        </li> -->
 
         <!-- Gudang -->
         <li class="sidebar-item <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
@@ -98,6 +91,22 @@
             <a href="<?= site_url('laporan'); ?>" class="sidebar-link">
                 <i class="fas fa-chart-bar me-2"></i>
                 <span><?= $wording['laporan']; ?></span>
+            </a>
+        </li>
+
+        <!-- Customer -->
+        <li class="sidebar-item <?= ($active_menu == 'customer') ? 'active' : ''; ?>">
+            <a href="<?= site_url('customer'); ?>" class="sidebar-link">
+                <i class="fas fa-users me-2"></i>
+                <span><?= $wording['customer']; ?></span>
+            </a>
+        </li>
+
+        <!-- Supplier -->
+        <li class="sidebar-item <?= ($active_menu == 'supplier') ? 'active' : ''; ?>">
+            <a href="<?= site_url('supplier'); ?>" class="sidebar-link">
+                <i class="fas fa-chart-bar me-2"></i>
+                <span><?= $wording['supplier']; ?></span>
             </a>
         </li>
 

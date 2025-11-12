@@ -74,7 +74,7 @@ if (!function_exists('api_request')) {
         }
 
         $method = strtoupper($method);
-        $payload = (!empty($data) && in_array($method, ['POST', 'PUT', 'DELETE'])) ? json_encode($data) : null;
+        $payload = (!empty($data) && in_array($method, ['POST', 'PUT', 'GET', 'DELETE'])) ? json_encode($data) : null;
 
         $options = [
             CURLOPT_URL => $url,

@@ -1,9 +1,9 @@
 Ceklist Project Logistik
 [DONE] 1. login
 2. logout
-[DONE] 3. product_type
+[OnProgress] 3. product_type //masih menampilkan error saat get By Id
 [DONE] 4. unit_type
-[DONE] 5. warehouse
+[OnProgress] 5. warehouse //kurang isProject 0/1
 6. barang
 7. supplier
 8. customer
@@ -13,3 +13,4 @@ Level User
 // admin wharehouse
 // superadmin warehouse = 0
 // tombol tambah type produk dihapus dan tampil hanya di sueradmin
+

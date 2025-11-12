@@ -92,6 +92,10 @@ class Api_model extends CI_Model
     {
         return api_request('GET', 'gudang', [], $params);
     }
+    public function get_gudang_id($data)
+    {
+        return api_request('GET', 'gudang', $data);
+    }
     public function add_gudang($data)
     {
         return api_request('POST', 'gudang', $data);
@@ -150,11 +154,9 @@ class Api_model extends CI_Model
     {
         return api_request('GET', 'user', [], $params);
     }
-    public function get_user_by_id($id)
+    public function get_user_by_id($data)
     {
-        return api_request('GET', 'user', [
-            'id' => $id
-        ]);
+        return api_request('GET', 'user', $data);
     }
     public function add_user($data)
     {
@@ -169,4 +171,39 @@ class Api_model extends CI_Model
         return api_request('DELETE', 'user', $data);
     }
 
+    // ---- Customer ----
+    public function get_customer($params = [])
+    {
+        return api_request('GET', 'Customer', [], $params);
+    }
+    public function add_customer($data)
+    {
+        return api_request('POST', 'Customer', $data);
+    }
+    public function update_customer($data)
+    {
+        return api_request('PUT', 'Customer', $data);
+    }
+    public function delete_customer($data)
+    {
+        return api_request('DELETE', 'Customer', $data);
+    }
+
+    // ---- Supplier ----
+    public function get_supplier($params = [])
+    {
+        return api_request('GET', 'Supplier', [], $params);
+    }
+    public function add_supplier($data)
+    {
+        return api_request('POST', 'Supplier', $data);
+    }
+    public function update_supplier($data)
+    {
+        return api_request('PUT', 'Supplier', $data);
+    }
+    public function delete_supplier($data)
+    {
+        return api_request('DELETE', 'Supplier', $data);
+    }
 }

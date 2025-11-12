@@ -7,10 +7,10 @@
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Form Gudang</h6>
+            <h6 class="m-0 font-weight-bold text-primary"><?= $wording['gudang_form']; ?></h6>
         </div>
         <div class="card-body">
-            <?php echo form_open('gudang/save', ['id' => 'warehouseForm']); ?>
+            <?php echo form_open('gudang/save'); ?>
             <?php if (isset($warehouse)): ?>
                 <input type="hidden" name="id" value="<?php echo $warehouse['Warehouse_Id']; ?>">
             <?php endif; ?>
@@ -52,10 +52,10 @@
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i> Simpan
+                    <i class="fas fa-save me-2"></i> <?= $wording['save']; ?>
                 </button>
                 <a href="<?php echo site_url('gudang'); ?>" class="btn btn-secondary">
-                    <i class="fas fa-times me-2"></i> Batal
+                    <i class="fas fa-times me-2"></i> <?= $wording['cancel']; ?>
                 </a>
             </div>
             <?php echo form_close(); ?>

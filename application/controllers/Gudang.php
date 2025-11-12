@@ -34,9 +34,9 @@ class Gudang extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Edit Gudang';
-
+        $data = ['id' => $id];
         // Get warehouse data from API
-        $warehouse = $this->Api_model->get_gudang(['id' => $id]);
+        $warehouse = $this->Api_model->get_gudang_id($data);
         $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
 
         // Render view

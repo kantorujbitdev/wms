@@ -1,7 +1,10 @@
 $(document).ready(function () {
-	// Apply custom colors to DataTables if used
-	if (typeof $.fn.DataTable !== "undefined") {
-		$.extend(true, $.fn.dataTable.defaults, {
+	// Apply DataTables only if the element exists
+	if ($.fn.DataTable && $("#dataTable").length > 0) {
+		if ($.fn.DataTable.isDataTable("#dataTable")) {
+			$("#dataTable").DataTable().destroy();
+		}
+		$("#dataTable").DataTable({
 			dom:
 				'<"row"<"col-sm-6"l><"col-sm-6"f>>' +
 				'<"row"<"col-sm-12"tr>>' +
@@ -14,15 +17,21 @@ $(document).ready(function () {
 			responsive: true,
 			language: {
 				search: "_INPUT_",
-				searchPlaceholder: "Search records...",
-				lengthMenu: "Show _MENU_ entries",
-				info: "Showing _START_ to _END_ of _TOTAL_ entries",
+				searchPlaceholder: "Cari data...",
+				lengthMenu: "Tampilkan _MENU_",
+				info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+				infoEmpty: "Tidak ada data yang tersedia",
+				infoFiltered: "(disaring dari total _MAX_ data)",
+				zeroRecords: "Tidak ada data yang cocok",
 				paginate: {
-					first: "First",
-					last: "Last",
-					next: "Next",
-					previous: "Previous",
+					first: "Pertama",
+					last: "Terakhir",
+					next: "Berikutnya",
+					previous: "Sebelumnya",
 				},
+				loadingRecords: "Memuat data...",
+				processing: "Memproses...",
+				emptyTable: "Tidak ada data tersedia pada tabel ini",
 			},
 		});
 	}

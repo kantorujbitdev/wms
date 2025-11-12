@@ -44,12 +44,10 @@ class User extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Edit User';
-
+        $data['id'] = $id;
         // Get user data from API
-        $user = $this->Api_model->get_user_by_id($id);
+        $user = $this->Api_model->get_user_by_id($data);
         $this->data['user_data'] = $user['success'] ? $user['data'] : [];
-
-        save_log("Editing user ID: " . $id . " | Data found: " . ($user['success'] ? 'yes' : 'no'), 'info');
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);

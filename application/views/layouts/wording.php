@@ -40,12 +40,27 @@ $wording = [
     'barang_price' => 'Harga',
     'barang_description' => 'Deskripsi',
 
+    // Customer
+    'customer' => 'Customer',
+    'customer_list' => 'Daftar Customer',
+    'customer_add' => 'Tambah Customer',
+    'customer_edit' => 'Edit Customer',
+    'customer_form' => 'Form Customer',
+
+    // Supplier
+    'supplier' => 'Supplier',
+    'supplier_list' => 'Daftar Supplier',
+    'supplier_add' => 'Tambah Supplier',
+    'supplier_edit' => 'Edit Supplier',
+    'supplier_form' => 'Form Supplier',
+
     // Gudang
     'gudang' => 'Master Gudang',
     'gudang_list' => 'Daftar Master Gudang',
     'gudang_add' => 'Tambah Master Gudang',
     'gudang_edit' => 'Edit Master Gudang',
     'gudang_name' => 'Nama Master Gudang',
+    'gudang_form' => 'Form Gudang',
     'gudang_code' => 'Kode Master Gudang',
     'gudang_address' => 'Alamat',
     'gudang_capacity' => 'Kapasitas',

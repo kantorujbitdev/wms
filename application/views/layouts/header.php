@@ -8,7 +8,6 @@
     <title><?= isset($title) ? $title . ' - ' . $config['app_name'] : $config['app_name']; ?></title>
 
     <link rel="icon" href="<?php echo base_url($config['app_logo']); ?>" type="image/x-icon">
-    <!-- <link rel="icon" href="<?php $config['app_logo']; ?>" type="image/x-icon"> -->
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,12 +22,9 @@
     <!-- SaaSpal Main CSS -->
     <link href="<?php echo base_url('assets/temp/css/main.css'); ?>" rel="stylesheet">
 
-    <!-- jQuery (wajib untuk Select2 dan SweetAlert jika interaktif) -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 
 </head>
 

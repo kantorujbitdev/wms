@@ -1,8 +1,14 @@
 </div> <!-- end container -->
 </div> <!-- end content-wrapper -->
 
+<!-- jQuery (wajib untuk Select2 dan SweetAlert jika interaktif) -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 <!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <!-- Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -32,8 +38,6 @@
 <!-- Custom Sidebar Toggle Script dan modal-->
 <script>
     $(document).ready(function () {
-        // Inisialisasi Tabel
-        $('#dataTable').DataTable(); // aktifkan DataTables
 
         // Inisialisasi Select2 global
         $('select').select2({
