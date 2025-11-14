@@ -26,8 +26,7 @@ class Gudang extends MY_Controller
     public function gudang_project()
     {
         // Set title
-        $this->data['title'] = 'Gudang';
-        // Set title
+        $this->data['title'] = 'Gudang Project';
         $this->data['active_menu'] = 'gudang';
         $this->data['active_submenu'] = 'gudang_project';
 
@@ -43,7 +42,7 @@ class Gudang extends MY_Controller
     public function add_gudang_project()
     {
         // Set title
-        $this->data['title'] = 'Tambah Gudang';
+        $this->data['title'] = 'Tambah Gudang Project';
         $this->data['active_menu'] = 'gudang';
         $this->data['active_submenu'] = 'gudang_project';
 
@@ -72,15 +71,21 @@ class Gudang extends MY_Controller
         $data = ['warehouse_id' => $id];
         // Get warehouse data from API
         $warehouse = $this->Api_model->get_gudang_id($data);
-        $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
+        // $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
+
+        if ($warehouse['success'] && !empty($warehouse['data'])) {
+            // Ambil baris pertama karena API return array
+            $this->data['warehouse'] = $warehouse['data'][0];
+        }
 
         // Render view
         $this->render_view('pages/gudang/form');
     }
+
     public function edit_gudang_project($id)
     {
         // Set title
-        $this->data['title'] = 'Edit Gudang';
+        $this->data['title'] = 'Edit Gudang Project';
         $this->data['active_menu'] = 'gudang';
         $this->data['active_submenu'] = 'gudang_project';
 
@@ -88,8 +93,11 @@ class Gudang extends MY_Controller
 
         // Get warehouse data from API
         $warehouse = $this->Api_model->get_gudang_id($data);
-        $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
-
+        // $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
+        if ($warehouse['success'] && !empty($warehouse['data'])) {
+            // Ambil baris pertama karena API return array
+            $this->data['warehouse'] = $warehouse['data'][0];
+        }
         // Render view
         $this->render_view('pages/gudang_project/form');
     }
@@ -103,17 +111,19 @@ class Gudang extends MY_Controller
 
         // Prepare data according to API format
         $data = [
-            'code' => $this->input->post('code'),
-            'name' => $this->input->post('name'),
-            'addr' => $this->input->post('addr'),
-            'contact' => $this->input->post('contact'),
+            'warehouse_code' => $this->input->post('warehouse_code'),
+            'warehouse_name' => $this->input->post('warehouse_name'),
+            'warehouse_address' => $this->input->post('warehouse_address'),
+            'contact_person' => $this->input->post('contact_person'),
             'phone' => $this->input->post('phone'),
-            'actionby' => $user_id
+            'warehouse_status' => $this->input->post('warehouse_status'),
+            'warehouse_type' => $this->input->post('warehouse_type'),
+            'user_id' => $user_id
         ];
 
         if ($id) {
             // Update existing warehouse - add ID to data for PUT request
-            $data['id'] = $id;
+            $data['warehouse_id'] = $id;
             $response = $this->Api_model->update_gudang($id, $data);
             $message = 'Gudang berhasil diperbarui!';
         } else {
@@ -128,7 +138,13 @@ class Gudang extends MY_Controller
             $this->session->set_flashdata('error', 'Gagal menyimpan data gudang: ' . $response['message']);
         }
 
-        redirect('gudang');
+        // Check if this is a project warehouse
+        $warehouse_type = $this->input->post('warehouse_type');
+        if ($warehouse_type == 1) {
+            redirect('gudang/gudang_project');
+        } else {
+            redirect('gudang');
+        }
     }
 
     public function delete($id)
@@ -138,8 +154,8 @@ class Gudang extends MY_Controller
 
         // Prepare data according to API format
         $data = [
-            'id' => $id,
-            'actionby' => $user_id
+            'warehouse_id' => $id,
+            'user_id' => $user_id
         ];
 
         $response = $this->Api_model->delete_gudang($data);

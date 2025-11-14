@@ -63,11 +63,11 @@ if (!function_exists('log_http_response')) {
         $shortResponse = substr($response, 0, 500); // batasi isi log agar tidak terlalu panjang
 
         if ($http_code >= 200 && $http_code < 300) {
-            save_log("✅ Response API - {$prefixText}-[{$http_code}]: {$shortResponse}", 'success');
+            save_log("✅ Response API - {$prefixText}-[{$http_code}]: {$response}", 'success');
         } elseif ($http_code >= 300 && $http_code < 500) {
-            save_log("⚠️ Response API - {$prefixText}-[{$http_code}]: {$shortResponse}", 'warning');
+            save_log("⚠️ Response API - {$prefixText}-[{$http_code}]: {$response}", 'warning');
         } else {
-            save_log("❌ Response API - {$prefixText}-[{$http_code}]: {$shortResponse}", 'error');
+            save_log("❌ Response API - {$prefixText}-[{$http_code}]: {$response}", 'error');
         }
     }
 }
