@@ -1,20 +1,6 @@
 </div> <!-- end container -->
 </div> <!-- end content-wrapper -->
 
-<!-- jQuery (wajib untuk Select2 dan SweetAlert jika interaktif) -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<!-- Bootstrap 5 JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-<!-- Select2 -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<!-- SaaSpal Main JS -->
-<script src="<?php echo base_url('assets/temp/js/main.js'); ?>"></script>
 <!-- Dynamic Confirmation Modal -->
 <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
@@ -108,12 +94,6 @@
             }
         });
 
-        // Logout confirmation modal
-        $('#logoutBtn').on('click', function (e) {
-            e.preventDefault();
-            $('#logoutModal').modal('show');
-        });
-
         // Handle dropdown menu on mobile
         $('.dropdown-toggle').on('click', function (e) {
             if (window.innerWidth < 992) {
@@ -121,8 +101,6 @@
                 // This ensures it works properly on mobile
             }
         });
-
-
 
         // Fungsi untuk menampilkan modal konfirmasi
         window.showConfirmationModal = function (options) {
@@ -132,7 +110,6 @@
                 message: 'Apakah Anda yakin ingin melanjutkan?',
                 confirmText: 'Ya',
                 confirmClass: 'btn-danger',
-                icon: 'fa-question-circle text-warning',
                 onConfirm: null,
                 confirmUrl: null
             };
@@ -144,9 +121,6 @@
             $('#confirmationModalLabel').text(settings.title);
             $('#confirmationMessage').text(settings.message);
             $('#confirmButton').text(settings.confirmText);
-
-            // Set icon
-            $('#confirmationIcon').html(`<i class="fas ${settings.icon} fa-2x"></i>`);
 
             // Set button class
             $('#confirmButton').removeClass('btn-danger btn-success btn-primary btn-warning')
@@ -172,7 +146,8 @@
             // Show the modal
             $('#confirmationModal').modal('show');
         };
-        // Example: Logout confirmation using the dynamic modal
+
+        // Logout confirmation modal
         $('#logoutBtn').on('click', function (e) {
             e.preventDefault();
             showConfirmationModal({
@@ -183,6 +158,32 @@
                 confirmUrl: '<?= site_url('auth/logout'); ?>'
             });
         });
+
+        $(document).on('click', '.actionBtnDelete', function () {
+
+            const url = $(this).data('url'); // ambil dari atribut data-url
+            const id = $(this).data('id'); // ambil dari atribut data-url
+            const name = $(this).data('name'); // ambil dari atribut data-url
+
+            showConfirmationModal({
+                title: 'Konfirmasi Hapus?',
+                message: 'Yakin ingin menghapus data: ' + name + '?',
+                confirmText: 'Ya, Hapus',
+                confirmClass: 'btn-danger',
+                confirmUrl: url + '/' + id // kirim ke modal
+            });
+        });
+
+        $('#confirmationModal').on('hidden.bs.modal', function () {
+            // Hilangkan fokus dari elemen yang sebelumnya aktif
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+
+            // (Opsional) arahkan fokus kembali ke body atau tombol pemicu
+            $('body').trigger('focus');
+        });
+
 
     });
 </script>

@@ -1,17 +1,17 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Barang</h1>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['barang']; ?></h1>
         <a href="<?php echo site_url('barang/add'); ?>"
             class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Barang
+            <i class="fas fa-plus fa-sm text-white-50"></i> <?= $wording['barang_add']; ?>
         </a>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Barang</h6>
+            <h6 class="m-0 font-weight-bold text-primary"><?= $wording['barang_list']; ?></h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -66,27 +66,3 @@
         </div>
     </div>
 </div>
-<!-- 
-<script>
-    $(document).ready(function () {
-        // Delete confirmation
-        $('.delete-btn').click(function () {
-            var id = $(this).data('id');
-            var name = $(this).data('name');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '<?php echo site_url('barang/delete/'); ?>' + id;
-                }
-            });
-        });
-    });
-</script> -->

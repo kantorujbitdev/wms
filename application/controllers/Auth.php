@@ -49,8 +49,8 @@ class Auth extends CI_Controller
             log_message('debug', 'Login api_base_url : ' . $api_base_url);
 
             $data = [
-                'Username' => $username,
-                'Password' => $password
+                'username' => $username,
+                'password' => $password
             ];
             // Call API login
             $response = $this->Api_model->login($data);

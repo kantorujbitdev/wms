@@ -45,9 +45,10 @@
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button class="btn btn-danger btn-sm delete-btn"
+                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                             data-id="<?php echo $user['User_Id']; ?>"
-                                            data-name="<?php echo $user['User_Name']; ?>">
+                                            data-name="<?php echo $user['User_Name']; ?>"
+                                            data-url="<?= site_url('user/delete'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -64,21 +65,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready(function () {
-        // Delete confirmation using our dynamic modal
-        $('.delete-btn').click(function () {
-            var id = $(this).data('id');
-            var name = $(this).data('name');
-
-            showConfirmationModal({
-                title: 'Konfirmasi Hapus',
-                message: `Apakah Anda yakin ingin menghapus user "${name}"?`,
-                confirmText: 'Ya, Hapus',
-                confirmClass: 'btn-danger',
-                confirmUrl: '<?php echo site_url('user/delete/'); ?>' + id
-            });
-        });
-    });
-</script>

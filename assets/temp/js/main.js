@@ -1,41 +1,45 @@
 $(document).ready(function () {
 	// Apply DataTables only if the element exists
 	if ($.fn.DataTable && $("#dataTable").length > 0) {
-		if ($.fn.DataTable.isDataTable("#dataTable")) {
-			$("#dataTable").DataTable().destroy();
-		}
-		$("#dataTable").DataTable({
-			dom:
-				'<"row"<"col-sm-6"l><"col-sm-6"f>>' +
-				'<"row"<"col-sm-12"tr>>' +
-				'<"row"<"col-sm-5"i><"col-sm-7"p>>',
-			pageLength: 5,
-			lengthMenu: [
-				[5, 10, 25, 50, 100],
-				[5, 10, 25, 50, 100],
-			],
-			responsive: true,
-			language: {
-				search: "_INPUT_",
-				searchPlaceholder: "Cari data...",
-				lengthMenu: "Tampilkan _MENU_",
-				info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-				infoEmpty: "Tidak ada data yang tersedia",
-				infoFiltered: "(disaring dari total _MAX_ data)",
-				zeroRecords: "Tidak ada data yang cocok",
-				paginate: {
-					first: "Pertama",
-					last: "Terakhir",
-					next: "Berikutnya",
-					previous: "Sebelumnya",
+		const hasData =
+			$("#dataTable tbody tr").length > 0 &&
+			!$("#dataTable tbody td").first().text().includes("Tidak ada data");
+		if (hasData) {
+			if ($.fn.DataTable.isDataTable("#dataTable")) {
+				$("#dataTable").DataTable().destroy();
+			}
+			$("#dataTable").DataTable({
+				dom:
+					'<"row"<"col-sm-6"l><"col-sm-6"f>>' +
+					'<"row"<"col-sm-12"tr>>' +
+					'<"row"<"col-sm-5"i><"col-sm-7"p>>',
+				pageLength: 5,
+				lengthMenu: [
+					[5, 10, 25, 50, 100],
+					[5, 10, 25, 50, 100],
+				],
+				responsive: true,
+				language: {
+					search: "_INPUT_",
+					searchPlaceholder: "Cari data...",
+					lengthMenu: "Tampilkan _MENU_",
+					info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+					infoEmpty: "Tidak ada data yang tersedia",
+					infoFiltered: "(disaring dari total _MAX_ data)",
+					zeroRecords: "Tidak ada data yang cocok",
+					paginate: {
+						first: "Pertama",
+						last: "Terakhir",
+						next: "Berikutnya",
+						previous: "Sebelumnya",
+					},
+					loadingRecords: "Memuat data...",
+					processing: "Memproses...",
+					emptyTable: "Tidak ada data tersedia pada tabel ini",
 				},
-				loadingRecords: "Memuat data...",
-				processing: "Memproses...",
-				emptyTable: "Tidak ada data tersedia pada tabel ini",
-			},
-		});
+			});
+		}
 	}
-
 	// Initialize tooltips
 	var tooltipTriggerList = [].slice.call(
 		document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -221,4 +225,14 @@ $(document).ready(function () {
 		);
 		return false;
 	});
+});
+// Fix Bootstrap modal focus warning
+$(document).on("hidden.bs.modal", ".modal", function () {
+	// Hilangkan fokus aktif supaya tidak mengarah ke elemen tersembunyi
+	if (document.activeElement) {
+		document.activeElement.blur();
+	}
+
+	// Opsional: arahkan fokus ke body agar "aman"
+	$("body").trigger("focus");
 });

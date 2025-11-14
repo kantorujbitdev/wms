@@ -30,10 +30,10 @@ class Api extends MY_Controller
             $this->session->set_flashdata('success', 'API berhasil ditambahkan');
             redirect('api');
         }
-        $data['title'] = 'Manajemen API - Tambah API Baru';
+        $data['title'] = 'Manajemen API - Edit API';
         $data['active_menu'] = 'pengaturan';
         $data['active_submenu'] = 'api';
-        $this->render_admin_view('pages/api/form');
+        $this->render_admin_view('pages/api/form', $data);
     }
 
     public function edit($id)

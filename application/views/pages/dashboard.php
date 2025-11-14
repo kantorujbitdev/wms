@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['dashboard']; ?></h1>
     </div>
 
     <!-- Content Row -->
@@ -93,7 +93,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
                             <thead class="text-center align-middle">
                                 <tr>
                                     <th>Date</th>
@@ -137,7 +137,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
                             <thead class="text-center align-middle">
                                 <tr>
                                     <th>Item</th>

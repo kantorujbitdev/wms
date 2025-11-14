@@ -47,9 +47,10 @@
                                             class="btn btn-success btn-sm">
                                             <i class="fas fa-boxes"></i>
                                         </a>
-                                        <button class="btn btn-danger btn-sm delete-btn"
+                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                             data-id="<?php echo $warehouse['Warehouse_Id']; ?>"
-                                            data-name="<?php echo $warehouse['Warehouse_Name']; ?>">
+                                            data-name="<?php echo $warehouse['Warehouse_Name']; ?>"
+                                            data-url="<?= site_url('gudang/delete'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -66,20 +67,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready(function () {
-        $('.delete-btn').on('click', function () {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-
-            showConfirmationModal({
-                title: 'Konfirmasi Hapus',
-                message: `Apakah Anda yakin ingin menghapus data "${name}"?`,
-                confirmText: 'Ya, Hapus',
-                confirmClass: 'btn-danger',
-                confirmUrl: `<?= site_url('gudang/delete') ?>/${id}`
-            });
-        });
-    });
-</script>

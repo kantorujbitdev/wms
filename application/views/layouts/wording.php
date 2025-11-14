@@ -27,6 +27,13 @@ $wording = [
     'password' => 'Password',
     'remember_me' => 'Ingat saya',
 
+    // Satuan
+    'unit' => 'Satuan',
+    'tipe_satuan' => 'Tipe Satuan',
+    'satuan_list' => 'List Tipe Satuan',
+    'satuan_add' => 'Tambah Tipe Satuan',
+
+
     // Barang
     'barang' => 'Barang',
     'master_barang' => 'Master Barang',
@@ -99,6 +106,7 @@ $wording = [
 
     // Pengaturan
     'pengaturan' => 'Pengaturan',
+    'pengaturan_list' => 'Daftar Pengaturan',
     'pengaturan_api' => 'Pengaturan API',
     'pengaturan_base_url' => 'Base URL',
     'pengaturan_token' => 'Token',

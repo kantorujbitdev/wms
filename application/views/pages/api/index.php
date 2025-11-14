@@ -38,10 +38,11 @@
                                     <a href="<?= site_url('api/edit/' . $api['id_api']); ?>" class="btn btn-info btn-sm">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="<?= site_url('api/delete/' . $api['id_api']); ?>"
+                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                         data-id="<?php echo $api['id_api']; ?>" data-name="<?php echo $api['nama_api']; ?>"
-                                        class="btn btn-danger btn-sm delete-btn">
-                                        <i class="fas fa-trash"></i></a>
+                                        data-url="<?= site_url('api/delete'); ?>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -51,20 +52,3 @@
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        // Delete confirmation using our dynamic modal
-        $('.delete-btn').click(function () {
-            var id = $(this).data('id');
-            var name = $(this).data('name');
-
-            showConfirmationModal({
-                title: 'Konfirmasi Hapus',
-                message: `Apakah Anda yakin ingin menghapus user "${name}"?`,
-                confirmText: 'Ya, Hapus',
-                confirmClass: 'btn-danger',
-                confirmUrl: '<?php echo site_url('api/delete/'); ?>' + id
-            });
-        });
-    });
-</script>

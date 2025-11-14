@@ -56,20 +56,17 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        $('#customerForm').on('submit', function (e) {
-            e.preventDefault();
-
-            showConfirmationModal({
-                title: 'Konfirmasi Simpan',
-                message: 'Apakah data yang Anda masukkan sudah benar?',
-                confirmText: 'Ya, Simpan',
-                confirmClass: 'btn-primary',
-                onConfirm: function () {
-                    // Submit form
-                    $('#customerForm').unbind('submit').submit();
-                }
-            });
+    $('#customerForm').on('submit', function (e) {
+        e.preventDefault();
+        showConfirmationModal({
+            title: 'Konfirmasi Simpan',
+            message: 'Apakah data yang Anda masukkan sudah benar?',
+            confirmText: 'Ya, Simpan',
+            confirmClass: 'btn-primary',
+            onConfirm: function () {
+                // Submit form
+                $('#customerForm').unbind('submit').submit();
+            }
         });
     });
 </script>

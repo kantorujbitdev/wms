@@ -19,7 +19,6 @@
             <?php if (isset($user_data)): ?>
                 <input type="hidden" name="id" value="<?php echo $user_data['User_Id']; ?>">
             <?php endif; ?>
-            <?php save_log('view save_tipe_produk called with ID: ' . $product_type['Product_Type_Id'], 'debug'); ?>
 
             <div class="mb-3">
                 <label for="name" class="form-label">Nama Tipe Produk</label>

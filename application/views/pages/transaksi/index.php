@@ -60,7 +60,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
                     <thead class="text-center align-middle">
                         <tr>
                             <th>Tanggal</th>
@@ -95,10 +95,13 @@
                                     </td>
                                     <td><?php echo $transaction['notes']; ?></td>
                                     <td>
-                                        <button class="btn btn-danger btn-sm delete-btn"
-                                            data-id="<?php echo $transaction['id']; ?>">
+                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                            data-id="<?php echo $transaction['id']; ?>"
+                                            data-name="<?php echo $transaction['warehouse_name']; ?>"
+                                            data-url="<?= site_url('transaksi/delete/'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>
+
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -113,26 +116,3 @@
         </div>
     </div>
 </div>
-<!-- 
-<script>
-    $(document).ready(function () {
-        // Delete confirmation
-        $('.delete-btn').click(function () {
-            var id = $(this).data('id');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '<?php echo site_url('transaksi/delete/'); ?>' + id;
-                }
-            });
-        });
-    });
-</script> -->

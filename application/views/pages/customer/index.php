@@ -38,9 +38,10 @@
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button class="btn btn-danger btn-sm delete-btn"
+                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                             data-id="<?php echo $customer['id']; ?>"
-                                            data-name="<?php echo $customer['Name']; ?>">
+                                            data-name="<?php echo $customer['Name']; ?>"
+                                            data-url="<?= site_url('customer/delete'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -57,20 +58,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready(function () {
-        $('.delete-btn').on('click', function () {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-
-            showConfirmationModal({
-                title: 'Konfirmasi Hapus',
-                message: `Apakah Anda yakin ingin menghapus customer "${name}"?`,
-                confirmText: 'Ya, Hapus',
-                confirmClass: 'btn-danger',
-                confirmUrl: `<?= site_url('customer/delete') ?>/${id}`
-            });
-        });
-    });
-</script>

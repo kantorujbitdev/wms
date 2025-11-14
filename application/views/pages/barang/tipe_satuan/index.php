@@ -1,17 +1,17 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Tipe Satuan</h1>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['tipe_satuan']; ?></h1>
         <a href="<?php echo site_url('barang/add_tipe_satuan'); ?>"
             class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Tipe Satuan
+            <i class="fas fa-plus fa-sm text-white-50"></i> <?= $wording['satuan_add']; ?>
         </a>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Tipe Satuan</h6>
+            <h6 class="m-0 font-weight-bold text-primary"><?= $wording['satuan_list']; ?></h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -37,9 +37,10 @@
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button class="btn btn-danger btn-sm delete-btn"
+                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                             data-id="<?php echo $type['Unit_Id']; ?>"
-                                            data-name="<?php echo $type['Unit_Code']; ?>">
+                                            data-name="<?php echo $type['Unit_Code']; ?>"
+                                            data-url="<?= site_url('barang/delete_tipe_satuan'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -56,20 +57,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready(function () {
-        $('.delete-btn').on('click', function () {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-
-            showConfirmationModal({
-                title: 'Konfirmasi Hapus',
-                message: `Apakah Anda yakin ingin menghapus tipe satuan "${name}"?`,
-                confirmText: 'Ya, Hapus',
-                confirmClass: 'btn-danger',
-                confirmUrl: `<?= site_url('barang/delete_tipe_satuan') ?>/${id}`
-            });
-        });
-    });
-</script>
