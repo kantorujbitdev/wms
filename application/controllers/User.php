@@ -44,7 +44,7 @@ class User extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Edit User';
-        $data['id'] = $id;
+        $data['user_id'] = $id;
         // Get user data from API
         $user = $this->Api_model->get_user_by_id($data);
         $this->data['user_data'] = $user['success'] ? $user['data'] : [];

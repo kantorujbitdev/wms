@@ -96,6 +96,10 @@ class Api_model extends CI_Model
     {
         return api_request('GET', 'gudang', $data);
     }
+    public function get_gudang_id_project($data)
+    {
+        return api_request('GET', 'gudang', $data);
+    }
     public function add_gudang($data)
     {
         return api_request('POST', 'gudang', $data);

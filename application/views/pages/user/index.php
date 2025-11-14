@@ -21,6 +21,7 @@
                             <th>Username</th>
                             <th>Nama Lengkap</th>
                             <th>Role</th>
+                            <th>Lingkup</th>
                             <th>Tanggal Dibuat</th>
                             <th>Aksi</th>
                         </tr>
@@ -31,28 +32,39 @@
                             foreach ($users as $user): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $user['User_Name']; ?></td>
-                                    <td><?php echo !empty($user['Full_Name']) ? $user['Full_Name'] : '-'; ?></td>
+                                    <td><?php echo $user['user_name']; ?></td>
+                                    <td><?php echo !empty($user['full_name']) ? $user['full_name'] : '-'; ?></td>
                                     <td class="text-center">
-                                        <span
-                                            class="badge bg-<?php echo $user['User_Role'] == 'admin' ? 'danger' : ($user['User_Role'] == 'Supervisor' ? 'warning' : 'info'); ?>">
-                                            <?php echo ucfirst($user['User_Role']); ?>
+                                        <?php
+                                        $roleColors = [
+                                            'superadmin' => 'danger',
+                                            'admin' => 'warning',
+                                            'staff' => 'info'
+                                        ];
+
+                                        $badgeColor = $roleColors[$user['user_role']] ?? 'secondary'; // default jika role tidak dikenal
+                                        ?>
+                                        <span class="badge bg-<?= $badgeColor ?>">
+                                            <?= ucfirst($user['user_role']); ?>
                                         </span>
+
                                     </td>
-                                    <td><?php echo date('d-m-Y H:i', strtotime($user['CreatedAt'])); ?></td>
+                                    <td><?php echo $user['warehouse_name']; ?></td>
+                                    <td><?php echo date('d-m-Y H:i', strtotime($user['create_at'])); ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('user/edit/' . $user['User_Id']); ?>"
+                                        <a href="<?php echo site_url('user/edit/' . $user['user_id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                            data-id="<?php echo $user['User_Id']; ?>"
-                                            data-name="<?php echo $user['User_Name']; ?>"
+                                            data-id="<?php echo $user['user_id']; ?>"
+                                            data-name="<?php echo $user['full_name']; ?>"
                                             data-url="<?= site_url('user/delete'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
+
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>

@@ -49,7 +49,7 @@ class Auth extends CI_Controller
             log_message('debug', 'Login api_base_url : ' . $api_base_url);
 
             $data = [
-                'username' => $username,
+                'user_name' => $username,
                 'password' => $password
             ];
             // Call API login
@@ -80,6 +80,7 @@ class Auth extends CI_Controller
                     'role' => $response['data']['Role'],
                     'is_active' => $response['data']['IsActive'],
                     'warehouse_id' => $response['data']['WarehouseId'],
+                    'warehouse_name' => $response['data']['WarehouseName'],
                     'api_token' => $response['data']['token'],
                     'logged_in' => TRUE
                 ];

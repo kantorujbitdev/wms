@@ -1,17 +1,17 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $wording['gudang']; ?></h1>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['gudang_project']; ?></h1>
         <a href="<?php echo site_url('gudang/add'); ?>"
             class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> <?= $wording['gudang_add']; ?>
+            <i class="fas fa-plus fa-sm text-white-50"></i> <?= $wording['gudang_add_project']; ?>
         </a>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary"><?= $wording['gudang_list']; ?></h6>
+            <h6 class="m-0 font-weight-bold text-primary"><?= $wording['gudang_list_project']; ?></h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -39,7 +39,7 @@
                                     <td><?php echo $warehouse['contact_person']; ?></td>
                                     <td><?php echo !empty($warehouse['Phone']) ? $warehouse['Phone'] : '-'; ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('gudang/edit/' . $warehouse['warehouse_id']); ?>"
+                                        <a href="<?php echo site_url('gudang/edit_gudang_project/' . $warehouse['warehouse_id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>

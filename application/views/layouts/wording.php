@@ -73,6 +73,12 @@ $wording = [
     'gudang_capacity' => 'Kapasitas',
     'gudang_stock' => 'Stok Gudang',
 
+
+    'gudang_project' => 'Master Gudang Project',
+    'gudang_list_project' => 'Daftar Master Gudang Project',
+    'gudang_add_project' => 'Tambah Master Gudang Project',
+    'gudang_edit_project' => 'Edit Master Gudang Project',
+
     // Transaksi
     'transaksi' => 'Transaksi',
     'transaksi_list' => 'Daftar Transaksi',

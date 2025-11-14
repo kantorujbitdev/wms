@@ -12,6 +12,8 @@ class Gudang extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Gudang';
+        $this->data['active_menu'] = 'gudang';
+        $this->data['active_submenu'] = 'gudang_utama';
 
         // Get warehouses from API
         $response = $this->Api_model->get_gudang();
@@ -21,10 +23,40 @@ class Gudang extends MY_Controller
         $this->render_view('pages/gudang/index');
     }
 
+    public function gudang_project()
+    {
+        // Set title
+        $this->data['title'] = 'Gudang';
+        // Set title
+        $this->data['active_menu'] = 'gudang';
+        $this->data['active_submenu'] = 'gudang_project';
+
+        $data = ['is_project' => 1];
+        // Get warehouses from API
+        $response = $this->Api_model->get_gudang_id_project($data);
+        $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
+
+        // Render view
+        $this->render_view('pages/gudang_project/index');
+    }
+
+    public function add_gudang_project()
+    {
+        // Set title
+        $this->data['title'] = 'Tambah Gudang';
+        $this->data['active_menu'] = 'gudang';
+        $this->data['active_submenu'] = 'gudang_project';
+
+        // Render view
+        $this->render_view('pages/gudang_project/form');
+    }
+
     public function add()
     {
         // Set title
         $this->data['title'] = 'Tambah Gudang';
+        $this->data['active_menu'] = 'gudang';
+        $this->data['active_submenu'] = 'gudang_utama';
 
         // Render view
         $this->render_view('pages/gudang/form');
@@ -34,13 +66,32 @@ class Gudang extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Edit Gudang';
-        $data = ['id' => $id];
+        $this->data['active_menu'] = 'gudang';
+        $this->data['active_submenu'] = 'gudang_utama';
+
+        $data = ['warehouse_id' => $id];
         // Get warehouse data from API
         $warehouse = $this->Api_model->get_gudang_id($data);
         $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
 
         // Render view
         $this->render_view('pages/gudang/form');
+    }
+    public function edit_gudang_project($id)
+    {
+        // Set title
+        $this->data['title'] = 'Edit Gudang';
+        $this->data['active_menu'] = 'gudang';
+        $this->data['active_submenu'] = 'gudang_project';
+
+        $data = ['warehouse_id' => $id];
+
+        // Get warehouse data from API
+        $warehouse = $this->Api_model->get_gudang_id($data);
+        $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
+
+        // Render view
+        $this->render_view('pages/gudang_project/form');
     }
 
     public function save()
