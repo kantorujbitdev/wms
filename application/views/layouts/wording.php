@@ -67,7 +67,7 @@ $wording = [
     'gudang_add' => 'Tambah Master Gudang',
     'gudang_edit' => 'Edit Master Gudang',
     'gudang_name' => 'Nama Master Gudang',
-    'gudang_form' => 'Form Gudang',
+    'gudang_form_utama' => 'Form Gudang Utama',
     'gudang_code' => 'Kode Master Gudang',
     'gudang_address' => 'Alamat',
     'gudang_capacity' => 'Kapasitas',
@@ -78,6 +78,7 @@ $wording = [
     'gudang_list_project' => 'Daftar Master Gudang Project',
     'gudang_add_project' => 'Tambah Master Gudang Project',
     'gudang_edit_project' => 'Edit Master Gudang Project',
+    'gudang_form_project' => 'Form Gudang Project',
 
     // Transaksi
     'transaksi' => 'Transaksi',

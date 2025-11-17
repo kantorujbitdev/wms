@@ -101,11 +101,8 @@ class Gudang extends MY_Controller
         // Render view
         $this->render_view('pages/gudang_project/form');
     }
-
-    public function save()
+    public function save_warehouse_project()
     {
-        $id = $this->input->post('id');
-
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
 
@@ -116,21 +113,17 @@ class Gudang extends MY_Controller
             'warehouse_address' => $this->input->post('warehouse_address'),
             'contact_person' => $this->input->post('contact_person'),
             'phone' => $this->input->post('phone'),
-            'warehouse_status' => $this->input->post('warehouse_status'),
-            'warehouse_type' => $this->input->post('warehouse_type'),
+            'warehouse_status' => 0,
+            'warehouse_type' => 1,
             'user_id' => $user_id
         ];
 
-        if ($id) {
-            // Update existing warehouse - add ID to data for PUT request
-            $data['warehouse_id'] = $id;
-            $response = $this->Api_model->update_gudang($id, $data);
-            $message = 'Gudang berhasil diperbarui!';
-        } else {
-            // Add new warehouse
-            $response = $this->Api_model->add_gudang($data);
-            $message = 'Gudang berhasil ditambahkan!';
-        }
+        // gudang utama warehouse_type = 0
+        // gudang project warehouse_type = 1
+
+        // Add new warehouse
+        $response = $this->Api_model->add_gudang($data);
+        $message = 'Gudang berhasil ditambahkan!';
 
         if ($response['success']) {
             $this->session->set_flashdata('success', $message);
@@ -138,13 +131,39 @@ class Gudang extends MY_Controller
             $this->session->set_flashdata('error', 'Gagal menyimpan data gudang: ' . $response['message']);
         }
 
-        // Check if this is a project warehouse
-        $warehouse_type = $this->input->post('warehouse_type');
-        if ($warehouse_type == 1) {
-            redirect('gudang/gudang_project');
+        redirect('gudang/gudang_project');
+    }
+    public function save_warehouse_utama()
+    {
+        // Get current user ID from session
+        $user_id = $this->session->userdata('user_id');
+
+        // Prepare data according to API format
+        $data = [
+            'warehouse_code' => $this->input->post('warehouse_code'),
+            'warehouse_name' => $this->input->post('warehouse_name'),
+            'warehouse_address' => $this->input->post('warehouse_address'),
+            'contact_person' => $this->input->post('contact_person'),
+            'phone' => $this->input->post('phone'),
+            'warehouse_status' => 0,
+            'warehouse_type' => 0,
+            'user_id' => $user_id
+        ];
+
+        // gudang utama warehouse_type = 0
+        // gudang project warehouse_type = 1
+
+        // Add new warehouse
+        $response = $this->Api_model->add_gudang($data);
+        $message = 'Gudang berhasil ditambahkan!';
+
+        if ($response['success']) {
+            $this->session->set_flashdata('success', $message);
         } else {
-            redirect('gudang');
+            $this->session->set_flashdata('error', 'Gagal menyimpan data gudang: ' . $response['message']);
         }
+
+        redirect('gudang');
     }
 
     public function delete($id)

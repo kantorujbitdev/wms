@@ -9,10 +9,10 @@
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Form Gudang Project</h6>
+            <h6 class="m-0 font-weight-bold text-primary"><?= $wording['gudang_form_project']; ?></h6>
         </div>
         <div class="card-body">
-            <?php echo form_open('gudang/save'); ?>
+            <?php echo form_open('gudang/save_warehouse_project'); ?>
             <?php if (isset($warehouse)): ?>
                 <input type="hidden" name="id" value="<?php echo $warehouse['warehouse_id']; ?>">
             <?php endif; ?>
@@ -52,27 +52,6 @@
                     <label for="phone" class="form-label">Telepon</label>
                     <input type="text" class="form-control" id="phone" name="phone"
                         value="<?php echo isset($warehouse) ? $warehouse['phone'] : set_value('phone'); ?>">
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="warehouse_type" class="form-label">Tipe Gudang <span
-                            class="text-danger">*</span></label>
-                    <select class="form-control" id="warehouse_type" name="warehouse_type" required>
-                        <option value="">Pilih Tipe Gudang</option>
-                        <option value="1">Gudang Utama</option>
-                        <option value="2" selected>Gudang Project</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="warehouse_status" class="form-label">Status Gudang <span
-                            class="text-danger">*</span></label>
-                    <select class="form-control" id="warehouse_status" name="warehouse_status" required>
-                        <option value="">Pilih Status</option>
-                        <option value="0" <?php echo (isset($warehouse) ? ($warehouse['warehouse_status'] == '0' ? 'selected' : '') : 'selected'); ?>>Aktif</option>
-                        <option value="1" <?php echo (isset($warehouse) && $warehouse['warehouse_status'] == '1') ? 'selected' : ''; ?>>Tidak Aktif</option>
-                    </select>
                 </div>
             </div>
 

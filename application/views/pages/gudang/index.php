@@ -7,10 +7,6 @@
                 class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm mr-2">
                 <i class="fas fa-plus fa-sm text-white-50"></i> <?= $wording['gudang_add']; ?>
             </a>
-            <a href="<?php echo site_url('gudang/add_gudang_project'); ?>"
-                class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
-                <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Gudang Project
-            </a>
         </div>
     </div>
 
