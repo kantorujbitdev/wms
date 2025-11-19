@@ -20,9 +20,9 @@ class Api_model extends CI_Model
     }
 
     // ---- Barang ----
-    public function get_barang($params = [])
+    public function get_barang($data)
     {
-        return api_request('GET', 'product', [], $params);
+        return api_request('GET', 'product', $data);
     }
     public function get_barang_by_id($data)
     {
@@ -42,9 +42,9 @@ class Api_model extends CI_Model
     }
 
     // ---- Tipe Produk ----
-    public function get_product_type($params = [])
+    public function get_product_type($data)
     {
-        return api_request('GET', 'Product Type', [], $params);
+        return api_request('GET', 'Product Type', $data);
     }
     public function get_product_type_by_id($data)
     {
@@ -65,9 +65,9 @@ class Api_model extends CI_Model
 
 
     // ---- Tipe unit ----
-    public function get_unit_type($params = [])
+    public function get_unit_type($data)
     {
-        return api_request('GET', 'Unit Type', [], $params);
+        return api_request('GET', 'Unit Type', $data);
     }
     public function get_unit_type_by_id($data)
     {
@@ -154,9 +154,9 @@ class Api_model extends CI_Model
     }
 
     // ---- User ----
-    public function get_user($params = [])
+    public function get_user($data)
     {
-        return api_request('GET', 'user', [], $params);
+        return api_request('GET', 'user', $data);
     }
     public function get_user_by_id($data)
     {

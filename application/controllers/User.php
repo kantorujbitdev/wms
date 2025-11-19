@@ -18,9 +18,10 @@ class User extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'User Management';
+        $data = get_user_data_login();
 
         // Get users from API
-        $response = $this->Api_model->get_user();
+        $response = $this->Api_model->get_user($data);
         $this->data['users'] = $response['success'] ? $response['data'] : [];
 
         // Render view
@@ -31,6 +32,9 @@ class User extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Tambah User';
+
+        $gudang = $this->Api_model->get_gudang();
+        $this->data['warehouses'] = $gudang['success'] ? $gudang['data'] : [];
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
@@ -44,14 +48,15 @@ class User extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Edit User';
-        $data['user_id'] = $id;
+        $data = get_user_data_login(['user_id' => $id]);
+
         // Get user data from API
         $user = $this->Api_model->get_user_by_id($data);
-        $this->data['user_data'] = $user['success'] ? $user['data'] : [];
+        $this->data['user_data'] = $user['success'] ? $user['data'][0] : [];
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
-        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['admin', 'Supervisor', 'Staff'];
+        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Superadmin', 'Admin', 'Staff'];
 
         // Render view
         $this->render_view('pages/user/form');
@@ -59,14 +64,16 @@ class User extends MY_Controller
 
     public function save()
     {
-        $id = $this->input->post('id');
+        $id = $this->input->post('user_id');
+        $warehouse_id = $this->input->post('warehouse_id');
 
         // Prepare data according to API format
-        $data = [
+        $data = get_user_data_login([
             'username' => $this->input->post('username'),
             'fullname' => $this->input->post('fullname'),
-            'role' => $this->input->post('role')
-        ];
+            'role' => $this->input->post('role'),
+            'warehouse_id' => $warehouse_id
+        ]);
 
         // Add password if it's not empty
         if (!empty($this->input->post('password'))) {
@@ -96,7 +103,7 @@ class User extends MY_Controller
     public function delete($id)
     {
         // Prepare data according to API format
-        $data = ['id' => $id];
+        $data = get_user_data_login(['id' => $id]);
         $response = $this->Api_model->delete_user($data);
 
         if ($response['success']) {

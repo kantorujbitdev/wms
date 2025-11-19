@@ -50,7 +50,7 @@
 
                                     </td>
                                     <td><?php echo $user['warehouse_name']; ?></td>
-                                    <td><?php echo date('d-m-Y H:i', strtotime($user['create_at'])); ?></td>
+                                    <td><?php echo date('d-m-Y H:i:s', strtotime($user['create_at'])); ?></td>
                                     <td class="text-center">
                                         <a href="<?php echo site_url('user/edit/' . $user['user_id']); ?>"
                                             class="btn btn-info btn-sm">

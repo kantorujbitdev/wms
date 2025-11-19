@@ -21,8 +21,8 @@
                             <th>No</th>
                             <th>Kode</th>
                             <th>Nama Produk</th>
-                            <th>Tipe Produk</th>
-                            <th>Tipe Satuan</th>
+                            <th>Satuan</th>
+                            <th>Tipe</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -32,18 +32,18 @@
                             foreach ($products as $product): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $product['Product_Code']; ?></td>
-                                    <td><?php echo $product['Product_Name']; ?></td>
-                                    <td><?php echo $product['Product_Type_Name']; ?></td>
-                                    <td><?php echo $product['Unit_Code']; ?></td>
+                                    <td><?php echo $product['product_code']; ?></td>
+                                    <td><?php echo $product['product_name']; ?></td>
+                                    <td><?php echo $product['unit_code']; ?></td>
+                                    <td><?php echo $product['type_name']; ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('barang/edit_produk/' . $product['Product_Id']); ?>"
+                                        <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                            data-id="<?php echo $product['Product_Id']; ?>"
-                                            data-name="<?php echo $product['Product_Name']; ?>"
+                                            data-id="<?php echo $product['product_id']; ?>"
+                                            data-name="<?php echo $product['product_name']; ?>"
                                             data-url="<?= site_url('barang/delete_produk'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>

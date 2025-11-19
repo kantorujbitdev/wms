@@ -30,16 +30,15 @@
                             foreach ($unit_types as $type): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $type['Unit_Code']; ?></td>
-                                    <td><?php echo !empty($type['Unit_Name']) ? $type['Unit_Name'] : '-'; ?></td>
+                                    <td><?php echo $type['code']; ?></td>
+                                    <td><?php echo !empty($type['name']) ? $type['name'] : '-'; ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('barang/edit_tipe_satuan/' . $type['Unit_Id']); ?>"
+                                        <a href="<?php echo site_url('barang/edit_tipe_satuan/' . $type['id']); ?>"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                            data-id="<?php echo $type['Unit_Id']; ?>"
-                                            data-name="<?php echo $type['Unit_Code']; ?>"
+                                            data-id="<?php echo $type['id']; ?>" data-name="<?php echo $type['code']; ?>"
                                             data-url="<?= site_url('barang/delete_tipe_satuan'); ?>">
                                             <i class="fas fa-trash"></i>
                                         </button>

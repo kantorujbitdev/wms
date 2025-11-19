@@ -12,14 +12,14 @@
         <div class="card-body">
             <?php echo form_open('user/save'); ?>
             <?php if (isset($user_data)): ?>
-                <input type="hidden" name="id" value="<?php echo $user_data['User_Id']; ?>">
+                <input type="hidden" name="id" value="<?php echo $user_data['user_id']; ?>">
             <?php endif; ?>
 
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" class="form-control" id="username" name="username"
-                        value="<?php echo isset($user_data) ? $user_data['User_Name'] : set_value('username'); ?>"
+                        value="<?php echo isset($user_data) ? $user_data['user_name'] : set_value('username'); ?>"
                         required>
                 </div>
                 <div class="col-md-6">
@@ -28,7 +28,8 @@
                         <option value="">-- Pilih Role --</option>
                         <?php if (!empty($roles)): ?>
                             <?php foreach ($roles as $role): ?>
-                                <option value="<?php echo $role; ?>" <?php echo (isset($user_data) && $user_data['User_Role'] == $role) ? 'selected' : ''; ?>>
+                                <?php echo save_log("user_role: " . ucfirst($user_data['user_role'])); ?>
+                                <option value="<?php echo $role; ?>" <?php echo (isset($user_data) && ucfirst($user_data['user_role']) == $role) ? 'selected' : ''; ?>>
                                     <?php echo ucfirst($role); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -40,7 +41,7 @@
             <div class="mb-3">
                 <label for="fullname" class="form-label">Nama Lengkap</label>
                 <input type="text" class="form-control" id="fullname" name="fullname"
-                    value="<?php echo isset($user_data) ? $user_data['Full_Name'] : set_value('fullname'); ?>" required>
+                    value="<?php echo isset($user_data) ? $user_data['full_name'] : set_value('fullname'); ?>" required>
             </div>
 
             <div class="row mb-3">

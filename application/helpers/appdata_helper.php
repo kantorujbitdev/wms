@@ -1,5 +1,22 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+/**
+ * Helper untuk mengelola data aplikasi seperti pengaturan dan API
+ */
+if (!function_exists('get_user_data_login')) {
+    function get_user_data_login($extra = [])
+    {
+        $CI = &get_instance();
+
+        $data = [
+            'login_id' => $CI->session->userdata('user_id'),
+            'login_name' => $CI->session->userdata('username'),
+        ];
+
+        // Gabungkan tambahan parameter jika ada
+        return array_merge($data, $extra);
+    }
+}
 
 if (!function_exists('load_appdata_to_session')) {
     /**
