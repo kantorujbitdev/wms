@@ -97,6 +97,67 @@
             </ul>
         </li>
 
+        <!-- Penerimaan -->
+        <li class="sidebar-item <?= ($active_menu == 'penerimaan') ? 'active' : ''; ?>">
+            <a href="#penerimaanSubmenu" data-bs-toggle="collapse"
+                aria-expanded="<?= ($active_menu == 'penerimaan') ? 'true' : 'false'; ?>"
+                class="sidebar-link dropdown-toggle">
+                <i class="fas fa-inbox me-2"></i>
+                <span><?= $wording['penerimaan']; ?></span>
+            </a>
+            <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'penerimaan') ? 'show' : ''; ?>"
+                id="penerimaanSubmenu">
+
+                <li>
+                    <a href="<?= site_url('penerimaan/antar_gudang'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'antar_gudang') ? 'active' : ''; ?>">
+                        <i class="fas fa-right-left me-2"></i>
+                        <span>Antar Gudang</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="<?= site_url('penerimaan/from_supplier'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'supplier') ? 'active' : ''; ?>">
+                        <i class="fas fa-truck-ramp-box me-2"></i>
+                        <span>Supplier</span>
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+        <!-- Pengiriman -->
+        <li class="sidebar-item <?= ($active_menu == 'pengiriman') ? 'active' : ''; ?>">
+            <a href="#pengirimanSubmenu" data-bs-toggle="collapse"
+                aria-expanded="<?= ($active_menu == 'pengiriman') ? 'true' : 'false'; ?>"
+                class="sidebar-link dropdown-toggle">
+                <i class="fas fa-paper-plane me-2"></i>
+                <span><?= $wording['pengiriman']; ?></span>
+            </a>
+
+            <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'pengiriman') ? 'show' : ''; ?>"
+                id="pengirimanSubmenu">
+
+                <li>
+                    <a href="<?= site_url('pengiriman/antar_gudang'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'antar_gudang') ? 'active' : ''; ?>">
+                        <i class="fas fa-right-left me-2"></i>
+                        <span>Antar Gudang</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="<?= site_url('pengiriman/penggunaan'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'penggunaan') ? 'active' : ''; ?>">
+                        <i class="fas fa-dolly me-2"></i>
+                        <span>Penggunaan</span>
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+
+
         <!-- Transaksi Dropdown -->
         <li class="sidebar-item <?= ($active_menu == 'transaksi') ? 'active' : ''; ?>">
             <a href="#transaksiSubmenu" data-bs-toggle="collapse"

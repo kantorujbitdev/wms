@@ -110,7 +110,6 @@ class Gudang extends MY_Controller
         // gudang project warehouse_type = 1
 
         $warehouse_id = $this->input->post('id');
-        save_log('save_warehouse_project warehouse_id: ' . $warehouse_id);
         if ($warehouse_id) {
             // Update existing warehouse - add ID to data for PUT request
             // Prepare data according to API format
@@ -144,7 +143,6 @@ class Gudang extends MY_Controller
             $message = 'Gudang berhasil ditambahkan!';
         }
 
-
         if ($response['success']) {
             $this->session->set_flashdata('success', $message);
         } else {
@@ -158,7 +156,6 @@ class Gudang extends MY_Controller
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
         $warehouse_id = $this->input->post('id');
-        save_log('save_warehouse_utama warehouse_id: ' . $warehouse_id);
 
         // gudang utama warehouse_type = 0
         // gudang project warehouse_type = 1

@@ -61,6 +61,14 @@ $wording = [
     'supplier_edit' => 'Edit Supplier',
     'supplier_form' => 'Form Supplier',
 
+    // Penerimaan
+    'penerimaan' => 'Penerimaan',
+    'penerimaan_list' => 'Daftar Penerimaan Barang',
+
+    // Pengiriman
+    'pengiriman' => 'pengiriman',
+    'pengiriman_list' => 'Daftar Pengiriman Barang',
+
     // Gudang
     'gudang' => 'Master Gudang',
     'gudang_list' => 'Daftar Master Gudang',

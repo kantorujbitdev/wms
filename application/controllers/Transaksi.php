@@ -31,11 +31,11 @@ class Transaksi extends MY_Controller
         $this->data['active_submenu'] = 'masuk';
 
         // Get items from API
-        $items = $this->Api_model->get_barang();
+        $items = $this->Api_model->get_barang(data_login_user());
         $this->data['items'] = $items['success'] ? $items['data'] : [];
 
         // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang();
+        $warehouses = $this->Api_model->get_gudang(data_login_user());
         $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
         // Render view
@@ -50,11 +50,11 @@ class Transaksi extends MY_Controller
         $this->data['active_submenu'] = 'keluar';
 
         // Get items from API
-        $items = $this->Api_model->get_barang();
+        $items = $this->Api_model->get_barang(data_login_user());
         $this->data['items'] = $items['success'] ? $items['data'] : [];
 
         // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang();
+        $warehouses = $this->Api_model->get_gudang(data_login_user());
         $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
         // Render view
@@ -69,11 +69,11 @@ class Transaksi extends MY_Controller
         $this->data['active_submenu'] = 'transfer';
 
         // Get items from API
-        $items = $this->Api_model->get_barang();
+        $items = $this->Api_model->get_barang(data_login_user());
         $this->data['items'] = $items['success'] ? $items['data'] : [];
 
         // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang();
+        $warehouses = $this->Api_model->get_gudang(data_login_user());
         $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
         // Render view
