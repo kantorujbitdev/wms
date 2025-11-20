@@ -26,7 +26,6 @@
                             <th>Alamat</th>
                             <th>Contact Person</th>
                             <th>Telepon</th>
-                            <th>Tipe</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -42,13 +41,6 @@
                                     <td><?php echo $warehouse['warehouse_address']; ?></td>
                                     <td><?php echo $warehouse['contact_person']; ?></td>
                                     <td><?php echo !empty($warehouse['phone']) ? $warehouse['phone'] : '-'; ?></td>
-                                    <td class="text-center">
-                                        <?php if ($warehouse['warehouse_type_name'] == 'Gudang Utama'): ?>
-                                            <span class="badge bg-primary"><?php echo $warehouse['warehouse_type_name'] ?></span>
-                                        <?php else: ?>
-                                            <span class="badge bg-info"><?php echo $warehouse['warehouse_type_name'] ?></span>
-                                        <?php endif; ?>
-                                    </td>
                                     <td class="text-center">
                                         <?php if ($warehouse['warehouse_status'] == 0): ?>
                                             <span class="badge bg-success">Aktif</span>

@@ -20,10 +20,13 @@
                 <div class="col-md-6">
                     <label for="warehouse_code" class="form-label">Kode Gudang <span
                             class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="warehouse_code" name="warehouse_code"
+
+                    <input type="text" class="form-control <?php echo isset($warehouse) ? 'bg-light' : ''; ?>"
+                        id="warehouse_code" name="warehouse_code" <?php echo isset($warehouse) ? 'readonly' : ''; ?>
                         value="<?php echo isset($warehouse) ? $warehouse['warehouse_code'] : set_value('warehouse_code'); ?>"
                         required>
                 </div>
+
                 <div class="col-md-6">
                     <label for="warehouse_name" class="form-label">Nama Gudang <span
                             class="text-danger">*</span></label>

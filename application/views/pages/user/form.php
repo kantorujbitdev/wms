@@ -13,6 +13,7 @@
             <?php echo form_open('user/save'); ?>
             <?php if (isset($user_data)): ?>
                 <input type="hidden" name="id" value="<?php echo $user_data['user_id']; ?>">
+                <?php echo save_log("user_id: " . ucfirst($user_data['user_id'])); ?>
             <?php endif; ?>
 
             <div class="row mb-3">
@@ -42,6 +43,21 @@
                 <label for="fullname" class="form-label">Nama Lengkap</label>
                 <input type="text" class="form-control" id="fullname" name="fullname"
                     value="<?php echo isset($user_data) ? $user_data['full_name'] : set_value('fullname'); ?>" required>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="warehouse_id" class="form-label">Ruang Lingkup (Gudang)</label>
+                    <select class="form-control" id="warehouse_id" name="warehouse_id" required>
+                        <option value="">-- Pilih Gudang --</option>
+                        <?php if (!empty($warehouses)): ?>
+                            <?php foreach ($warehouses as $g): ?>
+                                <option value="<?= $g['warehouse_id']; ?>" <?= (isset($user_data) && $user_data['warehouse_id'] == $g['warehouse_id']) ? 'selected' : ''; ?>>
+                                    <?= $g['warehouse_name']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
             </div>
 
             <div class="row mb-3">

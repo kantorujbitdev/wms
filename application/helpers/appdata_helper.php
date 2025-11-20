@@ -3,8 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * Helper untuk mengelola data aplikasi seperti pengaturan dan API
  */
-if (!function_exists('get_user_data_login')) {
-    function get_user_data_login($extra = [])
+if (!function_exists('data_login_user')) {
+    function data_login_user($extra = [])
     {
         $CI = &get_instance();
 

@@ -14,9 +14,9 @@ class Gudang extends MY_Controller
         $this->data['title'] = 'Gudang';
         $this->data['active_menu'] = 'gudang';
         $this->data['active_submenu'] = 'gudang_utama';
-
+        $data = data_login_user(['warehouse_type' => 0]);
         // Get warehouses from API
-        $response = $this->Api_model->get_gudang();
+        $response = $this->Api_model->get_gudang($data);
         $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
 
         // Render view
@@ -30,7 +30,7 @@ class Gudang extends MY_Controller
         $this->data['active_menu'] = 'gudang';
         $this->data['active_submenu'] = 'gudang_project';
 
-        $data = ['is_project' => 1];
+        $data = data_login_user(['warehouse_type' => 1]);
         // Get warehouses from API
         $response = $this->Api_model->get_gudang_id_project($data);
         $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
@@ -68,7 +68,7 @@ class Gudang extends MY_Controller
         $this->data['active_menu'] = 'gudang';
         $this->data['active_submenu'] = 'gudang_utama';
 
-        $data = ['warehouse_id' => $id];
+        $data = data_login_user(['warehouse_id' => $id]);
         // Get warehouse data from API
         $warehouse = $this->Api_model->get_gudang_id($data);
         // $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
@@ -89,7 +89,7 @@ class Gudang extends MY_Controller
         $this->data['active_menu'] = 'gudang';
         $this->data['active_submenu'] = 'gudang_project';
 
-        $data = ['warehouse_id' => $id];
+        $data = data_login_user(['warehouse_id' => $id]);
 
         // Get warehouse data from API
         $warehouse = $this->Api_model->get_gudang_id($data);
@@ -106,24 +106,44 @@ class Gudang extends MY_Controller
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
 
-        // Prepare data according to API format
-        $data = [
-            'warehouse_code' => $this->input->post('warehouse_code'),
-            'warehouse_name' => $this->input->post('warehouse_name'),
-            'warehouse_address' => $this->input->post('warehouse_address'),
-            'contact_person' => $this->input->post('contact_person'),
-            'phone' => $this->input->post('phone'),
-            'warehouse_status' => 0,
-            'warehouse_type' => 1,
-            'user_id' => $user_id
-        ];
-
         // gudang utama warehouse_type = 0
         // gudang project warehouse_type = 1
 
-        // Add new warehouse
-        $response = $this->Api_model->add_gudang($data);
-        $message = 'Gudang berhasil ditambahkan!';
+        $warehouse_id = $this->input->post('id');
+        save_log('save_warehouse_project warehouse_id: ' . $warehouse_id);
+        if ($warehouse_id) {
+            // Update existing warehouse - add ID to data for PUT request
+            // Prepare data according to API format
+            $data = data_login_user([
+                'warehouse_id' => $this->input->post('id'),
+                'warehouse_code' => $this->input->post('warehouse_code'),
+                'warehouse_name' => $this->input->post('warehouse_name'),
+                'warehouse_address' => $this->input->post('warehouse_address'),
+                'contact_person' => $this->input->post('contact_person'),
+                'phone' => $this->input->post('phone'),
+                'warehouse_status' => 0,
+                'warehouse_type' => 1,
+                'user_id' => $user_id
+            ]);
+            $response = $this->Api_model->update_gudang($data);
+            $message = 'Gudang berhasil diperbarui!';
+        } else {
+            // Prepare data according to API format
+            $data = data_login_user([
+                'warehouse_code' => $this->input->post('warehouse_code'),
+                'warehouse_name' => $this->input->post('warehouse_name'),
+                'warehouse_address' => $this->input->post('warehouse_address'),
+                'contact_person' => $this->input->post('contact_person'),
+                'phone' => $this->input->post('phone'),
+                'warehouse_status' => 0,
+                'warehouse_type' => 1,
+                'user_id' => $user_id
+            ]);
+            // Add new warehouse
+            $response = $this->Api_model->add_gudang($data);
+            $message = 'Gudang berhasil ditambahkan!';
+        }
+
 
         if ($response['success']) {
             $this->session->set_flashdata('success', $message);
@@ -137,25 +157,43 @@ class Gudang extends MY_Controller
     {
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
-
-        // Prepare data according to API format
-        $data = [
-            'warehouse_code' => $this->input->post('warehouse_code'),
-            'warehouse_name' => $this->input->post('warehouse_name'),
-            'warehouse_address' => $this->input->post('warehouse_address'),
-            'contact_person' => $this->input->post('contact_person'),
-            'phone' => $this->input->post('phone'),
-            'warehouse_status' => 0,
-            'warehouse_type' => 0,
-            'user_id' => $user_id
-        ];
+        $warehouse_id = $this->input->post('id');
+        save_log('save_warehouse_utama warehouse_id: ' . $warehouse_id);
 
         // gudang utama warehouse_type = 0
         // gudang project warehouse_type = 1
 
-        // Add new warehouse
-        $response = $this->Api_model->add_gudang($data);
-        $message = 'Gudang berhasil ditambahkan!';
+        if ($warehouse_id) {
+            // Update existing warehouse - add ID to data for PUT request
+            $data = data_login_user([
+                'warehouse_id' => $this->input->post('id'),
+                'warehouse_code' => $this->input->post('warehouse_code'),
+                'warehouse_name' => $this->input->post('warehouse_name'),
+                'warehouse_address' => $this->input->post('warehouse_address'),
+                'contact_person' => $this->input->post('contact_person'),
+                'phone' => $this->input->post('phone'),
+                'warehouse_status' => 0,
+                'warehouse_type' => 0,
+                'user_id' => $user_id
+            ]);
+            $response = $this->Api_model->update_gudang($data);
+            $message = 'Gudang berhasil diperbarui!';
+        } else {
+            // Add new warehouse
+            $data = data_login_user([
+                'warehouse_code' => $this->input->post('warehouse_code'),
+                'warehouse_name' => $this->input->post('warehouse_name'),
+                'warehouse_address' => $this->input->post('warehouse_address'),
+                'contact_person' => $this->input->post('contact_person'),
+                'phone' => $this->input->post('phone'),
+                'warehouse_status' => 0,
+                'warehouse_type' => 0,
+                'user_id' => $user_id
+            ]);
+            $response = $this->Api_model->add_gudang($data);
+            $message = 'Gudang berhasil ditambahkan!';
+        }
+
 
         if ($response['success']) {
             $this->session->set_flashdata('success', $message);
@@ -172,10 +210,10 @@ class Gudang extends MY_Controller
         $user_id = $this->session->userdata('user_id');
 
         // Prepare data according to API format
-        $data = [
+        $data = data_login_user([
             'warehouse_id' => $id,
             'user_id' => $user_id
-        ];
+        ]);
 
         $response = $this->Api_model->delete_gudang($data);
 

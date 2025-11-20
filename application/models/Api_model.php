@@ -88,9 +88,9 @@ class Api_model extends CI_Model
 
 
     // ---- Gudang ----
-    public function get_gudang($params = [])
+    public function get_gudang($data)
     {
-        return api_request('GET', 'gudang', [], $params);
+        return api_request('GET', 'gudang', $data);
     }
     public function get_gudang_id($data)
     {
@@ -104,9 +104,9 @@ class Api_model extends CI_Model
     {
         return api_request('POST', 'gudang', $data);
     }
-    public function update_gudang($id, $data)
+    public function update_gudang($data)
     {
-        return api_request('PUT', 'gudang', $data, ['id' => $id]);
+        return api_request('PUT', 'gudang', $data);
     }
     public function delete_gudang($data)
     {
