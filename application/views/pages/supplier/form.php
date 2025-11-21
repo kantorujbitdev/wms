@@ -19,12 +19,12 @@
                 <div class="col-md-6">
                     <label for="name" class="form-label">Nama Supplier</label>
                     <input type="text" class="form-control" id="name" name="name"
-                        value="<?php echo isset($supplier) ? $supplier['Name'] : set_value('name'); ?>" required>
+                        value="<?php echo isset($supplier) ? $supplier['name'] : set_value('name'); ?>" required>
                 </div>
                 <div class="col-md-6">
                     <label for="contact" class="form-label">Contact Person</label>
                     <input type="text" class="form-control" id="contact" name="contact"
-                        value="<?php echo isset($supplier) ? $supplier['Contact'] : set_value('contact'); ?>" required>
+                        value="<?php echo isset($supplier) ? $supplier['person'] : set_value('contact'); ?>" required>
                 </div>
             </div>
 
@@ -32,14 +32,14 @@
                 <div class="col-md-6">
                     <label for="phone" class="form-label">Telepon</label>
                     <input type="text" class="form-control" id="phone" name="phone"
-                        value="<?php echo isset($supplier) ? $supplier['Phone'] : set_value('phone'); ?>" required>
+                        value="<?php echo isset($supplier) ? $supplier['phone'] : set_value('phone'); ?>" required>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label for="address" class="form-label">Alamat</label>
                 <textarea class="form-control" id="address" name="address" rows="3"
-                    required><?php echo isset($supplier) ? $supplier['Addr'] : set_value('address'); ?></textarea>
+                    required><?php echo isset($supplier) ? $supplier['address'] : set_value('address'); ?></textarea>
             </div>
 
             <div class="mb-3">

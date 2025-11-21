@@ -34,16 +34,13 @@ $usernames = $this->session->userdata('username');
                     id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-user-circle user-icon"></i>
                     <div class="user-details ms-2 d-none d-sm-block">
-                        <span class="user-name d-block"><?php echo $usernames ?> (<?php echo $role_id ?>)</span>
+                        <span class="user-name"><?php echo strtoupper($usernames) ?>
+                            (<?php echo ucfirst($role_id) ?>)</span>
                     </div>
                     <!-- For mobile only - show username inline -->
-                    <span class="user-name-mobile d-sm-none ms-2"><?php echo $usernames ?></span>
+                    <span class="user-name-mobile d-sm-none ms-2"><?php echo strtoupper($usernames) ?></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
                     <li>
                         <a class="dropdown-item text-danger" href="#" id="logoutBtn">
                             <i class="fas fa-sign-out-alt me-2"></i>Logout

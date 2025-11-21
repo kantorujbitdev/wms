@@ -1,17 +1,23 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Gudang Project</h1>
-        <a href="<?php echo site_url('gudang/add_gudang_project'); ?>"
-            class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Gudang Project
-        </a>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['gudang_project']; ?></h1>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Gudang Project</h6>
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <?= $wording['gudang_list_project']; ?>
+                </h6>
+
+                <a href="<?= site_url('gudang/add_gudang_project') ?>"
+                    class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
+                    <i class="fas fa-plus fa-sm text-white-50"></i>
+                    <?= $wording['gudang_add_project']; ?>
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -55,12 +61,14 @@
                                             class="btn btn-success btn-sm">
                                             <i class="fas fa-boxes"></i>
                                         </a>
-                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                            data-id="<?php echo $warehouse['warehouse_id']; ?>"
-                                            data-name="<?php echo $warehouse['warehouse_name']; ?>"
-                                            data-url="<?= site_url('gudang/delete'); ?>">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <?php if (is_role(['superadmin', 'admin'])): ?>
+                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                data-id="<?php echo $warehouse['warehouse_id']; ?>"
+                                                data-name="<?php echo $warehouse['warehouse_name']; ?>"
+                                                data-url="<?= site_url('gudang/delete'); ?>">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -1,14 +1,20 @@
 <div class="container-fluid">
+    <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $title; ?></h1>
-        <a href="<?= site_url('api/add'); ?>" class="btn btn-primary btn-sm shadow-sm">
-            <i class="fas fa-plus"></i> Tambah API
-        </a>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['gudang']; ?></h1>
+
     </div>
 
+    <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar API</h6>
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Daftar API
+                </h6>
+                <a href="<?= site_url('api/add') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">
+                    <i class="fas fa-plus fa-sm text-white-50"></i> Tambah API
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">

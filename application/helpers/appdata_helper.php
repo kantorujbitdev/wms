@@ -17,6 +17,21 @@ if (!function_exists('data_login_user')) {
         return array_merge($data, $extra);
     }
 }
+if (!function_exists('is_role')) {
+
+    function is_role($roles = [])
+    {
+        $CI = &get_instance();
+        $user_role = $CI->session->userdata('role');
+
+        // Jika $roles adalah string → ubah jadi array
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
+
+        return in_array(strtolower($user_role), array_map('strtolower', $roles));
+    }
+}
 
 if (!function_exists('load_appdata_to_session')) {
     /**

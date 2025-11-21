@@ -16,7 +16,7 @@ class Supplier extends MY_Controller
         $this->data['active_submenu'] = 'supplier';
 
         // Get suppliers from API
-        $response = $this->Api_model->get_supplier();
+        $response = $this->Api_model->get_supplier(data_login_user());
         $this->data['suppliers'] = $response['success'] ? $response['data'] : [];
 
         // Render view
@@ -40,11 +40,11 @@ class Supplier extends MY_Controller
         $this->data['title'] = 'Edit Supplier';
         $this->data['active_menu'] = 'supplier';
         $this->data['active_submenu'] = 'supplier';
-        $data['id'] = $id;
+        $data = data_login_user(['id' => $id]);
 
         // Get supplier data from API
         $supplier = $this->Api_model->get_supplier($data);
-        $this->data['supplier'] = $supplier['success'] ? $supplier['data'] : [];
+        $this->data['supplier'] = $supplier['success'] ? $supplier['data'][0] : [];
 
         // Render view
         $this->render_view('pages/supplier/form');
@@ -54,25 +54,25 @@ class Supplier extends MY_Controller
     {
         $id = $this->input->post('id');
 
-        // Get current user ID from session
-        $user_id = $this->session->userdata('user_id');
-
-        // Prepare data according to API format
-        $data = [
-            'Name' => $this->input->post('name'),
-            'Contact' => $this->input->post('contact'),
-            'Phone' => $this->input->post('phone'),
-            'Addr' => $this->input->post('address'),
-            'actionby' => $user_id
-        ];
-
         if ($id) {
+            // Prepare data according to API format
+            $data = data_login_user([
+                'id' => $this->input->post('id'),
+                'name' => $this->input->post('name'),
+                'person' => $this->input->post('contact'),
+                'phone' => $this->input->post('phone'),
+                'address' => $this->input->post('address')
+            ]);
             // Update existing supplier
-            $data['id'] = $id;
             $response = $this->Api_model->update_supplier($data);
             $message = 'Supplier berhasil diperbarui!';
         } else {
-            // Add new supplier
+            $data = data_login_user([
+                'name' => $this->input->post('name'),
+                'person' => $this->input->post('contact'),
+                'phone' => $this->input->post('phone'),
+                'address' => $this->input->post('address')
+            ]);// Add new supplier
             $response = $this->Api_model->add_supplier($data);
             $message = 'Supplier berhasil ditambahkan!';
         }
@@ -88,14 +88,10 @@ class Supplier extends MY_Controller
 
     public function delete($id)
     {
-        // Get current user ID from session
-        $user_id = $this->session->userdata('user_id');
-
         // Prepare data according to API format
-        $data = [
-            'id' => $id,
-            'actionby' => $user_id
-        ];
+        $data = data_login_user([
+            'id' => $id
+        ]);
 
         $response = $this->Api_model->delete_supplier($data);
 

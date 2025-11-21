@@ -176,9 +176,13 @@ class Api_model extends CI_Model
     }
 
     // ---- Customer ----
-    public function get_customer($params = [])
+    public function get_customer($data)
     {
-        return api_request('GET', 'Customer', [], $params);
+        return api_request('GET', 'Customer', $data);
+    }
+    public function get_customer_by_id($data)
+    {
+        return api_request('GET', 'Customer', $data);
     }
     public function add_customer($data)
     {
@@ -194,9 +198,9 @@ class Api_model extends CI_Model
     }
 
     // ---- Supplier ----
-    public function get_supplier($params = [])
+    public function get_supplier($data)
     {
-        return api_request('GET', 'Supplier', [], $params);
+        return api_request('GET', 'Supplier', $data);
     }
     public function add_supplier($data)
     {

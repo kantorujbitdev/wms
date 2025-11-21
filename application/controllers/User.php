@@ -16,6 +16,8 @@ class User extends MY_Controller
 
     public function index()
     {
+        load_appdata_to_session();
+
         // Set title
         $this->data['title'] = 'User Management';
         $data = data_login_user();
@@ -78,21 +80,32 @@ class User extends MY_Controller
         if ($id) {
             // Prepare data according to API format
             $data = data_login_user([
-                'id' => $id,
+                'user_id' => $id,
                 'user_name' => $this->input->post('username'),
-                'fullname' => $this->input->post('fullname'),
-                'role' => strtolower($this->input->post('role')),
+                'full_name' => $this->input->post('fullname'),
+                'password' => $this->input->post('password'),
+                'user_role' => strtolower($this->input->post('role')),
                 'warehouse_id' => $warehouse_id
             ]);
             $response = $this->Api_model->update_user($data);
             $message = 'User berhasil diperbarui!';
         } else {
-            $data = data_login_user([
-                'user_name' => $this->input->post('username'),
-                'fullname' => $this->input->post('fullname'),
-                'role' => strtolower($this->input->post('role')),
-                'warehouse_id' => $warehouse_id
-            ]);
+            if (!empty($this->input->post('password'))) {
+                $data = data_login_user([
+                    'user_name' => $this->input->post('username'),
+                    'full_name' => $this->input->post('fullname'),
+                    'password' => $this->input->post('password'),
+                    'user_role' => strtolower($this->input->post('role')),
+                    'warehouse_id' => $warehouse_id
+                ]);
+            } else {
+                $data = data_login_user([
+                    'user_name' => $this->input->post('username'),
+                    'full_name' => $this->input->post('fullname'),
+                    'user_role' => strtolower($this->input->post('role')),
+                    'warehouse_id' => $warehouse_id
+                ]);
+            }
             // Add new user
             $response = $this->Api_model->add_user($data);
             $message = 'User berhasil ditambahkan!';
@@ -110,7 +123,7 @@ class User extends MY_Controller
     public function delete($id)
     {
         // Prepare data according to API format
-        $data = data_login_user(['id' => $id]);
+        $data = data_login_user(['user_id' => $id]);
         $response = $this->Api_model->delete_user($data);
 
         if ($response['success']) {

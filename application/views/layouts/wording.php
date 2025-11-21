@@ -27,12 +27,17 @@ $wording = [
     'password' => 'Password',
     'remember_me' => 'Ingat saya',
 
+    // Tipe Barang
+    'tipe' => 'Tipe',
+    'tipe_Barang' => 'Tipe Barang',
+    'barang_tipe_list' => 'Daftar Tipe Barang',
+    'barang_tipe_add' => 'Tambah Tipe Barang',
+
     // Satuan
     'unit' => 'Satuan',
     'tipe_satuan' => 'Tipe Satuan',
-    'satuan_list' => 'List Tipe Satuan',
+    'satuan_list' => 'Daftar Tipe Satuan',
     'satuan_add' => 'Tambah Tipe Satuan',
-
 
     // Barang
     'barang' => 'Barang',
@@ -66,7 +71,7 @@ $wording = [
     'penerimaan_list' => 'Daftar Penerimaan Barang',
 
     // Pengiriman
-    'pengiriman' => 'pengiriman',
+    'pengiriman' => 'Pengiriman',
     'pengiriman_list' => 'Daftar Pengiriman Barang',
 
     // Gudang
@@ -111,6 +116,7 @@ $wording = [
 
     // User
     'user' => 'User',
+    'user_management' => 'User Management',
     'user_list' => 'Daftar User',
     'user_add' => 'Tambah User',
     'user_edit' => 'Edit User',

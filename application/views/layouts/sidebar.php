@@ -20,52 +20,31 @@
         </li>
 
         <!-- Gudang -->
-        <li class="sidebar-item <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
-            <a href="#gudangSubmenu" data-bs-toggle="collapse"
-                aria-expanded="<?= ($active_menu == 'gudang') ? 'true' : 'false'; ?>"
-                class="sidebar-link dropdown-toggle">
-                <i class="fas fa-warehouse me-2"></i>
-                <span><?= $wording['gudang']; ?></span>
-            </a>
-            <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'gudang') ? 'show' : ''; ?>" id="gudangSubmenu">
-                <li>
-                    <a href="<?= site_url('gudang/gudang_project'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'gudang_project') ? 'active' : ''; ?>">
-                        <i class="fas fa-box me-2"></i>
-                        <span>Gudang Project</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= site_url('gudang'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'gudang_utama') ? 'active' : ''; ?>">
-                        <i class="fas fa-layer-group me-2"></i><span>Gudang Utama</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <!-- <li class="sidebar-item <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
-            <a href="#submenuGudang" data-bs-toggle="collapse"
-                aria-expanded="<?= ($active_menu == 'gudang') ? 'true' : 'false'; ?>"
-                class="sidebar-link dropdown-toggle">
-                <i class="fas fa-warehouse me-2"></i>
-                <span><?= $wording['gudang']; ?>
-                </span>
-            </a>
-            <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'gudang') ? 'show' : ''; ?>" id="submenuGudang">
-                <li>
-                    <a href="<?= site_url('gudang'); ?>"
-                        class="sidebar-link <?= ($active_submenu == 'gudang_utama') ? 'active' : ''; ?>">
-                        <i class="fas fa-box me-2"></i> Gudang Utama
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= site_url('gudang/gudang_project'); ?>"
-                        class="sidebar-link <?= ($active_submenu == 'gudang_project') ? 'active' : ''; ?>">
-                        <i class="fas fa-layer-group me-2"></i> Gudang Project
-                    </a>
-                </li>
-            </ul>
-        </li> -->
+        <?php if (is_role(['superadmin'])): ?>
+            <li class="sidebar-item <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
+                <a href="#gudangSubmenu" data-bs-toggle="collapse"
+                    aria-expanded="<?= ($active_menu == 'gudang') ? 'true' : 'false'; ?>"
+                    class="sidebar-link dropdown-toggle">
+                    <i class="fas fa-warehouse me-2"></i>
+                    <span><?= $wording['gudang']; ?></span>
+                </a>
+                <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'gudang') ? 'show' : ''; ?>" id="gudangSubmenu">
+                    <li>
+                        <a href="<?= site_url('gudang/gudang_project'); ?>"
+                            class="sidebar-sublink <?= ($active_submenu == 'gudang_project') ? 'active' : ''; ?>">
+                            <i class="fas fa-box me-2"></i>
+                            <span>Gudang Project</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?= site_url('gudang'); ?>"
+                            class="sidebar-sublink <?= ($active_submenu == 'gudang_utama') ? 'active' : ''; ?>">
+                            <i class="fas fa-layer-group me-2"></i><span>Gudang Utama</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        <?php endif; ?>
 
         <!-- Barang Dropdown -->
         <li class="sidebar-item <?= ($active_menu == 'barang') ? 'active' : ''; ?>">
@@ -159,7 +138,7 @@
 
 
         <!-- Transaksi Dropdown -->
-        <li class="sidebar-item <?= ($active_menu == 'transaksi') ? 'active' : ''; ?>">
+        <!-- <li class="sidebar-item <?= ($active_menu == 'transaksi') ? 'active' : ''; ?>">
             <a href="#transaksiSubmenu" data-bs-toggle="collapse"
                 aria-expanded="<?= ($active_menu == 'transaksi') ? 'true' : 'false'; ?>"
                 class="sidebar-link dropdown-toggle">
@@ -185,7 +164,7 @@
                         <i class="fas fa-history me-2"></i>Riwayat</a>
                 </li>
             </ul>
-        </li>
+        </li> -->
 
         <!-- Laporan -->
         <li class="sidebar-item <?= ($active_menu == 'laporan') ? 'active' : ''; ?>">
@@ -212,7 +191,7 @@
         </li>
 
         <!-- Admin Only -->
-        <?php if (isset($user) && in_array($user['role'], ['admin', 'superadmin'])): ?>
+        <?php if (is_role(['superadmin', 'admin'])): ?>
             <!-- User Management -->
             <li class="sidebar-item <?= ($active_menu == 'user') ? 'active' : ''; ?>">
                 <a href="<?= site_url('user'); ?>" class="sidebar-link">
@@ -220,6 +199,9 @@
                     <span><?= $wording['user']; ?></span>
                 </a>
             </li>
+        <?php endif; ?>
+
+        <?php if (is_role('superadmin')): ?>
 
             <!-- Pengaturan Dropdown -->
             <li class="sidebar-item <?= ($active_menu == 'pengaturan') ? 'active' : ''; ?>">

@@ -16,7 +16,7 @@ class Customer extends MY_Controller
         $this->data['active_submenu'] = 'customer';
 
         // Get customers from API
-        $response = $this->Api_model->get_customer();
+        $response = $this->Api_model->get_customer(data_login_user());
         $this->data['customers'] = $response['success'] ? $response['data'] : [];
 
         // Render view
@@ -41,10 +41,10 @@ class Customer extends MY_Controller
         $this->data['active_menu'] = 'customer';
         $this->data['active_submenu'] = 'customer';
 
-        $data['id'] = $id;
+        $data = data_login_user(['id' => $id]);
         // Get customer data from API
         $customer = $this->Api_model->get_customer_by_id($data);
-        $this->data['customer'] = $customer['success'] ? $customer['data'] : [];
+        $this->data['customer'] = $customer['success'] ? $customer['data'][0] : [];
 
         // Render view
         $this->render_view('pages/customer/form');
@@ -54,24 +54,26 @@ class Customer extends MY_Controller
     {
         $id = $this->input->post('id');
 
-        // Get current user ID from session
-        $user_id = $this->session->userdata('user_id');
-
-        // Prepare data according to API format
-        $data = [
-            'Name' => $this->input->post('name'),
-            'Contact' => $this->input->post('contact'),
-            'Phone' => $this->input->post('phone'),
-            'Address' => $this->input->post('address'),
-            'actionby' => $user_id
-        ];
-
         if ($id) {
+            // Prepare data according to API format
+            $data = data_login_user([
+                'id' => $this->input->post('id'),
+                'name' => $this->input->post('name'),
+                'person' => $this->input->post('contact'),
+                'phone' => $this->input->post('phone'),
+                'address' => $this->input->post('address'),
+            ]);
             // Update existing customer
-            $data['id'] = $id;
             $response = $this->Api_model->update_customer($data);
             $message = 'Customer berhasil diperbarui!';
         } else {
+            // Prepare data according to API format
+            $data = data_login_user([
+                'name' => $this->input->post('name'),
+                'person' => $this->input->post('contact'),
+                'phone' => $this->input->post('phone'),
+                'address' => $this->input->post('address'),
+            ]);
             // Add new customer
             $response = $this->Api_model->add_customer($data);
             $message = 'Customer berhasil ditambahkan!';
@@ -88,14 +90,10 @@ class Customer extends MY_Controller
 
     public function delete($id)
     {
-        // Get current user ID from session
-        $user_id = $this->session->userdata('user_id');
-
         // Prepare data according to API format
-        $data = [
-            'id' => $id,
-            'actionby' => $user_id
-        ];
+        $data = data_login_user([
+            'id' => $id
+        ]);
 
         $response = $this->Api_model->delete_customer($data);
 

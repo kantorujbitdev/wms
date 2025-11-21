@@ -1,17 +1,25 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">User Management</h1>
-        <a href="<?php echo site_url('user/add'); ?>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah User
-        </a>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['user_management']; ?></h1>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar User</h6>
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <?= $wording['customer_list']; ?>
+                </h6>
+
+                <a href="<?= site_url('user/add') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">
+                    <i class="fas fa-plus fa-sm text-white-50"></i>
+                    <?= $wording['user_add']; ?>
+                </a>
+            </div>
         </div>
+
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">

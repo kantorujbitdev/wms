@@ -1,18 +1,27 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Tipe Produk</h1>
-        <a href="<?php echo site_url('barang/add_tipe_produk'); ?>"
-            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Tipe Produk
-        </a>
+        <h1 class="h3 mb-0 text-gray-800"><?= $wording['tipe_Barang']; ?></h1>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Tipe Produk</h6>
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <?= $wording['barang_tipe_list']; ?>
+                </h6>
+
+                <?php if (is_role('superadmin')): ?>
+                    <a href="<?= site_url('barang/add_tipe_produk') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">
+                        <i class="fas fa-plus fa-sm text-white-50"></i>
+                        <?= $wording['barang_tipe_add']; ?>
+                    </a>
+                <?php endif; ?>
+
+            </div>
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -21,7 +30,9 @@
                             <th>No</th>
                             <th>Nama Tipe Produk</th>
                             <th>Deskripsi</th>
-                            <th>Aksi</th>
+                            <?php if (is_role('superadmin')): ?>
+                                <th>Aksi</th>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,18 +44,20 @@
                                     <td><?php echo $type['Product_Type_Code']; ?></td>
                                     <td><?php echo !empty($type['Product_Type_Name']) ? $type['Product_Type_Name'] : '-'; ?>
                                     </td>
-                                    <td class="text-center">
-                                        <a href="<?php echo site_url('barang/edit_tipe_produk/' . $type['Product_Type_Id']); ?>"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                            data-id="<?php echo $type['Product_Type_Id']; ?>"
-                                            data-name="<?php echo $type['Product_Type_Name']; ?>"
-                                            data-url="<?= site_url('barang/delete_tipe_produk'); ?>">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
+                                    <?php if (is_role('superadmin')): ?>
+                                        <td class="text-center">
+                                            <a href="<?php echo site_url('barang/edit_tipe_produk/' . $type['Product_Type_Id']); ?>"
+                                                class="btn btn-info btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                data-id="<?php echo $type['Product_Type_Id']; ?>"
+                                                data-name="<?php echo $type['Product_Type_Name']; ?>"
+                                                data-url="<?= site_url('barang/delete_tipe_produk'); ?>">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
