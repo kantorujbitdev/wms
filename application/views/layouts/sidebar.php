@@ -76,6 +76,13 @@
             </ul>
         </li>
 
+        <li class="sidebar-item <?= ($active_menu == 'gudang_stok') ? 'active' : ''; ?>">
+            <a href="<?= site_url('gudang_stok'); ?>" class="sidebar-link">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                <span><?= $wording['gudang_stok']; ?></span>
+            </a>
+        </li>
+
         <!-- Penerimaan -->
         <li class="sidebar-item <?= ($active_menu == 'penerimaan') ? 'active' : ''; ?>">
             <a href="#penerimaanSubmenu" data-bs-toggle="collapse"

@@ -57,7 +57,7 @@
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="<?php echo site_url('gudang/stock/' . $warehouse['warehouse_id']); ?>"
+                                        <a href="<?php echo site_url('gudang_stok/stok/' . $warehouse['warehouse_id']); ?>"
                                             class="btn btn-success btn-sm">
                                             <i class="fas fa-boxes"></i>
                                         </a>

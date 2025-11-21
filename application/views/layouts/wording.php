@@ -125,6 +125,9 @@ $wording = [
     'user_role' => 'Role',
     'user_status' => 'Status',
 
+    //Stok 
+    'gudang_stok' => 'Stok Gudang',
+
     // Pengaturan
     'pengaturan' => 'Pengaturan',
     'pengaturan_list' => 'Daftar Pengaturan',

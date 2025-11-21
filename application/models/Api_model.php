@@ -91,6 +91,16 @@ class Api_model extends CI_Model
     // penerimaan supplier = 2
     // transfer antar gudang = 3
 
+    // --------- Stok ---------------
+    public function get_stock_all($data)
+    {
+        return api_request('GET', 'stok', $data);
+    }
+    public function get_stock_by_warehous($data)
+    {
+        return api_request('GET', 'stok', $data);
+    }
+
     // ---- Gudang ----
     public function get_gudang($data)
     {

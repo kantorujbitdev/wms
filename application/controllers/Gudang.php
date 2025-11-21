@@ -239,6 +239,6 @@ class Gudang extends MY_Controller
         $this->data['stock_items'] = $stock['success'] ? $stock['data'] : [];
 
         // Render view
-        $this->render_view('pages/gudang/stock');
+        $this->render_view('pages/gudang/stok');
     }
 }
