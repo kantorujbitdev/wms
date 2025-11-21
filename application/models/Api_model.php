@@ -86,6 +86,10 @@ class Api_model extends CI_Model
         return api_request('DELETE', 'Unit Type', $data);
     }
 
+    // api from_status
+    // pengiriman customer = 1
+    // penerimaan supplier = 2
+    // transfer antar gudang = 3
 
     // ---- Gudang ----
     public function get_gudang($data)
