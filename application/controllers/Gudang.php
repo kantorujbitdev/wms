@@ -203,15 +203,14 @@ class Gudang extends MY_Controller
 
     public function delete($id)
     {
-        // Get current user ID from session
-        $user_id = $this->session->userdata('user_id');
-
+        $data_warehouse = $this->Api_model->get_gudang_id(data_login_user());
         // Prepare data according to API format
         $data = data_login_user([
             'warehouse_id' => $id,
-            'user_id' => $user_id
         ]);
+        $data_warehouse = $this->Api_model->get_gudang_id($data);
 
+        $warehouse_type = $data_warehouse['data'][0]['warehouse_type'];
         $response = $this->Api_model->delete_gudang($data);
 
         if ($response['success']) {
@@ -219,8 +218,11 @@ class Gudang extends MY_Controller
         } else {
             $this->session->set_flashdata('error', 'Gagal menghapus gudang: ' . $response['message']);
         }
-
-        redirect('gudang');
+        if ($warehouse_type == 1) {
+            redirect('gudang/gudang_project');
+        } else {
+            redirect('gudang');
+        }
     }
 
     public function stock($id)
