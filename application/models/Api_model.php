@@ -101,6 +101,11 @@ class Api_model extends CI_Model
         return api_request('GET', 'stok', $data);
     }
 
+    public function add_stok($data)
+    {
+        return api_request('POST', 'stok', $data);
+    }
+
     // ---- Gudang ----
     public function get_gudang($data)
     {

@@ -143,36 +143,6 @@
             </ul>
         </li>
 
-
-        <!-- Transaksi Dropdown -->
-        <!-- <li class="sidebar-item <?= ($active_menu == 'transaksi') ? 'active' : ''; ?>">
-            <a href="#transaksiSubmenu" data-bs-toggle="collapse"
-                aria-expanded="<?= ($active_menu == 'transaksi') ? 'true' : 'false'; ?>"
-                class="sidebar-link dropdown-toggle">
-                <i class="fas fa-exchange-alt me-2"></i>
-                <span><?= $wording['transaksi']; ?></span>
-            </a>
-            <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'transaksi') ? 'show' : ''; ?>"
-                id="transaksiSubmenu">
-                <li><a href="<?= site_url('transaksi/masuk'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'masuk') ? 'active' : ''; ?>">
-                        <i class="fas fa-sign-in-alt me-2"></i><?= $wording['transaksi_masuk']; ?></a>
-                </li>
-                <li><a href="<?= site_url('transaksi/keluar'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'keluar') ? 'active' : ''; ?>">
-                        <i class="fas fa-sign-out-alt me-2"></i><?= $wording['transaksi_keluar']; ?></a>
-                </li>
-                <li><a href="<?= site_url('transaksi/transfer'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'transfer') ? 'active' : ''; ?>">
-                        <i class="fas fa-exchange-alt me-2"></i><?= $wording['transaksi_transfer']; ?></a>
-                </li>
-                <li><a href="<?= site_url('transaksi'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'riwayat') ? 'active' : ''; ?>">
-                        <i class="fas fa-history me-2"></i>Riwayat</a>
-                </li>
-            </ul>
-        </li> -->
-
         <!-- Laporan -->
         <li class="sidebar-item <?= ($active_menu == 'laporan') ? 'active' : ''; ?>">
             <a href="<?= site_url('laporan'); ?>" class="sidebar-link">

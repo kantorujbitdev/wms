@@ -74,16 +74,11 @@ class Gudang_stok extends MY_Controller
         $product_id = $this->input->post('product_id', true);
         $current_stock = $this->input->post('current_stock', true);
 
-        // Data login user
-        $user = data_login_user();
-
-        $payload = [
+        $payload = data_login_user([
             "warehouse_id" => $warehouse_id,
             "product_id" => $product_id,
-            "current_stock" => $current_stock,
-            "login_id" => $user['user_id'],
-            "login_name" => $user['username']
-        ];
+            "current_stock" => $current_stock
+        ]);
 
         $response = $this->Api_model->add_stok($payload);
 
@@ -93,7 +88,7 @@ class Gudang_stok extends MY_Controller
             $this->session->set_flashdata('error', 'Gagal menambah stok: ' . $response['message']);
         }
 
-        redirect('stok');
+        redirect('gudang_stok');
     }
 
 
