@@ -12,36 +12,89 @@ class Gudang_stok extends MY_Controller
     {
         // Set title
         $this->data['title'] = 'Stok Gudang';
-        $this->data['active_menu'] = 'stok gudang';
-        // $this->data['active_submenu'] = 'gudang_utama';
+        $this->data['active_menu'] = 'gudang_stok';
+
+        $warehouse_id = $this->session->userdata('warehouse_id');
         $data = data_login_user();
+
         // Get warehouses from API
         $response = $this->Api_model->get_gudang($data);
-        $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
-        $stok_response = $this->Api_model->get_stock_all($data);
+
+        // Get initial stock data
+        if ($warehouse_id == 0 || $warehouse_id == null) {
+            $stok_response = $this->Api_model->get_stock_all($data);
+            $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
+        } else {
+            $data_with_warehouse = data_login_user(['warehouse_id' => $warehouse_id]);
+            $stok_response = $this->Api_model->get_stock_all($data_with_warehouse);
+        }
+
         $this->data['stoks'] = $stok_response['success'] ? $stok_response['data'] : [];
 
         // Render view
         $this->render_view('pages/stok/index');
     }
 
-    public function stock($id)
+    public function get_stock_by_warehouse()
     {
-        // Set title
-        $this->data['title'] = 'Stok Gudang';
-        $this->data['active_menu'] = 'stok gudang';
-        // $this->data['active_submenu'] = 'gudang_utama';
-        $data = data_login_user([
-            'warehouse_id' => $id,
-        ]);
+        $warehouse_id = $this->input->post('warehouse_id');
 
-        // Get warehouses from API
-        $response = $this->Api_model->get_gudang($data);
-        $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
-        $stok_response = $this->Api_model->get_stock_by_warehous($data);
-        $this->data['stoks'] = $stok_response['success'] ? $stok_response['data'] : [];
+        if (empty($warehouse_id)) {
+            // Jika semua gudang dipilih
+            $data = data_login_user();
+            $response = $this->Api_model->get_stock_all($data);
+        } else {
+            // Jika gudang spesifik dipilih
+            $data = data_login_user(['warehouse_id' => $warehouse_id]);
+            $response = $this->Api_model->get_stock_by_warehous($data);
+        }
 
-        // Render view
-        $this->render_view('pages/stok/index');
+        echo json_encode($response);
     }
+
+    public function add()
+    {
+        $this->data['title'] = 'Tambah Stok';
+
+        // Ambil data warehouse & produk dari API
+        $data = data_login_user();
+
+        $warehouse = $this->Api_model->get_gudang($data);
+        $product = $this->Api_model->get_barang($data);
+
+        $this->data['warehouses'] = $warehouse['success'] ? $warehouse['data'] : [];
+        $this->data['products'] = $product['success'] ? $product['data'] : [];
+
+        $this->render_view('pages/stok/form');
+    }
+
+    public function store()
+    {
+        $warehouse_id = $this->input->post('warehouse_id', true);
+        $product_id = $this->input->post('product_id', true);
+        $current_stock = $this->input->post('current_stock', true);
+
+        // Data login user
+        $user = data_login_user();
+
+        $payload = [
+            "warehouse_id" => $warehouse_id,
+            "product_id" => $product_id,
+            "current_stock" => $current_stock,
+            "login_id" => $user['user_id'],
+            "login_name" => $user['username']
+        ];
+
+        $response = $this->Api_model->add_stok($payload);
+
+        if ($response['success']) {
+            $this->session->set_flashdata('success', 'Stok berhasil ditambahkan!');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menambah stok: ' . $response['message']);
+        }
+
+        redirect('stok');
+    }
+
+
 }

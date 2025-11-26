@@ -57,10 +57,7 @@
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="<?php echo site_url('gudang_stok/stok/' . $warehouse['warehouse_id']); ?>"
-                                            class="btn btn-success btn-sm">
-                                            <i class="fas fa-boxes"></i>
-                                        </a>
+
                                         <?php if (is_role(['superadmin', 'admin'])): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?php echo $warehouse['warehouse_id']; ?>"

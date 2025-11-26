@@ -18,7 +18,6 @@ $route['gudang'] = 'gudang';
 $route['gudang/(:num)'] = 'gudang/detail/$1';
 $route['gudang/(:num)/stok'] = 'gudang/stok/$1';
 $route['transaksi/masuk'] = 'transaksi/masuk';
-$route['gudang_stok/stok/(:num)'] = 'gudang_stok/stock/$1';
 $route['transaksi/keluar'] = 'transaksi/keluar';
 $route['transaksi/transfer'] = 'transaksi/transfer';
 $route['transaksi'] = 'transaksi';

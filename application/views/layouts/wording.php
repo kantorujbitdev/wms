@@ -126,7 +126,10 @@ $wording = [
     'user_status' => 'Status',
 
     //Stok 
+    'stok' => 'Stok Gudang',
     'gudang_stok' => 'Stok Gudang',
+    'stok_add' => 'Tambah Stok Gudang',
+    'stok_list' => 'Daftar Stok Gudang',
 
     // Pengaturan
     'pengaturan' => 'Pengaturan',
