@@ -1,10 +1,16 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Detail Penerimaan Barang</h1>
-        <a href="<?= site_url('penerimaan') ?>" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i>
-            Kembali
+        <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
+        <?php
+        $back_url = 'penerimaan/dari_supplier';
+        if ($active_submenu == 'pengguna')
+            $back_url = 'penerimaan/dari_pengguna';
+        elseif ($active_submenu == 'penerimaan_antar_gudang')
+            $back_url = 'penerimaan/antar_gudang';
+        ?>
+        <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
         </a>
     </div>
 
@@ -27,13 +33,25 @@
                                 <td><?= $penerimaan['stockin_date'] ?? '-' ?></td>
                             </tr>
                             <tr>
-                                <th>No Invoice</th>
+                                <th>No Referensi</th>
                                 <td><?= $penerimaan['stockin_invoice'] ?? '-' ?></td>
                             </tr>
-                            <tr>
-                                <th>Supplier</th>
-                                <td><?= $penerimaan['supplier_name'] ?? '-' ?></td>
-                            </tr>
+                            <?php if ($penerimaan['from_status'] == '1'): ?>
+                                <tr>
+                                    <th>Pengguna</th>
+                                    <td><?= $penerimaan['customer_name'] ?? '-' ?></td>
+                                </tr>
+                            <?php elseif ($penerimaan['from_status'] == '2'): ?>
+                                <tr>
+                                    <th>Supplier</th>
+                                    <td><?= $penerimaan['supplier_name'] ?? '-' ?></td>
+                                </tr>
+                            <?php elseif ($penerimaan['from_status'] == '3'): ?>
+                                <tr>
+                                    <th>Gudang Asal</th>
+                                    <td><?= $penerimaan['from_warehouse_name'] ?? '-' ?></td>
+                                </tr>
+                            <?php endif; ?>
                         </table>
                     </div>
                     <div class="col-md-6">
@@ -47,7 +65,15 @@
                                 <td>
                                     <?php
                                     $from_status = $penerimaan['from_status'] ?? '';
-                                    echo $from_status == '2' ? 'Supplier' : ($from_status == '1' ? 'Gudang Lain' : '-');
+                                    if ($from_status == '1') {
+                                        echo 'Dari Pengguna';
+                                    } elseif ($from_status == '2') {
+                                        echo 'Dari Supplier';
+                                    } elseif ($from_status == '3') {
+                                        echo 'Antar Gudang';
+                                    } else {
+                                        echo '-';
+                                    }
                                     ?>
                                 </td>
                             </tr>
