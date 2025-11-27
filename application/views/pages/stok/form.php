@@ -30,7 +30,7 @@ $session_warehouse_id = $this->session->userdata('warehouse_id');
                 <?php else: ?>
                     <input type="hidden" name="warehouse_id" value="<?= $session_warehouse_id ?>">
                     <div class="mb-3">
-                        <label class="form-label">Warehouse</label>
+                        <label class="form-label">Gudang</label>
                         <input type="text" class="form-control" value="<?= $this->session->userdata('warehouse_name'); ?>"
                             readonly style="background:#e9ecef;">
                     </div>
