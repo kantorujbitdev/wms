@@ -26,3 +26,13 @@ $route['user'] = 'user';
 $route['user/add'] = 'user/add';
 $route['user/edit/(:num)'] = 'user/edit/$1';
 $route['pengaturan'] = 'pengaturan';
+
+// Pengiriman Routes
+$route['pengiriman/antar_gudang'] = 'pengiriman/antar_gudang';
+$route['pengiriman/penggunaan'] = 'pengiriman/penggunaan';
+$route['pengiriman/add_antar_gudang'] = 'pengiriman/add_antar_gudang';
+$route['pengiriman/add_penggunaan'] = 'pengiriman/add_penggunaan';
+$route['pengiriman/create_antar_gudang'] = 'pengiriman/create_antar_gudang';
+$route['pengiriman/create_penggunaan'] = 'pengiriman/create_penggunaan';
+$route['pengiriman/detail/(:num)'] = 'pengiriman/detail/$1';
+$route['pengiriman/delete/(:num)'] = 'pengiriman/delete/$1';

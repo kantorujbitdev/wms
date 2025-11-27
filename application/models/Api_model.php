@@ -1,6 +1,11 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+// nilai from_status
+// pengiriman dari atau ke customer = 1
+// penerimaan dari atau ke supplier = 2
+// pengiriman dan pengiriman dari atau ke antar gudang = 3
+
 class Api_model extends CI_Model
 {
     public function __construct()
@@ -10,9 +15,40 @@ class Api_model extends CI_Model
 
     }
 
-    // ---------------------------------------------------------------------
-    // 🔹 Bagian berikut hanya pembungkus endpoint (lebih ringkas & DRY)
-    // ---------------------------------------------------------------------
+    public function get_penerimaan($data)
+    {
+        return api_request('GET', 'penerimaan', $data);
+    }
+    public function get_penerimaan_by_id($data)
+    {
+        return api_request('GET', 'penerimaan', $data);
+    }
+    public function add_penerimaan($data)
+    {
+        return api_request('POST', 'penerimaan', $data);
+    }
+    public function update_penerimaan($data)
+    {
+        return api_request('PUT', 'penerimaan', $data);
+    }
+
+
+    public function get_pengiriman($data)
+    {
+        return api_request('GET', 'pengiriman', $data);
+    }
+    public function get_pengiriman_by_id($data)
+    {
+        return api_request('GET', 'pengiriman', $data);
+    }
+    public function add_pengiriman($data)
+    {
+        return api_request('POST', 'pengiriman', $data);
+    }
+    public function update_pengiriman($data)
+    {
+        return api_request('PUT', 'pengiriman', $data);
+    }
 
     public function login($data)
     {
@@ -86,11 +122,6 @@ class Api_model extends CI_Model
         return api_request('DELETE', 'Unit Type', $data);
     }
 
-    // api from_status
-    // pengiriman customer = 1
-    // penerimaan supplier = 2
-    // transfer antar gudang = 3
-
     // --------- Stok ---------------
     public function get_stock_all($data)
     {
@@ -134,28 +165,6 @@ class Api_model extends CI_Model
     public function get_stok_gudang($id)
     {
         return api_request('GET', 'gudang', [], ['action' => 'stok', 'id' => $id]);
-    }
-
-    // ---- Transaksi ----
-    public function add_transaksi_masuk($data)
-    {
-        return api_request('POST', 'transaksi', $data, ['action' => 'masuk']);
-    }
-    public function add_transaksi_keluar($data)
-    {
-        return api_request('POST', 'transaksi', $data, ['action' => 'keluar']);
-    }
-    public function add_transfer_stok($data)
-    {
-        return api_request('POST', 'transaksi', $data, ['action' => 'transfer']);
-    }
-    public function get_transaksi($params = [])
-    {
-        return api_request('GET', 'transaksi', [], $params);
-    }
-    public function delete_transaksi($id)
-    {
-        return api_request('DELETE', 'transaksi', [], ['id' => $id]);
     }
 
     // ---- Laporan ----

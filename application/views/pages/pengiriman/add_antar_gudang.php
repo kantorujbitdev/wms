@@ -1,9 +1,8 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-        <a href="<?= $from_status == '1' ? site_url('penerimaan/antar_gudang') : site_url('penerimaan/from_supplier') ?>"
-            class="btn btn-secondary btn-sm">
+        <h1 class="h3 mb-0 text-gray-800">Tambah Pengiriman Antar Gudang</h1>
+        <a href="<?= site_url('pengiriman/antar_gudang') ?>" class="btn btn-secondary btn-sm">
             <i class="fas fa-arrow-left fa-sm text-white-50"></i>
             Kembali
         </a>
@@ -12,76 +11,34 @@
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Form <?= $title ?></h6>
+            <h6 class="m-0 font-weight-bold text-primary">Form Pengiriman Antar Gudang</h6>
         </div>
         <div class="card-body">
-            <form id="penerimaanForm" action="<?= site_url('penerimaan/create') ?>" method="POST">
-                <input type="hidden" name="from_status" value="<?= $from_status ?>">
-
+            <form id="pengirimanForm" action="<?= site_url('pengiriman/create_antar_gudang') ?>" method="POST">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="stockin_date">Tanggal Penerimaan *</label>
-                            <input type="date" class="form-control" id="stockin_date" name="stockin_date"
+                            <label for="stockout_date">Tanggal Pengiriman *</label>
+                            <input type="date" class="form-control" id="stockout_date" name="stockout_date"
                                 value="<?= date('Y-m-d') ?>" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="stockin_code">Kode Penerimaan *</label>
-                            <input type="text" class="form-control" id="stockin_code" name="stockin_code"
-                                value="<?= $from_status == '1' ? 'TRF/IN/' . date('m/Y') : 'RI/INV/' . date('m/Y') ?>"
-                                required>
+                            <label for="stockout_code">Kode Pengiriman *</label>
+                            <input type="text" class="form-control" id="stockout_code" name="stockout_code"
+                                value="TRF/OUT/<?= date('m/Y') ?>" required>
                         </div>
                     </div>
                 </div>
 
-                <?php if ($from_status == '2'): ?>
-                    <!-- Form untuk Supplier -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="supplier_id">Supplier *</label>
-                                <select class="form-control select2" id="supplier_id" name="supplier_id" required>
-                                    <option value="">Pilih Supplier</option>
-                                    <?php foreach ($suppliers as $supplier): ?>
-                                        <option value="<?= $supplier['supplier_id'] ?>">
-                                            <?= $supplier['supplier_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Invoice *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    placeholder="Masukkan nomor invoice" required>
-                            </div>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <!-- Form untuk Antar Gudang -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    placeholder="Masukkan nomor referensi transfer" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <!-- Kosong untuk alignment -->
-                        </div>
-                    </div>
-                <?php endif; ?>
-
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="warehouse_id">Gudang Tujuan *</label>
-                            <select class="form-control select2" id="warehouse_id" name="warehouse_id" required>
-                                <option value="">Pilih Gudang</option>
+                            <label for="from_warehouse_id">Gudang Asal *</label>
+                            <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id"
+                                required>
+                                <option value="">Pilih Gudang Asal</option>
                                 <?php foreach ($warehouses as $warehouse): ?>
                                     <option value="<?= $warehouse['warehouse_id'] ?>">
                                         <?= $warehouse['warehouse_name'] ?>
@@ -92,11 +49,25 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="from_status">Tipe Penerimaan</label>
-                            <input type="text" class="form-control"
-                                value="<?= $from_status == '1' ? 'Antar Gudang' : 'Dari Supplier' ?>" readonly>
-                            <small class="form-text text-muted">Tipe penerimaan sudah ditentukan berdasarkan
-                                menu</small>
+                            <label for="to_warehouse_id">Gudang Tujuan *</label>
+                            <select class="form-control select2" id="to_warehouse_id" name="to_warehouse_id" required>
+                                <option value="">Pilih Gudang Tujuan</option>
+                                <?php foreach ($warehouses as $warehouse): ?>
+                                    <option value="<?= $warehouse['warehouse_id'] ?>">
+                                        <?= $warehouse['warehouse_name'] ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="stockout_reference">No Referensi *</label>
+                            <input type="text" class="form-control" id="stockout_reference" name="stockout_reference"
+                                placeholder="Masukkan nomor referensi" required>
                         </div>
                     </div>
                 </div>
@@ -114,7 +85,6 @@
                 </div>
 
                 <div id="itemsContainer">
-                    <!-- Items will be added dynamically here -->
                     <div class="item-row row mb-3">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -122,12 +92,8 @@
                                 <select class="form-control select2 product-select" name="product_id[]" required>
                                     <option value="">Pilih Produk</option>
                                     <?php foreach ($products as $product): ?>
-                                        <option value="<?= $product['stock_id'] ?>"
-                                            data-product-name="<?= $product['product_name'] ?>"
-                                            data-type-name="<?= $product['type_name'] ?>">
-                                            <!-- SESUAIKAN: product_code dan product_name -->
-                                            <?= $product['product_code'] ?? $product['kode'] ?> -
-                                            <?= $product['product_name'] ?? $product['nama'] ?>
+                                        <option value="<?= $product['stock_id'] ?>">
+                                            <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -162,10 +128,9 @@
                 <div class="row">
                     <div class="col-12 text-right">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Simpan Penerimaan
+                            <i class="fas fa-save"></i> Simpan Pengiriman
                         </button>
-                        <a href="<?= $from_status == '1' ? site_url('penerimaan/antar_gudang') : site_url('penerimaan/from_supplier') ?>"
-                            class="btn btn-secondary">
+                        <a href="<?= site_url('pengiriman/antar_gudang') ?>" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Batal
                         </a>
                     </div>
@@ -193,9 +158,7 @@
                         <select class="form-control select2 product-select" name="product_id[]" required>
                             <option value="">Pilih Produk</option>
                             <?php foreach ($products as $product): ?>
-                                <option value="<?= $product['stock_id'] ?>" 
-                                        data-product-name="<?= $product['product_name'] ?>"
-                                        data-type-name="<?= $product['type_name'] ?>">
+                                <option value="<?= $product['stock_id'] ?>">
                                     <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
                                 </option>
                             <?php endforeach; ?>
@@ -249,7 +212,7 @@
         });
 
         // Form validation
-        $('#penerimaanForm').submit(function (e) {
+        $('#pengirimanForm').submit(function (e) {
             let valid = true;
 
             // Check if at least one item has product selected
@@ -262,6 +225,15 @@
 
             if (!hasItems) {
                 alert('Minimal satu barang harus ditambahkan');
+                valid = false;
+            }
+
+            // Check if from and to warehouse are different
+            const fromWarehouse = $('#from_warehouse_id').val();
+            const toWarehouse = $('#to_warehouse_id').val();
+
+            if (fromWarehouse && toWarehouse && fromWarehouse === toWarehouse) {
+                alert('Gudang asal dan gudang tujuan tidak boleh sama');
                 valid = false;
             }
 

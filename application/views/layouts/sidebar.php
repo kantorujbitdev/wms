@@ -93,20 +93,26 @@
             </a>
             <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'penerimaan') ? 'show' : ''; ?>"
                 id="penerimaanSubmenu">
-
                 <li>
                     <a href="<?= site_url('penerimaan/antar_gudang'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'antar_gudang') ? 'active' : ''; ?>">
+                        class="sidebar-sublink <?= ($active_submenu == 'penerimaan_antar_gudang') ? 'active' : ''; ?>">
                         <i class="fas fa-right-left me-2"></i>
                         <span>Antar Gudang</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="<?= site_url('penerimaan/from_supplier'); ?>"
+                    <a href="<?= site_url('penerimaan/dari_supplier'); ?>"
                         class="sidebar-sublink <?= ($active_submenu == 'supplier') ? 'active' : ''; ?>">
                         <i class="fas fa-truck-ramp-box me-2"></i>
                         <span>Supplier</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= site_url('penerimaan/dari_pengguna'); ?>"
+                        class="sidebar-sublink <?= ($active_submenu == 'pengguna') ? 'active' : ''; ?>">
+                        <i class="fas fa-users me-2"></i>
+                        <span>Pengguna</span>
                     </a>
                 </li>
 
@@ -126,7 +132,7 @@
 
                 <li>
                     <a href="<?= site_url('pengiriman/antar_gudang'); ?>"
-                        class="sidebar-sublink <?= ($active_submenu == 'antar_gudang') ? 'active' : ''; ?>">
+                        class="sidebar-sublink <?= ($active_submenu == 'pengiriman_antar_gudang') ? 'active' : ''; ?>">
                         <i class="fas fa-right-left me-2"></i>
                         <span>Antar Gudang</span>
                     </a>
@@ -135,8 +141,8 @@
                 <li>
                     <a href="<?= site_url('pengiriman/penggunaan'); ?>"
                         class="sidebar-sublink <?= ($active_submenu == 'penggunaan') ? 'active' : ''; ?>">
-                        <i class="fas fa-dolly me-2"></i>
-                        <span>Penggunaan</span>
+                        <i class="fas fa-users me-2"></i>
+                        <span>Pengguna</span>
                     </a>
                 </li>
 

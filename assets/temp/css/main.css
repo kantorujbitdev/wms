@@ -663,3 +663,16 @@ table.dataTable thead th {
 	text-align: center !important;
 	vertical-align: middle !important;
 }
+/* Rapikan dropdown "Tampilkan 10" pada DataTables */
+.dataTables_length select {
+	padding-right: 2rem !important;
+	padding-left: 0.5rem !important;
+	padding-top: 0.25rem !important;
+	padding-bottom: 0.25rem !important;
+	border-radius: 6px !important;
+}
+
+/* Selaraskan tinggi */
+.dataTables_length .form-select {
+	line-height: 1.4;
+}

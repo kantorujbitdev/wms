@@ -1,8 +1,8 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $wording['penerimaan']; ?></h1>
-        <a href="<?= site_url('penerimaan/add') ?>" class="btn btn-primary btn-sm">
+        <h1 class="h3 mb-0 text-gray-800">Penerimaan Antar Gudang</h1>
+        <a href="<?= site_url('penerimaan/add_antar_gudang') ?>" class="btn btn-primary btn-sm">
             <i class="fas fa-plus fa-sm text-white-50"></i>
             Tambah Penerimaan
         </a>
@@ -11,7 +11,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Penerimaan Barang</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Penerimaan Antar Gudang</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -21,9 +21,8 @@
                             <th>No</th>
                             <th>Kode Penerimaan</th>
                             <th>Tanggal</th>
-                            <th>No Invoice</th>
-                            <th>Supplier</th>
-                            <th>Gudang</th>
+                            <th>Gudang Asal</th>
+                            <th>Gudang Tujuan</th>
                             <th>Total Items</th>
                             <th>Aksi</th>
                         </tr>
@@ -36,8 +35,7 @@
                                     <td class="text-center"><?= $no++; ?></td>
                                     <td><?= $penerimaan['stockin_code'] ?? '-'; ?></td>
                                     <td><?= $penerimaan['stockin_date'] ?? '-'; ?></td>
-                                    <td><?= $penerimaan['stockin_invoice'] ?? '-'; ?></td>
-                                    <td><?= $penerimaan['supplier_name'] ?? '-'; ?></td>
+                                    <td><?= $penerimaan['from_warehouse_name'] ?? 'Gudang Asal'; ?></td>
                                     <td><?= $penerimaan['warehouse_name'] ?? '-'; ?></td>
                                     <td class="text-center"><?= $penerimaan['total_items'] ?? '0'; ?></td>
                                     <td class="text-center">
@@ -58,7 +56,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="text-center">Tidak ada data penerimaan</td>
+                                <td colspan="7" class="text-center">Tidak ada data penerimaan antar gudang</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

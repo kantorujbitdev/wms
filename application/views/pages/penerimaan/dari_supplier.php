@@ -1,8 +1,8 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $wording['penerimaan']; ?></h1>
-        <a href="<?= site_url('penerimaan/add') ?>" class="btn btn-primary btn-sm">
+        <h1 class="h3 mb-0 text-gray-800">Penerimaan dari Supplier</h1>
+        <a href="<?= site_url('penerimaan/add_supplier') ?>" class="btn btn-primary btn-sm">
             <i class="fas fa-plus fa-sm text-white-50"></i>
             Tambah Penerimaan
         </a>
@@ -11,7 +11,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Penerimaan Barang</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Penerimaan dari Supplier</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -58,7 +58,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="text-center">Tidak ada data penerimaan</td>
+                                <td colspan="8" class="text-center">Tidak ada data penerimaan dari supplier</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
