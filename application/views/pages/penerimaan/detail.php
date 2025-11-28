@@ -38,17 +38,17 @@
                             </tr>
                             <?php if ($penerimaan['from_status'] == '1'): ?>
                                 <tr>
-                                    <th>Pengguna</th>
+                                    <th>Dari Pengguna</th>
                                     <td><?= $penerimaan['customer_name'] ?? '-' ?></td>
                                 </tr>
                             <?php elseif ($penerimaan['from_status'] == '2'): ?>
                                 <tr>
-                                    <th>Supplier</th>
+                                    <th>Dari Supplier</th>
                                     <td><?= $penerimaan['supplier_name'] ?? '-' ?></td>
                                 </tr>
                             <?php elseif ($penerimaan['from_status'] == '3'): ?>
                                 <tr>
-                                    <th>Gudang Asal</th>
+                                    <th>Dari Gudang</th>
                                     <td><?= $penerimaan['from_warehouse_name'] ?? '-' ?></td>
                                 </tr>
                             <?php endif; ?>
@@ -57,11 +57,11 @@
                     <div class="col-md-6">
                         <table class="table table-bordered">
                             <tr>
-                                <th width="40%">Gudang Tujuan</th>
-                                <td><?= $penerimaan['warehouse_name'] ?? '-' ?></td>
+                                <th width="40%">Ke Gudang</th>
+                                <td><?= $penerimaan['to_warehouse_name'] ?? '-' ?></td>
                             </tr>
                             <tr>
-                                <th>Status Asal</th>
+                                <th>Tipe Penerimaan</th>
                                 <td>
                                     <?php
                                     $from_status = $penerimaan['from_status'] ?? '';
@@ -76,6 +76,10 @@
                                     }
                                     ?>
                                 </td>
+                            </tr>
+                            <tr>
+                                <th>Keterangan</th>
+                                <td><?= $penerimaan['stockin_note'] ?? '-' ?></td>
                             </tr>
                             <tr>
                                 <th>Dibuat Oleh</th>
@@ -102,7 +106,7 @@
                                 <th>Nama Produk</th>
                                 <th>Tipe</th>
                                 <th>Qty</th>
-                                <th>Keterangan</th>
+                                <th>Keterangan Barang</th>
                             </tr>
                         </thead>
                         <tbody>

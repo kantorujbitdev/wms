@@ -122,29 +122,33 @@ class Penerimaan extends MY_Controller
         if ($_POST) {
             $data_login = data_login_user();
 
+            // Ambil warehouse_id dari session user
+            $warehouse_id_session = $this->session->userdata('warehouse_id');
+
             $post_data = [
                 'stockin_date' => $this->input->post('stockin_date'),
                 'stockin_code' => $this->input->post('stockin_code'),
                 'stockin_invoice' => $this->input->post('stockin_invoice'),
-                'warehouse_id' => $this->input->post('warehouse_id'),
+                'stockin_note' => $this->input->post('stockin_note'),
+                'to_warehouse_id' => $warehouse_id_session, // Ambil dari session
                 'from_status' => $this->input->post('from_status'),
                 'login_id' => $data_login['login_id'],
                 'login_name' => $data_login['login_name'],
                 'items' => []
             ];
 
-            // Tambahkan field berdasarkan tipe
+            // Tambahkan from_id berdasarkan tipe
             $from_status = $this->input->post('from_status');
             if ($from_status == '1') {
-                $post_data['customer_id'] = $this->input->post('customer_id');
+                $post_data['from_id'] = $this->input->post('customer_id'); // dari pengguna
             } elseif ($from_status == '2') {
-                $post_data['supplier_id'] = $this->input->post('supplier_id');
+                $post_data['from_id'] = $this->input->post('supplier_id'); // dari supplier
             } elseif ($from_status == '3') {
-                $post_data['from_warehouse_id'] = $this->input->post('from_warehouse_id');
+                $post_data['from_id'] = $this->input->post('from_warehouse_id'); // dari gudang lain
             }
 
             // Prepare items data
-            $product_ids = $this->input->post('product_id');
+            $product_ids = $this->input->post('stock_id');
             $qtys = $this->input->post('qty');
             $notes = $this->input->post('detail_note');
 
@@ -154,9 +158,7 @@ class Penerimaan extends MY_Controller
                         $post_data['items'][] = [
                             'stock_id' => $product_id,
                             'qty' => (float) $qtys[$index],
-                            'detail_note' => $notes[$index] ?? '',
-                            'warehouse_id' => $post_data['warehouse_id'],
-                            'login_id' => $data_login['login_id']
+                            'detail_note' => $notes[$index] ?? ''
                         ];
                     }
                 }
@@ -190,6 +192,7 @@ class Penerimaan extends MY_Controller
             }
         }
     }
+
 
     // ==================== DETAIL PENERIMAAN ====================
     public function detail($id)

@@ -21,10 +21,11 @@
                             <th>No</th>
                             <th>Kode Penerimaan</th>
                             <th>Tanggal</th>
+                            <th>Dari Supplier</th>
+                            <th>Ke Gudang</th>
                             <th>No Invoice</th>
-                            <th>Supplier</th>
-                            <th>Gudang</th>
-                            <th>Total Items</th>
+                            <th>Keterangan</th>
+                            <th>Dibuat</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -36,10 +37,11 @@
                                     <td class="text-center"><?= $no++; ?></td>
                                     <td><?= $penerimaan['stockin_code'] ?? '-'; ?></td>
                                     <td><?= $penerimaan['stockin_date'] ?? '-'; ?></td>
-                                    <td><?= $penerimaan['stockin_invoice'] ?? '-'; ?></td>
-                                    <td><?= $penerimaan['supplier_name'] ?? '-'; ?></td>
+                                    <td><?= $penerimaan['from_name'] ?? '-'; ?></td>
                                     <td><?= $penerimaan['warehouse_name'] ?? '-'; ?></td>
-                                    <td class="text-center"><?= $penerimaan['total_items'] ?? '0'; ?></td>
+                                    <td><?= $penerimaan['stockin_invoice'] ?? '-'; ?></td>
+                                    <td><?= $penerimaan['stockin_note'] ?? '-'; ?></td>
+                                    <td><?= $penerimaan['createby_name'] ?? '-'; ?></td>
                                     <td class="text-center">
                                         <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
                                             class="btn btn-info btn-sm" title="Detail">
@@ -58,7 +60,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="text-center">Tidak ada data penerimaan dari supplier</td>
+                                <td colspan="9" class="text-center">Tidak ada data penerimaan dari supplier</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
