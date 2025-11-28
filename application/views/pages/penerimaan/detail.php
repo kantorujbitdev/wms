@@ -20,36 +20,40 @@
             <h6 class="m-0 font-weight-bold text-primary">Informasi Penerimaan</h6>
         </div>
         <div class="card-body">
-            <?php if (isset($penerimaan)): ?>
+            <?php if (isset($penerimaan) && isset($penerimaan['header'])): ?>
+                <?php
+                $header = $penerimaan['header'];
+                $detail = $penerimaan['detail'] ?? [];
+                ?>
                 <div class="row">
                     <div class="col-md-6">
                         <table class="table table-bordered">
                             <tr>
                                 <th width="40%">Kode Penerimaan</th>
-                                <td><?= $penerimaan['stockin_code'] ?? '-' ?></td>
+                                <td><?= $header['stockin_code'] ?? '-' ?></td>
                             </tr>
                             <tr>
                                 <th>Tanggal</th>
-                                <td><?= $penerimaan['stockin_date'] ?? '-' ?></td>
+                                <td><?= $header['stockin_date'] ?? '-' ?></td>
                             </tr>
                             <tr>
-                                <th>No Referensi</th>
-                                <td><?= $penerimaan['stockin_invoice'] ?? '-' ?></td>
+                                <th>No Invoice/Referensi</th>
+                                <td><?= $header['stockin_invoice'] ?? '-' ?></td>
                             </tr>
-                            <?php if ($penerimaan['from_status'] == '1'): ?>
+                            <?php if ($header['from_Status'] == '1'): ?>
                                 <tr>
                                     <th>Dari Pengguna</th>
-                                    <td><?= $penerimaan['customer_name'] ?? '-' ?></td>
+                                    <td><?= $header['from_name'] ?? '-' ?></td>
                                 </tr>
-                            <?php elseif ($penerimaan['from_status'] == '2'): ?>
+                            <?php elseif ($header['from_Status'] == '2'): ?>
                                 <tr>
                                     <th>Dari Supplier</th>
-                                    <td><?= $penerimaan['supplier_name'] ?? '-' ?></td>
+                                    <td><?= $header['from_name'] ?? '-' ?></td>
                                 </tr>
-                            <?php elseif ($penerimaan['from_status'] == '3'): ?>
+                            <?php elseif ($header['from_Status'] == '3'): ?>
                                 <tr>
                                     <th>Dari Gudang</th>
-                                    <td><?= $penerimaan['from_warehouse_name'] ?? '-' ?></td>
+                                    <td><?= $header['from_name'] ?? '-' ?></td>
                                 </tr>
                             <?php endif; ?>
                         </table>
@@ -58,13 +62,13 @@
                         <table class="table table-bordered">
                             <tr>
                                 <th width="40%">Ke Gudang</th>
-                                <td><?= $penerimaan['to_warehouse_name'] ?? '-' ?></td>
+                                <td><?= $header['warehouse_name'] ?? '-' ?></td>
                             </tr>
                             <tr>
                                 <th>Tipe Penerimaan</th>
                                 <td>
                                     <?php
-                                    $from_status = $penerimaan['from_status'] ?? '';
+                                    $from_status = $header['from_Status'] ?? '';
                                     if ($from_status == '1') {
                                         echo 'Dari Pengguna';
                                     } elseif ($from_status == '2') {
@@ -79,15 +83,15 @@
                             </tr>
                             <tr>
                                 <th>Keterangan</th>
-                                <td><?= $penerimaan['stockin_note'] ?? '-' ?></td>
+                                <td><?= $header['stockin_note'] ?? '-' ?></td>
                             </tr>
                             <tr>
                                 <th>Dibuat Oleh</th>
-                                <td><?= $penerimaan['login_name'] ?? '-' ?></td>
+                                <td><?= $header['createby_name'] ?? '-' ?></td>
                             </tr>
                             <tr>
                                 <th>Total Items</th>
-                                <td><?= $penerimaan['total_items'] ?? '0' ?></td>
+                                <td><?= count($detail) ?></td>
                             </tr>
                         </table>
                     </div>
@@ -104,30 +108,43 @@
                                 <th>No</th>
                                 <th>Kode Produk</th>
                                 <th>Nama Produk</th>
-                                <th>Tipe</th>
-                                <th>Qty</th>
+                                <th>Satuan</th>
+                                <th>Qty Diterima</th>
+                                <th>Stok Saat Ini</th>
                                 <th>Keterangan Barang</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($penerimaan['items'])): ?>
+                            <?php if (!empty($detail)): ?>
                                 <?php $no = 1;
-                                foreach ($penerimaan['items'] as $item): ?>
+                                foreach ($detail as $item): ?>
                                     <tr>
                                         <td class="text-center"><?= $no++; ?></td>
-                                        <td><?= $item['product_code'] ?? '-' ?></td>
+                                        <td><?= $item['product_id'] ?? '-' ?></td>
                                         <td><?= $item['product_name'] ?? '-' ?></td>
-                                        <td><?= $item['type_name'] ?? '-' ?></td>
-                                        <td class="text-right"><?= $item['qty'] ?? '0' ?></td>
+                                        <td class="text-center"><?= $item['unit_code'] ?? '-' ?></td>
+                                        <td class="text-right"><?= number_format($item['qty'] ?? 0, 2) ?></td>
+                                        <td class="text-right"><?= number_format($item['current_stock'] ?? 0, 2) ?></td>
                                         <td><?= $item['detail_note'] ?? '-' ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" class="text-center">Tidak ada data barang</td>
+                                    <td colspan="7" class="text-center">Tidak ada data barang</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
+                        <?php if (!empty($detail)): ?>
+                            <tfoot>
+                                <tr class="font-weight-bold">
+                                    <td colspan="4" class="text-right">Total:</td>
+                                    <td class="text-right">
+                                        <?= number_format(array_sum(array_column($detail, 'qty')), 2) ?>
+                                    </td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        <?php endif; ?>
                     </table>
                 </div>
             <?php else: ?>

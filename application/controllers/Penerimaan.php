@@ -148,7 +148,7 @@ class Penerimaan extends MY_Controller
             }
 
             // Prepare items data
-            $product_ids = $this->input->post('stock_id');
+            $product_ids = $this->input->post('product_id');
             $qtys = $this->input->post('qty');
             $notes = $this->input->post('detail_note');
 
@@ -193,7 +193,6 @@ class Penerimaan extends MY_Controller
         }
     }
 
-
     // ==================== DETAIL PENERIMAAN ====================
     public function detail($id)
     {
@@ -201,17 +200,26 @@ class Penerimaan extends MY_Controller
         $this->data['active_menu'] = 'penerimaan';
 
         $data_login = data_login_user(['stockin_id' => $id]);
-        $response = $this->Api_model->get_penerimaan_by_id($data_login);
+        $response = $this->Api_model->penerimaan_by_id($data_login);
 
-        if ($response['success'] && !empty($response['data'])) {
-            $penerimaan = $response['data'][0];
+        // Periksa struktur response API
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Format data untuk view
+            $penerimaan = [
+                'header' => $header,
+                'detail' => $detail
+            ];
+
             $this->data['penerimaan'] = $penerimaan;
 
-            // Set active submenu berdasarkan from_status
-            if ($penerimaan['from_status'] == '1') {
+            // Set active submenu dan title berdasarkan from_status
+            if ($header['from_Status'] == '1') {
                 $this->data['active_submenu'] = 'pengguna';
                 $this->data['title'] = 'Detail Penerimaan dari Pengguna';
-            } elseif ($penerimaan['from_status'] == '2') {
+            } elseif ($header['from_Status'] == '2') {
                 $this->data['active_submenu'] = 'supplier';
                 $this->data['title'] = 'Detail Penerimaan dari Supplier';
             } else {
@@ -219,12 +227,28 @@ class Penerimaan extends MY_Controller
                 $this->data['title'] = 'Detail Penerimaan Antar Gudang';
             }
         } else {
+            // Jika header false atau tidak ada data
             $this->session->set_flashdata('error', 'Data penerimaan tidak ditemukan');
-            redirect('penerimaan/dari_supplier');
+            $this->redirect_back();
         }
+
 
         $this->render_view('pages/penerimaan/detail');
     }
+
+    // Helper function untuk redirect back
+    private function redirect_back()
+    {
+        $referer = $this->input->server('HTTP_REFERER');
+        if (strpos($referer, 'pengguna') !== false) {
+            redirect('penerimaan/dari_pengguna');
+        } elseif (strpos($referer, 'supplier') !== false) {
+            redirect('penerimaan/dari_supplier');
+        } else {
+            redirect('penerimaan/antar_gudang');
+        }
+    }
+
 
     // ==================== DELETE PENERIMAAN ====================
     public function delete($id)

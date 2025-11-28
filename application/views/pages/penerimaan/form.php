@@ -186,7 +186,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Produk *</label>
-                                <select class="form-control select2" name="stock_id[]" required>
+                                <select class="form-control select2" name="product_id[]" required>
                                     <option value="">Pilih Produk</option>
                                     <?php foreach ($products as $product): ?>
                                         <option value="<?= $product['product_id'] ?>">
@@ -239,8 +239,6 @@
 
 <script>
     $(document).ready(function () {
-        $('.select2').select2({ width: '100%', theme: 'bootstrap4' });
-
         // Prevent future date selection
         $('#stockin_date').on('change', function () {
             const selectedDate = new Date(this.value);
@@ -265,10 +263,10 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Produk *</label>
-                        <select class="form-control select2" name="stock_id[]" required>
+                        <select class="form-control select2" name="product_id[]" required>
                             <option value="">Pilih Produk</option>
                             <?php foreach ($products as $product): ?>
-                                <option value="<?= $product['stock_id'] ?>">
+                                <option value="<?= $product['product_id'] ?>">
                                     <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
                                 </option>
                             <?php endforeach; ?>
@@ -298,7 +296,7 @@
             </div>
         `;
             $('#itemsContainer').append(newRow);
-            $('#itemsContainer .item-row:last .select2').select2({ width: '100%', theme: 'bootstrap4' });
+
             $('.remove-item').prop('disabled', false);
         });
 
@@ -318,7 +316,7 @@
 
             // Check if at least one item has product selected
             let hasItems = false;
-            $('select[name="stock_id[]"]').each(function () {
+            $('select[name="product_id[]"]').each(function () {
                 if ($(this).val()) hasItems = true;
             });
 

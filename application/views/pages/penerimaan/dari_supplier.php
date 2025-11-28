@@ -21,7 +21,7 @@
                             <th>No</th>
                             <th>Kode Penerimaan</th>
                             <th>Tanggal</th>
-                            <th>Dari Supplier</th>
+                            <th>Dari</th>
                             <th>Ke Gudang</th>
                             <th>No Invoice</th>
                             <th>Keterangan</th>

@@ -21,7 +21,7 @@
                             <th>No</th>
                             <th>Kode Penerimaan</th>
                             <th>Tanggal</th>
-                            <th>Dari Gudang</th>
+                            <th>Dari</th>
                             <th>Ke Gudang</th>
                             <th>No Referensi</th>
                             <th>Keterangan</th>
