@@ -6,10 +6,12 @@ class Gudang extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->check_permission('gudang', 'view');
     }
 
     public function index()
     {
+        $this->check_permission('gudang_utama', 'view');
         // Set title
         $this->data['title'] = 'Gudang';
         $this->data['active_menu'] = 'gudang';
@@ -25,6 +27,7 @@ class Gudang extends MY_Controller
 
     public function gudang_project()
     {
+        $this->check_permission('gudang_project', 'view');
         // Set title
         $this->data['title'] = 'Gudang Project';
         $this->data['active_menu'] = 'gudang';
@@ -41,6 +44,7 @@ class Gudang extends MY_Controller
 
     public function add_gudang_project()
     {
+        $this->check_permission('gudang_project', 'edit');
         // Set title
         $this->data['title'] = 'Tambah Gudang Project';
         $this->data['active_menu'] = 'gudang';
@@ -52,6 +56,7 @@ class Gudang extends MY_Controller
 
     public function add()
     {
+        $this->check_permission('gudang', 'edit');
         // Set title
         $this->data['title'] = 'Tambah Gudang';
         $this->data['active_menu'] = 'gudang';
@@ -63,6 +68,7 @@ class Gudang extends MY_Controller
 
     public function edit($id)
     {
+        $this->check_permission('gudang', 'edit');
         // Set title
         $this->data['title'] = 'Edit Gudang';
         $this->data['active_menu'] = 'gudang';
@@ -84,6 +90,7 @@ class Gudang extends MY_Controller
 
     public function edit_gudang_project($id)
     {
+        $this->check_permission('gudang_project', 'edit');
         // Set title
         $this->data['title'] = 'Edit Gudang Project';
         $this->data['active_menu'] = 'gudang';
@@ -203,6 +210,7 @@ class Gudang extends MY_Controller
 
     public function delete($id)
     {
+        $this->check_permission('gudang', 'delete');
         $data_warehouse = $this->Api_model->get_gudang_id(data_login_user());
         // Prepare data according to API format
         $data = data_login_user([
@@ -225,20 +233,20 @@ class Gudang extends MY_Controller
         }
     }
 
-    public function stock($id)
-    {
-        // Set title
-        $this->data['title'] = 'Stok Gudang';
+    // public function stock($id)
+    // {
+    //     // Set title
+    //     $this->data['title'] = 'Stok Gudang';
 
-        // Get warehouse data from API
-        $warehouse = $this->Api_model->get_gudang(['id' => $id]);
-        $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
+    //     // Get warehouse data from API
+    //     $warehouse = $this->Api_model->get_gudang(['id' => $id]);
+    //     $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
 
-        // Get stock data from API
-        $stock = $this->Api_model->get_stok_gudang($id);
-        $this->data['stock_items'] = $stock['success'] ? $stock['data'] : [];
+    //     // Get stock data from API
+    //     $stock = $this->Api_model->get_stok_gudang($id);
+    //     $this->data['stock_items'] = $stock['success'] ? $stock['data'] : [];
 
-        // Render view
-        $this->render_view('pages/gudang/stok');
-    }
+    //     // Render view
+    //     $this->render_view('pages/gudang/stok');
+    // }
 }

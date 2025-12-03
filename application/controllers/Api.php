@@ -7,6 +7,7 @@ class Api extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Data_api_model', 'data_api_model');
+        $this->check_permission('api_pengaturan', 'view');
     }
 
     public function index()
@@ -20,6 +21,7 @@ class Api extends MY_Controller
 
     public function add()
     {
+        $this->check_permission('api_pengaturan', 'edit');
         if ($this->input->post()) {
             $data = [
                 'nama_api' => $this->input->post('nama_api'),
@@ -38,6 +40,7 @@ class Api extends MY_Controller
 
     public function edit($id)
     {
+        $this->check_permission('api_pengaturan', 'edit');
         $api = $this->data_api_model->get_by_id($id);
         if (!$api) {
             show_404();
@@ -63,6 +66,7 @@ class Api extends MY_Controller
 
     public function delete($id)
     {
+        $this->check_permission('api_pengaturan', 'delete');
         $this->data_api_model->delete($id);
         $this->session->set_flashdata('success', 'API berhasil dihapus');
         redirect('api');

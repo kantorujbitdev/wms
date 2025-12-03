@@ -6,10 +6,12 @@ class Laporan extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->check_permission('laporan', 'view');
     }
 
     public function index()
     {
+        $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'Laporan';
 
@@ -19,6 +21,7 @@ class Laporan extends MY_Controller
 
     public function stok()
     {
+        $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'Laporan Stok';
 
@@ -47,6 +50,7 @@ class Laporan extends MY_Controller
 
     public function masuk()
     {
+        $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'Laporan Barang Masuk';
 
@@ -76,6 +80,7 @@ class Laporan extends MY_Controller
 
     public function keluar()
     {
+        $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'Laporan Barang Keluar';
 

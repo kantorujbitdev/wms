@@ -28,7 +28,8 @@
                         <div class="form-group">
                             <label for="stockin_date">Tanggal Penerimaan *</label>
                             <input type="date" class="form-control" id="stockin_date" name="stockin_date"
-                                value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required>
+                                value="<?= isset($old_form_data['stockin_date']) ? $old_form_data['stockin_date'] : date('Y-m-d') ?>" 
+                                max="<?= date('Y-m-d') ?>" required>
                             <small class="form-text text-muted">Tidak bisa memilih tanggal yang akan datang</small>
                         </div>
                     </div>
@@ -41,9 +42,14 @@
                                 $kode_prefix = 'RET/IN/';
                             elseif ($from_status == '3')
                                 $kode_prefix = 'TRF/IN/';
+                            
+                            $stockin_code = $kode_prefix . date('m/Y');
+                            if (isset($old_form_data['stockin_code'])) {
+                                $stockin_code = $old_form_data['stockin_code'];
+                            }
                             ?>
                             <input type="text" class="form-control bg-light" id="stockin_code" name="stockin_code"
-                                value="<?= $kode_prefix . date('m/Y') ?>" readonly
+                                value="<?= $stockin_code ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
                             <small class="form-text text-muted">Kode otomatis generated oleh sistem</small>
                         </div>
@@ -58,8 +64,12 @@
                                 <label for="customer_id">Dari Pengguna *</label>
                                 <select class="form-control select2" id="customer_id" name="customer_id" required>
                                     <option value="">Pilih Pengguna</option>
-                                    <?php foreach ($customers as $customer): ?>
-                                        <option value="<?= $customer['id'] ?>">
+                                    <?php 
+                                    $selected_customer = isset($old_form_data['from_id']) ? $old_form_data['from_id'] : '';
+                                    foreach ($customers as $customer): 
+                                    ?>
+                                        <option value="<?= $customer['id'] ?>" 
+                                            <?= ($selected_customer == $customer['id']) ? 'selected' : '' ?>>
                                             <?= $customer['name'] ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -70,12 +80,13 @@
                             <div class="form-group">
                                 <label for="stockin_invoice">No Referensi *</label>
                                 <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
+                                    value="<?= isset($old_form_data['stockin_invoice']) ? $old_form_data['stockin_invoice'] : '' ?>"
                                     placeholder="Masukkan nomor referensi" required>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Form untuk Penerimaan dari Supplier (from_status = 2) -->
+                <!-- Form untuk Penerimaan dari Supplier (from_status = 2) -->
                 <?php elseif ($from_status == '2'): ?>
                     <div class="row">
                         <div class="col-md-6">
@@ -83,8 +94,12 @@
                                 <label for="supplier_id">Dari Supplier *</label>
                                 <select class="form-control select2" id="supplier_id" name="supplier_id" required>
                                     <option value="">Pilih Supplier</option>
-                                    <?php foreach ($suppliers as $supplier): ?>
-                                        <option value="<?= $supplier['id'] ?>">
+                                    <?php 
+                                    $selected_supplier = isset($old_form_data['from_id']) ? $old_form_data['from_id'] : '';
+                                    foreach ($suppliers as $supplier): 
+                                    ?>
+                                        <option value="<?= $supplier['id'] ?>"
+                                            <?= ($selected_supplier == $supplier['id']) ? 'selected' : '' ?>>
                                             <?= $supplier['name'] ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -95,12 +110,13 @@
                             <div class="form-group">
                                 <label for="stockin_invoice">No Invoice *</label>
                                 <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
+                                    value="<?= isset($old_form_data['stockin_invoice']) ? $old_form_data['stockin_invoice'] : '' ?>"
                                     placeholder="Masukkan nomor invoice" required>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Form untuk Penerimaan Antar Gudang (from_status = 3) -->
+                <!-- Form untuk Penerimaan Antar Gudang (from_status = 3) -->
                 <?php elseif ($from_status == '3'): ?>
                     <div class="row">
                         <div class="col-md-6">
@@ -109,8 +125,12 @@
                                 <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id"
                                     required>
                                     <option value="">Pilih Gudang Asal</option>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>">
+                                    <?php 
+                                    $selected_from_warehouse = isset($old_form_data['from_id']) ? $old_form_data['from_id'] : '';
+                                    foreach ($warehouses as $warehouse): 
+                                    ?>
+                                        <option value="<?= $warehouse['warehouse_id'] ?>"
+                                            <?= ($selected_from_warehouse == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
                                             <?= $warehouse['warehouse_name'] ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -121,6 +141,7 @@
                             <div class="form-group">
                                 <label for="stockin_invoice">No Referensi *</label>
                                 <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
+                                    value="<?= isset($old_form_data['stockin_invoice']) ? $old_form_data['stockin_invoice'] : '' ?>"
                                     placeholder="Masukkan nomor referensi transfer" required>
                             </div>
                         </div>
@@ -130,22 +151,42 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="to_warehouse_id">Ke Gudang</label>
-                            <?php
-                            $warehouse_name = $this->session->userdata('warehouse_name');
-                            $warehouse_id = $this->session->userdata('warehouse_id');
+                            <label for="to_warehouse_id">Ke Gudang *</label>
+                            <?php 
+                            $selected_to_warehouse = '';
+                            if (isset($old_form_data['to_warehouse_id'])) {
+                                $selected_to_warehouse = $old_form_data['to_warehouse_id'];
+                            } elseif (!$user_role == 'superadmin') {
+                                $selected_to_warehouse = $user_warehouse_id;
+                            }
                             ?>
-                            <input type="text" class="form-control bg-light" value="<?= $warehouse_name ?>" readonly
-                                style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <input type="hidden" name="to_warehouse_id" value="<?= $warehouse_id ?>">
-                            <small class="form-text text-muted">Gudang tujuan berdasarkan login Anda</small>
+                            
+                            <?php if ($user_role == 'superadmin'): ?>
+                                <!-- Superadmin dapat memilih gudang tujuan -->
+                                <select class="form-control select2" id="to_warehouse_id" name="to_warehouse_id" required>
+                                    <option value="">Pilih Gudang Tujuan</option>
+                                    <?php foreach ($warehouses as $warehouse): ?>
+                                        <option value="<?= $warehouse['warehouse_id'] ?>" 
+                                            <?= ($selected_to_warehouse == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
+                                            <?= $warehouse['warehouse_name'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <small class="form-text text-muted">Superadmin dapat memilih gudang tujuan</small>
+                            <?php else: ?>
+                                <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
+                                <input type="text" class="form-control bg-light" value="<?= $user_warehouse_name ?>" readonly
+                                    style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
+                                <input type="hidden" name="to_warehouse_id" value="<?= $user_warehouse_id ?>">
+                                <small class="form-text text-muted">Gudang tujuan berdasarkan login Anda</small>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="stockin_note">Keterangan</label>
                             <textarea class="form-control" id="stockin_note" name="stockin_note"
-                                placeholder="Masukkan keterangan tambahan" rows="2"></textarea>
+                                placeholder="Masukkan keterangan tambahan" rows="2"><?= isset($old_form_data['stockin_note']) ? $old_form_data['stockin_note'] : '' ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -163,8 +204,7 @@
                             ?>
                             <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Tipe penerimaan sudah ditentukan berdasarkan
-                                menu</small>
+                            <small class="form-text text-muted">Tipe penerimaan sudah ditentukan berdasarkan menu</small>
                         </div>
                     </div>
                 </div>
@@ -182,42 +222,88 @@
                 </div>
 
                 <div id="itemsContainer">
-                    <div class="item-row row mb-3">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Produk *</label>
-                                <select class="form-control select2" name="product_id[]" required>
-                                    <option value="">Pilih Produk</option>
-                                    <?php foreach ($products as $product): ?>
-                                        <option value="<?= $product['product_id'] ?>">
-                                            <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                    <?php if (isset($old_form_data['items']) && !empty($old_form_data['items'])): ?>
+                        <!-- Tampilkan item dari session jika ada -->
+                        <?php foreach ($old_form_data['items'] as $index => $item): ?>
+                            <div class="item-row row mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Produk *</label>
+                                        <select class="form-control select2" name="product_id[]" required>
+                                            <option value="">Pilih Produk</option>
+                                            <?php foreach ($products as $product): ?>
+                                                <option value="<?= $product['product_id'] ?>"
+                                                    <?= (isset($item['stock_id']) && $item['stock_id'] == $product['product_id']) ? 'selected' : '' ?>>
+                                                    <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Qty *</label>
+                                        <input type="number" class="form-control" name="qty[]" step="0.01" min="0.01" 
+                                            value="<?= isset($item['qty']) ? $item['qty'] : '' ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Keterangan Barang</label>
+                                        <input type="text" class="form-control" name="detail_note[]"
+                                            value="<?= isset($item['detail_note']) ? $item['detail_note'] : '' ?>"
+                                            placeholder="Keterangan tambahan untuk barang ini">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="button" class="btn btn-danger btn-block remove-item">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Default: satu row kosong -->
+                        <div class="item-row row mb-3">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Produk *</label>
+                                    <select class="form-control select2" name="product_id[]" required>
+                                        <option value="">Pilih Produk</option>
+                                        <?php foreach ($products as $product): ?>
+                                            <option value="<?= $product['product_id'] ?>">
+                                                <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Qty *</label>
+                                    <input type="number" class="form-control" name="qty[]" step="0.01" min="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Keterangan Barang</label>
+                                    <input type="text" class="form-control" name="detail_note[]"
+                                        placeholder="Keterangan tambahan untuk barang ini">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button type="button" class="btn btn-danger btn-block remove-item" disabled>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label>Qty *</label>
-                                <input type="number" class="form-control" name="qty[]" step="0.01" min="0.01" required>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Keterangan Barang</label>
-                                <input type="text" class="form-control" name="detail_note[]"
-                                    placeholder="Keterangan tambahan untuk barang ini">
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label>&nbsp;</label>
-                                <button type="button" class="btn btn-danger btn-block remove-item" disabled>
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <hr class="my-4">
@@ -230,6 +316,11 @@
                         <a href="<?= site_url($back_url) ?>" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Batal
                         </a>
+                        <?php if (isset($old_form_data)): ?>
+                            <button type="button" id="clearForm" class="btn btn-warning">
+                                <i class="fas fa-broom"></i> Bersihkan Form
+                            </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </form>
@@ -239,6 +330,9 @@
 
 <script>
     $(document).ready(function () {
+        // Initialize Select2
+        $('.select2').select2();
+        
         // Prevent future date selection
         $('#stockin_date').on('change', function () {
             const selectedDate = new Date(this.value);
@@ -254,6 +348,21 @@
         // Prevent typing future dates
         $('#stockin_date').on('keydown', function (e) {
             e.preventDefault();
+        });
+
+        // Clear form button
+        $('#clearForm').click(function() {
+            if (confirm('Apakah Anda yakin ingin membersihkan semua data form?')) {
+                // Reset form
+                $('#penerimaanForm')[0].reset();
+                // Reset Select2
+                $('.select2').val('').trigger('change');
+                // Reset items to single row
+                $('.item-row:gt(0)').remove();
+                $('.remove-item').prop('disabled', true);
+                // Refresh page to clear all data
+                window.location.href = window.location.href.split('?')[0];
+            }
         });
 
         // Add item row
@@ -296,8 +405,14 @@
             </div>
         `;
             $('#itemsContainer').append(newRow);
+            
+            // Reinitialize Select2 for new row
+            $('#itemsContainer .item-row:last-child .select2').select2();
 
-            $('.remove-item').prop('disabled', false);
+            // Enable remove buttons if more than one row
+            if ($('.item-row').length > 1) {
+                $('.remove-item').prop('disabled', false);
+            }
         });
 
         // Remove item row
@@ -314,6 +429,15 @@
         $('#penerimaanForm').submit(function (e) {
             let valid = true;
 
+            // Validasi untuk superadmin - harus memilih gudang tujuan
+            <?php if ($user_role == 'superadmin'): ?>
+            if (!$('#to_warehouse_id').val()) {
+                alert('Harap pilih gudang tujuan');
+                $('#to_warehouse_id').focus();
+                valid = false;
+            }
+            <?php endif; ?>
+
             // Check if at least one item has product selected
             let hasItems = false;
             $('select[name="product_id[]"]').each(function () {
@@ -328,7 +452,7 @@
             // Check quantity values
             $('input[name="qty[]"]').each(function (index) {
                 const qty = parseFloat($(this).val());
-                if (qty <= 0) {
+                if (qty <= 0 || isNaN(qty)) {
                     alert('Quantity harus lebih dari 0');
                     valid = false;
                     return false;

@@ -62,6 +62,7 @@ if (!function_exists('load_appdata_to_session')) {
                 'status_aktif' => $row['status_aktif']
             ];
         }
+
         $CI->session->set_userdata('api_list', $apis);
         save_log('Load data enpoint API: ' . json_encode($apis));
 

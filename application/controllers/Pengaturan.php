@@ -9,6 +9,7 @@ class Pengaturan extends MY_Controller
         $this->load->model('Pengaturan_model', 'Pengaturan_model');
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
+        $this->check_permission('pengaturan', 'view');
     }
 
     public function index()

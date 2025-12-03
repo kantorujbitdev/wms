@@ -8,6 +8,7 @@ class Auth extends CI_Controller
         parent::__construct();
         $this->load->model('Api_model');
         $this->load->model('Pengaturan_model', 'pengaturan');
+        $this->load->model('Role_permission_model');
         $this->load->model('Data_api_model', 'data_api');
         $this->load->library('session');
         $this->load->helper('url');
@@ -70,6 +71,10 @@ class Auth extends CI_Controller
             // "IsActive": "1",
             // "WarehouseId": "0"
 
+
+            $role_name = strtolower($response['data']['Role']);
+            $permissions = $this->Role_permission_model->get_permissions_by_role_name($role_name);
+
             // Check if login successful
             if (isset($response['success']) && $response['success'] === true) {
                 // Set session data
@@ -82,6 +87,7 @@ class Auth extends CI_Controller
                     'warehouse_id' => $response['data']['WarehouseId'],
                     'warehouse_name' => $response['data']['WarehouseName'],
                     'api_token' => $response['data']['token'],
+                    'permissions' => $permissions, // Tambahkan permissions ke session
                     'logged_in' => TRUE
                 ];
 

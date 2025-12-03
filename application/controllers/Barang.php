@@ -6,12 +6,14 @@ class Barang extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->check_permission('barang', 'view');
     }
 
     // ==================== TIPE PRODUK ====================
 
     public function tipe_produk()
     {
+        $this->check_permission('tipe_produk', 'view');
         // Set title
         $this->data['title'] = 'Tipe Produk';
         $this->data['active_menu'] = 'barang';
@@ -28,6 +30,7 @@ class Barang extends MY_Controller
 
     public function add_tipe_produk()
     {
+        $this->check_permission('tipe_produk', 'edit');
         // Set title
         $this->data['title'] = 'Tambah Tipe Produk';
         $this->data['active_menu'] = 'barang';
@@ -39,6 +42,7 @@ class Barang extends MY_Controller
 
     public function edit_tipe_produk($id)
     {
+        $this->check_permission('tipe_produk', 'edit');
         // Set title
         $this->data['title'] = 'Edit Tipe Produk';
         $this->data['active_menu'] = 'barang';
@@ -91,6 +95,7 @@ class Barang extends MY_Controller
 
     public function delete_tipe_produk($id)
     {
+        $this->check_permission('tipe_produk', 'delete');
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
 
@@ -116,6 +121,7 @@ class Barang extends MY_Controller
 
     public function tipe_satuan()
     {
+        $this->check_permission('tipe_satuan', 'view');
         // Set title
         $this->data['title'] = 'Tipe Satuan';
         $this->data['active_menu'] = 'barang';
@@ -132,6 +138,7 @@ class Barang extends MY_Controller
 
     public function add_tipe_satuan()
     {
+        $this->check_permission('tipe_satuan', 'edit');
         // Set title
         $this->data['title'] = 'Tambah Tipe Satuan';
         $this->data['active_menu'] = 'barang';
@@ -143,6 +150,7 @@ class Barang extends MY_Controller
 
     public function edit_tipe_satuan($id)
     {
+        $this->check_permission('tipe_satuan', 'edit');
         // Set title
         $this->data['title'] = 'Edit Tipe Satuan';
         $this->data['active_menu'] = 'barang';
@@ -196,6 +204,7 @@ class Barang extends MY_Controller
 
     public function delete_tipe_satuan($id)
     {
+        $this->check_permission('tipe_satuan', 'delete');
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
 
@@ -221,6 +230,7 @@ class Barang extends MY_Controller
 
     public function index()
     {
+        $this->check_permission('produk', 'view');
         // Set title
         $this->data['title'] = 'Produk';
         $this->data['active_menu'] = 'barang';
@@ -245,6 +255,7 @@ class Barang extends MY_Controller
 
     public function add_produk()
     {
+        $this->check_permission('produk', 'edit');
         // Set title
         $this->data['title'] = 'Tambah Produk';
         $this->data['active_menu'] = 'barang';
@@ -264,6 +275,7 @@ class Barang extends MY_Controller
 
     public function edit_produk($id)
     {
+        $this->check_permission('produk', 'edit');
         // Set title
         $this->data['title'] = 'Edit Produk';
         $this->data['active_menu'] = 'barang';
@@ -323,6 +335,7 @@ class Barang extends MY_Controller
 
     public function delete_produk($id)
     {
+        $this->check_permission('produk', 'delete');
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');
 

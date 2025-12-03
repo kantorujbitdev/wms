@@ -118,21 +118,6 @@ class MY_Controller extends CI_Controller
     }
 
     /**
-     * Fungsi untuk cek permission user
-     * 
-     * @param string|array $roles Role yang diizinkan
-     * @return bool
-     */
-    protected function check_permission($roles)
-    {
-        if (is_array($roles)) {
-            return in_array($this->user['role'], $roles);
-        } else {
-            return $this->user['role'] == $roles;
-        }
-    }
-
-    /**
      * Fungsi untuk set data umum yang akan digunakan di semua view
      */
     protected function set_common_data()
@@ -149,5 +134,33 @@ class MY_Controller extends CI_Controller
         // Set active submenu berdasarkan method
         $this->data['active_submenu'] = strtolower($this->router->method);
 
+        $this->data['can_access_menu'] = function ($menu_key) {
+            return can_access_menu($menu_key);
+        };
+
+        $this->data['get_menu_icon'] = function ($menu_key) {
+            return get_menu_icon($menu_key);
+        };
     }
+    /**
+     * Check permission in controller
+     */
+    protected function check_permission($menu_key, $action = 'view', $redirect_url = 'dashboard')
+    {
+        if (!has_permission($menu_key, $action)) {
+            $this->session->set_flashdata('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+            redirect($redirect_url);
+        }
+    }
+
+    /**
+     * Check if user can access menu (for sidebar)
+     */
+    protected function can_access_menu($menu_key)
+    {
+        return has_permission($menu_key, 'view');
+    }
+
+
+
 }

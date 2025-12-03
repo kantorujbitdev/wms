@@ -6,6 +6,7 @@ class Gudang_stok extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->check_permission('gudang_stok', 'view');
     }
 
     public function index()
@@ -54,6 +55,7 @@ class Gudang_stok extends MY_Controller
 
     public function add()
     {
+        $this->check_permission('gudang_stok', 'edit');
         $this->data['title'] = 'Tambah Stok';
 
         // Ambil data warehouse & produk dari API
