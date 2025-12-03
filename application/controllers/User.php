@@ -14,7 +14,7 @@ class User extends MY_Controller
     public function index()
     {
         load_appdata_to_session();
-
+        load_menu();
         // Set title
         $this->data['title'] = 'User Management';
         $data = data_login_user();

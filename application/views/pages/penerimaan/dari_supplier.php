@@ -43,11 +43,13 @@
                                     <td><?= $penerimaan['stockin_note'] ?? '-'; ?></td>
                                     <td><?= $penerimaan['createby_name'] ?? '-'; ?></td>
                                     <td class="text-center">
-                                        <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
-                                            class="btn btn-info btn-sm" title="Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <?php if (is_role(['superadmin', 'admin'])): ?>
+                                        <?php if (has_permission('penerimaan')): ?>
+                                            <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
+                                                class="btn btn-info btn-sm" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (has_permission('penerimaan', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?= $penerimaan['stockin_id']; ?>"
                                                 data-name="<?= $penerimaan['stockin_code']; ?>"

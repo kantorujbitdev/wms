@@ -53,6 +53,19 @@ if (!function_exists('has_permission')) {
     }
 }
 
+if (!function_exists('load_menu')) {
+    /**
+     * Check if user can access a menu (including parent check for submenus)
+     */
+    function load_menu()
+    {
+        $CI =& get_instance();
+        $CI->load->model('role_permission_model');
+        $permissions = $CI->role_permission_model->get_permissions_by_role_name($CI->session->userdata('role'));
+        $CI->session->set_userdata('permissions', $permissions);
+    }
+}
+
 if (!function_exists('can_access_menu')) {
     /**
      * Check if user can access a menu (including parent check for submenus)

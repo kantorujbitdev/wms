@@ -44,20 +44,22 @@
                                     <td><?php echo $type['Product_Type_Code']; ?></td>
                                     <td><?php echo !empty($type['Product_Type_Name']) ? $type['Product_Type_Name'] : '-'; ?>
                                     </td>
-                                    <?php if (is_role('superadmin')): ?>
-                                        <td class="text-center">
+                                    <td class="text-center">
+                                        <?php if (has_permission('tipe_produk', 'edit')): ?>
                                             <a href="<?php echo site_url('barang/edit_tipe_produk/' . $type['Product_Type_Id']); ?>"
                                                 class="btn btn-info btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                        <?php endif; ?>
+                                        <?php if (has_permission('tipe_produk', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?php echo $type['Product_Type_Id']; ?>"
                                                 data-name="<?php echo $type['Product_Type_Name']; ?>"
                                                 data-url="<?= site_url('barang/delete_tipe_produk'); ?>">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                        </td>
-                                    <?php endif; ?>
+                                        <?php endif; ?>
+                                    </td>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

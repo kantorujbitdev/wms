@@ -36,9 +36,12 @@
                                     <td><?= $pengiriman['To_Warehouse_Name'] ?? '-'; ?></td>
                                     <td><?= $pengiriman['StockOut_Note'] ?? '-'; ?></td>
                                     <td class="text-center">
-                                        <a href="<?= site_url('pengiriman/detail/' . $pengiriman['StockOut_Id']) ?>"
-                                            class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
-                                        <?php if (is_role(['superadmin', 'admin'])): ?>
+                                        <?php if (has_permission('pengiriman', 'edit')): ?>
+                                            <a href="<?= site_url('pengiriman/detail/' . $pengiriman['StockOut_Id']) ?>"
+                                                class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                                        <?php endif; ?>
+
+                                        <?php if (has_permission('pengiriman', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?= $pengiriman['StockOut_Id']; ?>"
                                                 data-name="<?= $pengiriman['StockOut_Code']; ?>"

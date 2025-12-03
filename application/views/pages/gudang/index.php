@@ -53,11 +53,13 @@
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('gudang/edit/' . $warehouse['warehouse_id']); ?>"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <?php if (is_role(['superadmin', 'admin'])): ?>
+                                        <?php if (has_permission('gudang', 'edit')): ?>
+                                            <a href="<?php echo site_url('gudang/edit/' . $warehouse['warehouse_id']); ?>"
+                                                class="btn btn-info btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (has_permission('gudang', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?php echo $warehouse['warehouse_id']; ?>"
                                                 data-name="<?php echo $warehouse['warehouse_name']; ?>"

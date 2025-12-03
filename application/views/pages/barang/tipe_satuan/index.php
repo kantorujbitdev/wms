@@ -38,11 +38,13 @@
                                     <td><?php echo $type['code']; ?></td>
                                     <td><?php echo !empty($type['name']) ? $type['name'] : '-'; ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('barang/edit_tipe_satuan/' . $type['id']); ?>"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <?php if (is_role(['superadmin', 'admin'])): ?>
+                                        <?php if (has_permission('tipe_satuan', 'edit')): ?>
+                                            <a href="<?php echo site_url('barang/edit_tipe_satuan/' . $type['id']); ?>"
+                                                class="btn btn-info btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (has_permission('tipe_satuan', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?php echo $type['id']; ?>" data-name="<?php echo $type['code']; ?>"
                                                 data-url="<?= site_url('barang/delete_tipe_satuan'); ?>">

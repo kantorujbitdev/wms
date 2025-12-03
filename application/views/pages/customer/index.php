@@ -43,11 +43,13 @@
                                     <td><?php echo $customer['phone']; ?></td>
                                     <td><?php echo $customer['address']; ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('customer/edit/' . $customer['id']); ?>"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <?php if (is_role(['superadmin', 'admin'])): ?>
+                                        <?php if (has_permission('customer', 'edit')): ?>
+                                            <a href="<?php echo site_url('customer/edit/' . $customer['id']); ?>"
+                                                class="btn btn-info btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (has_permission('customer', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?php echo $customer['id']; ?>"
                                                 data-name="<?php echo $customer['name']; ?>"

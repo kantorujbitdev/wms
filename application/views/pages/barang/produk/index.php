@@ -42,11 +42,13 @@
                                     <td><?php echo $product['unit_code']; ?></td>
                                     <td><?php echo $product['type_name']; ?></td>
                                     <td class="text-center">
-                                        <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <?php if (is_role(['superadmin', 'admin'])): ?>
+                                        <?php if (has_permission('barang', 'delete')): ?>
+                                            <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
+                                                class="btn btn-info btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (has_permission('barang', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
                                                 data-id="<?php echo $product['product_id']; ?>"
                                                 data-name="<?php echo $product['product_name']; ?>"
