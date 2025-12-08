@@ -36,3 +36,6 @@ $route['pengiriman/create_antar_gudang'] = 'pengiriman/create_antar_gudang';
 $route['pengiriman/create_penggunaan'] = 'pengiriman/create_penggunaan';
 $route['pengiriman/detail/(:num)'] = 'pengiriman/detail/$1';
 $route['pengiriman/delete/(:num)'] = 'pengiriman/delete/$1';
+
+$route['pengiriman/cetak/(:num)'] = 'pengiriman/cetak/$1';
+$route['pengiriman/cetak_pdf/(:num)'] = 'pengiriman/cetak_pdf/$1';

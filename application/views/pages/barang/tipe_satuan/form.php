@@ -17,13 +17,13 @@
             <?php endif; ?>
 
             <div class="mb-3">
-                <label for="name" class="form-label">Nama Tipe Satuan</label>
+                <label for="name" class="form-label">Kode</label>
                 <input type="text" class="form-control" id="name" name="name"
                     value="<?php echo isset($unit_type) ? $unit_type['code'] : set_value('code'); ?>" required>
             </div>
 
             <div class="mb-3">
-                <label for="description" class="form-label">Deskripsi</label>
+                <label for="description" class="form-label">Nama</label>
                 <textarea class="form-control" id="description" name="description"
                     rows="3"><?php echo isset($unit_type) ? $unit_type['name'] : set_value('name'); ?></textarea>
             </div>

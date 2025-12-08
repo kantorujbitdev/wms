@@ -24,8 +24,8 @@
                     <thead class="text-center align-middle">
                         <tr>
                             <th>No</th>
-                            <th>Nama Tipe Satuan</th>
-                            <th>Deskripsi</th>
+                            <th>Kode</th>
+                            <th>Nama</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>

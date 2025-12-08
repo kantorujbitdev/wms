@@ -28,11 +28,9 @@
                     <thead class="text-center align-middle">
                         <tr>
                             <th>No</th>
-                            <th>Nama Tipe Produk</th>
-                            <th>Deskripsi</th>
-                            <?php if (is_role('superadmin')): ?>
-                                <th>Aksi</th>
-                            <?php endif; ?>
+                            <th>Kode</th>
+                            <th>Nama</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>

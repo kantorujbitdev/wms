@@ -8,92 +8,82 @@ class Pengiriman extends MY_Controller
         parent::__construct();
     }
 
-    // ==================== PENGIRIMAN UNTUK PENGGUNAAN (ToStatus = 1) ====================
+    // ==================== PENGIRIMAN KE PENGGUNA (to_status = 1) ====================
     public function penggunaan()
     {
-        $this->data['title'] = 'Pengiriman untuk Penggunaan';
+        $this->data['title'] = 'Pengiriman ke Pengguna';
         $this->data['active_menu'] = 'pengiriman';
         $this->data['active_submenu'] = 'penggunaan';
 
-        $data_login = data_login_user(['To_Status' => '1']);
+        $data_login = data_login_user(['to_status' => '1']);
         $response = $this->Api_model->get_pengiriman($data_login);
+
+        // Debug: Lihat struktur response
+        // echo '<pre>'; print_r($response); echo '</pre>'; die();
+
         $this->data['pengiriman_list'] = $response['success'] ? $response['data'] : [];
 
-        $this->render_view('pages/pengiriman/penggunaan');
+        $this->render_view('pages/pengiriman/ke_pengguna');
     }
 
-    public function add_penggunaan()
+    public function add_pengguna()
     {
-        $this->data['title'] = 'Tambah Pengiriman untuk Penggunaan';
+        $this->data['title'] = 'Tambah Pengiriman ke Pengguna';
         $this->data['active_menu'] = 'pengiriman';
         $this->data['active_submenu'] = 'penggunaan';
 
         $data_login = data_login_user();
 
-        $warehouse_response = $this->Api_model->get_gudang($data_login);
+        // Get user role from session
+        $user_role = $this->session->userdata('role');
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // Get warehouses for superadmin or specific warehouse for others
+        if ($user_role == 'superadmin') {
+            $warehouse_response = $this->Api_model->get_all_gudang($data_login);
+        } else {
+            $warehouse_response = $this->Api_model->get_gudang($data_login);
+        }
         $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
 
+        // Get user's warehouse info for display
+        $this->data['user_warehouse_id'] = $warehouse_id_session;
+        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+        $this->data['user_role'] = $user_role;
+
+        // Get customers
         $customer_response = $this->Api_model->get_customer($data_login);
         $this->data['customers'] = $customer_response['success'] ? $customer_response['data'] : [];
 
-        $products_response = $this->Api_model->get_barang($data_login);
-        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
-
-        $this->render_view('pages/pengiriman/add_penggunaan');
-    }
-
-    public function create_penggunaan()
-    {
-        if ($_POST) {
-            $data_login = data_login_user();
-
-            $post_data = [
-                'StockOutDate' => $this->input->post('StockOutDate'),
-                'CustomerID' => $this->input->post('CustomerID'),
-                'StockOutNote' => $this->input->post('StockOutNote'),
-                'StockOutCode' => $this->input->post('StockOutCode'),
-                'WarehouseID' => $this->input->post('WarehouseID'),
-                'actionby' => $data_login['login_id'],
-                'ToStatus' => '1',
-                'Items' => []
-            ];
-
-            $product_ids = $this->input->post('Stock_Id');
-            $qtys = $this->input->post('Qty');
-            $notes = $this->input->post('DetailNote');
-
-            if (!empty($product_ids)) {
-                foreach ($product_ids as $index => $product_id) {
-                    if (!empty($product_id) && !empty($qtys[$index])) {
-                        $post_data['Items'][] = [
-                            'Stock_Id' => $product_id,
-                            'Qty' => (float) $qtys[$index],
-                            'DetailNote' => $notes[$index] ?? ''
-                        ];
-                    }
-                }
-            }
-
-            $response = $this->Api_model->add_pengiriman($post_data);
-
-            if ($response['success']) {
-                $this->session->set_flashdata('success', 'Pengiriman untuk penggunaan berhasil ditambahkan');
-            } else {
-                $this->session->set_flashdata('error', $response['message'] ?? 'Gagal menambahkan pengiriman');
-            }
-
-            redirect('pengiriman/penggunaan');
+        // Get products from stock based on warehouse
+        if ($user_role == 'superadmin') {
+            // For superadmin, we need to load products after warehouse selection
+            $this->data['stocks'] = [];
+            $this->data['products'] = [];
+        } else {
+            // Get stock from current warehouse
+            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $this->data['stocks'] = $stock_response['success'] ? $stock_response['data'] : [];
+            $this->data['products'] = $this->data['stocks'];
         }
+
+        $this->data['to_status'] = '1';
+        $this->data['form_type'] = 'pengguna';
+
+        // Get old form data from session if exists (after error)
+        $this->data['old_form_data'] = $this->session->flashdata('form_data_1_out');
+
+        $this->render_view('pages/pengiriman/form');
     }
 
-    // ==================== PENGIRIMAN ANTAR GUDANG (ToStatus = 3) ====================
+    // ==================== PENGIRIMAN ANTAR GUDANG (to_status = 3) ====================
     public function antar_gudang()
     {
         $this->data['title'] = 'Pengiriman Antar Gudang';
         $this->data['active_menu'] = 'pengiriman';
         $this->data['active_submenu'] = 'pengiriman_antar_gudang';
 
-        $data_login = data_login_user(['To_Status' => '3']);
+        $data_login = data_login_user(['to_status' => '3']);
         $response = $this->Api_model->get_pengiriman($data_login);
         $this->data['pengiriman_list'] = $response['success'] ? $response['data'] : [];
 
@@ -108,90 +98,527 @@ class Pengiriman extends MY_Controller
 
         $data_login = data_login_user();
 
-        $warehouse_response = $this->Api_model->get_gudang($data_login);
+        // Get user role from session
+        $user_role = $this->session->userdata('role');
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // Get warehouses for superadmin or specific warehouse for others
+        if ($user_role == 'superadmin') {
+            $warehouse_response = $this->Api_model->get_all_gudang($data_login);
+        } else {
+            $warehouse_response = $this->Api_model->get_gudang($data_login);
+        }
         $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
 
-        $products_response = $this->Api_model->get_barang($data_login);
-        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
+        // Get user's warehouse info for display
+        $this->data['user_warehouse_id'] = $warehouse_id_session;
+        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+        $this->data['user_role'] = $user_role;
 
-        $this->render_view('pages/pengiriman/add_antar_gudang');
+        // Get products from stock based on warehouse
+        if ($user_role == 'superadmin') {
+            // For superadmin, we need to load products after warehouse selection
+            $this->data['stocks'] = [];
+            $this->data['products'] = [];
+        } else {
+            // Get stock from current warehouse
+            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $this->data['stocks'] = $stock_response['success'] ? $stock_response['data'] : [];
+            $this->data['products'] = $this->data['stocks'];
+        }
+
+        $this->data['to_status'] = '3';
+        $this->data['form_type'] = 'antar_gudang';
+
+        // Get old form data from session if exists (after error)
+        $this->data['old_form_data'] = $this->session->flashdata('form_data_3_out');
+
+        $this->render_view('pages/pengiriman/form');
     }
 
-    public function create_antar_gudang()
+    // ==================== AJAX: LOAD PRODUCTS BY WAREHOUSE ====================
+    public function load_products_by_warehouse()
+    {
+        $data_login = data_login_user();
+        $warehouse_id = $this->input->post('warehouse_id');
+
+        if ($warehouse_id) {
+            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
+
+            if ($stock_response['success']) {
+                echo json_encode([
+                    'success' => true,
+                    'data' => $stock_response['data']
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => $stock_response['message'] ?? 'Gagal memuat data stok'
+                ]);
+            }
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Warehouse ID tidak valid'
+            ]);
+        }
+    }
+
+    // ==================== CREATE PENGIRIMAN ====================
+    public function create()
     {
         if ($_POST) {
             $data_login = data_login_user();
 
-            $post_data = [
-                'StockOutDate' => $this->input->post('StockOutDate'),
-                'StockOutCode' => $this->input->post('StockOutCode'),
-                'WarehouseID' => $this->input->post('WarehouseID'),
-                'To_WarehouseID' => $this->input->post('To_WarehouseID'),
-                'StockOutNote' => $this->input->post('StockOutNote'),
-                'actionby' => $data_login['login_id'],
-                'ToStatus' => '3',
-                'Items' => []
-            ];
+            // Get user role and warehouse from session
+            $user_role = $this->session->userdata('role');
+            $warehouse_id_session = $this->session->userdata('warehouse_id');
 
-            $product_ids = $this->input->post('Stock_Id');
-            $qtys = $this->input->post('Qty');
-            $notes = $this->input->post('DetailNote');
+            // Determine from_warehouse_id based on user role
+            $from_warehouse_id = $warehouse_id_session;
+            if ($user_role == 'superadmin') {
+                // Superadmin can select source warehouse
+                $from_warehouse_id = $this->input->post('from_warehouse_id');
+            }
 
-            if (!empty($product_ids)) {
-                foreach ($product_ids as $index => $product_id) {
-                    if (!empty($product_id) && !empty($qtys[$index])) {
-                        $post_data['Items'][] = [
-                            'Stock_Id' => $product_id,
-                            'Qty' => (float) $qtys[$index],
-                            'DetailNote' => $notes[$index] ?? ''
+            $post_data = data_login_user([
+                'stockout_date' => $this->input->post('stockout_date'),
+                'stockout_code' => $this->input->post('stockout_code'),
+                'stockout_invoice' => $this->input->post('stockout_invoice') ?: '-',
+                'stockout_note' => $this->input->post('stockout_note'),
+                'from_warehouse_id' => $from_warehouse_id,
+                'to_status' => $this->input->post('to_status'),
+                'items' => []
+            ]);
+
+            // Tambahkan to_id berdasarkan tipe
+            $to_status = $this->input->post('to_status');
+            $to_id_field = '';
+
+            if ($to_status == '1') {
+                $post_data['to_id'] = $this->input->post('customer_id');
+                $to_id_field = 'customer_id';
+            } elseif ($to_status == '3') {
+                $post_data['to_id'] = $this->input->post('to_warehouse_id');
+                $to_id_field = 'to_warehouse_id';
+            }
+
+            // Prepare items data
+            $stock_ids = $this->input->post('stock_id');
+            $qtys = $this->input->post('qty');
+            $notes = $this->input->post('detail_note');
+
+            $items_data = [];
+            if (!empty($stock_ids)) {
+                foreach ($stock_ids as $index => $stock_id) {
+                    if (!empty($stock_id) && !empty($qtys[$index])) {
+                        $items_data[] = [
+                            'stock_id' => $stock_id,
+                            'qty' => (float) $qtys[$index],
+                            'detail_note' => $notes[$index] ?? ''
+                        ];
+
+                        $post_data['items'][] = [
+                            'stock_id' => $stock_id,
+                            'qty' => (float) $qtys[$index],
+                            'detail_note' => $notes[$index] ?? ''
                         ];
                     }
                 }
             }
 
+            // Send to API
             $response = $this->Api_model->add_pengiriman($post_data);
 
             if ($response['success']) {
-                $this->session->set_flashdata('success', 'Pengiriman antar gudang berhasil ditambahkan');
-            } else {
-                $this->session->set_flashdata('error', $response['message'] ?? 'Gagal menambahkan pengiriman');
-            }
+                $this->session->set_flashdata('success', 'Pengiriman barang berhasil ditambahkan');
 
-            redirect('pengiriman/antar_gudang');
+                // Hapus form data dari session jika berhasil
+                $this->session->unset_userdata('form_data_' . $to_status . '_out');
+
+                // Redirect berdasarkan tipe pengiriman
+                if ($to_status == '1') {
+                    redirect('pengiriman/penggunaan');
+                } else {
+                    redirect('pengiriman/antar_gudang');
+                }
+            } else {
+                $this->session->set_flashdata('error', $response['message'] ?? 'Gagal menambahkan pengiriman barang');
+
+                // Simpan data form ke session untuk ditampilkan kembali
+                $form_data = [
+                    'stockout_date' => $this->input->post('stockout_date'),
+                    'stockout_code' => $this->input->post('stockout_code'),
+                    'stockout_invoice' => $this->input->post('stockout_invoice'),
+                    'stockout_note' => $this->input->post('stockout_note'),
+                    'to_status' => $to_status,
+                    'to_id' => $this->input->post($to_id_field),
+                    'items' => $items_data
+                ];
+
+                // Simpan from_warehouse_id untuk superadmin
+                if ($user_role == 'superadmin' && $this->input->post('from_warehouse_id')) {
+                    $form_data['from_warehouse_id'] = $this->input->post('from_warehouse_id');
+                }
+
+                $this->session->set_flashdata('form_data_' . $to_status . '_out', $form_data);
+
+                // Redirect back based on to_status
+                if ($to_status == '1') {
+                    redirect('pengiriman/add_pengguna');
+                } else {
+                    redirect('pengiriman/add_antar_gudang');
+                }
+            }
         }
     }
 
-    // ==================== DETAIL & DELETE ====================
-    public function detail($id)
+    // ==================== EDIT PENGIRIMAN ====================
+    public function edit($id)
     {
-        $this->data['title'] = 'Detail Pengiriman';
+        $this->data['title'] = 'Edit Pengiriman Barang';
         $this->data['active_menu'] = 'pengiriman';
 
-        $data_login = data_login_user(['StockOut_Id' => $id]);
-        $response = $this->Api_model->get_pengiriman_by_id($data_login);
+        $data_login = data_login_user(['stockout_id' => $id]);
+        $response = $this->Api_model->pengiriman_by_id($data_login);
 
-        if ($response['success'] && !empty($response['data'])) {
-            $pengiriman = $response['data'][0];
+        // Debug: Lihat struktur response
+        // echo '<pre>'; print_r($response); echo '</pre>'; die();
+
+        // Periksa struktur response API
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Normalize header keys to lowercase
+            $normalized_header = [];
+            foreach ($header as $key => $value) {
+                $normalized_key = strtolower($key);
+                $normalized_header[$normalized_key] = $value;
+            }
+
+            // Format data untuk view
+            $pengiriman = [
+                'header' => $normalized_header,
+                'detail' => $detail
+            ];
+
+            $this->data['pengiriman'] = $pengiriman;
+            $this->data['to_status'] = $normalized_header['to_status'];
+
+            // Set active submenu dan title berdasarkan to_status
+            if ($normalized_header['to_status'] == '1') {
+                $this->data['active_submenu'] = 'penggunaan';
+                $this->data['title'] = 'Edit Pengiriman ke Pengguna';
+            } else {
+                $this->data['active_submenu'] = 'pengiriman_antar_gudang';
+                $this->data['title'] = 'Edit Pengiriman Antar Gudang';
+            }
+
+            // Get user role from session
+            $user_role = $this->session->userdata('role');
+            $this->data['user_role'] = $user_role;
+
+            // Get warehouses
+            if ($user_role == 'superadmin') {
+                $warehouse_response = $this->Api_model->get_all_gudang($data_login);
+            } else {
+                $warehouse_response = $this->Api_model->get_gudang($data_login);
+            }
+            $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+
+            // Get customers if to_status = 1
+            if ($normalized_header['to_status'] == '1') {
+                $customer_response = $this->Api_model->get_customer($data_login);
+                $this->data['customers'] = $customer_response['success'] ? $customer_response['data'] : [];
+            }
+
+            // Get products from stock based on warehouse
+            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $normalized_header['warehouse_id']]));
+            $stocks = $stock_response['success'] ? $stock_response['data'] : [];
+
+            // Add available_qty to each detail item
+            foreach ($this->data['pengiriman']['detail'] as &$item) {
+                // Normalize detail item keys
+                $normalized_detail = [];
+                foreach ($item as $key => $value) {
+                    $normalized_detail[strtolower($key)] = $value;
+                }
+                $item = $normalized_detail;
+
+                // Find matching stock and add available_qty
+                foreach ($stocks as $stock) {
+                    if (
+                        isset($stock['stock_id']) && isset($item['stock_id']) &&
+                        $stock['stock_id'] == $item['stock_id']
+                    ) {
+                        $item['available_qty'] = $stock['current_stock'];
+                        $item['product_code'] = $stock['product_code'] ?? '';
+                        $item['unit_name'] = $stock['unit_name'] ?? '';
+                        break;
+                    }
+                }
+
+                // If not found in stocks, use current_stock from detail
+                if (!isset($item['available_qty']) && isset($item['current_stock'])) {
+                    $item['available_qty'] = $item['current_stock'];
+                }
+            }
+
+            $this->data['products'] = $stocks;
+
+            $this->render_view('pages/pengiriman/edit');
+        } else {
+            // Jika header false atau tidak ada data
+            $this->session->set_flashdata('error', 'Data pengiriman tidak ditemukan');
+            $this->redirect_back();
+        }
+    }
+
+    // ==================== UPDATE PENGIRIMAN ====================
+    public function update($id)
+    {
+        if ($_POST) {
+            $data_login = data_login_user();
+
+            // Get user role and warehouse from session
+            $user_role = $this->session->userdata('role');
+            $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+            // Determine from_warehouse_id based on user role
+            $from_warehouse_id = $warehouse_id_session;
+            if ($user_role == 'superadmin') {
+                // Superadmin can select source warehouse
+                $from_warehouse_id = $this->input->post('from_warehouse_id');
+            }
+
+            $post_data = data_login_user([
+                'stockout_id' => $id,
+                'stockout_date' => $this->input->post('stockout_date'),
+                'stockout_invoice' => $this->input->post('stockout_invoice') ?: '-',
+                'stockout_note' => $this->input->post('stockout_note'),
+                'warehouse_id' => $from_warehouse_id,
+                'to_status' => $this->input->post('to_status'),
+                'items' => []
+            ]);
+
+            // Tambahkan to_id berdasarkan tipe
+            $to_status = $this->input->post('to_status');
+            if ($to_status == '1') {
+                $post_data['to_id'] = $this->input->post('customer_id');
+            } elseif ($to_status == '3') {
+                $post_data['to_id'] = $this->input->post('to_warehouse_id');
+            }
+
+            // Prepare items data
+            $stock_ids = $this->input->post('stock_id');
+            $qtys = $this->input->post('qty');
+            $notes = $this->input->post('detail_note');
+
+            if (!empty($stock_ids)) {
+                foreach ($stock_ids as $index => $stock_id) {
+                    if (!empty($stock_id) && !empty($qtys[$index])) {
+                        $post_data['items'][] = [
+                            'stock_id' => $stock_id,
+                            'qty' => (float) $qtys[$index],
+                            'detail_note' => $notes[$index] ?? ''
+                        ];
+                    }
+                }
+            }
+
+            // Send to API
+            $response = $this->Api_model->update_pengiriman($post_data);
+
+            if ($response['success']) {
+                $this->session->set_flashdata('success', 'Pengiriman barang berhasil diperbarui');
+
+                // Redirect berdasarkan tipe pengiriman
+                if ($to_status == '1') {
+                    redirect('pengiriman/penggunaan');
+                } else {
+                    redirect('pengiriman/antar_gudang');
+                }
+            } else {
+                $this->session->set_flashdata('error', $response['message'] ?? 'Gagal memperbarui pengiriman barang');
+                redirect('pengiriman/edit/' . $id);
+            }
+        }
+    }
+
+    // ==================== DETAIL PENGIRIMAN ====================
+    public function detail($id)
+    {
+        $this->data['title'] = 'Detail Pengiriman Barang';
+        $this->data['active_menu'] = 'pengiriman';
+
+        $data_login = data_login_user(['stockout_id' => $id]);
+        $response = $this->Api_model->pengiriman_by_id($data_login);
+
+        // Debug: Lihat struktur response
+        // echo '<pre>'; print_r($response); echo '</pre>'; die();
+
+        // Periksa struktur response API
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Normalize header keys to lowercase
+            $normalized_header = [];
+            foreach ($header as $key => $value) {
+                $normalized_key = strtolower($key);
+                $normalized_header[$normalized_key] = $value;
+            }
+
+            // Normalize detail keys
+            $normalized_detail = [];
+            foreach ($detail as $item) {
+                $normalized_item = [];
+                foreach ($item as $key => $value) {
+                    $normalized_item[strtolower($key)] = $value;
+                }
+                $normalized_detail[] = $normalized_item;
+            }
+
+            // Format data untuk view
+            $pengiriman = [
+                'header' => $normalized_header,
+                'detail' => $normalized_detail
+            ];
+
             $this->data['pengiriman'] = $pengiriman;
 
-            if ($pengiriman['To_Status'] == '3') {
+            // Set active submenu dan title berdasarkan to_status
+            if ($normalized_header['to_status'] == '1') {
+                $this->data['active_submenu'] = 'penggunaan';
+                $this->data['title'] = 'Detail Pengiriman ke Pengguna';
+            } else {
                 $this->data['active_submenu'] = 'pengiriman_antar_gudang';
                 $this->data['title'] = 'Detail Pengiriman Antar Gudang';
-            } else {
-                $this->data['active_submenu'] = 'penggunaan';
-                $this->data['title'] = 'Detail Pengiriman untuk Penggunaan';
             }
         } else {
+            // Jika header false atau tidak ada data
             $this->session->set_flashdata('error', 'Data pengiriman tidak ditemukan');
-            redirect('pengiriman/penggunaan');
+            $this->redirect_back();
         }
 
         $this->render_view('pages/pengiriman/detail');
     }
 
+    // ==================== CETAK PENGIRIMAN (SURAT JALAN) ====================
+    public function cetak($id)
+    {
+        $this->data['title'] = 'Surat Jalan';
+        $this->data['active_menu'] = 'pengiriman';
+
+        // Ambil data
+        $data_login = data_login_user(['stockout_id' => $id]);
+        $response = $this->Api_model->pengiriman_by_id($data_login);
+
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Normalize header keys
+            $normalized_header = [];
+            foreach ($header as $key => $value) {
+                $normalized_header[strtolower($key)] = $value;
+            }
+
+            // Normalize detail keys
+            $normalized_detail = [];
+            foreach ($detail as $item) {
+                $normalized_item = [];
+                foreach ($item as $key => $value) {
+                    $normalized_item[strtolower($key)] = $value;
+                }
+                $normalized_detail[] = $normalized_item;
+            }
+
+            $this->data['pengiriman'] = [
+                'header' => $normalized_header,
+                'detail' => $normalized_detail
+            ];
+
+            // Hitung halaman
+            $items_per_page = 12;
+            $total_items = count($normalized_detail) + 10; // +10 baris kosong
+            $this->data['total_pages'] = ceil($total_items / $items_per_page);
+
+            // Tentukan jenis surat jalan
+            if ($normalized_header['to_status'] == '1') {
+                $this->data['jenis_surat'] = 'SURAT JALAN - PENGIRIMAN KE PENGGUNA';
+                $this->data['tipe_pengiriman'] = 'Pengguna';
+            } else {
+                $this->data['jenis_surat'] = 'SURAT JALAN - PENGIRIMAN ANTAR GUDANG';
+                $this->data['tipe_pengiriman'] = 'Gudang';
+            }
+
+            // Load view cetak surat jalan
+            $this->load->view('pages/pengiriman/cetak_surat_jalan', $this->data);
+
+        } else {
+            $this->session->set_flashdata('error', 'Data pengiriman tidak ditemukan');
+            redirect('pengiriman');
+        }
+    }
+
+    // ==================== CETAK LANSGUNG (AUTO PRINT) ====================
+    public function cetak_langsung($id)
+    {
+        // Ambil data
+        $data_login = data_login_user(['stockout_id' => $id]);
+        $response = $this->Api_model->pengiriman_by_id($data_login);
+
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Normalize header keys
+            $normalized_header = [];
+            foreach ($header as $key => $value) {
+                $normalized_header[strtolower($key)] = $value;
+            }
+
+            // Normalize detail keys
+            $normalized_detail = [];
+            foreach ($detail as $item) {
+                $normalized_item = [];
+                foreach ($item as $key => $value) {
+                    $normalized_item[strtolower($key)] = $value;
+                }
+                $normalized_detail[] = $normalized_item;
+            }
+
+            $this->data['pengiriman'] = [
+                'header' => $normalized_header,
+                'detail' => $normalized_detail
+            ];
+
+            $this->data['auto_print'] = true;
+
+            // Tentukan jenis surat jalan
+            if ($normalized_header['to_status'] == '1') {
+                $this->data['jenis_surat'] = 'SURAT JALAN - PENGIRIMAN KE PENGGUNA';
+                $this->data['tipe_pengiriman'] = 'Pengguna';
+            } else {
+                $this->data['jenis_surat'] = 'SURAT JALAN - PENGIRIMAN ANTAR GUDANG';
+                $this->data['tipe_pengiriman'] = 'Gudang';
+            }
+
+            // Load view cetak surat jalan
+            $this->load->view('pages/pengiriman/cetak_surat_jalan', $this->data);
+
+        } else {
+            $this->session->set_flashdata('error', 'Data pengiriman tidak ditemukan');
+            redirect('pengiriman');
+        }
+    }
+
+    // ==================== DELETE PENGIRIMAN ====================
     public function delete($id)
     {
-        $data_login = data_login_user(['StockOut_Id' => $id]);
+        $data_login = data_login_user(['stockout_id' => $id]);
         $response = $this->Api_model->delete_pengiriman($data_login);
 
         if ($response['success']) {
@@ -200,6 +627,19 @@ class Pengiriman extends MY_Controller
             $this->session->set_flashdata('error', $response['message'] ?? 'Gagal menghapus pengiriman');
         }
 
-        redirect('pengiriman/penggunaan');
+        $this->redirect_back();
+    }
+
+    // Helper function untuk redirect back
+    private function redirect_back()
+    {
+        $referer = $this->input->server('HTTP_REFERER');
+        if (strpos($referer, 'penggunaan') !== false || strpos($referer, 'pengguna') !== false) {
+            redirect('pengiriman/penggunaan');
+        } else if (strpos($referer, 'antar_gudang') !== false) {
+            redirect('pengiriman/antar_gudang');
+        } else {
+            redirect('pengiriman/penggunaan');
+        }
     }
 }

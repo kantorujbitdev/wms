@@ -51,7 +51,18 @@ class Api_model extends CI_Model
     }
     public function update_pengiriman($data)
     {
-        return api_request('PUT', 'pengiriman', $data);
+        return api_request('POST', 'edit pengiriman', $data);
+    }
+
+    public function pengiriman_by_id($data)
+    {
+        return api_request('GET', 'edit pengiriman', $data);
+
+    }
+
+    public function delete_pengiriman($data)
+    {
+        return api_request('DELETE', 'pengiriman', $data);
     }
 
     public function login($data)

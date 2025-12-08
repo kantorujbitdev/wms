@@ -1,14 +1,14 @@
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Pengiriman untuk Penggunaan</h1>
-        <a href="<?= site_url('pengiriman/add_penggunaan') ?>" class="btn btn-primary btn-sm">
+        <h1 class="h3 mb-0 text-gray-800">Pengiriman Antar Gudang</h1>
+        <a href="<?= site_url('pengiriman/add_antar_gudang') ?>" class="btn btn-primary btn-sm">
             <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengiriman
         </a>
     </div>
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman untuk Penggunaan</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman Antar Gudang</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -18,9 +18,9 @@
                             <th>No</th>
                             <th>Kode Pengiriman</th>
                             <th>Tanggal</th>
-                            <th>Gudang</th>
+                            <th>Gudang Asal</th>
+                            <th>Gudang Tujuan</th>
                             <th>Keterangan</th>
-                            <th>Dibuat Oleh</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -29,21 +29,32 @@
                             <?php $no = 1;
                             foreach ($pengiriman_list as $pengiriman): ?>
                                 <tr>
-                                    <td class="text-center"><?= $no++; ?></td>
-                                    <td><?= $pengiriman['StockOut_Code'] ?? '-'; ?></td>
-                                    <td><?= $pengiriman['StockOut_Date'] ?? '-'; ?></td>
-                                    <td><?= $pengiriman['Warehouse_Name'] ?? '-'; ?></td>
-                                    <td><?= $pengiriman['StockOut_Note'] ?? '-'; ?></td>
-                                    <td><?= $pengiriman['CreateBy_Name'] ?? '-'; ?></td>
-                                    <td class="text-center">
+                                    <td><?= $no++ ?></td>
+                                    <td><?= $pengiriman['stockout_code'] ?></td>
+                                    <td><?= date('d-m-Y', strtotime($pengiriman['stockout_date'])) ?></td>
+                                    <td><?= $pengiriman['warehouse_name'] ?></td>
+                                    <td><?= $pengiriman['to_name'] ? $pengiriman['to_name'] : ($pengiriman['to_id'] ?? '-') ?>
+                                    </td>
+                                    <td>-</td> <!-- stockout_invoice tidak ada -->
+                                    <td><?= $pengiriman['stockout_note'] ?: '-' ?></td>
+                                    <td><?= $pengiriman['createby_name'] ?></td>
+                                    <td>
+                                        <a href="<?= site_url('pengiriman/detail/' . $pengiriman['stockout_id']) ?>"
+                                            class="btn btn-info btn-sm" title="Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
                                         <?php if (has_permission('pengiriman', 'edit')): ?>
-                                            <a href="<?= site_url('pengiriman/detail/' . $pengiriman['StockOut_Id']) ?>"
-                                                class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                                            <a href="<?= site_url('pengiriman/edit/' . $pengiriman['stockout_id']) ?>"
+                                                class="btn btn-warning btn-sm" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
                                         <?php endif; ?>
+
                                         <?php if (has_permission('pengiriman', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?= $pengiriman['StockOut_Id']; ?>"
-                                                data-name="<?= $pengiriman['StockOut_Code']; ?>"
+                                                data-id="<?= $pengiriman['stockout_id']; ?>"
+                                                data-name="<?= $pengiriman['stockout_code']; ?>"
                                                 data-url="<?= site_url('pengiriman/delete'); ?>">
                                                 <i class="fas fa-trash"></i>
                                             </button>
