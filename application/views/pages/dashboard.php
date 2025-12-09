@@ -4,18 +4,42 @@
         <h1 class="h3 mb-0 text-gray-800"><?= $wording['dashboard']; ?></h1>
     </div>
 
-    <!-- Content Row -->
-    <div class="row">
-        <!-- Total Items Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <!-- Stock Status Chart -->
+        <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Items</div>
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Status Stok</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?php echo isset($summary['total_items']) ? $summary['total_items'] : '0'; ?>
+                                Normal: <?= $chart_data['stock_status']['normal'] ?><br>
+                                Menipis: <?= $chart_data['stock_status']['menipis'] ?><br>
+                                Kosong: <?= $chart_data['stock_status']['kosong'] ?>
                             </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-pie fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Products -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Item</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <?= count($stoks) ?> Item
+                            </div>
+                            <div class="text-xs text-muted">Total barang dalam sistem</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-boxes fa-2x text-gray-300"></i>
@@ -25,57 +49,27 @@
             </div>
         </div>
 
-        <!-- Total Stock Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Stock</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?php echo isset($summary['total_stock']) ? $summary['total_stock'] : '0'; ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-warehouse fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Transactions Today Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <!-- Total Stock Value -->
+        <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Transactions Today</div>
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Stok</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?php echo isset($summary['transactions_today']) ? $summary['transactions_today'] : '0'; ?>
+                                <?php
+                                $total_qty = 0;
+                                foreach ($stoks as $stok) {
+                                    $total_qty += isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
+                                }
+                                echo number_format($total_qty, 2);
+                                ?>
                             </div>
+                            <div class="text-xs text-muted">Total quantity semua barang</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-exchange-alt fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Low Stock Items Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Low Stock Items</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?php echo isset($summary['low_stock_items']) ? $summary['low_stock_items'] : '0'; ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            <i class="fas fa-weight-hanging fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>

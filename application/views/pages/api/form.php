@@ -26,8 +26,8 @@
                         <?= isset($api) && $api['status_aktif'] ? 'checked' : ''; ?>>
                     <label class="form-check-label">Aktif</label>
                 </div>
-                <button class="btn btn-primary" type="submit">Simpan</button>
-                <a href="<?= site_url('api'); ?>" class="btn btn-secondary">Kembali</a>
+                <button class="btn btn-primary" type="submit"><?= $wording['save']; ?></button>
+                <a href="<?= site_url('api'); ?>" class="btn btn-secondary"><?= $wording['back']; ?></a>
             </form>
         </div>
     </div>

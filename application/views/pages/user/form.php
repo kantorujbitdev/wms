@@ -84,10 +84,10 @@
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i> Simpan
+                    <i class="fas fa-save me-2"></i> <?= $wording['save']; ?>
                 </button>
                 <a href="<?php echo site_url('user'); ?>" class="btn btn-secondary">
-                    <i class="fas fa-times me-2"></i> Batal
+                    <i class="fas fa-times me-2"></i> <?= $wording['cancel']; ?>
                 </a>
             </div>
             <?php echo form_close(); ?>

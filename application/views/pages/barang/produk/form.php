@@ -67,11 +67,11 @@
 
             <div>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Simpan
+                    <i class="fas fa-save"></i> <?= $wording['save']; ?>
                 </button>
 
                 <a href="<?php echo site_url('barang'); ?>" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Batal
+                    <i class="fas fa-times"></i> <?= $wording['cancel']; ?>
                 </a>
             </div>
 

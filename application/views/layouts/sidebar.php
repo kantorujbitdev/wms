@@ -181,15 +181,60 @@
             </li>
         <?php endif; ?>
 
-        <!-- Laporan -->
+        <!-- laporan -->
         <?php if (can_access_menu('laporan')): ?>
             <li class="sidebar-item <?= ($active_menu == 'laporan') ? 'active' : ''; ?>">
-                <a href="<?= site_url('laporan'); ?>" class="sidebar-link">
+                <a href="#laporanSubmenu" data-bs-toggle="collapse"
+                    aria-expanded="<?= ($active_menu == 'laporan') ? 'true' : 'false'; ?>"
+                    class="sidebar-link dropdown-toggle">
                     <i class="<?= get_menu_icon('laporan'); ?> me-2"></i>
                     <span><?= $wording['laporan']; ?></span>
                 </a>
+
+                <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'laporan') ? 'show' : ''; ?>"
+                    id="laporanSubmenu">
+                    <?php if (can_access_menu('laporan')): ?>
+                        <li>
+                            <a href="<?= site_url('laporan/stok'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_stok') ? 'active' : ''; ?>">
+                                <i class="<?= get_menu_icon('laporan_stok'); ?> me-2"></i>
+                                <span>Laporan Stok</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if (can_access_menu('laporan')): ?>
+                        <li>
+                            <a href="<?= site_url('laporan/keluar'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_keluar') ? 'active' : ''; ?>">
+                                <i class="<?= get_menu_icon('laporan_keluar'); ?> me-2"></i>
+                                <span>Laporan Keluar</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (can_access_menu('laporan')): ?>
+                        <li>
+                            <a href="<?= site_url('laporan/masuk'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_masuk') ? 'active' : ''; ?>">
+                                <i class="<?= get_menu_icon('laporan_masuk'); ?> me-2"></i>
+                                <span>Laporan Masuk</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if (can_access_menu('laporan')): ?>
+                        <li>
+                            <a href="<?= site_url('laporan/transaksi'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_transaksi') ? 'active' : ''; ?>">
+                                <i class="<?= get_menu_icon('laporan_transaksi'); ?> me-2"></i>
+                                <span>Detail Transaksi</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
             </li>
         <?php endif; ?>
+
 
         <!-- Customer -->
         <?php if (can_access_menu('customer')): ?>

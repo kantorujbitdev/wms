@@ -191,15 +191,24 @@ class Api_model extends CI_Model
     {
         return api_request('GET', 'laporan', [], array_merge(['action' => 'stok'], $params));
     }
+
     public function get_laporan_masuk($params = [])
     {
+        // Mengambil data dari penerimaan (stockin)
         return api_request('GET', 'laporan', [], array_merge(['action' => 'masuk'], $params));
     }
+
     public function get_laporan_keluar($params = [])
     {
+        // Mengambil data dari pengiriman (stockout)
         return api_request('GET', 'laporan', [], array_merge(['action' => 'keluar'], $params));
     }
 
+    public function get_laporan_transaksi($params = [])
+    {
+        // Menggabungkan data masuk dan keluar
+        return api_request('GET', 'laporan', [], array_merge(['action' => 'transaksi'], $params));
+    }
     // ---- User ----
     public function get_user($data)
     {

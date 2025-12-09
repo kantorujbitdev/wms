@@ -49,8 +49,8 @@
                     </div>
                 <?php endif; ?>
                 
-                <button class="btn btn-primary" type="submit">Simpan</button>
-                <a href="<?= site_url('pengaturan'); ?>" class="btn btn-secondary">Kembali</a>
+                <button class="btn btn-primary" type="submit"><?= $wording['save']; ?></button>
+                <a href="<?= site_url('pengaturan'); ?>" class="btn btn-secondary"><?= $wording['back']; ?></a>
             </form>
         </div>
     </div>

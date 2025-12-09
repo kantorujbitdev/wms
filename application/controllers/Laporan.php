@@ -1,5 +1,13 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+// Import namespace PHP Spreadsheet
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class Laporan extends MY_Controller
 {
@@ -9,43 +17,591 @@ class Laporan extends MY_Controller
         $this->check_permission('laporan', 'view');
     }
 
-    public function index()
+    public function export_stok_simple()
     {
-        $this->check_permission('laporan', 'view');
-        // Set title
-        $this->data['title'] = 'Laporan';
+        $this->check_permission('laporan', 'export');
 
-        // Render view
-        $this->render_view('pages/laporan/index');
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+
+        // Get filter parameters
+        $filter_warehouse = $this->input->get('warehouse_id');
+        $filter_product = $this->input->get('product_id');
+        $filter_category = $this->input->get('category_id');
+        $filter_status = $this->input->get('status');
+
+        // Prepare filter data
+        $filter_data = $data;
+
+        if ($filter_warehouse) {
+            $filter_data['warehouse_id'] = $filter_warehouse;
+        } elseif ($warehouse_id && $user_role != 'superadmin') {
+            $filter_data['warehouse_id'] = $warehouse_id;
+        }
+
+        if ($filter_product) {
+            $filter_data['product_id'] = $filter_product;
+        }
+
+        if ($filter_category) {
+            $filter_data['category_id'] = $filter_category;
+        }
+
+        // Get stock report from API
+        $response = $this->Api_model->get_stock_all($filter_data);
+
+        if ($response['success'] && !empty($response['data'])) {
+            // Create new Spreadsheet
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set title
+            $sheet->setCellValue('A1', 'Laporan Stok Barang');
+            $sheet->mergeCells('A1:K1');
+            $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+            // Set headers
+            $headers = [
+                'No',
+                'Kode Barang',
+                'Nama Barang',
+                'Kategori',
+                'Satuan',
+                'Stok Tersedia',
+                'Stok Minimum',
+                'Gudang',
+                'Lokasi',
+                'Status',
+                'Keterangan'
+            ];
+
+            $sheet->fromArray($headers, NULL, 'A3');
+
+            // Style headers
+            $headerStyle = [
+                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4F81BD']],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+            ];
+            $sheet->getStyle('A3:K3')->applyFromArray($headerStyle);
+
+            // Fill data
+            $row = 4;
+            $no = 1;
+            $total_stock = 0;
+
+            foreach ($response['data'] as $item) {
+                $min_stock = isset($item['min_stock']) ? (float) $item['min_stock'] : 0;
+                $current_stock = isset($item['current_stock']) ? (float) $item['current_stock'] : 0;
+                $total_stock += $current_stock;
+
+                // Determine status
+                $status = 'Normal';
+                if ($current_stock <= 0) {
+                    $status = 'Kosong';
+                } elseif ($current_stock <= $min_stock) {
+                    $status = 'Menipis';
+                }
+
+                $sheet->setCellValue('A' . $row, $no);
+                $sheet->setCellValue('B' . $row, $item['product_code'] ?? '');
+                $sheet->setCellValue('C' . $row, $item['product_name'] ?? '');
+                $sheet->setCellValue('D' . $row, $item['product_type_name'] ?? '-');
+                $sheet->setCellValue('E' . $row, $item['unit_name'] ?? '');
+                $sheet->setCellValue('F' . $row, $current_stock);
+                $sheet->setCellValue('G' . $row, $min_stock);
+                $sheet->setCellValue('H' . $row, $item['warehouse_name'] ?? '-');
+                $sheet->setCellValue('I' . $row, $item['location'] ?? '-');
+                $sheet->setCellValue('J' . $row, $status);
+                $sheet->setCellValue('K' . $row, $item['product_note'] ?? '-');
+
+                // Number format
+                $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
+                $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
+
+                $row++;
+                $no++;
+            }
+
+            // Add summary
+            $sheet->setCellValue('E' . $row, 'TOTAL STOK:');
+            $sheet->getStyle('E' . $row)->getFont()->setBold(true);
+            $sheet->setCellValue('F' . $row, $total_stock);
+            $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('F' . $row)->getFont()->setBold(true);
+
+            // Auto size columns
+            foreach (range('A', 'K') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+
+            // Set headers for download
+            $filename = 'laporan_stok_' . date('Ymd_His') . '.xlsx';
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+            exit;
+
+        } else {
+            $this->session->set_flashdata('error', 'Tidak ada data stok untuk diekspor!');
+            redirect('laporan/stok');
+        }
     }
-
     public function stok()
     {
         $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'Laporan Stok';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_stok';
 
-        // Get parameters from filter
-        $params = [
-            'category' => $this->input->get('category'),
-            'warehouse_id' => $this->input->get('warehouse_id'),
-            'status' => $this->input->get('status')
-        ];
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
 
-        // Get stock report from API
-        $response = $this->Api_model->get_laporan_stok($params);
-        $this->data['stock_report'] = $response['success'] ? $response['data'] : [];
+        // Get filter parameters
+        $filter_warehouse = $this->input->get('warehouse_id');
+        $filter_product = $this->input->get('product_id');
+        $filter_category = $this->input->get('category_id');
+        $filter_status = $this->input->get('status'); // stok_normal, stok_menipis, stok_kosong
 
-        // Get categories from API
-        $categories = $this->Api_model->get_barang(['action' => 'categories']);
-        $this->data['categories'] = $categories['success'] ? $categories['data'] : [];
+        // Get warehouses for filter (superadmin can see all)
+        if ($user_role == 'superadmin') {
+            $warehouse_response = $this->Api_model->get_all_gudang($data);
+        } else {
+            $warehouse_response = $this->Api_model->get_gudang($data);
+        }
+        $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
 
-        // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang();
-        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
+        // Get all products for filter
+        $products_response = $this->Api_model->get_barang($data);
+        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
+
+        // Get product categories for filter
+        $categories_response = $this->Api_model->get_product_type($data);
+        $this->data['categories'] = $categories_response['success'] ? $categories_response['data'] : [];
+
+        // Prepare filter data for API
+        $filter_data = $data;
+
+        // Apply warehouse filter
+        if ($filter_warehouse) {
+            $filter_data['warehouse_id'] = $filter_warehouse;
+        } elseif ($warehouse_id && $user_role != 'superadmin') {
+            // Non-superadmin default to their warehouse
+            $filter_data['warehouse_id'] = $warehouse_id;
+        }
+
+        // Apply product filter
+        if ($filter_product) {
+            $filter_data['product_id'] = $filter_product;
+        }
+
+        // Apply category filter
+        if ($filter_category) {
+            $filter_data['category_id'] = $filter_category;
+        }
+
+        // Get stock data from API
+        $stok_response = $this->Api_model->get_stock_all($filter_data);
+        $stocks = $stok_response['success'] ? $stok_response['data'] : [];
+
+        // // Apply status filter in PHP if needed
+        // if ($filter_status) {
+        //     $filtered_stocks = [];
+        //     foreach ($stocks as $stock) {
+        //         $min_stock = isset($stock['min_stock']) ? (float) $stock['min_stock'] : 0;
+        //         $current_stock = isset($stock['current_stock']) ? (float) $stock['current_stock'] : 0;
+
+        //         if ($filter_status == 'stok_normal' && $current_stock > $min_stock) {
+        //             $filtered_stocks[] = $stock;
+        //         } elseif ($filter_status == 'stok_menipis' && $current_stock > 0 && $current_stock <= $min_stock) {
+        //             $filtered_stocks[] = $stock;
+        //         } elseif ($filter_status == 'stok_kosong' && $current_stock <= 0) {
+        //             $filtered_stocks[] = $stock;
+        //         }
+        //     }
+        //     $stocks = $filtered_stocks;
+        // }
+
+        $this->data['stoks'] = $stocks;
+
+        // // Prepare data for charts
+        // $this->data['chart_data'] = $this->prepare_stock_chart_data($stocks);
+
+        // Pass filter values back to view
+        $this->data['filter_warehouse_id'] = $filter_warehouse;
+        $this->data['filter_product_id'] = $filter_product;
+        $this->data['filter_category_id'] = $filter_category;
+        $this->data['filter_status'] = $filter_status;
+        $this->data['user_role'] = $user_role;
+        $this->data['user_warehouse_id'] = $warehouse_id;
+        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
 
         // Render view
         $this->render_view('pages/laporan/stok');
+    }
+
+    public function export_stok()
+    {
+        // $this->check_permission('laporan', 'export');
+
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+
+        // Get filter parameters
+        $filter_warehouse = $this->input->get('warehouse_id');
+        $filter_product = $this->input->get('product_id');
+        $filter_category = $this->input->get('category_id');
+        $filter_status = $this->input->get('status');
+
+        // Prepare filter data
+        $filter_data = $data;
+
+        if ($filter_warehouse) {
+            $filter_data['warehouse_id'] = $filter_warehouse;
+        } elseif ($warehouse_id && $user_role != 'superadmin') {
+            $filter_data['warehouse_id'] = $warehouse_id;
+        }
+
+        if ($filter_product) {
+            $filter_data['product_id'] = $filter_product;
+        }
+
+        if ($filter_category) {
+            $filter_data['category_id'] = $filter_category;
+        }
+
+        // Get stock report from API
+        $response = $this->Api_model->get_stock_all($filter_data);
+
+        if ($response['success'] && !empty($response['data'])) {
+            // Create new Spreadsheet object
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set document properties
+            $spreadsheet->getProperties()
+                ->setCreator($this->session->userdata('name') ?: 'WMS System')
+                ->setLastModifiedBy($this->session->userdata('name') ?: 'WMS System')
+                ->setTitle('Laporan Stok Barang')
+                ->setSubject('Laporan Stok Barang per Gudang')
+                ->setDescription('Dokumen ini berisi laporan stok barang per gudang')
+                ->setKeywords('stok barang gudang laporan')
+                ->setCategory('Laporan');
+
+            // Set default font
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial')->setSize(10);
+
+            // =================== TITLE AND HEADER ===================
+            $sheet->setCellValue('A1', 'LAPORAN STOK BARANG');
+            $sheet->mergeCells('A1:J1');
+            $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+            $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Company/System Info
+            $sheet->setCellValue('A2', 'Sistem Warehouse Management');
+            $sheet->mergeCells('A2:J2');
+            $sheet->getStyle('A2')->getFont()->setSize(11);
+            $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Filter Info
+            $row = 4;
+            $sheet->setCellValue('A' . $row, 'Tanggal Export: ' . date('d-m-Y H:i:s'));
+
+            // Get filter names if ID provided
+            $filter_info = [];
+
+            if ($filter_warehouse) {
+                $warehouse_name = $this->get_warehouse_name($filter_warehouse);
+                $sheet->setCellValue('A' . ($row + 1), 'Gudang: ' . $warehouse_name);
+                $filter_info[] = 'Gudang: ' . $warehouse_name;
+            } else {
+                $sheet->setCellValue('A' . ($row + 1), 'Semua Gudang');
+            }
+
+            if ($filter_product) {
+                $product_name = $this->get_product_name($filter_product);
+                $sheet->setCellValue('A' . ($row + 2), 'Barang: ' . $product_name);
+                $filter_info[] = 'Barang: ' . $product_name;
+            }
+
+            if ($filter_category) {
+                $category_name = $this->get_category_name($filter_category);
+                $sheet->setCellValue('A' . ($row + 3), 'Kategori: ' . $category_name);
+                $filter_info[] = 'Kategori: ' . $category_name;
+            }
+
+            if ($filter_status) {
+                $status_text = $this->get_status_text($filter_status);
+                $sheet->setCellValue('A' . ($row + 4), 'Status: ' . $status_text);
+                $filter_info[] = 'Status: ' . $status_text;
+            }
+
+            // =================== TABLE HEADER ===================
+            $header_row = max($row + 6, 10);
+            $headers = [
+                'No',
+                'Kode Barang',
+                'Nama Barang',
+                'Kategori',
+                'Satuan',
+                'Stok Tersedia',
+                'Gudang',
+                'Lokasi',
+                'Status',
+                'Keterangan'
+            ];
+
+            $col = 'A';
+            foreach ($headers as $header) {
+                $sheet->setCellValue($col . $header_row, $header);
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+
+                // Style header
+                $sheet->getStyle($col . $header_row)
+                    ->getFont()->setBold(true);
+                $sheet->getStyle($col . $header_row)
+                    ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($col . $header_row)
+                    ->getFill()->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB('4F81BD');
+                $sheet->getStyle($col . $header_row)
+                    ->getFont()->getColor()->setRGB('FFFFFF');
+                $sheet->getStyle($col . $header_row)
+                    ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+                $col++;
+            }
+
+            // =================== TABLE DATA ===================
+            $data_row = $header_row + 1;
+            $no = 1;
+            $total_stock = 0;
+
+            foreach ($response['data'] as $item) {
+                $min_stock = 10;
+                $current_stock = isset($item['current_stock']) ? (float) $item['current_stock'] : 0;
+                $total_stock += $current_stock;
+
+                // Determine status
+                $status = 'Normal';
+                $status_color = '92D050'; // Green
+                if ($current_stock <= 0) {
+                    $status = 'Kosong';
+                    $status_color = 'FF0000'; // Red
+                } elseif ($current_stock <= $min_stock) {
+                    $status = 'Menipis';
+                    $status_color = 'FFC000'; // Orange
+                }
+
+                // Fill data
+                $sheet->setCellValue('A' . $data_row, $no);
+                $sheet->setCellValue('B' . $data_row, $item['product_code'] ?? '');
+                $sheet->setCellValue('C' . $data_row, $item['product_name'] ?? '');
+                $sheet->setCellValue('D' . $data_row, $item['product_type_name'] ?? '-');
+                $sheet->setCellValue('E' . $data_row, $item['unit_name'] ?? '');
+                $sheet->setCellValue('F' . $data_row, $current_stock);
+                $sheet->setCellValue('G' . $data_row, $item['warehouse_name'] ?? '-');
+                $sheet->setCellValue('H' . $data_row, $item['location'] ?? '-');
+                $sheet->setCellValue('I' . $data_row, $status);
+                $sheet->setCellValue('J' . $data_row, $item['product_note'] ?? '-');
+
+                // Number format for stock columns
+                $sheet->getStyle('F' . $data_row)->getNumberFormat()->setFormatCode('#,##0.00');
+                // $sheet->getStyle('G' . $data_row)->getNumberFormat()->setFormatCode('#,##0.00');
+
+                // Style status cell
+                $sheet->getStyle('I' . $data_row)
+                    ->getFill()->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB($status_color);
+                $sheet->getStyle('I' . $data_row)
+                    ->getFont()->getColor()->setRGB('FFFFFF');
+                $sheet->getStyle('I' . $data_row)
+                    ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                // Add borders to all cells
+                $sheet->getStyle('A' . $data_row . ':J' . $data_row)
+                    ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+                // Highlight low stock
+                if ($current_stock <= $min_stock && $current_stock >= 0) {
+                    $sheet->getStyle('F' . $data_row)
+                        ->getFont()->setBold(true)->getColor()->setRGB('FF0000');
+                }
+
+                $data_row++;
+                $no++;
+            }
+
+            // =================== SUMMARY ===================
+            $summary_row = $data_row + 2;
+
+            $sheet->setCellValue('E' . $summary_row, 'TOTAL STOK:');
+            $sheet->getStyle('E' . $summary_row)
+                ->getFont()->setBold(true)->setSize(11);
+            $sheet->getStyle('E' . $summary_row)
+                ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            $sheet->setCellValue('F' . $summary_row, $total_stock);
+            $sheet->getStyle('F' . $summary_row)
+                ->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('F' . $summary_row)
+                ->getFont()->setBold(true)->setSize(11);
+            $sheet->getStyle('F' . $summary_row)
+                ->getFill()->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('E2EFDA');
+
+            // =================== STATISTICS ===================
+            $stats_row = $summary_row + 2;
+            $sheet->setCellValue('A' . $stats_row, 'STATISTIK STOK');
+            $sheet->mergeCells('A' . $stats_row . ':C' . $stats_row);
+            $sheet->getStyle('A' . $stats_row)
+                ->getFont()->setBold(true)->setSize(12);
+
+            $stats_row++;
+
+            // Calculate statistics
+            $stok_normal = 0;
+            $stok_menipis = 0;
+            $stok_kosong = 0;
+
+            foreach ($response['data'] as $item) {
+                $min_stock = 10;
+                $current_stock = isset($item['current_stock']) ? (float) $item['current_stock'] : 0;
+
+                if ($current_stock <= 0) {
+                    $stok_kosong++;
+                } elseif ($current_stock <= $min_stock) {
+                    $stok_menipis++;
+                } else {
+                    $stok_normal++;
+                }
+            }
+
+            $sheet->setCellValue('A' . $stats_row, 'Stok Normal:');
+            $sheet->setCellValue('B' . $stats_row, $stok_normal);
+            $sheet->getStyle('A' . $stats_row)->getFont()->setBold(true);
+
+            $stats_row++;
+            $sheet->setCellValue('A' . $stats_row, 'Stok Menipis:');
+            $sheet->setCellValue('B' . $stats_row, $stok_menipis);
+            $sheet->getStyle('A' . $stats_row)->getFont()->setBold(true);
+
+            $stats_row++;
+            $sheet->setCellValue('A' . $stats_row, 'Stok Kosong:');
+            $sheet->setCellValue('B' . $stats_row, $stok_kosong);
+            $sheet->getStyle('A' . $stats_row)->getFont()->setBold(true);
+
+            $stats_row++;
+            $sheet->setCellValue('A' . $stats_row, 'Total Item:');
+            $sheet->setCellValue('B' . $stats_row, count($response['data']));
+            $sheet->getStyle('A' . $stats_row)->getFont()->setBold(true);
+            $sheet->getStyle('B' . $stats_row)->getFont()->setBold(true);
+
+            // =================== FOOTER ===================
+            $footer_row = $stats_row + 3;
+            $sheet->setCellValue('A' . $footer_row, 'Dibuat oleh:');
+            $sheet->getStyle('A' . $footer_row)->getFont()->setItalic(true);
+
+            $sheet->setCellValue('B' . $footer_row, $this->session->userdata('name') ?: 'System');
+            $sheet->getStyle('B' . $footer_row)->getFont()->setBold(true);
+
+            $footer_row++;
+            $sheet->setCellValue('A' . $footer_row, 'Jabatan:');
+            $sheet->getStyle('A' . $footer_row)->getFont()->setItalic(true);
+
+            $sheet->setCellValue('B' . $footer_row, $this->session->userdata('role') ?: 'User');
+            $sheet->getStyle('B' . $footer_row)->getFont()->setBold(true);
+
+            // =================== SET COLUMN WIDTHS ===================
+            $sheet->getColumnDimension('A')->setWidth(8);  // No
+            $sheet->getColumnDimension('B')->setWidth(15); // Kode Barang
+            $sheet->getColumnDimension('C')->setWidth(30); // Nama Barang
+            $sheet->getColumnDimension('D')->setWidth(20); // Kategori
+            $sheet->getColumnDimension('E')->setWidth(10); // Satuan
+            $sheet->getColumnDimension('F')->setWidth(15); // Stok Tersedia
+            $sheet->getColumnDimension('G')->setWidth(25); // Gudang
+            $sheet->getColumnDimension('H')->setWidth(15); // Lokasi
+            $sheet->getColumnDimension('I')->setWidth(12); // Status
+            $sheet->getColumnDimension('J')->setWidth(30); // Keterangan
+
+            // Set auto filter
+            $sheet->setAutoFilter('A' . $header_row . ':J' . ($data_row - 1));
+
+            // =================== OUTPUT ===================
+            $filename = 'Laporan_Stok_' . date('Ymd_His') . '.xlsx';
+
+            // Redirect output to a client's web browser (Xlsx)
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+            // If you're serving to IE 9, then the following may be needed
+            header('Cache-Control: max-age=1');
+
+            // If you're serving to IE over SSL, then the following may be needed
+            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+            header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+            header('Pragma: public'); // HTTP/1.0
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+            exit;
+
+        } else {
+            $this->session->set_flashdata('error', 'Tidak ada data stok untuk diekspor!');
+            redirect('laporan/stok');
+        }
+    }
+
+    // Helper function to get warehouse name
+    private function get_warehouse_name($warehouse_id)
+    {
+        $data = data_login_user(['warehouse_id' => $warehouse_id]);
+        $response = $this->Api_model->get_gudang_id($data);
+        if ($response['success'] && isset($response['data'][0])) {
+            return $response['data'][0]['warehouse_name'];
+        }
+        return 'Tidak Diketahui';
+    }
+
+    // Helper function to get product name
+    private function get_product_name($product_id)
+    {
+        $data = data_login_user(['product_id' => $product_id]);
+        $response = $this->Api_model->get_barang_by_id($data);
+        if ($response['success'] && isset($response['data'][0])) {
+            return $response['data'][0]['product_name'];
+        }
+        return 'Tidak Diketahui';
+    }
+
+    // Helper function to get category name
+    private function get_category_name($category_id)
+    {
+        $data = data_login_user(['product_type_id' => $category_id]);
+        $response = $this->Api_model->get_product_type_by_id($data);
+        if ($response['success'] && isset($response['data'][0])) {
+            return $response['data'][0]['product_type_name'];
+        }
+        return 'Tidak Diketahui';
+    }
+
+    // Helper function to get status text
+    private function get_status_text($status)
+    {
+        $statuses = [
+            'stok_normal' => 'Stok Normal',
+            'stok_menipis' => 'Stok Menipis',
+            'stok_kosong' => 'Stok Kosong'
+        ];
+        return $statuses[$status] ?? 'Semua Status';
     }
 
     public function masuk()
@@ -53,7 +609,8 @@ class Laporan extends MY_Controller
         $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'Laporan Barang Masuk';
-
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_masuk';
         // Get parameters from filter
         $params = [
             'date_from' => $this->input->get('date_from'),
@@ -67,11 +624,11 @@ class Laporan extends MY_Controller
         $this->data['in_report'] = $response['success'] ? $response['data'] : [];
 
         // Get items from API
-        $items = $this->Api_model->get_barang();
+        $items = $this->Api_model->get_barang(data_login_user());
         $this->data['items'] = $items['success'] ? $items['data'] : [];
 
         // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang();
+        $warehouses = $this->Api_model->get_gudang(data_login_user());
         $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
         // Render view
@@ -84,6 +641,8 @@ class Laporan extends MY_Controller
         // Set title
         $this->data['title'] = 'Laporan Barang Keluar';
 
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_keluar';
         // Get parameters from filter
         $params = [
             'date_from' => $this->input->get('date_from'),
@@ -97,47 +656,15 @@ class Laporan extends MY_Controller
         $this->data['out_report'] = $response['success'] ? $response['data'] : [];
 
         // Get items from API
-        $items = $this->Api_model->get_barang();
+        $items = $this->Api_model->get_barang(data_login_user());
         $this->data['items'] = $items['success'] ? $items['data'] : [];
 
         // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang();
+        $warehouses = $this->Api_model->get_gudang(data_login_user());
         $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
 
         // Render view
         $this->render_view('pages/laporan/keluar');
-    }
-
-    public function export_stok()
-    {
-        // Get parameters from filter
-        $params = [
-            'category' => $this->input->get('category'),
-            'warehouse_id' => $this->input->get('warehouse_id'),
-            'status' => $this->input->get('status')
-        ];
-
-        // Get stock report from API
-        $response = $this->Api_model->get_laporan_stok($params);
-
-        if ($response['success']) {
-            // Create CSV content
-            $csv_content = "Kode Barang,Nama Barang,Kategori,Satuan,Stok,Stok Minimum,Gudang\n";
-
-            foreach ($response['data'] as $item) {
-                $csv_content .= "{$item['code']},{$item['name']},{$item['category']},{$item['unit']},{$item['current_stock']},{$item['min_stock']},{$item['warehouse_name']}\n";
-            }
-
-            // Set headers for download
-            header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="laporan_stok_' . date('Y-m-d') . '.csv"');
-
-            echo $csv_content;
-            exit;
-        } else {
-            $this->session->set_flashdata('error', 'Gagal mengekspor laporan stok!');
-            redirect('laporan/stok');
-        }
     }
 
     public function export_masuk()
@@ -205,4 +732,108 @@ class Laporan extends MY_Controller
             redirect('laporan/keluar');
         }
     }
+
+    public function transaksi()
+    {
+        $this->check_permission('laporan', 'view');
+        // Set title
+        $this->data['title'] = 'Laporan Transaksi';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_transaksi';
+
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+
+        // Get filter parameters
+        $date_from = $this->input->get('date_from');
+        $date_to = $this->input->get('date_to');
+        $product_id = $this->input->get('product_id');
+        $filter_warehouse = $this->input->get('warehouse_id');
+        $transaction_type = $this->input->get('transaction_type'); // masuk/keluar
+
+        // Prepare filter data for API
+        $filter_data = $data;
+
+        // Date filter
+        if ($date_from) {
+            $filter_data['date_from'] = $date_from;
+        }
+        if ($date_to) {
+            $filter_data['date_to'] = $date_to;
+        }
+
+        // Warehouse filter
+        if ($filter_warehouse) {
+            $filter_data['warehouse_id'] = $filter_warehouse;
+        } elseif ($warehouse_id && $user_role != 'superadmin') {
+            $filter_data['warehouse_id'] = $warehouse_id;
+        }
+
+        // Product filter
+        if ($product_id) {
+            $filter_data['product_id'] = $product_id;
+        }
+
+        // Transaction type filter
+        if ($transaction_type) {
+            $filter_data['transaction_type'] = $transaction_type;
+        }
+
+        // Get combined report from API (both masuk and keluar)
+        $response_in = $this->Api_model->get_laporan_masuk($filter_data);
+        $response_out = $this->Api_model->get_laporan_keluar($filter_data);
+
+        $transactions = [];
+
+        // Process masuk (penerimaan)
+        if ($response_in['success']) {
+            foreach ($response_in['data'] as $item) {
+                $item['type'] = 'MASUK';
+                $item['type_text'] = 'Barang Masuk';
+                $transactions[] = $item;
+            }
+        }
+
+        // Process keluar (pengiriman)
+        if ($response_out['success']) {
+            foreach ($response_out['data'] as $item) {
+                $item['type'] = 'KELUAR';
+                $item['type_text'] = 'Barang Keluar';
+                $transactions[] = $item;
+            }
+        }
+
+        // Sort by date
+        usort($transactions, function ($a, $b) {
+            return strtotime($b['date']) - strtotime($a['date']);
+        });
+
+        $this->data['transactions'] = $transactions;
+
+        // Get products for filter dropdown
+        $products_response = $this->Api_model->get_barang($data);
+        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
+
+        // Get warehouses for filter dropdown
+        if ($user_role == 'superadmin') {
+            $warehouses_response = $this->Api_model->get_all_gudang($data);
+        } else {
+            $warehouses_response = $this->Api_model->get_gudang($data);
+        }
+        $this->data['warehouses'] = $warehouses_response['success'] ? $warehouses_response['data'] : [];
+
+        // Pass filter values back to view
+        $this->data['filter_date_from'] = $date_from;
+        $this->data['filter_date_to'] = $date_to;
+        $this->data['filter_product_id'] = $product_id;
+        $this->data['filter_warehouse_id'] = $filter_warehouse;
+        $this->data['filter_transaction_type'] = $transaction_type;
+        $this->data['user_role'] = $user_role;
+        $this->data['user_warehouse_id'] = $warehouse_id;
+
+        // Render view
+        $this->render_view('pages/laporan/transaksi');
+    }
+
 }

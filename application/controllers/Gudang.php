@@ -232,21 +232,4 @@ class Gudang extends MY_Controller
             redirect('gudang');
         }
     }
-
-    // public function stock($id)
-    // {
-    //     // Set title
-    //     $this->data['title'] = 'Stok Gudang';
-
-    //     // Get warehouse data from API
-    //     $warehouse = $this->Api_model->get_gudang(['id' => $id]);
-    //     $this->data['warehouse'] = $warehouse['success'] ? $warehouse['data'] : [];
-
-    //     // Get stock data from API
-    //     $stock = $this->Api_model->get_stok_gudang($id);
-    //     $this->data['stock_items'] = $stock['success'] ? $stock['data'] : [];
-
-    //     // Render view
-    //     $this->render_view('pages/gudang/stok');
-    // }
 }

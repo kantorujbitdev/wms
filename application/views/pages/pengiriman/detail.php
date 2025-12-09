@@ -1,12 +1,15 @@
 <div class="container-fluid">
+    <?php
+    $back_url = 'pengiriman/penggunaan';
+    if ($pengiriman['header']['to_status'] == '3')
+        $back_url = 'pengiriman/antar_gudang'; ?>
+    <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mt-2 mb-4">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
+    </a>
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-        <?php
-        $back_url = 'pengiriman/penggunaan';
-        if ($pengiriman['header']['to_status'] == '3')
-            $back_url = 'pengiriman/antar_gudang';
-        ?>
+
         <!-- TAMBAHKAN TOMBOL CETAK DISINI -->
         <div class="btn-group" role="group">
             <a href="<?= site_url('pengiriman/cetak/' . $pengiriman['header']['stockout_id']) ?>" target="_blank"
@@ -25,10 +28,6 @@
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Informasi Pengiriman </h6>
-
-                <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mt-2 mt-md-0">
-                    <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
-                </a>
             </div>
         </div>
         <div class="card-body">

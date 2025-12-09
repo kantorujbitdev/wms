@@ -12,7 +12,7 @@
                     <?= $wording['barang_tipe_list']; ?>
                 </h6>
 
-                <?php if (is_role('superadmin')): ?>
+                <?php if (has_permission('tipe_produk', 'edit')): ?>
                     <a href="<?= site_url('barang/add_tipe_produk') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">
                         <i class="fas fa-plus fa-sm text-white-50"></i>
                         <?= $wording['barang_tipe_add']; ?>
@@ -30,7 +30,9 @@
                             <th>No</th>
                             <th>Kode</th>
                             <th>Nama</th>
-                            <th>Aksi</th>
+                            <?php if (has_permission('tipe_produk', 'edit')): ?>
+                                <th>Aksi</th>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,8 +44,8 @@
                                     <td><?php echo $type['Product_Type_Code']; ?></td>
                                     <td><?php echo !empty($type['Product_Type_Name']) ? $type['Product_Type_Name'] : '-'; ?>
                                     </td>
-                                    <td class="text-center">
-                                        <?php if (has_permission('tipe_produk', 'edit')): ?>
+                                    <?php if (has_permission('tipe_produk', 'edit')): ?>
+                                        <td class="text-center">
                                             <a href="<?php echo site_url('barang/edit_tipe_produk/' . $type['Product_Type_Id']); ?>"
                                                 class="btn btn-info btn-sm">
                                                 <i class="fas fa-edit"></i>
@@ -56,8 +58,8 @@
                                                 data-url="<?= site_url('barang/delete_tipe_produk'); ?>">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                        <?php endif; ?>
-                                    </td>
+                                        </td>
+                                    <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

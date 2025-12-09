@@ -4,7 +4,7 @@
         <h1 class="h3 mb-0 text-gray-800">Transfer Stok</h1>
         <a href="<?php echo site_url('transaksi'); ?>"
             class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
         </a>
     </div>
 
@@ -71,8 +71,8 @@
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="<?php echo site_url('transaksi'); ?>" class="btn btn-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary"><?= $wording['save']; ?></button>
+                <a href="<?php echo site_url('transaksi'); ?>" class="btn btn-secondary"><?= $wording['cancel']; ?></a>
             </div>
             <?php echo form_close(); ?>
         </div>

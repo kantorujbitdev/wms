@@ -54,9 +54,9 @@ $session_warehouse_id = $this->session->userdata('warehouse_id');
                 </div>
 
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Simpan
+                    <i class="fas fa-save"></i> <?= $wording['save']; ?>
                 </button>
-                <a href="<?= site_url('gudang_stok') ?>" class="btn btn-secondary">Kembali</a>
+                <a href="<?= site_url('gudang_stok') ?>" class="btn btn-secondary"><?= $wording['back']; ?></a>
 
             </form>
 

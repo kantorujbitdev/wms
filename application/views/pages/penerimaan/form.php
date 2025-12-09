@@ -1,17 +1,18 @@
 <div class="container-fluid">
+    <?php 
+    $back_url = 'penerimaan/dari_supplier';
+    if ($from_status == '1')
+        $back_url = 'penerimaan/dari_pengguna';
+    elseif ($from_status == '3')
+        $back_url = 'penerimaan/antar_gudang';?>
+    
+    <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
+    </a>
+    
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-        <?php
-        $back_url = 'penerimaan/dari_supplier';
-        if ($from_status == '1')
-            $back_url = 'penerimaan/dari_pengguna';
-        elseif ($from_status == '3')
-            $back_url = 'penerimaan/antar_gudang';
-        ?>
-        <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
-        </a>
     </div>
 
     <!-- Form -->

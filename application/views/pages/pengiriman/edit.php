@@ -8,7 +8,7 @@
             $back_url = 'pengiriman/antar_gudang';
         ?>
         <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
         </a>
     </div>
 

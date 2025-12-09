@@ -1,35 +1,16 @@
 <div class="container-fluid">
+    <?php
+    $back_url = 'pengiriman/penggunaan';
+    if ($to_status == '3')
+        $back_url = 'pengiriman/antar_gudang'; ?>
+         <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
+        <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
+    </a>
+    
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-1">
         <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-        <?php
-        $back_url = 'pengiriman/penggunaan';
-        if ($to_status == '3')
-            $back_url = 'pengiriman/antar_gudang';
-        ?>
-        <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
-        </a>
     </div>
-
-    <!-- Tampilkan pesan error/success -->
-    <?php if ($this->session->flashdata('error')): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong> <?= $this->session->flashdata('error') ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-    <?php endif; ?>
-
-    <?php if ($this->session->flashdata('success')): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Sukses!</strong> <?= $this->session->flashdata('success') ?>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-    <?php endif; ?>
 
     <!-- Form -->
     <div class="card shadow mb-4">
@@ -326,7 +307,7 @@
                             <i class="fas fa-save"></i> Simpan Pengiriman
                         </button>
                         <a href="<?= site_url($back_url) ?>" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Batal
+                            <i class="fas fa-times"></i> <?= $wording['cancel']; ?>
                         </a>
                         <?php if (isset($old_form_data)): ?>
                                     <button type="button" id="clearForm" class="btn btn-warning">
