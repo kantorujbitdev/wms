@@ -10,18 +10,21 @@
         </div>
     </div>
 
-    <!-- Filter Card -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Filter Laporan</h6>
-        </div>
-        <div class="card-body">
-            <form method="GET" action="<?= site_url('laporan/stok') ?>">
-                <div class="row">
-                    <?php if ($user_role == 'superadmin'): ?>
+    <?php if ($user_role == 'superadmin'): ?>
+        <!-- Filter Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Filter Laporan</h6>
+            </div>
+
+            <div class="card-body">
+                <form method="GET" action="<?= site_url('laporan/stok') ?>">
+                    <div class="row">
+
+                        <!-- Dropdown Gudang -->
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="warehouse_id">Gudang</label>
+                                <label for="warehouse_id" class="mb-1">Gudang</label>
                                 <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                     <option value="">Semua Gudang</option>
                                     <?php foreach ($warehouses as $warehouse): ?>
@@ -33,25 +36,29 @@
                                 </select>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <input type="hidden" name="warehouse_id" value="<?= $user_warehouse_id ?>">
-                    <?php endif; ?>
 
-                </div>
-
-                <div class="row mt-2">
-                    <div class="col-md-12 text-right">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-filter"></i> Filter
-                        </button>
-                        <a href="<?= site_url('laporan/stok') ?>" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-sync"></i> Reset
-                        </a>
+                        <!-- Tombol Filter -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div>
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        <i class="fas fa-filter"></i> Filter
+                                    </button>
+                                    <a href="<?= site_url('laporan/stok') ?>" class="btn btn-secondary btn-block">
+                                        <i class="fas fa-sync"></i> Reset
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
+
+    <?php else: ?>
+        <input type="hidden" name="warehouse_id" value="<?= $user_warehouse_id ?>">
+    <?php endif; ?>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
