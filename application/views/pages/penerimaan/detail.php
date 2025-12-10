@@ -87,7 +87,7 @@
                             </tr>
                             <tr>
                                 <th>Dibuat Oleh</th>
-                                <td><?= $header['createby_name'] ?? '-' ?></td>
+                                <td><?= $header['user_name'] ?? '-' ?></td>
                             </tr>
                             <tr>
                                 <th>Total Items</th>

@@ -43,8 +43,8 @@
                                 $kode_prefix = 'RET/IN/';
                             elseif ($from_status == '3')
                                 $kode_prefix = 'TRF/IN/';
-                            
-                            $stockin_code = $kode_prefix . date('m/Y');
+                            $romanMonth = monthToRoman(date('m'));
+                            $stockin_code = $kode_prefix . $romanMonth . '/' .date('Y');
                             if (isset($old_form_data['stockin_code'])) {
                                 $stockin_code = $old_form_data['stockin_code'];
                             }

@@ -41,12 +41,18 @@
                                     <td><?= $penerimaan['warehouse_name'] ?? '-'; ?></td>
                                     <td><?= $penerimaan['stockin_invoice'] ?? '-'; ?></td>
                                     <td><?= $penerimaan['stockin_note'] ?? '-'; ?></td>
-                                    <td><?= $penerimaan['createby_name'] ?? '-'; ?></td>
+                                    <td><?= $penerimaan['user_name'] ?? '-'; ?></td>
                                     <td class="text-center">
                                         <?php if (has_permission('penerimaan')): ?>
                                             <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
                                                 class="btn btn-info btn-sm" title="Detail">
                                                 <i class="fas fa-eye"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (has_permission('penerimaan', 'edit')): ?>
+                                            <a href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
+                                                class="btn btn-warning btn-sm" title="Edit">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                         <?php endif; ?>
                                         <?php if (has_permission('penerimaan', 'delete')): ?>

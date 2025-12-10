@@ -37,7 +37,7 @@
                                     </td>
                                     <td>-</td> <!-- stockout_invoice tidak ada -->
                                     <td><?= $pengiriman['stockout_note'] ?: '-' ?></td>
-                                    <td><?= $pengiriman['createby_name'] ?></td>
+                                    <td><?= $pengiriman['user_name'] ?></td>
                                     <td>
                                         <a href="<?= site_url('pengiriman/detail/' . $pengiriman['stockout_id']) ?>"
                                             class="btn btn-info btn-sm" title="Detail">

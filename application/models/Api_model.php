@@ -29,7 +29,7 @@ class Api_model extends CI_Model
     }
     public function update_penerimaan($data)
     {
-        return api_request('PUT', 'penerimaan', $data);
+        return api_request('POST', 'edit penerimaan', $data);
     }
 
     public function penerimaan_by_id($data)

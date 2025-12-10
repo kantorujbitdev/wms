@@ -156,7 +156,7 @@
                                     </td>
                                     <td><?= $item['warehouse_name'] ?></td>
                                     <td><?= $item['stockout_note'] ?? '-' ?></td>
-                                    <td><?= $item['createby_name'] ?? '-' ?></td>
+                                    <td><?= $item['user_name'] ?? '-' ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>

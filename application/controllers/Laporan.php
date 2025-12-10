@@ -210,28 +210,7 @@ class Laporan extends MY_Controller
         $stok_response = $this->Api_model->get_stock_all($filter_data);
         $stocks = $stok_response['success'] ? $stok_response['data'] : [];
 
-        // // Apply status filter in PHP if needed
-        // if ($filter_status) {
-        //     $filtered_stocks = [];
-        //     foreach ($stocks as $stock) {
-        //         $min_stock = isset($stock['min_stock']) ? (float) $stock['min_stock'] : 0;
-        //         $current_stock = isset($stock['current_stock']) ? (float) $stock['current_stock'] : 0;
-
-        //         if ($filter_status == 'stok_normal' && $current_stock > $min_stock) {
-        //             $filtered_stocks[] = $stock;
-        //         } elseif ($filter_status == 'stok_menipis' && $current_stock > 0 && $current_stock <= $min_stock) {
-        //             $filtered_stocks[] = $stock;
-        //         } elseif ($filter_status == 'stok_kosong' && $current_stock <= 0) {
-        //             $filtered_stocks[] = $stock;
-        //         }
-        //     }
-        //     $stocks = $filtered_stocks;
-        // }
-
         $this->data['stoks'] = $stocks;
-
-        // // Prepare data for charts
-        // $this->data['chart_data'] = $this->prepare_stock_chart_data($stocks);
 
         // Pass filter values back to view
         $this->data['filter_warehouse_id'] = $filter_warehouse;
@@ -248,7 +227,6 @@ class Laporan extends MY_Controller
 
     public function export_stok()
     {
-        // $this->check_permission('laporan', 'export');
 
         $user_role = $this->session->userdata('role');
         $warehouse_id = $this->session->userdata('warehouse_id');
@@ -666,7 +644,6 @@ class Laporan extends MY_Controller
         // Render view
         $this->render_view('pages/laporan/keluar');
     }
-
     public function export_masuk()
     {
         // Get parameters from filter

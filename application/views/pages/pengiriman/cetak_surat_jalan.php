@@ -3,9 +3,11 @@
 <html lang="id">
 <?php
 $config = get_app_config();
-$items_per_page = 12; // Jumlah item per halaman untuk perhitungan halaman
+$items_per_page = 20; // Jumlah item per halaman untuk perhitungan halaman
+// $items_per_page = 12; // Jumlah item per halaman untuk perhitungan halaman
 $total_items = count($pengiriman['detail']);
-$total_pages = ceil(($total_items + 10) / $items_per_page); // +10 untuk baris kosong
+// $total_pages = ceil(($total_items + 10) / $items_per_page); // +10 untuk baris kosong
+$total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
 ?>
 
 <head>
@@ -468,7 +470,7 @@ $total_pages = ceil(($total_items + 10) / $items_per_page); // +10 untuk baris k
                         </div>
                         <div class="info-row">
                             <div class="info-label">Dibuat Oleh:</div>
-                            <div class="info-value"><?= $pengiriman['header']['createby_name'] ?></div>
+                            <div class="info-value"><?= $pengiriman['header']['user_name'] ?></div>
                         </div>
                     </div>
                 </div>
@@ -572,7 +574,7 @@ $total_pages = ceil(($total_items + 10) / $items_per_page); // +10 untuk baris k
                             <h4>PENGIRIM</h4>
                             <div class="ttd-line"></div>
                             <div class="ttd-info">
-                                <p><?= strtoupper($pengiriman['header']['createby_name']) ?></p>
+                                <p><?= strtoupper($pengiriman['header']['user_name']) ?></p>
                                 <p>Tanggal: <?= date('d F Y') ?></p>
                             </div>
                         </div>

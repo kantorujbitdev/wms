@@ -39,8 +39,8 @@
                             $kode_prefix = 'RO/INV/';
                             if ($to_status == '3')
                                 $kode_prefix = 'TRF/OUT/';
-
-                            $stockout_code = $kode_prefix . date('m/Y');
+                            $romanMonth = monthToRoman(date('m'));
+                            $stockout_code = $kode_prefix . $romanMonth . '/' . date('Y');
                             if (isset($old_form_data['stockout_code'])) {
                                 $stockout_code = $old_form_data['stockout_code'];
                             }

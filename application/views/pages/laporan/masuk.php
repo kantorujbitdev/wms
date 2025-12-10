@@ -137,7 +137,7 @@
                                     <td><?= $item['supplier_name'] ?? '-' ?></td>
                                     <td><?= $item['warehouse_name'] ?></td>
                                     <td><?= $item['stockin_note'] ?? '-' ?></td>
-                                    <td><?= $item['createby_name'] ?? '-' ?></td>
+                                    <td><?= $item['user_name'] ?? '-' ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
