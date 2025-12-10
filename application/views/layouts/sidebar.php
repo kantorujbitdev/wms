@@ -310,4 +310,4 @@
 <!-- Content Wrapper -->
 <div class="content-wrapper" id="content-wrapper">
     <?php $this->load->view('layouts/top_profile'); ?>
-    <div class="container-fluid pt-2">
+    <div class="container-fluid pt-3">
