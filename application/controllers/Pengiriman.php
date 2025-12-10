@@ -25,7 +25,6 @@ class Pengiriman extends MY_Controller
 
         $this->render_view('pages/pengiriman/ke_pengguna');
     }
-
     public function add_pengguna()
     {
         $this->data['title'] = 'Tambah Pengiriman ke Pengguna';
@@ -57,15 +56,23 @@ class Pengiriman extends MY_Controller
 
         // Get products from stock based on warehouse
         if ($user_role == 'superadmin') {
-            // For superadmin, we need to load products after warehouse selection
+            // For superadmin, initially no products
             $this->data['stocks'] = [];
             $this->data['products'] = [];
         } else {
             // Get stock from current warehouse
             $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
-            $this->data['stocks'] = $stock_response['success'] ? $stock_response['data'] : [];
-            $this->data['products'] = $this->data['stocks'];
+            if ($stock_response['success']) {
+                $this->data['stocks'] = $stock_response['data'];
+                $this->data['products'] = $stock_response['data'];
+            } else {
+                $this->data['stocks'] = [];
+                $this->data['products'] = [];
+            }
         }
+
+        // Convert products data to JSON for JavaScript
+        $this->data['products_json'] = json_encode($this->data['products']);
 
         $this->data['to_status'] = '1';
         $this->data['form_type'] = 'pengguna';
@@ -282,9 +289,6 @@ class Pengiriman extends MY_Controller
         $data_login = data_login_user(['stockout_id' => $id]);
         $response = $this->Api_model->pengiriman_by_id($data_login);
 
-        // Debug: Lihat struktur response
-        // echo '<pre>'; print_r($response); echo '</pre>'; die();
-
         // Periksa struktur response API
         if (isset($response['header']) && $response['header'] !== false) {
             $header = $response['header'];
@@ -304,10 +308,11 @@ class Pengiriman extends MY_Controller
             ];
 
             $this->data['pengiriman'] = $pengiriman;
-            $this->data['to_status'] = $normalized_header['to_status'];
+            $to_status = $normalized_header['to_status'];
+            $this->data['to_status'] = $to_status;
 
             // Set active submenu dan title berdasarkan to_status
-            if ($normalized_header['to_status'] == '1') {
+            if ($to_status == '1') {
                 $this->data['active_submenu'] = 'penggunaan';
                 $this->data['title'] = 'Edit Pengiriman ke Pengguna';
             } else {
@@ -318,6 +323,8 @@ class Pengiriman extends MY_Controller
             // Get user role from session
             $user_role = $this->session->userdata('role');
             $this->data['user_role'] = $user_role;
+            $this->data['user_warehouse_id'] = $this->session->userdata('warehouse_id');
+            $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
 
             // Get warehouses
             if ($user_role == 'superadmin') {
@@ -328,16 +335,17 @@ class Pengiriman extends MY_Controller
             $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
 
             // Get customers if to_status = 1
-            if ($normalized_header['to_status'] == '1') {
+            if ($to_status == '1') {
                 $customer_response = $this->Api_model->get_customer($data_login);
                 $this->data['customers'] = $customer_response['success'] ? $customer_response['data'] : [];
             }
 
             // Get products from stock based on warehouse
-            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $normalized_header['warehouse_id']]));
+            $warehouse_id = $normalized_header['warehouse_id'];
+            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
             $stocks = $stock_response['success'] ? $stock_response['data'] : [];
 
-            // Add available_qty to each detail item
+            // Process detail items
             foreach ($this->data['pengiriman']['detail'] as &$item) {
                 // Normalize detail item keys
                 $normalized_detail = [];
@@ -346,26 +354,43 @@ class Pengiriman extends MY_Controller
                 }
                 $item = $normalized_detail;
 
-                // Find matching stock and add available_qty
+                // Find matching stock and add product info
                 foreach ($stocks as $stock) {
                     if (
                         isset($stock['stock_id']) && isset($item['stock_id']) &&
                         $stock['stock_id'] == $item['stock_id']
                     ) {
-                        $item['available_qty'] = $stock['current_stock'];
+                        // Current stock available (current stock + edited qty)
+                        $current_stock = floatval($stock['current_stock']);
+                        $edited_qty = floatval($item['qty']);
+                        $available_qty = $current_stock + $edited_qty; // Add back the qty being edited
+
+                        $item['available_qty'] = $available_qty;
                         $item['product_code'] = $stock['product_code'] ?? '';
+                        $item['product_name'] = $stock['product_name'] ?? '';
+                        $item['unit_code'] = $stock['unit_code'] ?? '';
                         $item['unit_name'] = $stock['unit_name'] ?? '';
                         break;
                     }
                 }
 
-                // If not found in stocks, use current_stock from detail
-                if (!isset($item['available_qty']) && isset($item['current_stock'])) {
-                    $item['available_qty'] = $item['current_stock'];
+                // If not found in stocks
+                if (!isset($item['available_qty'])) {
+                    $item['available_qty'] = $item['qty']; // At least the qty being edited
+                    $item['unit_code'] = '';
+                    $item['unit_name'] = '';
+                }
+
+                // Make sure available_qty is not negative
+                if ($item['available_qty'] < 0) {
+                    $item['available_qty'] = 0;
                 }
             }
 
             $this->data['products'] = $stocks;
+
+            // Convert products data to JSON for JavaScript
+            $this->data['products_json'] = json_encode($stocks);
 
             $this->render_view('pages/pengiriman/edit');
         } else {
@@ -397,7 +422,7 @@ class Pengiriman extends MY_Controller
                 'stockout_date' => $this->input->post('stockout_date'),
                 'stockout_invoice' => $this->input->post('stockout_invoice') ?: '-',
                 'stockout_note' => $this->input->post('stockout_note'),
-                'warehouse_id' => $from_warehouse_id,
+                'from_warehouse_id' => $from_warehouse_id,
                 'to_status' => $this->input->post('to_status'),
                 'items' => []
             ]);

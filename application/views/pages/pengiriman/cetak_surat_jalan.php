@@ -506,7 +506,7 @@ $total_pages = ceil(($total_items + 10) / $items_per_page); // +10 untuk baris k
                         <?php foreach ($page_items as $index => $item): ?>
                             <tr>
                                 <td class="text-center"><?= $start_number + $index ?></td>
-                                <td><?= isset($item['stock_id']) ? $item['stock_id'] : '&nbsp;' ?></td>
+                                <td><?= isset($item['product_code']) ? $item['product_code'] : '&nbsp;' ?></td>
                                 <td><?= isset($item['product_name']) ? $item['product_name'] : '&nbsp;' ?></td>
                                 <td class="text-right">
                                     <?php

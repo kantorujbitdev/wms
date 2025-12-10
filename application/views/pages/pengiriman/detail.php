@@ -80,7 +80,7 @@
                         </tr>
                         <tr>
                             <th>Dibuat Oleh</th>
-                            <td><?= $pengiriman['header']['createby_name'] ?></td>
+                            <td><?= $pengiriman['header']['user_name'] ?></td>
                         </tr>
                     </table>
                 </div>
@@ -111,7 +111,7 @@
                         <?php foreach ($pengiriman['detail'] as $detail): ?>
                             <tr>
                                 <td><?= $no++ ?></td>
-                                <td><?= $detail['stock_id'] ?></td>
+                                <td><?= $detail['product_code'] ?></td>
                                 <td><?= $detail['product_name'] ?></td>
                                 <td><?= number_format($detail['qty'], 2) ?></td>
                                 <td><?= $detail['unit_code'] ?></td>

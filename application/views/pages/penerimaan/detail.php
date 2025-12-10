@@ -120,7 +120,7 @@
                                 foreach ($detail as $item): ?>
                                     <tr>
                                         <td class="text-center"><?= $no++; ?></td>
-                                        <td><?= $item['product_id'] ?? '-' ?></td>
+                                        <td><?= $item['product_code'] ?? '-' ?></td>
                                         <td><?= $item['product_name'] ?? '-' ?></td>
                                         <td class="text-center"><?= $item['unit_code'] ?? '-' ?></td>
                                         <td class="text-right"><?= number_format($item['qty'] ?? 0, 2) ?></td>

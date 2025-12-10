@@ -222,7 +222,7 @@
                         </li>
                     <?php endif; ?>
 
-                    <?php if (can_access_menu('laporan')): ?>
+                    <!-- <?php if (can_access_menu('laporan')): ?>
                         <li>
                             <a href="<?= site_url('laporan/transaksi'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'laporan_transaksi') ? 'active' : ''; ?>">
@@ -230,7 +230,7 @@
                                 <span>Detail Transaksi</span>
                             </a>
                         </li>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
                 </ul>
             </li>
         <?php endif; ?>

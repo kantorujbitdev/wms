@@ -14,3 +14,27 @@ Level User
 // superadmin warehouse = 0
 // tombol tambah type produk dihapus dan tampil hanya di sueradmin
 
+kekurangan sistem gudang
+1. rubah pengiriman
+2. rubah penerimaan
+3. laporan stok
+4. laporan keluar
+5. laporan masuk
+6. laporan keluar-masuk
+7. export excel semua laporan.
+
+pengiriman
+-gudang asal berkurang stok
+-list pengiriman
+
+penerimaan
+-gudang bertambah stok
+-list penerimaan
+
+
+
+edit pengiriman
+-gudang asal berkurang
+-lakukan edit
+-lalu stok asal menyesuaikan
+-list pengiriman
