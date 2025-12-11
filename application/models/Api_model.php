@@ -194,14 +194,25 @@ class Api_model extends CI_Model
 
     public function get_laporan_masuk($params = [])
     {
-        // Mengambil data dari penerimaan (stockin)
-        return api_request('GET', 'laporan', [], array_merge(['action' => 'masuk'], $params));
-    }
+        $data = [
+            'login_id' => $this->session->userdata('user_id'),
+            'login_name' => $this->session->userdata('username'),
+        ];
+        $final_data = array_merge($data, $params);
 
+        // Mengambil data dari penerimaan (stockin)   
+        return api_request('GET', 'penerimaan', $final_data);
+    }
     public function get_laporan_keluar($params = [])
     {
+        $data = [
+            'login_id' => $this->session->userdata('user_id'),
+            'login_name' => $this->session->userdata('username'),
+        ];
+        $final_data = array_merge($data, $params);
         // Mengambil data dari pengiriman (stockout)
-        return api_request('GET', 'laporan', [], array_merge(['action' => 'keluar'], $params));
+        return api_request('GET', 'pengiriman', $final_data);
+
     }
 
     public function get_laporan_transaksi($params = [])

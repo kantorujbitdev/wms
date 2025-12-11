@@ -25,29 +25,31 @@
                         <div class="form-group">
                             <label for="date_from">Tanggal Dari</label>
                             <input type="date" class="form-control" id="date_from" name="date_from"
-                                value="<?= $filter_date_from ?>">
+                                value="<?= isset($filter_date_from) ? $filter_date_from : '' ?>">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="date_to">Tanggal Sampai</label>
                             <input type="date" class="form-control" id="date_to" name="date_to"
-                                value="<?= $filter_date_to ?>">
+                                value="<?= isset($filter_date_to) ? $filter_date_to : '' ?>">
                         </div>
                     </div>
 
-                    <?php if ($user_role == 'superadmin'): ?>
+                    <?php if (isset($user_role) && $user_role == 'superadmin'): ?>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="warehouse_id">Gudang</label>
                                 <select class="form-control select2" id="warehouse_id" name="warehouse_id">
                                     <option value="">Semua Gudang</option>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($filter_warehouse_id == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                    <?php if (isset($warehouses)): ?>
+                                        <?php foreach ($warehouses as $warehouse): ?>
+                                            <option value="<?= $warehouse['warehouse_id'] ?>"
+                                                <?= (isset($filter_warehouse_id) && $filter_warehouse_id == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
+                                                <?= $warehouse['warehouse_name'] ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -58,12 +60,14 @@
                             <label for="product_id">Barang</label>
                             <select class="form-control select2" id="product_id" name="product_id">
                                 <option value="">Semua Barang</option>
-                                <?php foreach ($products as $product): ?>
-                                    <option value="<?= $product['product_id'] ?>"
-                                        <?= ($filter_product_id == $product['product_id']) ? 'selected' : '' ?>>
-                                        <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                    </option>
-                                <?php endforeach; ?>
+                                <?php if (isset($products)): ?>
+                                    <?php foreach ($products as $product): ?>
+                                        <option value="<?= $product['product_id'] ?>"
+                                            <?= (isset($filter_product_id) && $filter_product_id == $product['product_id']) ? 'selected' : '' ?>>
+                                            <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
@@ -75,11 +79,14 @@
                             <label for="supplier_id">Supplier</label>
                             <select class="form-control select2" id="supplier_id" name="supplier_id">
                                 <option value="">Semua Supplier</option>
-                                <?php foreach ($suppliers as $supplier): ?>
-                                    <option value="<?= $supplier['id'] ?>" <?= ($filter_supplier_id == $supplier['id']) ? 'selected' : '' ?>>
-                                        <?= $supplier['name'] ?>
-                                    </option>
-                                <?php endforeach; ?>
+                                <?php if (isset($suppliers)): ?>
+                                    <?php foreach ($suppliers as $supplier): ?>
+                                        <option value="<?= $supplier['supplier_id'] ?? $supplier['id'] ?>" 
+                                            <?= (isset($filter_supplier_id) && $filter_supplier_id == ($supplier['supplier_id'] ?? $supplier['id'])) ? 'selected' : '' ?>>
+                                            <?= $supplier['supplier_name'] ?? $supplier['name'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
@@ -123,19 +130,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($in_report)): ?>
+                        <?php if (isset($in_report) && !empty($in_report)): ?>
                             <?php $no = 1; ?>
                             <?php foreach ($in_report as $item): ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
-                                    <td><?= date('d-m-Y', strtotime($item['stockin_date'])) ?></td>
-                                    <td><?= $item['stockin_code'] ?></td>
-                                    <td><?= $item['product_code'] ?></td>
-                                    <td><?= $item['product_name'] ?></td>
-                                    <td class="text-right"><?= number_format($item['qty'], 2) ?></td>
-                                    <td><?= $item['unit_name'] ?></td>
+                                    <td><?= isset($item['stockin_date']) ? date('d-m-Y', strtotime($item['stockin_date'])) : '' ?></td>
+                                    <td><?= $item['stockin_code'] ?? '' ?></td>
+                                    <td><?= $item['product_code'] ?? '' ?></td>
+                                    <td><?= $item['product_name'] ?? '' ?></td>
+                                    <td class="text-right"><?= isset($item['qty']) ? number_format($item['qty'], 2) : '0.00' ?></td>
+                                    <td><?= $item['unit_name'] ?? '' ?></td>
                                     <td><?= $item['supplier_name'] ?? '-' ?></td>
-                                    <td><?= $item['warehouse_name'] ?></td>
+                                    <td><?= $item['warehouse_name'] ?? '' ?></td>
                                     <td><?= $item['stockin_note'] ?? '-' ?></td>
                                     <td><?= $item['user_name'] ?? '-' ?></td>
                                 </tr>
@@ -153,8 +160,10 @@
                                 <strong>
                                     <?php
                                     $total_qty = 0;
-                                    foreach ($in_report as $item) {
-                                        $total_qty += $item['qty'];
+                                    if (isset($in_report) && !empty($in_report)) {
+                                        foreach ($in_report as $item) {
+                                            $total_qty += isset($item['qty']) ? (float)$item['qty'] : 0;
+                                        }
                                     }
                                     echo number_format($total_qty, 2);
                                     ?>
@@ -168,3 +177,18 @@
         </div>
     </div>
 </div>
+
+<script>
+// Inisialisasi Select2 jika ada
+$(document).ready(function() {
+    // Set date max untuk date_to
+    $('#date_from').on('change', function() {
+        $('#date_to').attr('min', $(this).val());
+    });
+    
+    // Set date min untuk date_from
+    $('#date_to').on('change', function() {
+        $('#date_from').attr('max', $(this).val());
+    });
+});
+</script>

@@ -582,6 +582,7 @@ class Laporan extends MY_Controller
         return $statuses[$status] ?? 'Semua Status';
     }
 
+
     public function masuk()
     {
         $this->check_permission('laporan', 'view');
@@ -589,13 +590,32 @@ class Laporan extends MY_Controller
         $this->data['title'] = 'Laporan Barang Masuk';
         $this->data['active_menu'] = 'laporan';
         $this->data['active_submenu'] = 'laporan_masuk';
+
+        // Get user data
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+
         // Get parameters from filter
+        $filter_date_from = $this->input->get('date_from') ?: null;
+        $filter_date_to = $this->input->get('date_to') ?: null;
+        $filter_product_id = $this->input->get('product_id') ?: null;
+        $filter_warehouse_id = $this->input->get('warehouse_id') ?: null;
+        $filter_supplier_id = $this->input->get('supplier_id') ?: null;
+
+        // Prepare filter data for API
         $params = [
-            'date_from' => $this->input->get('date_from'),
-            'date_to' => $this->input->get('date_to'),
-            'item_id' => $this->input->get('item_id'),
-            'warehouse_id' => $this->input->get('warehouse_id')
+            'date_from' => $filter_date_from,
+            'date_to' => $filter_date_to,
+            'product_id' => $filter_product_id,
+            'warehouse_id' => $filter_warehouse_id,
+            'supplier_id' => $filter_supplier_id
         ];
+
+        // Jika bukan superadmin, default ke warehouse user
+        if ($user_role != 'superadmin' && empty($filter_warehouse_id)) {
+            $params['warehouse_id'] = $warehouse_id;
+        }
 
         // Get in report from API
         $response = $this->Api_model->get_laporan_masuk($params);
@@ -603,11 +623,27 @@ class Laporan extends MY_Controller
 
         // Get items from API
         $items = $this->Api_model->get_barang(data_login_user());
-        $this->data['items'] = $items['success'] ? $items['data'] : [];
+        $this->data['products'] = $items['success'] ? $items['data'] : [];
+
+        // Get suppliers from API
+        $suppliers_response = $this->Api_model->get_supplier(data_login_user());
+        $this->data['suppliers'] = $suppliers_response['success'] ? $suppliers_response['data'] : [];
 
         // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang(data_login_user());
+        if ($user_role == 'superadmin') {
+            $warehouses = $this->Api_model->get_all_gudang(data_login_user());
+        } else {
+            $warehouses = $this->Api_model->get_gudang(data_login_user());
+        }
         $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
+
+        // Pass filter values to view
+        $this->data['filter_date_from'] = $filter_date_from;
+        $this->data['filter_date_to'] = $filter_date_to;
+        $this->data['filter_product_id'] = $filter_product_id;
+        $this->data['filter_warehouse_id'] = $filter_warehouse_id;
+        $this->data['filter_supplier_id'] = $filter_supplier_id;
+        $this->data['user_role'] = $user_role;
 
         // Render view
         $this->render_view('pages/laporan/masuk');
@@ -618,16 +654,36 @@ class Laporan extends MY_Controller
         $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'Laporan Barang Keluar';
-
         $this->data['active_menu'] = 'laporan';
         $this->data['active_submenu'] = 'laporan_keluar';
+
+        // Get user data
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+
         // Get parameters from filter
+        $filter_date_from = $this->input->get('date_from') ?: null;
+        $filter_date_to = $this->input->get('date_to') ?: null;
+        $filter_product_id = $this->input->get('product_id') ?: null;
+        $filter_warehouse_id = $this->input->get('warehouse_id') ?: null;
+        $filter_customer_id = $this->input->get('customer_id') ?: null;
+        $filter_to_status = $this->input->get('to_status') ?: null; // 1=ke pengguna, 3=antar gudang
+
+        // Prepare filter data for API
         $params = [
-            'date_from' => $this->input->get('date_from'),
-            'date_to' => $this->input->get('date_to'),
-            'item_id' => $this->input->get('item_id'),
-            'warehouse_id' => $this->input->get('warehouse_id')
+            'date_start' => $filter_date_from,
+            'date_end' => $filter_date_to,
+            'product_id' => $filter_product_id,
+            'warehouse_id' => $filter_warehouse_id,
+            'customer_id' => $filter_customer_id,
+            'to_status' => $filter_to_status
         ];
+
+        // Jika bukan superadmin, default ke warehouse user
+        if ($user_role != 'superadmin' && empty($filter_warehouse_id)) {
+            $params['warehouse_id'] = $warehouse_id;
+        }
 
         // Get out report from API
         $response = $this->Api_model->get_laporan_keluar($params);
@@ -635,11 +691,28 @@ class Laporan extends MY_Controller
 
         // Get items from API
         $items = $this->Api_model->get_barang(data_login_user());
-        $this->data['items'] = $items['success'] ? $items['data'] : [];
+        $this->data['products'] = $items['success'] ? $items['data'] : [];
+
+        // Get customers from API
+        $customers_response = $this->Api_model->get_customer(data_login_user());
+        $this->data['customers'] = $customers_response['success'] ? $customers_response['data'] : [];
 
         // Get warehouses from API
-        $warehouses = $this->Api_model->get_gudang(data_login_user());
+        if ($user_role == 'superadmin') {
+            $warehouses = $this->Api_model->get_all_gudang(data_login_user());
+        } else {
+            $warehouses = $this->Api_model->get_gudang(data_login_user());
+        }
         $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
+
+        // Pass filter values to view
+        $this->data['filter_date_from'] = $filter_date_from;
+        $this->data['filter_date_to'] = $filter_date_to;
+        $this->data['filter_product_id'] = $filter_product_id;
+        $this->data['filter_warehouse_id'] = $filter_warehouse_id;
+        $this->data['filter_customer_id'] = $filter_customer_id;
+        $this->data['filter_to_status'] = $filter_to_status;
+        $this->data['user_role'] = $user_role;
 
         // Render view
         $this->render_view('pages/laporan/keluar');
@@ -647,66 +720,476 @@ class Laporan extends MY_Controller
 
     public function export_masuk()
     {
+        $this->check_permission('laporan', 'export');
+
+        // Get user data
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+
         // Get parameters from filter
+        $filter_date_from = $this->input->get('date_from');
+        $filter_date_to = $this->input->get('date_to');
+        $filter_product_id = $this->input->get('product_id');
+        $filter_warehouse_id = $this->input->get('warehouse_id');
+        $filter_supplier_id = $this->input->get('supplier_id');
+
+        // Prepare filter data for API
         $params = [
-            'date_from' => $this->input->get('date_from'),
-            'date_to' => $this->input->get('date_to'),
-            'item_id' => $this->input->get('item_id'),
-            'warehouse_id' => $this->input->get('warehouse_id')
+            'date_from' => $filter_date_from,
+            'date_to' => $filter_date_to,
+            'product_id' => $filter_product_id,
+            'warehouse_id' => $filter_warehouse_id,
+            'supplier_id' => $filter_supplier_id
         ];
+
+        // Jika bukan superadmin, default ke warehouse user
+        if ($user_role != 'superadmin' && empty($filter_warehouse_id)) {
+            $params['warehouse_id'] = $warehouse_id;
+        }
 
         // Get in report from API
         $response = $this->Api_model->get_laporan_masuk($params);
 
-        if ($response['success']) {
-            // Create CSV content
-            $csv_content = "Tanggal,Kode Barang,Nama Barang,Jumlah,Gudang,Catatan\n";
+        if ($response['success'] && !empty($response['data'])) {
+            // Create new Spreadsheet object
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
 
-            foreach ($response['data'] as $item) {
-                $csv_content .= "{$item['date']},{$item['item_code']},{$item['item_name']},{$item['quantity']},{$item['warehouse_name']},{$item['notes']}\n";
+            // Set document properties
+            $spreadsheet->getProperties()
+                ->setCreator($this->session->userdata('name') ?: 'WMS System')
+                ->setLastModifiedBy($this->session->userdata('name') ?: 'WMS System')
+                ->setTitle('Laporan Barang Masuk')
+                ->setSubject('Laporan Barang Masuk per Gudang')
+                ->setDescription('Dokumen ini berisi laporan barang masuk per gudang')
+                ->setKeywords('barang masuk gudang laporan')
+                ->setCategory('Laporan');
+
+            // Set default font
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial')->setSize(10);
+
+            // =================== TITLE AND HEADER ===================
+            $sheet->setCellValue('A1', 'LAPORAN BARANG MASUK');
+            $sheet->mergeCells('A1:K1');
+            $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+            $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Company/System Info
+            $sheet->setCellValue('A2', 'Sistem Warehouse Management');
+            $sheet->mergeCells('A2:K2');
+            $sheet->getStyle('A2')->getFont()->setSize(11);
+            $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Filter Info
+            $row = 4;
+            $sheet->setCellValue('A' . $row, 'Tanggal Export: ' . date('d-m-Y H:i:s'));
+
+            $row++;
+            if ($filter_date_from || $filter_date_to) {
+                $date_range = 'Periode: ';
+                $date_range .= $filter_date_from ? date('d-m-Y', strtotime($filter_date_from)) : '';
+                $date_range .= $filter_date_from && $filter_date_to ? ' s/d ' : '';
+                $date_range .= $filter_date_to ? date('d-m-Y', strtotime($filter_date_to)) : '';
+                $sheet->setCellValue('A' . $row, $date_range);
+                $row++;
             }
 
-            // Set headers for download
-            header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="laporan_barang_masuk_' . date('Y-m-d') . '.csv"');
+            if ($filter_warehouse_id) {
+                $warehouse_name = $this->get_warehouse_name($filter_warehouse_id);
+                $sheet->setCellValue('A' . $row, 'Gudang: ' . $warehouse_name);
+                $row++;
+            } elseif ($user_role != 'superadmin') {
+                $warehouse_name = $this->session->userdata('warehouse_name');
+                $sheet->setCellValue('A' . $row, 'Gudang: ' . $warehouse_name);
+                $row++;
+            }
 
-            echo $csv_content;
+            // =================== TABLE HEADER ===================
+            $header_row = $row + 1;
+            $headers = [
+                'No',
+                'Tanggal',
+                'Kode Transaksi',
+                'Kode Barang',
+                'Nama Barang',
+                'Jumlah',
+                'Satuan',
+                'Supplier',
+                'Gudang',
+                'Keterangan',
+                'Dibuat Oleh'
+            ];
+
+            $col = 'A';
+            foreach ($headers as $header) {
+                $sheet->setCellValue($col . $header_row, $header);
+
+                // Style header
+                $sheet->getStyle($col . $header_row)
+                    ->getFont()->setBold(true);
+                $sheet->getStyle($col . $header_row)
+                    ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($col . $header_row)
+                    ->getFill()->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB('4F81BD');
+                $sheet->getStyle($col . $header_row)
+                    ->getFont()->getColor()->setRGB('FFFFFF');
+                $sheet->getStyle($col . $header_row)
+                    ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+                $col++;
+            }
+
+            // =================== TABLE DATA ===================
+            $data_row = $header_row + 1;
+            $no = 1;
+            $total_qty = 0;
+
+            foreach ($response['data'] as $item) {
+                $qty = isset($item['qty']) ? (float) $item['qty'] : 0;
+                $total_qty += $qty;
+
+                // Fill data
+                $sheet->setCellValue('A' . $data_row, $no);
+                $sheet->setCellValue('B' . $data_row, date('d-m-Y', strtotime($item['stockin_date'] ?? '')));
+                $sheet->setCellValue('C' . $data_row, $item['stockin_code'] ?? '');
+                $sheet->setCellValue('D' . $data_row, $item['product_code'] ?? '');
+                $sheet->setCellValue('E' . $data_row, $item['product_name'] ?? '');
+                $sheet->setCellValue('F' . $data_row, $qty);
+                $sheet->setCellValue('G' . $data_row, $item['unit_name'] ?? '');
+                $sheet->setCellValue('H' . $data_row, $item['supplier_name'] ?? '-');
+                $sheet->setCellValue('I' . $data_row, $item['warehouse_name'] ?? '-');
+                $sheet->setCellValue('J' . $data_row, $item['stockin_note'] ?? '-');
+                $sheet->setCellValue('K' . $data_row, $item['user_name'] ?? '-');
+
+                // Number format for quantity
+                $sheet->getStyle('F' . $data_row)->getNumberFormat()->setFormatCode('#,##0.00');
+
+                // Add borders to all cells
+                $sheet->getStyle('A' . $data_row . ':K' . $data_row)
+                    ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+                $data_row++;
+                $no++;
+            }
+
+            // =================== SUMMARY ===================
+            $summary_row = $data_row + 2;
+
+            $sheet->setCellValue('E' . $summary_row, 'TOTAL QUANTITY:');
+            $sheet->getStyle('E' . $summary_row)
+                ->getFont()->setBold(true)->setSize(11);
+            $sheet->getStyle('E' . $summary_row)
+                ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            $sheet->setCellValue('F' . $summary_row, $total_qty);
+            $sheet->getStyle('F' . $summary_row)
+                ->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('F' . $summary_row)
+                ->getFont()->setBold(true)->setSize(11);
+            $sheet->getStyle('F' . $summary_row)
+                ->getFill()->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('E2EFDA');
+
+            // =================== STATISTICS ===================
+            $stats_row = $summary_row + 2;
+            $sheet->setCellValue('A' . $stats_row, 'STATISTIK');
+            $sheet->mergeCells('A' . $stats_row . ':C' . $stats_row);
+            $sheet->getStyle('A' . $stats_row)
+                ->getFont()->setBold(true)->setSize(12);
+
+            $stats_row++;
+            $sheet->setCellValue('A' . $stats_row, 'Total Transaksi:');
+            $sheet->setCellValue('B' . $stats_row, count($response['data']));
+            $sheet->getStyle('A' . $stats_row)->getFont()->setBold(true);
+            $sheet->getStyle('B' . $stats_row)->getFont()->setBold(true);
+
+            // =================== SET COLUMN WIDTHS ===================
+            $sheet->getColumnDimension('A')->setWidth(8);   // No
+            $sheet->getColumnDimension('B')->setWidth(12);  // Tanggal
+            $sheet->getColumnDimension('C')->setWidth(20);  // Kode Transaksi
+            $sheet->getColumnDimension('D')->setWidth(15);  // Kode Barang
+            $sheet->getColumnDimension('E')->setWidth(30);  // Nama Barang
+            $sheet->getColumnDimension('F')->setWidth(12);  // Jumlah
+            $sheet->getColumnDimension('G')->setWidth(10);  // Satuan
+            $sheet->getColumnDimension('H')->setWidth(25);  // Supplier
+            $sheet->getColumnDimension('I')->setWidth(20);  // Gudang
+            $sheet->getColumnDimension('J')->setWidth(30);  // Keterangan
+            $sheet->getColumnDimension('K')->setWidth(20);  // Dibuat Oleh
+
+            // Set auto filter
+            $last_row = $data_row - 1;
+            if ($last_row > $header_row) {
+                $sheet->setAutoFilter('A' . $header_row . ':K' . $last_row);
+            }
+
+            // =================== OUTPUT ===================
+            $filename = 'Laporan_Barang_Masuk_' . date('Ymd_His') . '.xlsx';
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
             exit;
+
         } else {
-            $this->session->set_flashdata('error', 'Gagal mengekspor laporan barang masuk!');
+            $this->session->set_flashdata('error', 'Tidak ada data barang masuk untuk diekspor!');
             redirect('laporan/masuk');
         }
     }
 
     public function export_keluar()
     {
+        $this->check_permission('laporan', 'export');
+
+        // Get user data
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+
         // Get parameters from filter
+        $filter_date_from = $this->input->get('date_from');
+        $filter_date_to = $this->input->get('date_to');
+        $filter_product_id = $this->input->get('product_id');
+        $filter_warehouse_id = $this->input->get('warehouse_id');
+        $filter_customer_id = $this->input->get('customer_id');
+        $filter_to_status = $this->input->get('to_status');
+
+        // Prepare filter data for API
         $params = [
-            'date_from' => $this->input->get('date_from'),
-            'date_to' => $this->input->get('date_to'),
-            'item_id' => $this->input->get('item_id'),
-            'warehouse_id' => $this->input->get('warehouse_id')
+            'date_from' => $filter_date_from,
+            'date_to' => $filter_date_to,
+            'product_id' => $filter_product_id,
+            'warehouse_id' => $filter_warehouse_id,
+            'customer_id' => $filter_customer_id,
+            'to_status' => $filter_to_status
         ];
+
+        // Jika bukan superadmin, default ke warehouse user
+        if ($user_role != 'superadmin' && empty($filter_warehouse_id)) {
+            $params['warehouse_id'] = $warehouse_id;
+        }
 
         // Get out report from API
         $response = $this->Api_model->get_laporan_keluar($params);
 
-        if ($response['success']) {
-            // Create CSV content
-            $csv_content = "Tanggal,Kode Barang,Nama Barang,Jumlah,Gudang,Catatan\n";
+        if ($response['success'] && !empty($response['data'])) {
+            // Create new Spreadsheet object
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
 
-            foreach ($response['data'] as $item) {
-                $csv_content .= "{$item['date']},{$item['item_code']},{$item['item_name']},{$item['quantity']},{$item['warehouse_name']},{$item['notes']}\n";
+            // Set document properties
+            $spreadsheet->getProperties()
+                ->setCreator($this->session->userdata('name') ?: 'WMS System')
+                ->setLastModifiedBy($this->session->userdata('name') ?: 'WMS System')
+                ->setTitle('Laporan Barang Keluar')
+                ->setSubject('Laporan Barang Keluar per Gudang')
+                ->setDescription('Dokumen ini berisi laporan barang keluar per gudang')
+                ->setKeywords('barang keluar gudang laporan')
+                ->setCategory('Laporan');
+
+            // Set default font
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial')->setSize(10);
+
+            // =================== TITLE AND HEADER ===================
+            $sheet->setCellValue('A1', 'LAPORAN BARANG KELUAR');
+            $sheet->mergeCells('A1:L1');
+            $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+            $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Company/System Info
+            $sheet->setCellValue('A2', 'Sistem Warehouse Management');
+            $sheet->mergeCells('A2:L2');
+            $sheet->getStyle('A2')->getFont()->setSize(11);
+            $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Filter Info
+            $row = 4;
+            $sheet->setCellValue('A' . $row, 'Tanggal Export: ' . date('d-m-Y H:i:s'));
+
+            $row++;
+            if ($filter_date_from || $filter_date_to) {
+                $date_range = 'Periode: ';
+                $date_range .= $filter_date_from ? date('d-m-Y', strtotime($filter_date_from)) : '';
+                $date_range .= $filter_date_from && $filter_date_to ? ' s/d ' : '';
+                $date_range .= $filter_date_to ? date('d-m-Y', strtotime($filter_date_to)) : '';
+                $sheet->setCellValue('A' . $row, $date_range);
+                $row++;
             }
 
-            // Set headers for download
-            header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="laporan_barang_keluar_' . date('Y-m-d') . '.csv"');
+            if ($filter_warehouse_id) {
+                $warehouse_name = $this->get_warehouse_name($filter_warehouse_id);
+                $sheet->setCellValue('A' . $row, 'Gudang: ' . $warehouse_name);
+                $row++;
+            } elseif ($user_role != 'superadmin') {
+                $warehouse_name = $this->session->userdata('warehouse_name');
+                $sheet->setCellValue('A' . $row, 'Gudang: ' . $warehouse_name);
+                $row++;
+            }
 
-            echo $csv_content;
+            // =================== TABLE HEADER ===================
+            $header_row = $row + 1;
+            $headers = [
+                'No',
+                'Tanggal',
+                'Kode Transaksi',
+                'Kode Barang',
+                'Nama Barang',
+                'Jumlah',
+                'Satuan',
+                'Tujuan',
+                'Jenis',
+                'Gudang',
+                'Keterangan',
+                'Dibuat Oleh'
+            ];
+
+            $col = 'A';
+            foreach ($headers as $header) {
+                $sheet->setCellValue($col . $header_row, $header);
+
+                // Style header
+                $sheet->getStyle($col . $header_row)
+                    ->getFont()->setBold(true);
+                $sheet->getStyle($col . $header_row)
+                    ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($col . $header_row)
+                    ->getFill()->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB('4F81BD');
+                $sheet->getStyle($col . $header_row)
+                    ->getFont()->getColor()->setRGB('FFFFFF');
+                $sheet->getStyle($col . $header_row)
+                    ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+                $col++;
+            }
+
+            // =================== TABLE DATA ===================
+            $data_row = $header_row + 1;
+            $no = 1;
+            $total_qty = 0;
+
+            foreach ($response['data'] as $item) {
+                $qty = isset($item['qty']) ? (float) $item['qty'] : 0;
+                $total_qty += $qty;
+
+                // Determine jenis pengiriman
+                $jenis = '-';
+                if ($item['to_status'] == '1') {
+                    $jenis = 'Ke Pengguna';
+                } elseif ($item['to_status'] == '3') {
+                    $jenis = 'Antar Gudang';
+                }
+
+                // Fill data
+                $sheet->setCellValue('A' . $data_row, $no);
+                $sheet->setCellValue('B' . $data_row, date('d-m-Y', strtotime($item['stockout_date'] ?? '')));
+                $sheet->setCellValue('C' . $data_row, $item['stockout_code'] ?? '');
+                $sheet->setCellValue('D' . $data_row, $item['product_code'] ?? '');
+                $sheet->setCellValue('E' . $data_row, $item['product_name'] ?? '');
+                $sheet->setCellValue('F' . $data_row, $qty);
+                $sheet->setCellValue('G' . $data_row, $item['unit_name'] ?? '');
+                $sheet->setCellValue('H' . $data_row, $item['to_name'] ?? '-');
+                $sheet->setCellValue('I' . $data_row, $jenis);
+                $sheet->setCellValue('J' . $data_row, $item['warehouse_name'] ?? '-');
+                $sheet->setCellValue('K' . $data_row, $item['stockout_note'] ?? '-');
+                $sheet->setCellValue('L' . $data_row, $item['user_name'] ?? '-');
+
+                // Number format for quantity
+                $sheet->getStyle('F' . $data_row)->getNumberFormat()->setFormatCode('#,##0.00');
+
+                // Add borders to all cells
+                $sheet->getStyle('A' . $data_row . ':L' . $data_row)
+                    ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+                $data_row++;
+                $no++;
+            }
+
+            // =================== SUMMARY ===================
+            $summary_row = $data_row + 2;
+
+            $sheet->setCellValue('E' . $summary_row, 'TOTAL QUANTITY:');
+            $sheet->getStyle('E' . $summary_row)
+                ->getFont()->setBold(true)->setSize(11);
+            $sheet->getStyle('E' . $summary_row)
+                ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            $sheet->setCellValue('F' . $summary_row, $total_qty);
+            $sheet->getStyle('F' . $summary_row)
+                ->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('F' . $summary_row)
+                ->getFont()->setBold(true)->setSize(11);
+            $sheet->getStyle('F' . $summary_row)
+                ->getFill()->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('E2EFDA');
+
+            // =================== STATISTICS ===================
+            $stats_row = $summary_row + 2;
+            $sheet->setCellValue('A' . $stats_row, 'STATISTIK');
+            $sheet->mergeCells('A' . $stats_row . ':C' . $stats_row);
+            $sheet->getStyle('A' . $stats_row)
+                ->getFont()->setBold(true)->setSize(12);
+
+            $stats_row++;
+            $sheet->setCellValue('A' . $stats_row, 'Total Transaksi:');
+            $sheet->setCellValue('B' . $stats_row, count($response['data']));
+            $sheet->getStyle('A' . $stats_row)->getFont()->setBold(true);
+            $sheet->getStyle('B' . $stats_row)->getFont()->setBold(true);
+
+            // Count by jenis
+            $ke_pengguna = 0;
+            $antar_gudang = 0;
+            foreach ($response['data'] as $item) {
+                if ($item['to_status'] == '1') {
+                    $ke_pengguna++;
+                } elseif ($item['to_status'] == '3') {
+                    $antar_gudang++;
+                }
+            }
+
+            $stats_row++;
+            $sheet->setCellValue('A' . $stats_row, 'Ke Pengguna:');
+            $sheet->setCellValue('B' . $stats_row, $ke_pengguna);
+
+            $stats_row++;
+            $sheet->setCellValue('A' . $stats_row, 'Antar Gudang:');
+            $sheet->setCellValue('B' . $stats_row, $antar_gudang);
+
+            // =================== SET COLUMN WIDTHS ===================
+            $sheet->getColumnDimension('A')->setWidth(8);   // No
+            $sheet->getColumnDimension('B')->setWidth(12);  // Tanggal
+            $sheet->getColumnDimension('C')->setWidth(20);  // Kode Transaksi
+            $sheet->getColumnDimension('D')->setWidth(15);  // Kode Barang
+            $sheet->getColumnDimension('E')->setWidth(30);  // Nama Barang
+            $sheet->getColumnDimension('F')->setWidth(12);  // Jumlah
+            $sheet->getColumnDimension('G')->setWidth(10);  // Satuan
+            $sheet->getColumnDimension('H')->setWidth(25);  // Tujuan
+            $sheet->getColumnDimension('I')->setWidth(15);  // Jenis
+            $sheet->getColumnDimension('J')->setWidth(20);  // Gudang
+            $sheet->getColumnDimension('K')->setWidth(30);  // Keterangan
+            $sheet->getColumnDimension('L')->setWidth(20);  // Dibuat Oleh
+
+            // Set auto filter
+            $last_row = $data_row - 1;
+            if ($last_row > $header_row) {
+                $sheet->setAutoFilter('A' . $header_row . ':L' . $last_row);
+            }
+
+            // =================== OUTPUT ===================
+            $filename = 'Laporan_Barang_Keluar_' . date('Ymd_His') . '.xlsx';
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
             exit;
+
         } else {
-            $this->session->set_flashdata('error', 'Gagal mengekspor laporan barang keluar!');
+            $this->session->set_flashdata('error', 'Tidak ada data barang keluar untuk diekspor!');
             redirect('laporan/keluar');
         }
     }
