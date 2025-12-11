@@ -644,6 +644,7 @@ class Laporan extends MY_Controller
         // Render view
         $this->render_view('pages/laporan/keluar');
     }
+
     public function export_masuk()
     {
         // Get parameters from filter
