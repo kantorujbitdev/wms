@@ -161,8 +161,7 @@ $config = get_app_config();
                     </div>
                 <?php endif; ?>
 
-                <?php echo form_open('auth/login', ['id' => 'loginForm', 'class' => 'needs-validation', 'novalidate' => '']); ?>
-
+                <?php echo form_open('auth/login', ['id' => 'loginForm']); ?>
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -181,7 +180,7 @@ $config = get_app_config();
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
                         <input id="passwordInput" type="password" name="password" class="form-control"
                             placeholder="Password" required aria-label="Password" autocomplete="current-password"
-                            minlength="6" maxlength="100">
+                            minlength="2" maxlength="100">
                         <button id="togglePassword" type="button"
                             class="btn btn-outline-secondary input-group-text btn-eye" aria-pressed="false"
                             title="Tampilkan password" aria-label="Toggle password visibility">
@@ -201,14 +200,6 @@ $config = get_app_config();
 
                 <?php echo form_close(); ?>
 
-                <!-- Forgot Password Link (Opsional) -->
-                <!--
-                <div class="text-center mt-3">
-                    <a href="<?php echo base_url('auth/forgot_password'); ?>" class="text-decoration-none">
-                        <small>Lupa password?</small>
-                    </a>
-                </div>
-                -->
 
                 <div class="login-footer">
                     <div class="footer-text">
