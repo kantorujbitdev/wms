@@ -113,7 +113,7 @@
                 </a>
                 <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'penerimaan') ? 'show' : ''; ?>"
                     id="penerimaanSubmenu">
-                    <?php if (can_access_menu('penerimaan_antar_gudang')): ?>
+                    <!-- <?php if (can_access_menu('penerimaan_antar_gudang')): ?>
                         <li>
                             <a href="<?= site_url('penerimaan/antar_gudang'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'penerimaan_antar_gudang') ? 'active' : ''; ?>">
@@ -121,7 +121,7 @@
                                 <span>Antar Gudang</span>
                             </a>
                         </li>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
 
                     <?php if (can_access_menu('supplier_penerimaan')): ?>
                         <li>
@@ -158,7 +158,7 @@
 
                 <ul class="collapse list-unstyled ps-0 <?= ($active_menu == 'pengiriman') ? 'show' : ''; ?>"
                     id="pengirimanSubmenu">
-                    <?php if (can_access_menu('pengiriman_antar_gudang')): ?>
+                    <!-- <?php if (can_access_menu('pengiriman_antar_gudang')): ?>
                         <li>
                             <a href="<?= site_url('pengiriman/antar_gudang'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'pengiriman_antar_gudang') ? 'active' : ''; ?>">
@@ -166,7 +166,7 @@
                                 <span>Antar Gudang</span>
                             </a>
                         </li>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
 
                     <?php if (can_access_menu('penggunaan')): ?>
                         <li>
@@ -203,7 +203,7 @@
                         </li>
                     <?php endif; ?>
 
-                    <?php if (can_access_menu('laporan')): ?>
+                    <!-- <?php if (can_access_menu('laporan')): ?>
                         <li>
                             <a href="<?= site_url('laporan/keluar'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'laporan_keluar') ? 'active' : ''; ?>">
@@ -220,7 +220,7 @@
                                 <span>Laporan Masuk</span>
                             </a>
                         </li>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
 
                     <!-- <?php if (can_access_menu('laporan')): ?>
                         <li>

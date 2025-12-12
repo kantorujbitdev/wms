@@ -7,9 +7,6 @@
                 class="btn btn-success btn-sm">
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
-            <a href="<?= site_url('laporan/keluar') ?>" class="btn btn-secondary btn-sm">
-                <i class="fas fa-sync"></i> Reset
-            </a>
         </div>
     </div>
 
@@ -109,11 +106,16 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
+                                <a href="<?= site_url('laporan/keluar') ?>" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-sync"></i> Reset
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </form>
+            
+            
         </div>
     </div>
 
