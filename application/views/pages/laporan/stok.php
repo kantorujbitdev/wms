@@ -86,7 +86,7 @@
                             <?php $no = 1; ?>
                             <?php foreach ($stoks as $stok): ?>
                                 <?php
-                                $min_stock = 10;
+                                $min_stock = 0;
                                 $current_stock = isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
 
                                 // Determine status
