@@ -214,14 +214,20 @@ if (!function_exists('api_request')) {
             save_log($msg, 'error');
             return response_error($msg, 0);
         }
+
         $result = json_decode($response, true);
+        save_log("DATA RESPONSE: " . $response, 'info');
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             $msg = 'JSON Decode Error: ' . json_last_error_msg();
             save_log($msg, 'error');
             return response_error($msg, $http_code, $response);
         }
+
         $result['http_code'] = $http_code;
-        log_http_response($http_code, $response, strtoupper($endpoint)); // Token expired 
+        log_http_response($http_code, $response, strtoupper($endpoint));
+
+        // Token expired 
         if ($http_code === 401 && strtolower($endpoint) !== 'login') {
             save_log('Token expired, destroying session', 'warning');
             $CI->session->sess_destroy();
