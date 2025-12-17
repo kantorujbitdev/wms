@@ -1,32 +1,30 @@
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+#     RewriteBase /wms/
+    
+#     # Exclude existing files and directories
+#     RewriteCond %{REQUEST_FILENAME} -f [OR]
+#     RewriteCond %{REQUEST_FILENAME} -d
+#     RewriteRule ^ - [L]
+    
+#     # Route all requests to index.php
+#     RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
+# </IfModule>
+
+# # Security settings
+# Options -Indexes
+
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /wms/
+
+    # Jangan set RewriteBase dulu (aman)
     
-    # Exclude existing files and directories
+    # Allow existing files & folders
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
-    
-    # Route all requests to index.php
-    RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
+
+    # CodeIgniter front controller
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
 </IfModule>
-
-# Security settings
-Options -Indexes
-
-
-
-# <IfModule mod_rewrite.c>
-#     RewriteEngine On
-#     RewriteBase /
-
-#     # Allow access to existing files & folders
-#     RewriteCond %{REQUEST_FILENAME} !-f
-#     RewriteCond %{REQUEST_FILENAME} !-d
-
-#     # Redirect everything else to index.php
-#     RewriteRule ^(.*)$ index.php/$1 [L]
-# </IfModule>
-
-# # Disable directory listing
-# Options -Indexes
