@@ -116,7 +116,7 @@ if (!function_exists('get_menu_icon')) {
     function get_menu_icon($menu_key)
     {
         $icons = array(
-            'dashboard' => 'fas fa-tachometer-alt',
+            'dashboard' => 'fas fa-water',
             'gudang' => 'fas fa-warehouse',
             'gudang_project' => 'fas fa-box',
             'gudang_utama' => 'fas fa-layer-group',
