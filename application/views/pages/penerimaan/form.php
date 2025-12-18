@@ -173,7 +173,6 @@
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <small class="form-text text-muted">Superadmin dapat memilih gudang tujuan</small>
                             <?php else: ?>
                                 <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
                                 <input type="text" class="form-control bg-light" value="<?= $user_warehouse_name ?>" readonly
@@ -205,7 +204,6 @@
                             ?>
                             <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Tipe penerimaan sudah ditentukan berdasarkan menu</small>
                         </div>
                     </div>
                 </div>
@@ -256,7 +254,7 @@
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-4">
                                     <div class="form-group">
                                         <label>&nbsp;</label>
                                         <button type="button" class="btn btn-danger btn-block remove-item">
@@ -295,7 +293,7 @@
                                         placeholder="Keterangan tambahan untuk barang ini">
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-2 mt-4">
                                 <div class="form-group">
                                     <label>&nbsp;</label>
                                     <button type="button" class="btn btn-danger btn-block remove-item" disabled>
@@ -395,7 +393,7 @@
                         <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan tambahan untuk barang ini">
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2 mt-4">
                     <div class="form-group">
                         <label>&nbsp;</label>
                         <button type="button" class="btn btn-danger btn-block remove-item">

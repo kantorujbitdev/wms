@@ -68,16 +68,14 @@ class Barang extends MY_Controller
             $data = data_login_user([
                 'id' => $id,
                 'code' => $this->input->post('name'),
-                'name' => $this->input->post('description'),
-                'actionby' => $user_id
+                'name' => $this->input->post('description')
             ]);
             $response = $this->Api_model->update_product_type($data);
             $message = 'Tipe produk berhasil diperbarui!';
         } else {
             $data = data_login_user([
                 'code' => $this->input->post('name'),
-                'name' => $this->input->post('description'),
-                'actionby' => $user_id
+                'name' => $this->input->post('description')
             ]);
             // Add new product type - sesuaikan dengan nama fungsi di model
             $response = $this->Api_model->add_product_type($data);
@@ -101,8 +99,7 @@ class Barang extends MY_Controller
 
         // Prepare data according to API format
         $data = data_login_user([
-            'id' => $id,
-            'actionby' => $user_id
+            'id' => $id
         ]);
 
         // Sesuaikan dengan nama fungsi di model
@@ -177,16 +174,14 @@ class Barang extends MY_Controller
             $data = data_login_user([
                 'id' => $id,
                 'code' => $this->input->post('name'),
-                'name' => $this->input->post('description'),
-                'actionby' => $user_id
+                'name' => $this->input->post('description')
             ]);
             $response = $this->Api_model->update_unit_type($data);
             $message = 'Tipe produk berhasil diperbarui!';
         } else {
             $data = data_login_user([
                 'code' => $this->input->post('name'),
-                'name' => $this->input->post('description'),
-                'actionby' => $user_id
+                'name' => $this->input->post('description')
             ]);  // Add new product type - sesuaikan dengan nama fungsi di model
             $response = $this->Api_model->add_unit_type($data);
             $message = 'Tipe produk berhasil ditambahkan!';
@@ -210,8 +205,7 @@ class Barang extends MY_Controller
 
         // Prepare data according to API format
         $data = data_login_user([
-            'id' => $id,
-            'actionby' => $user_id
+            'id' => $id
         ]);
 
         // Sesuaikan dengan nama fungsi di model
@@ -341,8 +335,7 @@ class Barang extends MY_Controller
 
         // Prepare data according to API format
         $data = data_login_user([
-            'product_id' => $id,
-            'actionby' => $user_id
+            'product_id' => $id
         ]);
 
         // Sesuaikan dengan nama fungsi di model

@@ -18,7 +18,7 @@
             <div class="row mb-3">
                 <?php if (isset($product)): ?>
                     <div class="col-md-6">
-                        <label>Kode Produk</label>
+                        <label class="form-label">Kode Produk</label>
                         <input type="text" class="form-control" name="product_code" value="<?php echo $product['product_code']; ?>"
                             readonly>
                     </div>
@@ -26,7 +26,7 @@
 
 
                 <div class="col-md-6">
-                    <label>Nama Produk</label>
+                    <label class="form-label">Nama Produk</label>
                     <input type="text" class="form-control" name="product_name"
                         value="<?php echo isset($product) ? $product['product_name'] : set_value('product_name'); ?>"
                         required>
@@ -36,7 +36,7 @@
             <div class="row mb-3">
                 <!-- PRODUCT TYPE -->
                 <div class="col-md-6">
-                    <label>Tipe Produk</label>
+                    <label class="form-label">Tipe Produk</label>
                     <select class="form-control" name="product_type_id" required>
                         <option value="">-- Pilih Tipe Produk --</option>
 
@@ -51,7 +51,7 @@
 
                 <!-- UNIT TYPE -->
                 <div class="col-md-6">
-                    <label>Tipe Satuan</label>
+                    <label class="form-label">Tipe Satuan</label>
                     <select class="form-control" name="unit_type_id" required>
                         <option value="">-- Pilih Satuan --</option>
 

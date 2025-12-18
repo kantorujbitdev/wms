@@ -77,7 +77,6 @@
                                                         </option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <small class="form-text text-muted">Superadmin dapat memilih gudang asal</small>
                             <?php else: ?>
                                         <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
                                         <input type="text" class="form-control bg-light" value="<?= $user_warehouse_name ?>" readonly
@@ -177,7 +176,6 @@
                             ?>
                             <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Tipe pengiriman sudah ditentukan berdasarkan menu</small>
                         </div>
                     </div>
                 </div>
@@ -188,7 +186,6 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <h5 class="font-weight-bold">Detail Barang</h5>
-                        <small class="text-muted">Pilih barang dari stok yang tersedia di gudang</small>
                         <button type="button" id="addItem" class="btn btn-success btn-sm">
                             <i class="fas fa-plus"></i> Tambah Barang
                         </button>
@@ -202,7 +199,7 @@
                                             <div class="item-row row mb-3">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label>Produk *</label>
+                                                        <label class="form-label">Produk *</label>
                                                         <select class="form-control select2 product-select" name="product_id[]" data-index="<?= $index ?>" required>
                                                             <option value="">Pilih Produk</option>
                                                             <?php foreach ($products as $product): 
@@ -238,7 +235,7 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <label>Qty *</label>
+                                                        <label class="form-label">Qty *</label>
                                                         <input type="number" class="form-control qty-input" name="qty[]" 
                                                             data-index="<?= $index ?>" step="0.01" min="0.01" 
                                                             value="<?= isset($item['qty']) ? $item['qty'] : '' ?>" required>
@@ -249,15 +246,15 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label>Keterangan Barang</label>
+                                                        <label class="form-label">Keterangan Barang</label>
                                                         <input type="text" class="form-control" name="detail_note[]"
                                                             value="<?= isset($item['detail_note']) ? $item['detail_note'] : '' ?>"
                                                             placeholder="Keterangan tambahan untuk barang ini">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 mt-4">
                                                     <div class="form-group">
-                                                        <label>&nbsp;</label>
+                                                        <label class="form-label">&nbsp;</label>
                                                         <button type="button" class="btn btn-danger btn-block remove-item">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
@@ -270,7 +267,7 @@
                                 <div class="item-row row mb-3">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>Produk *</label>
+                                            <label class="form-label">Produk *</label>
                                             <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
                                                 <option value="">Pilih Produk</option>
                                                 <?php foreach ($products as $product): 
@@ -293,7 +290,7 @@
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label>Qty *</label>
+                                            <label class="form-label">Qty *</label>
                                             <input type="number" class="form-control qty-input" name="qty[]" 
                                                 data-index="0" step="0.01" min="0.01" max="0" required>
                                             <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
@@ -303,14 +300,14 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>Keterangan Barang</label>
+                                            <label class="form-label">Keterangan Barang</label>
                                             <input type="text" class="form-control" name="detail_note[]"
                                                 placeholder="Keterangan tambahan untuk barang ini">
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 mt-4">
                                         <div class="form-group">
-                                            <label>&nbsp;</label>
+                                            <label class="form-label">&nbsp;</label>
                                             <button type="button" class="btn btn-danger btn-block remove-item" disabled>
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -487,7 +484,7 @@
             <div class="item-row row mb-3">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Produk *</label>
+                        <label class="form-label">Produk *</label>
                         <select class="form-control select2 product-select" name="product_id[]" data-index="${itemCounter}" required>
                             ${optionsHtml}
                         </select>
@@ -497,7 +494,7 @@
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label>Qty *</label>
+                        <label class="form-label">Qty *</label>
                         <input type="number" class="form-control qty-input" name="qty[]" 
                             data-index="${itemCounter}" step="0.01" min="0.01" max="0" required>
                         <small class="form-text text-danger qty-error" id="qtyError${itemCounter}" style="display: none;">
@@ -507,13 +504,13 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Keterangan Barang</label>
+                        <label class="form-label">Keterangan Barang</label>
                         <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan tambahan untuk barang ini">
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2 mt-4">
                     <div class="form-group">
-                        <label>&nbsp;</label>
+                        <label class="form-label">&nbsp;</label>
                         <button type="button" class="btn btn-danger btn-block remove-item">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -691,7 +688,7 @@
                             <div class="item-row row mb-3">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Produk *</label>
+                                        <label class="form-label">Produk *</label>
                                         <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
                                             ${optionsHtml}
                                         </select>
@@ -701,7 +698,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <label>Qty *</label>
+                                        <label class="form-label">Qty *</label>
                                         <input type="number" class="form-control qty-input" name="qty[]" 
                                             data-index="0" step="0.01" min="0.01" max="0" required>
                                         <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
@@ -711,14 +708,14 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Keterangan Barang</label>
+                                        <label class="form-label">Keterangan Barang</label>
                                         <input type="text" class="form-control" name="detail_note[]"
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-4">
                                     <div class="form-group">
-                                        <label>&nbsp;</label>
+                                        <label class="form-label">&nbsp;</label>
                                         <button type="button" class="btn btn-danger btn-block remove-item" disabled>
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -753,7 +750,7 @@
                             <div class="item-row row mb-3">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Produk *</label>
+                                        <label class="form-label">Produk *</label>
                                         <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
                                             <option value="">Pilih Produk</option>
                                         </select>
@@ -763,7 +760,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <label>Qty *</label>
+                                        <label class="form-label">Qty *</label>
                                         <input type="number" class="form-control qty-input" name="qty[]" 
                                             data-index="0" step="0.01" min="0.01" max="0" required>
                                         <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
@@ -773,14 +770,14 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Keterangan Barang</label>
+                                        <label class="form-label">Keterangan Barang</label>
                                         <input type="text" class="form-control" name="detail_note[]"
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-4">
                                     <div class="form-group">
-                                        <label>&nbsp;</label>
+                                        <label class="form-label">&nbsp;</label>
                                         <button type="button" class="btn btn-danger btn-block remove-item" disabled>
                                             <i class="fas fa-trash"></i>
                                         </button>

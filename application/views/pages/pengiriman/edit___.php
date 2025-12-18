@@ -167,7 +167,6 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <h5 class="font-weight-bold">Detail Barang</h5>
-                        <small class="text-muted">Pilih barang dari stok yang tersedia di gudang</small>
                         <button type="button" id="addItem" class="btn btn-success btn-sm">
                             <i class="fas fa-plus"></i> Tambah Barang
                         </button>
