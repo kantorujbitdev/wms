@@ -16,8 +16,12 @@ class Penerimaan extends MY_Controller
         $this->data['title'] = 'Penerimaan dari Pengguna';
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'pengguna';
-
-        $data_login = data_login_user(['from_status' => '1']);
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        if ($warehouse_id == 0 || $warehouse_id == null) {
+            $data_login = data_login_user(['from_status' => '1']);
+        } else {
+            $data_login = data_login_user(['from_status' => '1', 'warehouse_id' => $warehouse_id]);
+        }
         $response = $this->Api_model->get_penerimaan($data_login);
         $this->data['penerimaan_list'] = $response['success'] ? $response['data'] : [];
 
@@ -73,8 +77,12 @@ class Penerimaan extends MY_Controller
         $this->data['title'] = 'Penerimaan dari Supplier';
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'supplier';
-
-        $data_login = data_login_user(['from_status' => '2']);
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        if ($warehouse_id == 0 || $warehouse_id == null) {
+            $data_login = data_login_user(['from_status' => '2']);
+        } else {
+            $data_login = data_login_user(['from_status' => '2', 'warehouse_id' => $warehouse_id]);
+        }
         $response = $this->Api_model->get_penerimaan($data_login);
         $this->data['penerimaan_list'] = $response['success'] ? $response['data'] : [];
 

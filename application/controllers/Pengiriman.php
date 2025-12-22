@@ -14,12 +14,13 @@ class Pengiriman extends MY_Controller
         $this->data['title'] = 'Pengiriman ke Pengguna';
         $this->data['active_menu'] = 'pengiriman';
         $this->data['active_submenu'] = 'penggunaan';
-
-        $data_login = data_login_user(['to_status' => '1']);
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        if ($warehouse_id == 0 || $warehouse_id == null) {
+            $data_login = data_login_user(['to_status' => '1']);
+        } else {
+            $data_login = data_login_user(['to_status' => '1', 'warehouse_id' => $warehouse_id]);
+        }
         $response = $this->Api_model->get_pengiriman($data_login);
-
-        // Debug: Lihat struktur response
-        // echo '<pre>'; print_r($response); echo '</pre>'; die();
 
         $this->data['pengiriman_list'] = $response['success'] ? $response['data'] : [];
 
