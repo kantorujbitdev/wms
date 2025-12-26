@@ -50,8 +50,8 @@
                                         <?php endif; ?>
                                         <?php if (has_permission('barang', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?php echo $product['product_id']; ?>"
-                                                data-name="<?php echo $product['product_name']; ?>"
+                                                data-id="<?php echo $product['product_id']; ?>" data-name="<?php echo '<br>Kode : ' . $product['product_code'] .
+                                                       '<br>Barang : ' . $product['product_name']; ?>"
                                                 data-url="<?= site_url('barang/delete_produk'); ?>">
                                                 <i class="fas fa-trash"></i>
                                             </button>

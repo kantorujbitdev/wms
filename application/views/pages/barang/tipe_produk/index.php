@@ -53,8 +53,8 @@
                                         <?php endif; ?>
                                         <?php if (has_permission('tipe_produk', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?php echo $type['Product_Type_Id']; ?>"
-                                                data-name="<?php echo $type['Product_Type_Name']; ?>"
+                                                data-id="<?php echo $type['Product_Type_Id']; ?>" data-name="<?php echo '<br>Kode : ' . $type['Product_Type_Code'] .
+                                                       '<br>Nama : ' . $type['Product_Type_Name']; ?>"
                                                 data-url="<?= site_url('barang/delete_tipe_produk'); ?>">
                                                 <i class="fas fa-trash"></i>
                                             </button>

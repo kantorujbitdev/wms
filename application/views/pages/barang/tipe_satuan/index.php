@@ -46,7 +46,8 @@
                                         <?php endif; ?>
                                         <?php if (has_permission('tipe_satuan', 'delete')): ?>
                                             <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?php echo $type['id']; ?>" data-name="<?php echo $type['code']; ?>"
+                                                data-id="<?php echo $type['id']; ?>" data-name="<?php echo '<br>Code : ' . $type['code'] .
+                                                       ' <br>Name : ' . $type['name']; ?>"
                                                 data-url="<?= site_url('barang/delete_tipe_satuan'); ?>">
                                                 <i class="fas fa-trash"></i>
                                             </button>

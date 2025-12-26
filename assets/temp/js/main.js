@@ -225,7 +225,7 @@ $(document).ready(function () {
 
 		// Set modal content
 		$("#confirmationModalLabel").text(settings.title);
-		$("#confirmationMessage").text(settings.message);
+		$("#confirmationMessage").html(settings.message);
 		$("#confirmButton").text(settings.confirmText);
 
 		// Set button class
@@ -273,7 +273,12 @@ $(document).ready(function () {
 
 		showConfirmationModal({
 			title: "Konfirmasi Hapus?",
-			message: "Yakin ingin menghapus data: " + name + "?",
+			message:
+				"Yakin ingin menghapus data: " +
+				'<span class="text-danger fw-semibold">' +
+				name +
+				"</span>",
+
 			confirmText: "Ya, Hapus",
 			confirmClass: "btn-danger",
 			confirmUrl: url + "/" + id,

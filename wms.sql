@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Dec 11, 2025 at 11:30 AM
+-- Generation Time: Dec 22, 2025 at 09:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -140,13 +140,13 @@ INSERT INTO `role_permissions` (`id`, `role_name`, `menu_key`, `can_view`, `can_
 (30, 'admin', 'tipe_satuan', 1, 1, 0, '2025-12-02 17:05:59'),
 (31, 'admin', 'produk', 1, 1, 0, '2025-12-02 17:05:59'),
 (32, 'admin', 'gudang_stok', 1, 1, 0, '2025-12-02 17:05:59'),
-(33, 'admin', 'penerimaan', 1, 1, 0, '2025-12-02 17:05:59'),
-(34, 'admin', 'penerimaan_antar_gudang', 1, 1, 0, '2025-12-02 17:05:59'),
-(35, 'admin', 'supplier_penerimaan', 1, 1, 0, '2025-12-02 17:05:59'),
-(36, 'admin', 'pengguna_penerimaan', 1, 1, 0, '2025-12-02 17:05:59'),
-(37, 'admin', 'pengiriman', 1, 1, 0, '2025-12-02 17:05:59'),
-(38, 'admin', 'pengiriman_antar_gudang', 1, 1, 0, '2025-12-02 17:05:59'),
-(39, 'admin', 'penggunaan', 1, 1, 0, '2025-12-02 17:05:59'),
+(33, 'admin', 'penerimaan', 1, 1, 1, '2025-12-02 17:05:59'),
+(34, 'admin', 'penerimaan_antar_gudang', 1, 1, 1, '2025-12-02 17:05:59'),
+(35, 'admin', 'supplier_penerimaan', 1, 1, 1, '2025-12-02 17:05:59'),
+(36, 'admin', 'pengguna_penerimaan', 1, 1, 1, '2025-12-02 17:05:59'),
+(37, 'admin', 'pengiriman', 1, 1, 1, '2025-12-02 17:05:59'),
+(38, 'admin', 'pengiriman_antar_gudang', 1, 1, 1, '2025-12-02 17:05:59'),
+(39, 'admin', 'penggunaan', 1, 1, 1, '2025-12-02 17:05:59'),
 (40, 'admin', 'laporan', 1, 1, 0, '2025-12-02 17:05:59'),
 (41, 'admin', 'customer', 1, 1, 0, '2025-12-02 17:05:59'),
 (42, 'admin', 'supplier', 1, 1, 0, '2025-12-02 17:05:59'),
@@ -196,7 +196,7 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `api`
 --
 ALTER TABLE `api`
-  MODIFY `id_api` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_api` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `pengaturan`

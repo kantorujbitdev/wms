@@ -26,7 +26,6 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
 
         body {
             font-family: 'Arial', sans-serif;
-            font-size: 11px;
             line-height: 1.3;
             color: #000;
             background: #fff;
@@ -107,14 +106,14 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
         }
 
         .info-perusahaan h2 {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             margin-bottom: 3px;
             color: #333;
         }
 
         .info-perusahaan h3 {
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
             margin-bottom: 3px;
             color: #000;
@@ -129,7 +128,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
             flex-shrink: 0;
             border: 1px solid #000;
             padding: 5px;
-            font-size: 9px;
+            font-size: 12px;
             font-weight: bold;
             margin-top: 10px;
         }
@@ -149,7 +148,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
         }
 
         .info-box h4 {
-            font-size: 11px;
+            font-size: 14px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 8px;
@@ -160,12 +159,14 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
         .info-row {
             display: flex;
             margin-bottom: 4px;
+            font-size: 14px;
         }
 
         .info-label {
-            width: 100px;
+            width: 120px;
             font-weight: bold;
             flex-shrink: 0;
+            font-
         }
 
         .info-value {
@@ -180,13 +181,11 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
         .detail-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10px;
+            font-size: 14px;
             table-layout: fixed;
         }
 
         .detail-table th {
-            background-color: #2c3e50 !important;
-            color: white;
             font-weight: bold;
             padding: 6px 3px;
             text-align: center;
@@ -237,7 +236,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
         .ttd-box h4 {
             margin-bottom: 30px;
             font-weight: bold;
-            font-size: 11px;
+            font-size: 14px;
             text-transform: uppercase;
         }
 
@@ -263,7 +262,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
         }
 
         .ttd-info {
-            font-size: 10px;
+            font-size: 14px;
             color: #000;
             margin-top: 5px;
         }
@@ -274,7 +273,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
             bottom: 10mm;
             left: 10mm;
             right: 10mm;
-            font-size: 9px;
+            font-size: 12px;
             color: #666;
             text-align: center;
             padding-top: 5px;
@@ -286,7 +285,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
             position: absolute;
             bottom: 5mm;
             right: 10mm;
-            font-size: 9px;
+            font-size: 10px;
             color: #666;
         }
 
@@ -315,7 +314,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
         /* Print Styles */
         @media print {
             body {
-                font-size: 10px;
+                font-size: 12px;
                 background: white;
                 margin: 0;
                 padding: 0;
@@ -394,10 +393,6 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
             <div class="watermark">
                 <?php if (!empty($config['app_logo_blue'])): ?>
                     <img src="<?= base_url($config['app_logo_blue']) ?>" alt="Watermark" class="watermark-logo">
-                <?php else: ?>
-                    <div style="font-size: 120px; color: #f0f0f0; font-weight: bold;">
-                        <?= substr($config['app_pt_name'] ?? 'UJB', 0, 3) ?>
-                    </div>
                 <?php endif; ?>
             </div>
 
@@ -408,11 +403,6 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
                         <div class="logo-perusahaan">
                             <?php if (!empty($config['app_logo_blue'])): ?>
                                 <img src="<?= base_url($config['app_logo_blue']) ?>" alt="Logo Perusahaan">
-                            <?php else: ?>
-                                <div style="width: 100%; height: 100%; background: #f0f0f0; 
-                                        display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: #666; font-size: 10px;">LOGO</span>
-                                </div>
                             <?php endif; ?>
                         </div>
 
@@ -479,7 +469,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
             <!-- Detail Barang -->
             <div class="detail-container">
                 <?php if ($current_page == 1): ?>
-                    <h4 style="text-align: center; margin-bottom: 10px; font-weight: bold; font-size: 12px;">
+                    <h4 style="text-align: center; margin-bottom: 10px; font-weight: bold; font-size: 16px;">
                         DAFTAR BARANG YANG DIKIRIM
                     </h4>
                 <?php endif; ?>
@@ -494,7 +484,6 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
                                 <th width="10%">QTY</th>
                                 <th width="10%">SATUAN</th>
                                 <th width="15%">KETERANGAN</th>
-                                <th width="15%">CATATAN PENERIMA</th>
                             </tr>
                         </thead>
                     <?php endif; ?>
@@ -523,7 +512,6 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
                                 <td class="text-center"><?= isset($item['unit_code']) ? $item['unit_code'] : '&nbsp;' ?></td>
                                 <td><?= (isset($item['detail_note']) && !empty($item['detail_note'])) ? $item['detail_note'] : '-' ?>
                                 </td>
-                                <td>&nbsp;</td>
                             </tr>
                         <?php endforeach; ?>
 
@@ -541,7 +529,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
                                     echo number_format($total_qty_all, 2);
                                     ?>
                                 </td>
-                                <td colspan="3">&nbsp;</td>
+                                <td colspan="2">&nbsp;</td>
                             </tr>
                         <?php else: ?>
                             <!-- Baris Sub Total untuk halaman non-terakhir -->
@@ -571,7 +559,7 @@ $total_pages = ceil(($total_items) / $items_per_page); // +10 untuk baris kosong
 
                         <!-- Pengirim -->
                         <div class="ttd-box">
-                            <h4>PENGIRIM</h4>
+                            <h4>DIBUAT OLEH</h4>
                             <div class="ttd-line"></div>
                             <div class="ttd-info">
                                 <p><?= strtoupper($pengiriman['header']['user_name']) ?></p>
