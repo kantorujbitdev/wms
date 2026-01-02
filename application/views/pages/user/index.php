@@ -9,7 +9,7 @@
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">
-                    <?= $wording['customer_list']; ?>
+                    <?= $wording['user_list']; ?>
                 </h6>
 
                 <a href="<?= site_url('user/add') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">

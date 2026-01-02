@@ -29,7 +29,7 @@ $wording = [
 
     // Tipe Barang
     'tipe' => 'Tipe',
-    'tipe_Barang' => 'Tipe Barang',
+    'tipe_produk' => 'Tipe Barang',
     'barang_tipe_list' => 'Daftar Tipe Barang',
     'barang_tipe_add' => 'Tambah Tipe Barang',
 
@@ -115,11 +115,11 @@ $wording = [
     'laporan_export' => 'Export',
 
     // User
-    'user' => 'User',
-    'user_management' => 'User Management',
-    'user_list' => 'Daftar User',
-    'user_add' => 'Tambah User',
-    'user_edit' => 'Edit User',
+    'user' => 'Pengguna',
+    'user_management' => 'Kelola Pengguna',
+    'user_list' => 'Daftar Pengguna',
+    'user_add' => 'Tambah Pengguna',
+    'user_edit' => 'Edit Pengguna',
     'user_name' => 'Nama Lengkap',
     'user_email' => 'Email',
     'user_role' => 'Role',

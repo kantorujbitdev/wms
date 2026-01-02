@@ -66,7 +66,7 @@
                         <li>
                             <a href="<?= site_url('barang/tipe_produk'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'tipe_produk') ? 'active' : ''; ?>">
-                                <i class="<?= get_menu_icon('tipe_produk'); ?> me-2"></i>Product Type
+                                <i class="<?= get_menu_icon('tipe_produk'); ?> me-2"></i><?= $wording['tipe_produk']; ?>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -75,7 +75,7 @@
                         <li>
                             <a href="<?= site_url('barang/tipe_satuan'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'tipe_satuan') ? 'active' : ''; ?>">
-                                <i class="<?= get_menu_icon('tipe_satuan'); ?> me-2"></i>Unit Type
+                                <i class="<?= get_menu_icon('tipe_satuan'); ?> me-2"></i><?= $wording['tipe_satuan']; ?>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -84,7 +84,7 @@
                         <li>
                             <a href="<?= site_url('barang'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'produk') ? 'active' : ''; ?>">
-                                <i class="<?= get_menu_icon('produk'); ?> me-2"></i>Product
+                                <i class="<?= get_menu_icon('produk'); ?> me-2"></i><?= $wording['barang']; ?>
                             </a>
                         </li>
                     <?php endif; ?>
