@@ -160,7 +160,7 @@ $config = get_app_config();
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
                         <input type="text" name="username" class="form-control" placeholder="Username"
                             value="<?php echo set_value('username'); ?>" required autocomplete="username"
-                            autocapitalize="none" minlength="3" maxlength="50" pattern="[A-Za-z0-9_]+"
+                            autocapitalize="none" minlength="1" maxlength="50" pattern="[A-Za-z0-9_]+"
                             title="Username hanya boleh mengandung huruf, angka, dan underscore">
                         <div class="invalid-feedback">
                             Username harus diisi (minimal 3 karakter)
@@ -173,7 +173,7 @@ $config = get_app_config();
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
                         <input id="passwordInput" type="password" name="password" class="form-control"
                             placeholder="Password" required aria-label="Password" autocomplete="current-password"
-                            minlength="2" maxlength="100">
+                            minlength="1" maxlength="100">
                         <button id="togglePassword" type="button"
                             class="btn btn-outline-secondary input-group-text btn-eye" aria-pressed="false"
                             title="Tampilkan password" aria-label="Toggle password visibility">

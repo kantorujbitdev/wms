@@ -16,6 +16,12 @@
                 <?php echo save_log("user_id: " . ucfirst($user_data['user_id'])); ?>
             <?php endif; ?>
 
+            <!-- Input tersembunyi untuk user yang sedang login -->
+            <input type="hidden" id="current_user_role"
+                value="<?php echo isset($current_user_role) ? $current_user_role : ''; ?>">
+            <input type="hidden" id="current_user_warehouse"
+                value="<?php echo isset($current_user_warehouse) ? $current_user_warehouse : ''; ?>">
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="username" class="form-label">Username</label>
@@ -29,10 +35,27 @@
                         <option value="">-- Pilih Role --</option>
                         <?php if (!empty($roles)): ?>
                             <?php foreach ($roles as $role): ?>
-                                <?php echo save_log("user_role: " . ucfirst($user_data['user_role'])); ?>
-                                <option value="<?php echo $role; ?>" <?php echo (isset($user_data) && ucfirst($user_data['user_role']) == $role) ? 'selected' : ''; ?>>
-                                    <?php echo ucfirst($role); ?>
-                                </option>
+                                <?php
+                                // Cek apakah user yang login bisa membuat role ini
+                                $canCreateRole = true;
+                                $current_role = isset($current_user_role) ? $current_user_role : '';
+
+                                // Admin hanya bisa membuat staff
+                                if ($current_role == 'admin' && $role != 'staff') {
+                                    $canCreateRole = false;
+                                }
+
+                                // Staff tidak bisa membuat user baru
+                                if ($current_role == 'staff') {
+                                    $canCreateRole = false;
+                                }
+                                ?>
+
+                                <?php if ($canCreateRole): ?>
+                                    <option value="<?php echo $role; ?>" <?php echo (isset($user_data) && ucfirst($user_data['user_role']) == $role) ? 'selected' : ''; ?>>
+                                        <?php echo ucfirst($role); ?>
+                                    </option>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
@@ -51,11 +74,31 @@
                     <select class="form-control" id="warehouse_id" name="warehouse_id">
                         <option value="">-- Pilih Gudang --</option>
                         <?php if (!empty($warehouses)): ?>
-                            <?php foreach ($warehouses as $g): ?>
-                                <option value="<?= $g['warehouse_id']; ?>" <?= (isset($user_data) && $user_data['warehouse_id'] == $g['warehouse_id']) ? 'selected' : ''; ?>>
-                                    <?= $g['warehouse_name']; ?>
-                                </option>
-                            <?php endforeach; ?>
+                            <?php
+                            // Jika admin/staff yang login, tampilkan hanya gudang mereka
+                            if ($current_user_role == 'admin' || $current_user_role == 'staff'):
+                                // Cari gudang yang sesuai dengan user yang login
+                                $user_warehouse = null;
+                                foreach ($warehouses as $g):
+                                    if ($g['warehouse_id'] == $current_user_warehouse):
+                                        $user_warehouse = $g;
+                                        break;
+                                    endif;
+                                endforeach;
+
+                                if ($user_warehouse): ?>
+                                    <option value="<?= $user_warehouse['warehouse_id']; ?>" selected>
+                                        <?= $user_warehouse['warehouse_name']; ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <!-- Superadmin bisa melihat semua gudang -->
+                                <?php foreach ($warehouses as $g): ?>
+                                    <option value="<?= $g['warehouse_id']; ?>" <?= (isset($user_data) && $user_data['warehouse_id'] == $g['warehouse_id']) ? 'selected' : ''; ?>>
+                                        <?= $g['warehouse_name']; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </select>
                     <small id="warehouseHelp" class="form-text text-muted"></small>
@@ -99,32 +142,47 @@
 
 <script>
     $(document).ready(function () {
+        const currentUserRole = $('#current_user_role').val();
+        const currentUserWarehouse = $('#current_user_warehouse').val();
+
         // Fungsi untuk update tampilan gudang berdasarkan role
         function updateWarehouseField() {
             const role = $('#role').val().toLowerCase();
             const warehouseField = $('#warehouse_id');
             const warehouseHelp = $('#warehouseHelp');
 
-            if (role === 'superadmin') {
-                // Nonaktifkan required untuk superadmin
-                warehouseField.prop('required', false);
+            // Jika yang login adalah admin atau staff
+            if (currentUserRole === 'admin' || currentUserRole === 'staff') {
+                // Admin/Staff hanya bisa assign gudang mereka sendiri
+                warehouseField.val(currentUserWarehouse);
                 warehouseField.prop('disabled', true);
-                warehouseField.val('');
-                warehouseHelp.text('Superadmin tidak memerlukan ruang lingkup gudang');
-                warehouseHelp.removeClass('text-danger').addClass('text-muted');
-            } else {
-                // Aktifkan required untuk role lainnya
                 warehouseField.prop('required', true);
-                warehouseField.prop('disabled', false);
-                warehouseHelp.text('Pilih gudang untuk ruang lingkup user');
+                warehouseHelp.text('Hanya bisa menetapkan gudang ' + warehouseField.find('option:selected').text());
                 warehouseHelp.removeClass('text-danger').addClass('text-muted');
+            }
+            // Jika yang login adalah superadmin
+            else if (currentUserRole === 'superadmin') {
+                if (role === 'superadmin') {
+                    // Superadmin tidak memerlukan gudang
+                    warehouseField.prop('required', false);
+                    warehouseField.prop('disabled', true);
+                    warehouseField.val('');
+                    warehouseHelp.text('Superadmin tidak memerlukan ruang lingkup gudang');
+                    warehouseHelp.removeClass('text-danger').addClass('text-muted');
+                } else {
+                    // Role lain memerlukan gudang
+                    warehouseField.prop('required', true);
+                    warehouseField.prop('disabled', false);
+                    warehouseHelp.text('Pilih gudang untuk ruang lingkup user');
+                    warehouseHelp.removeClass('text-danger').addClass('text-muted');
+                }
             }
         }
 
         // Inisialisasi saat halaman dimuat
         updateWarehouseField();
 
-        // Update saat role berubah
+        // Update saat role berubah (hanya berpengaruh untuk superadmin)
         $('#role').change(function () {
             updateWarehouseField();
         });
