@@ -19,6 +19,38 @@
             </a>
         </li>
 
+        <!-- User Management -->
+        <?php if (can_access_menu('user')): ?>
+            <li class="sidebar-item <?= ($active_menu == 'user') ? 'active' : ''; ?>">
+                <a href="<?= site_url('user'); ?>" class="sidebar-link">
+                    <i class="<?= get_menu_icon('user'); ?> me-2"></i>
+                    <span><?= $wording['user']; ?></span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+
+
+        <!-- Customer -->
+        <?php if (can_access_menu('customer')): ?>
+            <li class="sidebar-item <?= ($active_menu == 'customer') ? 'active' : ''; ?>">
+                <a href="<?= site_url('customer'); ?>" class="sidebar-link">
+                    <i class="<?= get_menu_icon('customer'); ?> me-2"></i>
+                    <span><?= $wording['customer']; ?></span>
+                </a>
+            </li>
+        <?php endif; ?>
+
+        <!-- Supplier -->
+        <?php if (can_access_menu('supplier')): ?>
+            <li class="sidebar-item <?= ($active_menu == 'supplier') ? 'active' : ''; ?>">
+                <a href="<?= site_url('supplier'); ?>" class="sidebar-link">
+                    <i class="<?= get_menu_icon('supplier'); ?> me-2"></i>
+                    <span><?= $wording['supplier']; ?></span>
+                </a>
+            </li>
+        <?php endif; ?>
+
         <!-- Gudang -->
         <?php if (can_access_menu('gudang')): ?>
             <li class="sidebar-item <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
@@ -236,35 +268,7 @@
         <?php endif; ?>
 
 
-        <!-- Customer -->
-        <?php if (can_access_menu('customer')): ?>
-            <li class="sidebar-item <?= ($active_menu == 'customer') ? 'active' : ''; ?>">
-                <a href="<?= site_url('customer'); ?>" class="sidebar-link">
-                    <i class="<?= get_menu_icon('customer'); ?> me-2"></i>
-                    <span><?= $wording['customer']; ?></span>
-                </a>
-            </li>
-        <?php endif; ?>
 
-        <!-- Supplier -->
-        <?php if (can_access_menu('supplier')): ?>
-            <li class="sidebar-item <?= ($active_menu == 'supplier') ? 'active' : ''; ?>">
-                <a href="<?= site_url('supplier'); ?>" class="sidebar-link">
-                    <i class="<?= get_menu_icon('supplier'); ?> me-2"></i>
-                    <span><?= $wording['supplier']; ?></span>
-                </a>
-            </li>
-        <?php endif; ?>
-
-        <!-- User Management -->
-        <?php if (can_access_menu('user')): ?>
-            <li class="sidebar-item <?= ($active_menu == 'user') ? 'active' : ''; ?>">
-                <a href="<?= site_url('user'); ?>" class="sidebar-link">
-                    <i class="<?= get_menu_icon('user'); ?> me-2"></i>
-                    <span><?= $wording['user']; ?></span>
-                </a>
-            </li>
-        <?php endif; ?>
 
         <!-- Pengaturan -->
         <?php $usernames = strtolower($this->session->userdata('username')); ?>
