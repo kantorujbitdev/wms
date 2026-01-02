@@ -60,8 +60,8 @@ $wording = [
     'customer_form' => 'Form Pengguna',
 
     // Supplier
-    'supplier' => 'Supplier',
-    'supplier_list' => 'Daftar Supplier',
+    'supplier' => 'Master Supplier',
+    'supplier_list' => 'DaftarSupplier',
     'supplier_add' => 'Tambah Supplier',
     'supplier_edit' => 'Edit Supplier',
     'supplier_form' => 'Form Supplier',
