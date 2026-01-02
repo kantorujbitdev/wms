@@ -80,7 +80,7 @@
     <!-- Content Row -->
     <div class="row">
         <!-- Recent Transactions -->
-        <div class="col-lg-6 mb-4">
+        <!-- <div class="col-lg-6 mb-4">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Recent Transactions</h6>
@@ -121,10 +121,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Low Stock Items -->
-        <div class="col-lg-6 mb-4">
+        <!-- <div class="col-lg-6 mb-4">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Low Stock Items</h6>
@@ -162,13 +162,13 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <!-- Content Row -->
     <div class="row">
         <!-- Stock Overview Chart -->
-        <div class="col-xl-8 col-lg-7">
+        <!-- <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Stock Overview</h6>
@@ -179,10 +179,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Stock by Warehouse -->
-        <div class="col-xl-4 col-lg-5">
+        <!-- <div class="col-xl-4 col-lg-5">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Stock by Warehouse</h6>
@@ -204,7 +204,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 

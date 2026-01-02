@@ -44,10 +44,11 @@
                 <input type="text" class="form-control" id="fullname" name="fullname"
                     value="<?php echo isset($user_data) ? $user_data['full_name'] : set_value('fullname'); ?>" required>
             </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="warehouse_id" class="form-label">Ruang Lingkup (Gudang)</label>
-                    <select class="form-control" id="warehouse_id" name="warehouse_id" required>
+                    <select class="form-control" id="warehouse_id" name="warehouse_id">
                         <option value="">-- Pilih Gudang --</option>
                         <?php if (!empty($warehouses)): ?>
                             <?php foreach ($warehouses as $g): ?>
@@ -57,6 +58,7 @@
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
+                    <small id="warehouseHelp" class="form-text text-muted"></small>
                 </div>
             </div>
 
@@ -97,13 +99,41 @@
 
 <script>
     $(document).ready(function () {
+        // Fungsi untuk update tampilan gudang berdasarkan role
+        function updateWarehouseField() {
+            const role = $('#role').val().toLowerCase();
+            const warehouseField = $('#warehouse_id');
+            const warehouseHelp = $('#warehouseHelp');
+
+            if (role === 'superadmin') {
+                // Nonaktifkan required untuk superadmin
+                warehouseField.prop('required', false);
+                warehouseField.prop('disabled', true);
+                warehouseField.val('');
+                warehouseHelp.text('Superadmin tidak memerlukan ruang lingkup gudang');
+                warehouseHelp.removeClass('text-danger').addClass('text-muted');
+            } else {
+                // Aktifkan required untuk role lainnya
+                warehouseField.prop('required', true);
+                warehouseField.prop('disabled', false);
+                warehouseHelp.text('Pilih gudang untuk ruang lingkup user');
+                warehouseHelp.removeClass('text-danger').addClass('text-muted');
+            }
+        }
+
+        // Inisialisasi saat halaman dimuat
+        updateWarehouseField();
+
+        // Update saat role berubah
+        $('#role').change(function () {
+            updateWarehouseField();
+        });
+
         // Toggle password visibility
         $('#togglePassword').click(function () {
             const passwordField = $('#password');
             const passwordType = passwordField.attr('type') === 'password' ? 'text' : 'password';
             passwordField.attr('type', passwordType);
-
-            // Toggle icon
             $(this).find('i').toggleClass('fa-eye fa-eye-slash');
         });
 
@@ -111,23 +141,37 @@
             const confirmPasswordField = $('#confirm_password');
             const confirmPasswordType = confirmPasswordField.attr('type') === 'password' ? 'text' : 'password';
             confirmPasswordField.attr('type', confirmPasswordType);
-
-            // Toggle icon
             $(this).find('i').toggleClass('fa-eye fa-eye-slash');
         });
 
-        // Password confirmation
+        // Validasi form submit
         $('form').submit(function (e) {
+            var role = $('#role').val();
+            var warehouseId = $('#warehouse_id').val();
             var password = $('#password').val();
             var confirmPassword = $('#confirm_password').val();
             var isEdit = <?php echo isset($user_data) ? 'true' : 'false'; ?>;
 
-            // For edit mode, password is optional
+            // Validasi untuk role non-superadmin
+            if (role && role.toLowerCase() !== 'superadmin' && !warehouseId) {
+                e.preventDefault();
+                showConfirmationModal({
+                    title: 'Gudang Harus Dipilih',
+                    message: 'Untuk role ' + role + ', ruang lingkup gudang wajib dipilih!',
+                    confirmText: 'OK',
+                    confirmClass: 'btn-primary',
+                    onConfirm: function () {
+                        // Just close the modal
+                    }
+                });
+                return;
+            }
+
+            // Validasi password
             if (isEdit && password === '') {
                 return true;
             }
 
-            // For add mode or when password is provided in edit mode
             if (password !== confirmPassword) {
                 e.preventDefault();
                 showConfirmationModal({
