@@ -51,13 +51,13 @@ $wording = [
     'barang_unit' => 'Satuan',
     'barang_price' => 'Harga',
     'barang_description' => 'Deskripsi',
-
+    // Master Pengguna
     // Customer
-    'customer' => 'Customer',
-    'customer_list' => 'Daftar Customer',
-    'customer_add' => 'Tambah Customer',
-    'customer_edit' => 'Edit Customer',
-    'customer_form' => 'Form Customer',
+    'customer' => 'Master Pengguna',
+    'customer_list' => 'Daftar Master Pengguna',
+    'customer_add' => 'Tambah Pengguna',
+    'customer_edit' => 'Edit Pengguna',
+    'customer_form' => 'Form Pengguna',
 
     // Supplier
     'supplier' => 'Supplier',
@@ -115,11 +115,11 @@ $wording = [
     'laporan_export' => 'Export',
 
     // User
-    'user' => 'Pengguna',
-    'user_management' => 'Kelola Pengguna',
-    'user_list' => 'Daftar Pengguna',
-    'user_add' => 'Tambah Pengguna',
-    'user_edit' => 'Edit Pengguna',
+    'user' => 'Master User',
+    'user_management' => 'Kelola User',
+    'user_list' => 'Daftar User',
+    'user_add' => 'Tambah User',
+    'user_edit' => 'Edit User',
     'user_name' => 'Nama Lengkap',
     'user_email' => 'Email',
     'user_role' => 'Role',

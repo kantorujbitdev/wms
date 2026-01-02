@@ -22,7 +22,7 @@
                         value="<?php echo isset($supplier) ? $supplier['name'] : set_value('name'); ?>" required>
                 </div>
                 <div class="col-md-6">
-                    <label for="contact" class="form-label">Contact Person</label>
+                    <label for="contact" class="form-label">Nama Kontak</label>
                     <input type="text" class="form-control" id="contact" name="contact"
                         value="<?php echo isset($supplier) ? $supplier['person'] : set_value('contact'); ?>" required>
                 </div>
@@ -30,7 +30,7 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="phone" class="form-label">Telepon</label>
+                    <label for="phone" class="form-label">Nomor Kontak</label>
                     <input type="text" class="form-control" id="phone" name="phone"
                         value="<?php echo isset($supplier) ? $supplier['phone'] : set_value('phone'); ?>" required>
                 </div>

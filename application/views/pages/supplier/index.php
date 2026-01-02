@@ -25,8 +25,8 @@
                         <tr>
                             <th>No</th>
                             <th>Nama</th>
-                            <th>Contact</th>
-                            <th>Telepon</th>
+                            <th>Nama Kontak</th>
+                            <th>Nomor Kontak</th>
                             <th>Alamat</th>
                             <th>Aksi</th>
                         </tr>

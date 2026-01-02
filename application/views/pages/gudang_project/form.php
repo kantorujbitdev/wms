@@ -45,7 +45,7 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="contact_person" class="form-label">Contact Person <span
+                    <label for="contact_person" class="form-label">Nama Kontak <span
                             class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="contact_person" name="contact_person"
                         value="<?php echo isset($warehouse) ? $warehouse['contact_person'] : set_value('contact_person'); ?>"

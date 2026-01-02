@@ -28,8 +28,8 @@
                             <th>Kode</th>
                             <th>Nama</th>
                             <th>Alamat</th>
-                            <th>Contact Person</th>
-                            <th>Telepon</th>
+                            <th>Nama Kontak</th>
+                            <th>Nomor Kontak</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
