@@ -37,9 +37,9 @@
                             <label for="stockout_code">Kode Pengiriman *</label>
                             <?php 
                             $code = $warehouses[0]['warehouse_code'];
-                            $kode_prefix = $code . '/RO/INV/';
-                            if ($to_status == '3')
-                                $kode_prefix = $code . '/TRF/OUT/';
+                            $kode_prefix = 'DO/'. $code . '/';
+                            // if ($to_status == '3')
+                            //     $kode_prefix = $code . '/TRF/OUT/';
                             $romanMonth = monthToRoman(date('m'));
                             $stockout_code = $kode_prefix . $romanMonth . '/' . date('Y');
                             if (isset($old_form_data['stockout_code'])) {

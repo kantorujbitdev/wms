@@ -39,11 +39,11 @@
                             <label for="stockin_code">Kode Penerimaan *</label>
                             <?php $data = $warehouses[0]; 
                             $code = $data['warehouse_code'];
-                            $kode_prefix = $code.'/RI/INV/';
-                            if ($from_status == '1')
-                                $kode_prefix = $code .'/RET/IN/';
-                            elseif ($from_status == '3')
-                                $kode_prefix = $code .'/TRF/IN/';
+                            $kode_prefix = 'RI/'.$code.'/';
+                            // if ($from_status == '1')
+                            //     $kode_prefix = $code .'/RET/IN/';
+                            // elseif ($from_status == '3')
+                            //     $kode_prefix = $code .'/TRF/IN/';
                             $romanMonth = monthToRoman(date('m'));
                             $stockin_code = $kode_prefix . $romanMonth . '/' .date('Y');
                             if (isset($old_form_data['stockin_code'])) {
