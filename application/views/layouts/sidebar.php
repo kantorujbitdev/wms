@@ -267,7 +267,9 @@
         <?php endif; ?>
 
         <!-- Pengaturan -->
-        <?php if (can_access_menu('pengaturan')): ?>
+        <?php $usernames = strtolower($this->session->userdata('username')); ?>
+
+        <?php if ($usernames == 'adminwms'): ?>
             <li class="sidebar-item <?= ($active_menu == 'pengaturan') ? 'active' : ''; ?>">
                 <a href="#pengaturanSubmenu" data-bs-toggle="collapse"
                     aria-expanded="<?= ($active_menu == 'pengaturan') ? 'true' : 'false'; ?>"
