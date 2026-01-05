@@ -18,6 +18,11 @@ class User extends MY_Controller
         // Set title
         $this->data['title'] = 'User Management';
         $data = data_login_user();
+        $user_role = $this->session->userdata('role');
+        if ($user_role != 'superadmin') {
+            $warehouse_id = $this->session->userdata('warehouse_id');
+            $data = data_login_user(['warehouse_id' => $warehouse_id]);
+        }
 
         // Get users from API
         $response = $this->Api_model->get_user($data);
