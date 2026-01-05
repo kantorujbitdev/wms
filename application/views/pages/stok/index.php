@@ -11,10 +11,10 @@
                 <h6 class="m-0 font-weight-bold text-primary">
                     <?= $wording['stok_list']; ?>
                 </h6>
-                <a href="<?= site_url('gudang_stok/add') ?>" class="btn btn-primary btn-sm">
+                <!-- <a href="<?= site_url('gudang_stok/add') ?>" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus fa-sm text-white-50"></i>
                     <?= $wording['stok_add']; ?>
-                </a>
+                </a> -->
             </div>
         </div>
 
