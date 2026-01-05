@@ -33,23 +33,50 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockout_code">Kode Pengiriman *</label>
-                            <?php 
-                            $code = $warehouses[0]['warehouse_code'];
-                            $kode_prefix = 'DO/'. $code . '/';
-                            // if ($to_status == '3')
-                            //     $kode_prefix = $code . '/TRF/OUT/';
+    <div class="form-group">
+        <label for="stockout_code">Kode Pengiriman *</label>
+        <?php
+                            // Generate kode awal berdasarkan gudang default
+                            $default_warehouse_code = 'WH';
+                            $default_warehouse_name = 'Pilih Gudang';
+
+                            if ($user_role != 'superadmin' && isset($user_warehouse_id)) {
+                                // Untuk non-superadmin, gunakan gudang mereka
+                                foreach ($warehouses as $wh) {
+                                    if ($wh['warehouse_id'] == $user_warehouse_id) {
+                                        $default_warehouse_code = $wh['warehouse_code'];
+                                        $default_warehouse_name = $wh['warehouse_name'];
+                                        break;
+                                    }
+                                }
+                            } elseif (isset($old_form_data['from_warehouse_id']) && !empty($old_form_data['from_warehouse_id'])) {
+                                // Jika ada data lama, gunakan gudang dari data lama
+                                foreach ($warehouses as $wh) {
+                                    if ($wh['warehouse_id'] == $old_form_data['from_warehouse_id']) {
+                                        $default_warehouse_code = $wh['warehouse_code'];
+                                        $default_warehouse_name = $wh['warehouse_name'];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            $kode_prefix = 'DO/' . $default_warehouse_code . '/';
                             $romanMonth = monthToRoman(date('m'));
                             $stockout_code = $kode_prefix . $romanMonth . '/' . date('Y');
+
                             if (isset($old_form_data['stockout_code'])) {
                                 $stockout_code = $old_form_data['stockout_code'];
                             }
                             ?>
+                    
                             <input type="text" class="form-control bg-light" id="stockout_code" name="stockout_code"
                                 value="<?= $stockout_code ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Kode otomatis generated oleh sistem</small>
+                            <input type="hidden" id="warehouse_data"
+                                value='<?= json_encode(array_column($warehouses, 'warehouse_code', 'warehouse_id')) ?>'>
+                            <small class="form-text text-muted">
+                                Kode otomatis berdasarkan Gudang Asal: <strong><?= $default_warehouse_name ?></strong>
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -339,12 +366,14 @@
         </div>
     </div>
 </div>
-
 <script>
     $(document).ready(function () {
         // Store products data from PHP - use window object for global access
         window.productsData = <?= $products_json ?: '[]' ?>;
         let itemCounter = <?= isset($old_form_data['items']) ? count($old_form_data['items']) : 1 ?>;
+
+        // Get warehouse data from hidden input
+        const warehouseData = JSON.parse($('#warehouse_data').val() || '{}');
 
         // Initialize Select2
         $('.select2').select2({
@@ -352,27 +381,91 @@
             dropdownParent: $('.card-body')
         });
 
+        // Function to update stockout code based on warehouse selection
+        function updateStockoutCode() {
+            let selectedWarehouseId = '';
+
+            <?php if ($user_role == 'superadmin'): ?>
+                // For superadmin, get from dropdown selection
+                selectedWarehouseId = $('#from_warehouse_id').val();
+            <?php else: ?>
+                // For non-superadmin, use their warehouse
+                selectedWarehouseId = '<?= $user_warehouse_id ?>';
+            <?php endif; ?>
+
+            // Get warehouse code from data
+            let warehouseCode = 'WH'; // default
+            if (selectedWarehouseId && warehouseData[selectedWarehouseId]) {
+                warehouseCode = warehouseData[selectedWarehouseId];
+            }
+
+            // Generate new stockout code
+            const romanMonth = getRomanMonth(new Date().getMonth() + 1);
+            const currentYear = new Date().getFullYear();
+            const newStockoutCode = `DO/${warehouseCode}/${romanMonth}/${currentYear}`;
+
+            // Update the input field
+            $('#stockout_code').val(newStockoutCode);
+
+            // Update the help text
+            let warehouseName = 'Gudang';
+            <?php if ($user_role == 'superadmin'): ?>
+                if (selectedWarehouseId) {
+                    const selectedOption = $('#from_warehouse_id option:selected').text();
+                    warehouseName = selectedOption || 'Gudang';
+                }
+            <?php else: ?>
+                warehouseName = '<?= $user_warehouse_name ?>';
+            <?php endif; ?>
+
+            $('#stockout_code').next('small').html(
+                `Kode otomatis berdasarkan Gudang Asal: <strong>${warehouseName}</strong>`
+            );
+        }
+
+        // Function to convert month to Roman numeral
+        function getRomanMonth(month) {
+            const romanNumerals = {
+                1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI',
+                7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII'
+            };
+            return romanNumerals[month] || 'I';
+        }
+
+        // Update code when warehouse selection changes (for superadmin)
+        <?php if ($user_role == 'superadmin'): ?>
+            $('#from_warehouse_id').on('change', function () {
+                updateStockoutCode();
+            });
+        <?php endif; ?>
+
+        // Update code on page load
+        updateStockoutCode();
+
         // For superadmin: Load products when warehouse changes
         <?php if ($user_role == 'superadmin'): ?>
             $('#from_warehouse_id').on('change', function () {
                 const warehouseId = $(this).val();
                 if (warehouseId) {
                     loadProductsByWarehouse(warehouseId);
+                    updateStockoutCode(); // Update kode juga
 
                     // Disable same warehouse in destination dropdown
-                    $('#to_warehouse_id option').each(function () {
-                        const optionValue = $(this).val();
-                        if (optionValue == warehouseId) {
-                            $(this).prop('disabled', true);
-                            if ($(this).is(':selected')) {
-                                $(this).prop('selected', false);
-                                $('#to_warehouse_id').trigger('change.select2');
+                    <?php if ($to_status == '3'): ?>
+                        $('#to_warehouse_id option').each(function () {
+                            const optionValue = $(this).val();
+                            if (optionValue == warehouseId) {
+                                $(this).prop('disabled', true);
+                                if ($(this).is(':selected')) {
+                                    $(this).prop('selected', false);
+                                    $('#to_warehouse_id').trigger('change.select2');
+                                }
+                            } else {
+                                $(this).prop('disabled', false);
                             }
-                        } else {
-                            $(this).prop('disabled', false);
-                        }
-                    });
-                    $('#to_warehouse_id').trigger('change.select2');
+                        });
+                        $('#to_warehouse_id').trigger('change.select2');
+                    <?php endif; ?>
                 }
             });
         <?php endif; ?>
@@ -451,6 +544,8 @@
                 // Reset items to single row
                 $('.item-row:gt(0)').remove();
                 $('.remove-item').prop('disabled', true);
+                // Reset stockout code
+                updateStockoutCode();
                 // Refresh page to clear all data
                 window.location.href = window.location.href.split('?')[0];
             }
@@ -633,6 +728,12 @@
             });
 
             if (hasQuantityError) {
+                valid = false;
+            }
+
+            // Validasi kode pengiriman
+            if (!$('#stockout_code').val()) {
+                errorMessages.push('Kode pengiriman tidak valid');
                 valid = false;
             }
 

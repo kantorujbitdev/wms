@@ -94,7 +94,7 @@ class Penerimaan extends MY_Controller
         $this->check_permission('supplier_penerimaan', 'edit');
         $this->data['title'] = 'Tambah Penerimaan dari Supplier';
         $this->data['active_menu'] = 'penerimaan';
-        $this->data['active_submenu'] = 'supplier';
+        $this->data['active_submenu'] = 'supplier_penerimaan';
 
         $data_login = data_login_user();
 

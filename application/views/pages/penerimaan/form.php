@@ -35,25 +35,50 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockin_code">Kode Penerimaan *</label>
-                            <?php $data = $warehouses[0]; 
-                            $code = $data['warehouse_code'];
-                            $kode_prefix = 'RI/'.$code.'/';
-                            // if ($from_status == '1')
-                            //     $kode_prefix = $code .'/RET/IN/';
-                            // elseif ($from_status == '3')
-                            //     $kode_prefix = $code .'/TRF/IN/';
+    <div class="form-group">
+        <label for="stockin_code">Kode Penerimaan *</label>
+        <?php
+                            // Generate kode awal berdasarkan gudang default
+                            $default_warehouse_code = 'WH';
+                            $default_warehouse_name = 'Pilih Gudang';
+
+                            if ($user_role != 'superadmin' && isset($user_warehouse_id)) {
+                                // Untuk non-superadmin, gunakan gudang mereka
+                                foreach ($warehouses as $wh) {
+                                    if ($wh['warehouse_id'] == $user_warehouse_id) {
+                                        $default_warehouse_code = $wh['warehouse_code'];
+                                        $default_warehouse_name = $wh['warehouse_name'];
+                                        break;
+                                    }
+                                }
+                            } elseif (isset($old_form_data['to_warehouse_id']) && !empty($old_form_data['to_warehouse_id'])) {
+                                // Jika ada data lama, gunakan gudang dari data lama
+                                foreach ($warehouses as $wh) {
+                                    if ($wh['warehouse_id'] == $old_form_data['to_warehouse_id']) {
+                                        $default_warehouse_code = $wh['warehouse_code'];
+                                        $default_warehouse_name = $wh['warehouse_name'];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            $kode_prefix = 'RI/' . $default_warehouse_code . '/';
                             $romanMonth = monthToRoman(date('m'));
-                            $stockin_code = $kode_prefix . $romanMonth . '/' .date('Y');
+                            $stockin_code = $kode_prefix . $romanMonth . '/' . date('Y');
+
                             if (isset($old_form_data['stockin_code'])) {
                                 $stockin_code = $old_form_data['stockin_code'];
                             }
                             ?>
+                    
                             <input type="text" class="form-control bg-light" id="stockin_code" name="stockin_code"
                                 value="<?= $stockin_code ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Kode otomatis generated oleh sistem</small>
+                            <input type="hidden" id="warehouse_data"
+                                value='<?= json_encode(array_column($warehouses, 'warehouse_code', 'warehouse_id')) ?>'>
+                            <small class="form-text text-muted">
+                                Kode otomatis berdasarkan Gudang Tujuan: <strong><?= $default_warehouse_name ?></strong>
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -333,6 +358,70 @@
         // Initialize Select2
         $('.select2').select2();
         
+        // Get warehouse data from hidden input
+        const warehouseData = JSON.parse($('#warehouse_data').val() || '{}');
+        
+        // Function to update stockin code based on warehouse selection
+        function updateStockinCode() {
+            let selectedWarehouseId = '';
+            
+            <?php if ($user_role == 'superadmin'): ?>
+                // For superadmin, get from dropdown selection
+                selectedWarehouseId = $('#to_warehouse_id').val();
+            <?php else: ?>
+                // For non-superadmin, use their warehouse
+                selectedWarehouseId = '<?= $user_warehouse_id ?>';
+            <?php endif; ?>
+
+            // Get warehouse code from data
+            let warehouseCode = 'WH'; // default
+            if (selectedWarehouseId && warehouseData[selectedWarehouseId]) {
+                warehouseCode = warehouseData[selectedWarehouseId];
+            }
+
+            // Generate new stockin code
+            const romanMonth = getRomanMonth(new Date().getMonth() + 1);
+            const currentYear = new Date().getFullYear();
+            const newStockinCode = `RI/${warehouseCode}/${romanMonth}/${currentYear}`;
+
+            // Update the input field
+            $('#stockin_code').val(newStockinCode);
+
+            // Update the help text
+            let warehouseName = 'Gudang';
+            <?php if ($user_role == 'superadmin'): ?>
+                if (selectedWarehouseId) {
+                    const selectedOption = $('#to_warehouse_id option:selected').text();
+                    warehouseName = selectedOption || 'Gudang';
+                }
+            <?php else: ?>
+                warehouseName = '<?= $user_warehouse_name ?>';
+            <?php endif; ?>
+
+            $('#stockin_code').next('small').html(
+                `Kode otomatis berdasarkan Gudang Tujuan: <strong>${warehouseName}</strong>`
+            );
+        }
+
+        // Function to convert month to Roman numeral
+        function getRomanMonth(month) {
+            const romanNumerals = {
+                1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI',
+                7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII'
+            };
+            return romanNumerals[month] || 'I';
+        }
+
+        // Update code when warehouse selection changes (for superadmin)
+        <?php if ($user_role == 'superadmin'): ?>
+            $('#to_warehouse_id').on('change', function () {
+                updateStockinCode();
+            });
+        <?php endif; ?>
+
+        // Update code on page load
+        updateStockinCode();
+
         // Prevent future date selection
         $('#stockin_date').on('change', function () {
             const selectedDate = new Date(this.value);
@@ -351,7 +440,7 @@
         });
 
         // Clear form button
-        $('#clearForm').click(function() {
+        $('#clearForm').click(function () {
             if (confirm('Apakah Anda yakin ingin membersihkan semua data form?')) {
                 // Reset form
                 $('#penerimaanForm')[0].reset();
@@ -360,6 +449,8 @@
                 // Reset items to single row
                 $('.item-row:gt(0)').remove();
                 $('.remove-item').prop('disabled', true);
+                // Reset stockin code
+                updateStockinCode();
                 // Refresh page to clear all data
                 window.location.href = window.location.href.split('?')[0];
             }
@@ -375,9 +466,9 @@
                         <select class="form-control select2" name="product_id[]" required>
                             <option value="">Pilih Produk</option>
                             <?php foreach ($products as $product): ?>
-                                <option value="<?= $product['product_id'] ?>">
-                                    <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                </option>
+                                    <option value="<?= $product['product_id'] ?>">
+                                        <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
+                                    </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -405,7 +496,7 @@
             </div>
         `;
             $('#itemsContainer').append(newRow);
-            
+
             // Reinitialize Select2 for new row
             $('#itemsContainer .item-row:last-child .select2').select2();
 
@@ -431,11 +522,11 @@
 
             // Validasi untuk superadmin - harus memilih gudang tujuan
             <?php if ($user_role == 'superadmin'): ?>
-            if (!$('#to_warehouse_id').val()) {
-                alert('Harap pilih gudang tujuan');
-                $('#to_warehouse_id').focus();
-                valid = false;
-            }
+                if (!$('#to_warehouse_id').val()) {
+                    alert('Harap pilih gudang tujuan');
+                    $('#to_warehouse_id').focus();
+                    valid = false;
+                }
             <?php endif; ?>
 
             // Check if at least one item has product selected
