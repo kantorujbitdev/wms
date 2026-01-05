@@ -5,36 +5,22 @@ $warning = $this->session->flashdata('warning');
 $info = $this->session->flashdata('info');
 ?>
 
-<!-- Modal untuk Error -->
-<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="errorModalLabel">
-                    <i class="fas fa-exclamation-triangle"></i> <?= $wording['error'] ?>
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Peringatan !</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="mr-3">
-                        <i class="fas fa-exclamation-circle fa-2x text-danger"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0" id="errorMessage"></p>
-                    </div>
+                <div>
+                    <p class="mb-0" id="errorMessage"></p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fas fa-times"></i> Tutup
-                </button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">
-                    <i class="fas fa-check"></i> Mengerti
-                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Mengerti</button>
             </div>
         </div>
     </div>

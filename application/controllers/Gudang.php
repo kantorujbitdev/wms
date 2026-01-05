@@ -19,7 +19,7 @@ class Gudang extends MY_Controller
         $data = data_login_user(['warehouse_type' => 0]);
         // Get warehouses from API
         $response = $this->Api_model->get_gudang($data);
-        $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($response);
 
         // Render view
         $this->render_view('pages/gudang/index');
@@ -36,7 +36,7 @@ class Gudang extends MY_Controller
         $data = data_login_user(['warehouse_type' => 1]);
         // Get warehouses from API
         $response = $this->Api_model->get_gudang_id_project($data);
-        $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($response);
 
         // Render view
         $this->render_view('pages/gudang_project/index');
@@ -150,11 +150,7 @@ class Gudang extends MY_Controller
             $message = 'Gudang berhasil ditambahkan!';
         }
 
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data gudang: ' . $response['message']);
-        }
+        $this->handle_response($response, $message);
 
         redirect('gudang/gudang_project');
     }
@@ -197,14 +193,7 @@ class Gudang extends MY_Controller
             $response = $this->Api_model->add_gudang($data);
             $message = 'Gudang berhasil ditambahkan!';
         }
-
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data gudang: ' . $response['message']);
-        }
-
+        $this->handle_response($response, $message);
         redirect('gudang');
     }
 
@@ -217,15 +206,11 @@ class Gudang extends MY_Controller
             'warehouse_id' => $id,
         ]);
         $data_warehouse = $this->Api_model->get_gudang_id($data);
-
+        $this->handle_response($data_warehouse);
         $warehouse_type = $data_warehouse['data'][0]['warehouse_type'];
         $response = $this->Api_model->delete_gudang($data);
 
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Gudang berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus gudang: ' . $response['message']);
-        }
+        $this->handle_response($response, 'Gudang berhasil dihapus!');
         if ($warehouse_type == 1) {
             redirect('gudang/gudang_project');
         } else {

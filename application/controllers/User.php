@@ -26,7 +26,7 @@ class User extends MY_Controller
 
         // Get users from API
         $response = $this->Api_model->get_user($data);
-        $this->data['users'] = $response['success'] ? $response['data'] : [];
+        $this->data['users'] = $this->handle_response($response);
 
         // Render view
         $this->render_view('pages/user/index');
@@ -38,7 +38,7 @@ class User extends MY_Controller
         $this->data['title'] = 'Tambah User';
 
         $gudang = $this->Api_model->get_gudang(data_login_user());
-        $this->data['warehouses'] = $gudang['success'] ? $gudang['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($gudang);
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
@@ -56,15 +56,17 @@ class User extends MY_Controller
 
         // Get user data from API
         $user = $this->Api_model->get_user_by_id($data);
+        $this->handle_response($user);
         $this->data['user_data'] = $user['success'] ? $user['data'][0] : [];
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
+        $this->handle_response($roles);
         $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Superadmin', 'Admin', 'Staff'];
 
         // ✅ Get Warehouse
         $warehouse = $this->Api_model->get_gudang(data_login_user());
-        $this->data['warehouses'] = $warehouse['success'] ? $warehouse['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouse);
 
         // Render view
         $this->render_view('pages/user/form');
@@ -110,15 +112,8 @@ class User extends MY_Controller
             }
             // Add new user
             $response = $this->Api_model->add_user($data);
-            $message = 'User berhasil ditambahkan!';
         }
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data user: ' . $response['message']);
-        }
-
+        $this->handle_response($response, 'User berhasil ditambahkan!');
         redirect('user');
     }
 
@@ -127,12 +122,7 @@ class User extends MY_Controller
         // Prepare data according to API format
         $data = data_login_user(['user_id' => $id]);
         $response = $this->Api_model->delete_user($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'User berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus user: ' . $response['message']);
-        }
+        $this->handle_response($response, 'User berhasil dihapus!');
 
         redirect('user');
     }

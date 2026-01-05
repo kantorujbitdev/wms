@@ -17,7 +17,7 @@ class Customer extends MY_Controller
 
         // Get customers from API
         $response = $this->Api_model->get_customer(data_login_user());
-        $this->data['customers'] = $response['success'] ? $response['data'] : [];
+        $this->data['customers'] = $this->handle_response($response);
 
         // Render view
         $this->render_view('pages/customer/index');
@@ -44,6 +44,7 @@ class Customer extends MY_Controller
         $data = data_login_user(['id' => $id]);
         // Get customer data from API
         $customer = $this->Api_model->get_customer_by_id($data);
+        $this->handle_response($customer);
         $this->data['customer'] = $customer['success'] ? $customer['data'][0] : [];
 
         // Render view
@@ -78,12 +79,7 @@ class Customer extends MY_Controller
             $response = $this->Api_model->add_customer($data);
             $message = 'Customer berhasil ditambahkan!';
         }
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data customer: ' . $response['message']);
-        }
+        $this->handle_response($response, $message);
 
         redirect('customer');
     }
@@ -96,13 +92,7 @@ class Customer extends MY_Controller
         ]);
 
         $response = $this->Api_model->delete_customer($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Customer berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus customer: ' . $response['message']);
-        }
-
+        $this->handle_response($response, 'Customer berhasil dihapus!');
         redirect('customer');
     }
 }

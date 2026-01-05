@@ -23,8 +23,7 @@ class Penerimaan extends MY_Controller
             $data_login = data_login_user(['from_status' => '1', 'warehouse_id' => $warehouse_id]);
         }
         $response = $this->Api_model->get_penerimaan($data_login);
-        $this->data['penerimaan_list'] = $response['success'] ? $response['data'] : [];
-
+        $this->data['penerimaan_list'] = $this->handle_response($response);
         $this->render_view('pages/penerimaan/dari_pengguna');
     }
 
@@ -48,7 +47,7 @@ class Penerimaan extends MY_Controller
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data_login);
         }
-        $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get user's warehouse info for display
         $this->data['user_warehouse_id'] = $warehouse_id_session;
@@ -56,10 +55,10 @@ class Penerimaan extends MY_Controller
         $this->data['user_role'] = $user_role;
 
         $customer_response = $this->Api_model->get_customer($data_login);
-        $this->data['customers'] = $customer_response['success'] ? $customer_response['data'] : [];
+        $this->data['customers'] = $this->handle_response($customer_response);
 
         $products_response = $this->Api_model->get_barang($data_login);
-        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
+        $this->data['products'] = $this->handle_response($products_response);
 
         $this->data['from_status'] = '1';
         $this->data['form_type'] = 'pengguna';
@@ -84,7 +83,7 @@ class Penerimaan extends MY_Controller
             $data_login = data_login_user(['from_status' => '2', 'warehouse_id' => $warehouse_id]);
         }
         $response = $this->Api_model->get_penerimaan($data_login);
-        $this->data['penerimaan_list'] = $response['success'] ? $response['data'] : [];
+        $this->data['penerimaan_list'] = $this->handle_response($response);
 
         $this->render_view('pages/penerimaan/dari_supplier');
     }
@@ -108,7 +107,8 @@ class Penerimaan extends MY_Controller
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data_login);
         }
-        $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+
+        $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get user's warehouse info for display
         $this->data['user_warehouse_id'] = $warehouse_id_session;
@@ -116,10 +116,10 @@ class Penerimaan extends MY_Controller
         $this->data['user_role'] = $user_role;
 
         $supplier_response = $this->Api_model->get_supplier($data_login);
-        $this->data['suppliers'] = $supplier_response['success'] ? $supplier_response['data'] : [];
+        $this->data['suppliers'] = $this->handle_response($supplier_response);
 
         $products_response = $this->Api_model->get_barang($data_login);
-        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
+        $this->data['products'] = $this->handle_response($products_response);
 
         $this->data['from_status'] = '2';
         $this->data['form_type'] = 'supplier';
@@ -139,7 +139,7 @@ class Penerimaan extends MY_Controller
 
         $data_login = data_login_user(['from_status' => '3']);
         $response = $this->Api_model->get_penerimaan($data_login);
-        $this->data['penerimaan_list'] = $response['success'] ? $response['data'] : [];
+        $this->data['penerimaan_list'] = $this->handle_response($response);
 
         $this->render_view('pages/penerimaan/antar_gudang');
     }
@@ -162,7 +162,7 @@ class Penerimaan extends MY_Controller
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data_login);
         }
-        $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get user's warehouse info for display
         $this->data['user_warehouse_id'] = $warehouse_id_session;
@@ -170,7 +170,7 @@ class Penerimaan extends MY_Controller
         $this->data['user_role'] = $user_role;
 
         $products_response = $this->Api_model->get_barang($data_login);
-        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
+        $this->data['products'] = $this->handle_response($products_response);
 
         $this->data['from_status'] = '3';
         $this->data['form_type'] = 'antar_gudang';
@@ -253,8 +253,7 @@ class Penerimaan extends MY_Controller
             $response = $this->Api_model->add_penerimaan($post_data);
 
             if ($response['success']) {
-                $this->session->set_flashdata('success', 'Penerimaan barang berhasil ditambahkan');
-
+                $this->handle_response($response, 'Penerimaan barang berhasil ditambahkan');
                 // Hapus form data dari session jika berhasil
                 $this->session->unset_userdata('form_data_' . $from_status);
 
@@ -267,8 +266,7 @@ class Penerimaan extends MY_Controller
                     redirect('penerimaan/antar_gudang');
                 }
             } else {
-                $this->session->set_flashdata('error', $response['message'] ?? 'Gagal menambahkan penerimaan barang');
-
+                $this->handle_response($response);
                 // Simpan data form ke session untuk ditampilkan kembali
                 $form_data = [
                     'stockin_date' => $this->input->post('stockin_date'),
@@ -355,23 +353,23 @@ class Penerimaan extends MY_Controller
             } else {
                 $warehouse_response = $this->Api_model->get_gudang($data_login);
             }
-            $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+            $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
             // Get customers if from_status = 1
             if ($from_status == '1') {
                 $customer_response = $this->Api_model->get_customer($data_login);
-                $this->data['customers'] = $customer_response['success'] ? $customer_response['data'] : [];
+                $this->data['customers'] = $this->handle_response($customer_response);
             }
 
             // Get suppliers if from_status = 2
             if ($from_status == '2') {
                 $supplier_response = $this->Api_model->get_supplier($data_login);
-                $this->data['suppliers'] = $supplier_response['success'] ? $supplier_response['data'] : [];
+                $this->data['suppliers'] = $this->handle_response($supplier_response);
             }
 
             // Get products
             $products_response = $this->Api_model->get_barang($data_login);
-            $products = $products_response['success'] ? $products_response['data'] : [];
+            $products = $this->handle_response($products_response);
 
             // Add current_stock to detail items from products
             foreach ($this->data['penerimaan']['detail'] as &$item) {
@@ -400,7 +398,7 @@ class Penerimaan extends MY_Controller
             $this->render_view('pages/penerimaan/edit');
         } else {
             // Jika header false atau tidak ada data
-            $this->session->set_flashdata('error', 'Data penerimaan tidak ditemukan');
+            $this->handle_response($response);
             $this->redirect_back();
         }
     }
@@ -465,8 +463,7 @@ class Penerimaan extends MY_Controller
             $response = $this->Api_model->update_penerimaan($post_data);
 
             if ($response['success']) {
-                $this->session->set_flashdata('success', 'Penerimaan barang berhasil diperbarui');
-
+                $this->handle_response($response, 'Penerimaan barang berhasil diperbarui');
                 // Redirect berdasarkan tipe penerimaan
                 if ($from_status == '1') {
                     redirect('penerimaan/dari_pengguna');
@@ -476,7 +473,7 @@ class Penerimaan extends MY_Controller
                     redirect('penerimaan/antar_gudang');
                 }
             } else {
-                $this->session->set_flashdata('error', $response['message'] ?? 'Gagal memperbarui penerimaan barang');
+                $this->handle_response($response);
                 redirect('penerimaan/edit/' . $id);
             }
         }
@@ -519,7 +516,7 @@ class Penerimaan extends MY_Controller
             }
         } else {
             // Jika header false atau tidak ada data
-            $this->session->set_flashdata('error', 'Data penerimaan tidak ditemukan');
+            $this->handle_response($response);
             $this->redirect_back();
         }
 
@@ -546,12 +543,7 @@ class Penerimaan extends MY_Controller
         $data_login = data_login_user(['stockin_id' => $id]);
         $response = $this->Api_model->delete_penerimaan($data_login);
 
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Penerimaan berhasil dihapus');
-        } else {
-            $this->session->set_flashdata('error', $response['message'] ?? 'Gagal menghapus penerimaan');
-        }
-
+        $this->handle_response($response, 'Penerimaan berhasil dihapus!');
         redirect('penerimaan/dari_supplier');
     }
 }

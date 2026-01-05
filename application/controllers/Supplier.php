@@ -44,6 +44,7 @@ class Supplier extends MY_Controller
 
         // Get supplier data from API
         $supplier = $this->Api_model->get_supplier($data);
+        $this->handle_response($supplier);
         $this->data['supplier'] = $supplier['success'] ? $supplier['data'][0] : [];
 
         // Render view
@@ -65,7 +66,7 @@ class Supplier extends MY_Controller
             ]);
             // Update existing supplier
             $response = $this->Api_model->update_supplier($data);
-            $message = 'Supplier berhasil diperbarui!';
+            $this->handle_response($response, 'Supplier berhasil diperbarui!');
         } else {
             $data = data_login_user([
                 'name' => $this->input->post('name'),
@@ -74,13 +75,7 @@ class Supplier extends MY_Controller
                 'address' => $this->input->post('address')
             ]);// Add new supplier
             $response = $this->Api_model->add_supplier($data);
-            $message = 'Supplier berhasil ditambahkan!';
-        }
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data supplier: ' . $response['message']);
+            $this->handle_response($response, 'Supplier berhasil ditambahkan!');
         }
 
         redirect('supplier');
@@ -94,12 +89,7 @@ class Supplier extends MY_Controller
         ]);
 
         $response = $this->Api_model->delete_supplier($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Supplier berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus supplier: ' . $response['message']);
-        }
+        $this->handle_response($response, 'Supplier berhasil dihapus!');
 
         redirect('supplier');
     }

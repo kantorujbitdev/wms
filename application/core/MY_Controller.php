@@ -66,10 +66,10 @@ class MY_Controller extends CI_Controller
 
         // Load views
         $this->load->view('layouts/header', $data);
-        $this->load->view('layouts/notif', $data);
         $this->load->view('layouts/sidebar', $data);
         $this->load->view($view, $data);
         $this->load->view('layouts/footer', $data);
+        $this->load->view('layouts/notif', $data);
 
         if ($return) {
             // If return is true, we need to capture the output
@@ -150,6 +150,21 @@ class MY_Controller extends CI_Controller
         if (!has_permission($menu_key, $action)) {
             $this->session->set_flashdata('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
             redirect($redirect_url);
+        }
+    }
+
+    protected function handle_response($response, $success_message = null)
+    {
+        if ($response['success']) {
+            if ($success_message !== null) {
+                $this->session->set_flashdata('success', $success_message);
+            }
+            return $response['data'];
+        } else {
+            // Set error message
+            $error_message = isset($response['message']) ? $response['message'] : 'Terjadi kesalahan';
+            $this->session->set_flashdata('error', $error_message);
+            return false;
         }
     }
 

@@ -175,16 +175,15 @@ class Laporan extends MY_Controller
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data);
         }
-        $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get all products for filter
         $products_response = $this->Api_model->get_barang($data);
-        $this->data['products'] = $products_response['success'] ? $products_response['data'] : [];
+        $this->data['products'] = $this->handle_response($products_response);
 
         // Get product categories for filter
         $categories_response = $this->Api_model->get_product_type($data);
-        $this->data['categories'] = $categories_response['success'] ? $categories_response['data'] : [];
-
+        $this->data['categories'] = $this->handle_response($categories_response);
         // Prepare filter data for API
         $filter_data = $data;
 
@@ -208,7 +207,7 @@ class Laporan extends MY_Controller
 
         // Get stock data from API
         $stok_response = $this->Api_model->get_stock_all($filter_data);
-        $stocks = $stok_response['success'] ? $stok_response['data'] : [];
+        $stocks = $this->handle_response($stok_response);
 
         $this->data['stoks'] = $stocks;
 
@@ -623,11 +622,11 @@ class Laporan extends MY_Controller
 
         // Get items from API
         $items = $this->Api_model->get_barang(data_login_user());
-        $this->data['products'] = $items['success'] ? $items['data'] : [];
+        $this->data['products'] = $this->handle_response($items);
 
         // Get suppliers from API
         $suppliers_response = $this->Api_model->get_supplier(data_login_user());
-        $this->data['suppliers'] = $suppliers_response['success'] ? $suppliers_response['data'] : [];
+        $this->data['suppliers'] = $this->handle_response($suppliers_response);
 
         // Get warehouses from API
         if ($user_role == 'superadmin') {
@@ -635,7 +634,7 @@ class Laporan extends MY_Controller
         } else {
             $warehouses = $this->Api_model->get_gudang(data_login_user());
         }
-        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouses);
 
         // Pass filter values to view
         $this->data['filter_date_from'] = $filter_date_from;

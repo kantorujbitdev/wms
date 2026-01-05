@@ -22,7 +22,7 @@ class Pengiriman extends MY_Controller
         }
         $response = $this->Api_model->get_pengiriman($data_login);
 
-        $this->data['pengiriman_list'] = $response['success'] ? $response['data'] : [];
+        $this->data['pengiriman_list'] = $this->handle_response($response);
 
         $this->render_view('pages/pengiriman/ke_pengguna');
     }
@@ -44,6 +44,7 @@ class Pengiriman extends MY_Controller
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data_login);
         }
+        $this->handle_response($warehouse_response);
         $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
 
         // Get user's warehouse info for display
@@ -53,7 +54,7 @@ class Pengiriman extends MY_Controller
 
         // Get customers
         $customer_response = $this->Api_model->get_customer($data_login);
-        $this->data['customers'] = $customer_response['success'] ? $customer_response['data'] : [];
+        $this->data['customers'] = $this->handle_response($customer_response);
 
         // Get products from stock based on warehouse
         if ($user_role == 'superadmin') {
@@ -63,6 +64,8 @@ class Pengiriman extends MY_Controller
         } else {
             // Get stock from current warehouse
             $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $this->handle_response($stock_response);
+
             if ($stock_response['success']) {
                 $this->data['stocks'] = $stock_response['data'];
                 $this->data['products'] = $stock_response['data'];
@@ -93,7 +96,7 @@ class Pengiriman extends MY_Controller
 
         $data_login = data_login_user(['to_status' => '3']);
         $response = $this->Api_model->get_pengiriman($data_login);
-        $this->data['pengiriman_list'] = $response['success'] ? $response['data'] : [];
+        $this->data['pengiriman_list'] = $this->handle_response($response);
 
         $this->render_view('pages/pengiriman/antar_gudang');
     }
@@ -116,6 +119,7 @@ class Pengiriman extends MY_Controller
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data_login);
         }
+        $this->handle_response($warehouse_response);
         $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
 
         // Get user's warehouse info for display
@@ -152,7 +156,7 @@ class Pengiriman extends MY_Controller
 
         if ($warehouse_id) {
             $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
-
+            $this->handle_response($stock_response);
             if ($stock_response['success']) {
                 echo json_encode([
                     'success' => true,
@@ -237,7 +241,7 @@ class Pengiriman extends MY_Controller
 
             // Send to API
             $response = $this->Api_model->add_pengiriman($post_data);
-
+            $this->handle_response($response);
             if ($response['success']) {
                 $this->session->set_flashdata('success', 'Pengiriman barang berhasil ditambahkan');
 
@@ -333,7 +337,7 @@ class Pengiriman extends MY_Controller
             } else {
                 $warehouse_response = $this->Api_model->get_gudang($data_login);
             }
-            $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+            $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
             // Get customers if to_status = 1
             if ($to_status == '1') {
@@ -344,7 +348,8 @@ class Pengiriman extends MY_Controller
             // Get products from stock based on warehouse
             $warehouse_id = $normalized_header['warehouse_id'];
             $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
-            $stocks = $stock_response['success'] ? $stock_response['data'] : [];
+            $stocks = $this->handle_response($stock_response);
+            // $stock_response['success'] ? $stock_response['data'] : [];
 
             // Process detail items
             foreach ($this->data['pengiriman']['detail'] as &$item) {
@@ -455,9 +460,10 @@ class Pengiriman extends MY_Controller
 
             // Send to API
             $response = $this->Api_model->update_pengiriman($post_data);
+            $this->handle_response($response);
 
             if ($response['success']) {
-                $this->session->set_flashdata('success', 'Pengiriman barang berhasil diperbarui');
+                $this->handle_response($response, 'Pengiriman barang berhasil diperbarui!');
 
                 // Redirect berdasarkan tipe pengiriman
                 if ($to_status == '1') {
@@ -466,7 +472,7 @@ class Pengiriman extends MY_Controller
                     redirect('pengiriman/antar_gudang');
                 }
             } else {
-                $this->session->set_flashdata('error', $response['message'] ?? 'Gagal memperbarui pengiriman barang');
+                $this->handle_response($response);
                 redirect('pengiriman/edit/' . $id);
             }
         }
@@ -480,9 +486,6 @@ class Pengiriman extends MY_Controller
 
         $data_login = data_login_user(['stockout_id' => $id]);
         $response = $this->Api_model->pengiriman_by_id($data_login);
-
-        // Debug: Lihat struktur response
-        // echo '<pre>'; print_r($response); echo '</pre>'; die();
 
         // Periksa struktur response API
         if (isset($response['header']) && $response['header'] !== false) {
@@ -524,7 +527,7 @@ class Pengiriman extends MY_Controller
             }
         } else {
             // Jika header false atau tidak ada data
-            $this->session->set_flashdata('error', 'Data pengiriman tidak ditemukan');
+            $this->handle_response($response);
             $this->redirect_back();
         }
 
@@ -584,7 +587,7 @@ class Pengiriman extends MY_Controller
             $this->load->view('pages/pengiriman/cetak_surat_jalan', $this->data);
 
         } else {
-            $this->session->set_flashdata('error', 'Data pengiriman tidak ditemukan');
+            $this->handle_response($response);
             redirect('pengiriman');
         }
     }
@@ -636,7 +639,7 @@ class Pengiriman extends MY_Controller
             $this->load->view('pages/pengiriman/cetak_surat_jalan', $this->data);
 
         } else {
-            $this->session->set_flashdata('error', 'Data pengiriman tidak ditemukan');
+            $this->handle_response($response);
             redirect('pengiriman');
         }
     }
@@ -647,11 +650,7 @@ class Pengiriman extends MY_Controller
         $data_login = data_login_user(['stockout_id' => $id]);
         $response = $this->Api_model->delete_pengiriman($data_login);
 
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Pengiriman berhasil dihapus');
-        } else {
-            $this->session->set_flashdata('error', $response['message'] ?? 'Gagal menghapus pengiriman');
-        }
+        $this->handle_response($response, 'Pengiriman berhasil dihapus!');
 
         $this->redirect_back();
     }

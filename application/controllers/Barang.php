@@ -22,7 +22,7 @@ class Barang extends MY_Controller
         $data = data_login_user();
         // Get product types from API - sesuaikan dengan nama fungsi di model
         $response = $this->Api_model->get_product_type($data);
-        $this->data['product_types'] = $response['success'] ? $response['data'] : [];
+        $this->data['product_types'] = $this->handle_response($response);
 
         // Render view
         $this->render_view('pages/barang/tipe_produk/index');
@@ -51,6 +51,7 @@ class Barang extends MY_Controller
 
         // Get product type data from API - sesuaikan dengan nama fungsi di model
         $product_type = $this->Api_model->get_product_type_by_id($data);
+        $this->handle_response($product_type);
         $this->data['product_type'] = $product_type['success'] ? $product_type['data'][0] : [];
 
         // Render view
@@ -81,13 +82,7 @@ class Barang extends MY_Controller
             $response = $this->Api_model->add_product_type($data);
             $message = 'Tipe produk berhasil ditambahkan!';
         }
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data tipe produk: ' . $response['message']);
-        }
-
+        $this->handle_response($response, $message);
         redirect('barang/tipe_produk');
     }
 
@@ -104,13 +99,7 @@ class Barang extends MY_Controller
 
         // Sesuaikan dengan nama fungsi di model
         $response = $this->Api_model->delete_product_type($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Tipe produk berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus tipe produk: ' . $response['message']);
-        }
-
+        $this->handle_response($response, 'Tipe produk berhasil dihapus!');
         redirect('barang/tipe_produk');
     }
 
@@ -127,7 +116,7 @@ class Barang extends MY_Controller
 
         // Get unit types from API - sesuaikan dengan nama fungsi di model
         $response = $this->Api_model->get_unit_type($data);
-        $this->data['unit_types'] = $response['success'] ? $response['data'] : [];
+        $this->data['unit_types'] = $this->handle_response($response);
 
         // Render view
         $this->render_view('pages/barang/tipe_satuan/index');
@@ -157,6 +146,7 @@ class Barang extends MY_Controller
 
         // Get unit type data from API - sesuaikan dengan nama fungsi di model
         $unit_type = $this->Api_model->get_unit_type_by_id($data);
+        $this->handle_response($unit_type);
         $this->data['unit_type'] = $unit_type['success'] ? $unit_type['data'][0] : [];
 
         // Render view
@@ -187,13 +177,7 @@ class Barang extends MY_Controller
             $message = 'Tipe produk berhasil ditambahkan!';
         }
 
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data tipe satuan: ' . $response['message']);
-        }
-
+        $this->handle_response($response, $message);
         redirect('barang/tipe_satuan');
     }
 
@@ -210,13 +194,7 @@ class Barang extends MY_Controller
 
         // Sesuaikan dengan nama fungsi di model
         $response = $this->Api_model->delete_unit_type($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Tipe satuan berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus tipe satuan: ' . $response['message']);
-        }
-
+        $this->handle_response($response, 'Tipe satuan berhasil dihapus!');
         redirect('barang/tipe_satuan');
     }
 
@@ -233,16 +211,15 @@ class Barang extends MY_Controller
 
         // Get products from API - sesuaikan dengan nama fungsi di model
         $response = $this->Api_model->get_barang($data);
-        $this->data['products'] = $response['success'] ? $response['data'] : [];
+        $this->data['products'] = $this->handle_response($response);
 
         // Get product types for filter - sesuaikan dengan nama fungsi di model
         $product_types = $this->Api_model->get_product_type($data);
-        $this->data['product_types'] = $product_types['success'] ? $product_types['data'] : [];
+        $this->data['product_types'] = $this->handle_response($product_types);
 
         // Get unit types for filter - sesuaikan dengan nama fungsi di model
         $unit_types = $this->Api_model->get_unit_type($data);
-        $this->data['unit_types'] = $unit_types['success'] ? $unit_types['data'] : [];
-
+        $this->data['unit_types'] = $this->handle_response($unit_types);
         // Render view
         $this->render_view('pages/barang/produk/index');
     }
@@ -257,12 +234,11 @@ class Barang extends MY_Controller
 
         // Get product types - sesuaikan dengan nama fungsi di model
         $product_types = $this->Api_model->get_product_type(data_login_user());
-        $this->data['product_types'] = $product_types['success'] ? $product_types['data'] : [];
+        $this->data['product_types'] = $this->handle_response($product_types);
 
         // Get unit types - sesuaikan dengan nama fungsi di model
         $unit_types = $this->Api_model->get_unit_type(data_login_user());
-        $this->data['unit_types'] = $unit_types['success'] ? $unit_types['data'] : [];
-
+        $this->data['unit_types'] = $this->handle_response($unit_types);
         // Render view
         $this->render_view('pages/barang/produk/form');
     }
@@ -277,15 +253,16 @@ class Barang extends MY_Controller
 
         // Get product data from API - sesuaikan dengan nama fungsi di model
         $product = $this->Api_model->get_barang(data_login_user(['product_id' => $id]));
+        $this->handle_response($product);
         $this->data['product'] = $product['success'] ? $product['data'][0] : [];
 
         // Get product types - sesuaikan dengan nama fungsi di model
         $product_types = $this->Api_model->get_product_type(data_login_user());
-        $this->data['product_types'] = $product_types['success'] ? $product_types['data'] : [];
+        $this->data['product_types'] = $this->handle_response($product_types);
 
         // Get unit types - sesuaikan dengan nama fungsi di model
         $unit_types = $this->Api_model->get_unit_type(data_login_user());
-        $this->data['unit_types'] = $unit_types['success'] ? $unit_types['data'] : [];
+        $this->data['unit_types'] = $this->handle_response($unit_types);
 
         // Render view
         $this->render_view('pages/barang/produk/form');
@@ -317,13 +294,7 @@ class Barang extends MY_Controller
             $response = $this->Api_model->add_barang($data);
             $message = 'Produk berhasil ditambahkan!';
         }
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', $message);
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan data produk: ' . $response['message']);
-        }
-
+        $this->handle_response($response, $message);
         redirect('barang');
     }
 
@@ -340,13 +311,7 @@ class Barang extends MY_Controller
 
         // Sesuaikan dengan nama fungsi di model
         $response = $this->Api_model->delete_barang($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Produk berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus produk: ' . $response['message']);
-        }
-
+        $this->handle_response($response, 'Produk berhasil dihapus!');
         redirect('barang');
     }
 }

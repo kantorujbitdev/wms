@@ -20,7 +20,7 @@ class Gudang_stok extends MY_Controller
 
         // Get warehouses from API
         $response = $this->Api_model->get_gudang($data);
-
+        $this->handle_response($response);
         // Get initial stock data
         if ($warehouse_id == 0 || $warehouse_id == null) {
             $stok_response = $this->Api_model->get_stock_all($data);
@@ -30,7 +30,7 @@ class Gudang_stok extends MY_Controller
             $stok_response = $this->Api_model->get_stock_all($data_with_warehouse);
         }
 
-        $this->data['stoks'] = $stok_response['success'] ? $stok_response['data'] : [];
+        $this->data['stoks'] = $this->handle_response($stok_response);
 
         // Render view
         $this->render_view('pages/stok/index');
@@ -49,7 +49,7 @@ class Gudang_stok extends MY_Controller
             $data = data_login_user(['warehouse_id' => $warehouse_id]);
             $response = $this->Api_model->get_stock_by_warehous($data);
         }
-
+        $this->handle_response($response);
         echo json_encode($response);
     }
 
@@ -64,8 +64,8 @@ class Gudang_stok extends MY_Controller
         $warehouse = $this->Api_model->get_gudang($data);
         $product = $this->Api_model->get_barang($data);
 
-        $this->data['warehouses'] = $warehouse['success'] ? $warehouse['data'] : [];
-        $this->data['products'] = $product['success'] ? $product['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouse);
+        $this->data['products'] = $this->handle_response($product);
 
         $this->render_view('pages/stok/form');
     }
@@ -84,12 +84,7 @@ class Gudang_stok extends MY_Controller
 
         $response = $this->Api_model->add_stok($payload);
 
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Stok berhasil ditambahkan!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menambah stok: ' . $response['message']);
-        }
-
+        $this->handle_response($response, 'Stok berhasil ditambahkan!');
         redirect('gudang_stok');
     }
 

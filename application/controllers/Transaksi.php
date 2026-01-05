@@ -17,7 +17,7 @@ class Transaksi extends MY_Controller
 
         // Get transactions from API
         $response = $this->Api_model->get_transaksi();
-        $this->data['transactions'] = $response['success'] ? $response['data'] : [];
+        $this->data['transactions'] = $this->handle_response($response);
 
         // Render view
         $this->render_view('pages/transaksi/index');
@@ -36,7 +36,8 @@ class Transaksi extends MY_Controller
 
         // Get warehouses from API
         $warehouses = $this->Api_model->get_gudang(data_login_user());
-        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouses);
+        $warehouses['success'] ? $warehouses['data'] : [];
 
         // Render view
         $this->render_view('pages/transaksi/masuk');
@@ -51,12 +52,11 @@ class Transaksi extends MY_Controller
 
         // Get items from API
         $items = $this->Api_model->get_barang(data_login_user());
-        $this->data['items'] = $items['success'] ? $items['data'] : [];
+        $this->data['items'] = $this->handle_response($items);
 
         // Get warehouses from API
         $warehouses = $this->Api_model->get_gudang(data_login_user());
-        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
-
+        $this->data['warehouses'] = $this->handle_response($warehouses);
         // Render view
         $this->render_view('pages/transaksi/keluar');
     }
@@ -70,11 +70,11 @@ class Transaksi extends MY_Controller
 
         // Get items from API
         $items = $this->Api_model->get_barang(data_login_user());
-        $this->data['items'] = $items['success'] ? $items['data'] : [];
+        $this->data['items'] = $this->handle_response($items);
 
         // Get warehouses from API
         $warehouses = $this->Api_model->get_gudang(data_login_user());
-        $this->data['warehouses'] = $warehouses['success'] ? $warehouses['data'] : [];
+        $this->data['warehouses'] = $this->handle_response($warehouses);
 
         // Render view
         $this->render_view('pages/transaksi/transfer');
@@ -91,13 +91,7 @@ class Transaksi extends MY_Controller
         ];
 
         $response = $this->Api_model->add_transaksi_masuk($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Transaksi barang masuk berhasil disimpan!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan transaksi barang masuk!');
-        }
-
+        $this->handle_response($response, 'Transaksi barang masuk berhasil disimpan!');
         redirect('transaksi');
     }
 
@@ -112,12 +106,7 @@ class Transaksi extends MY_Controller
         ];
 
         $response = $this->Api_model->add_transaksi_keluar($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Transaksi barang keluar berhasil disimpan!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan transaksi barang keluar!');
-        }
+        $this->handle_response($response, 'Transaksi barang keluar berhasil disimpan!');
 
         redirect('transaksi');
     }
@@ -134,26 +123,14 @@ class Transaksi extends MY_Controller
         ];
 
         $response = $this->Api_model->add_transfer_stok($data);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Transfer stok berhasil disimpan!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menyimpan transfer stok!');
-        }
-
+        $this->handle_response($response, 'Transfer stok berhasil disimpan!');
         redirect('transaksi');
     }
 
     public function delete($id)
     {
         $response = $this->Api_model->delete_transaksi($id);
-
-        if ($response['success']) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil dihapus!');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus transaksi!');
-        }
-
+        $this->handle_response($response, 'Transaksi berhasil dihapus!');
         redirect('transaksi');
     }
 }
