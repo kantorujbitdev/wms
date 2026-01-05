@@ -76,7 +76,7 @@ class Penerimaan extends MY_Controller
         $this->check_permission('supplier_penerimaan', 'view');
         $this->data['title'] = 'Penerimaan dari Supplier';
         $this->data['active_menu'] = 'penerimaan';
-        $this->data['active_submenu'] = 'supplier';
+        $this->data['active_submenu'] = 'supplier_penerimaan';
         $warehouse_id = $this->session->userdata('warehouse_id');
         if ($warehouse_id == 0 || $warehouse_id == null) {
             $data_login = data_login_user(['from_status' => '2']);

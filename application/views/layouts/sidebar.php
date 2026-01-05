@@ -158,7 +158,7 @@
                     <?php if (can_access_menu('supplier_penerimaan')): ?>
                         <li>
                             <a href="<?= site_url('penerimaan/dari_supplier'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'supplier') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'supplier_penerimaan') ? 'active' : ''; ?>">
                                 <i class="<?= get_menu_icon('supplier_penerimaan'); ?> me-2"></i>
                                 <span>Supplier</span>
                             </a>
