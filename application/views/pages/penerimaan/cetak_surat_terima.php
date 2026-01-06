@@ -1,4 +1,4 @@
-<!-- C:\xampp\htdocs\wms\application\views\pages\pengiriman\cetak_surat_terima.php -->
+<!-- C:\xampp\htdocs\wms\application\views\pages\penerimaan\cetak_surat_terima.php -->
 <!DOCTYPE html>
 <html lang="id">
 <?php
@@ -19,7 +19,7 @@ $config = get_app_config();
     <?php
     // Hitung total halaman dengan optimasi tinggi
     $max_items_per_page = 20; // Maksimal 20 item per halaman untuk A4
-    $all_items = $pengiriman['detail'];
+    $all_items = $penerimaan['detail'];
     $total_items = count($all_items);
     $total_pages = ceil($total_items / $max_items_per_page);
 
@@ -69,47 +69,54 @@ $config = get_app_config();
                     </div>
                 </div>
 
-                <!-- Informasi pengiriman (hanya di halaman pertama) -->
+                <!-- Informasi Penerimaan (hanya di halaman pertama) -->
                 <div class="info-grid">
                     <div class="info-box">
-                        <h4>INFORMASI PENGIRIMAN</h4>
+                        <h4>INFORMASI PENERIMAAN</h4>
                         <div class="info-row">
-                            <div class="info-label">No. Surat Jalan:</div>
-                            <div class="info-value"><?= $pengiriman['header']['stockout_code'] ?></div>
+                            <span class="info-label">No. Surat Terima:</span>
+                            <span class="info-value"><?= $penerimaan['header']['stockin_code'] ?></span>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Tanggal:</div>
-                            <div class="info-value"><?= date('d F Y', strtotime($pengiriman['header']['stockout_date'])) ?>
-                            </div>
+                            <span class="info-label">Tanggal:</span>
+                            <span
+                                class="info-value"><?= date('d F Y', strtotime($penerimaan['header']['stockin_date'])) ?></span>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Dari Gudang:</div>
-                            <div class="info-value"><?= $pengiriman['header']['warehouse_name'] ?></div>
+                            <span class="info-label">Gudang Tujuan:</span>
+                            <span class="info-value"><?= $penerimaan['header']['warehouse_name'] ?></span>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">No. Referensi:</div>
-                            <div class="info-value"><?= $pengiriman['header']['stockout_invoice'] ?? '-' ?></div>
+                            <span class="info-label">No. Referensi:</span>
+                            <span class="info-value"><?= $penerimaan['header']['stockin_invoice'] ?? '-' ?></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Dibuat Oleh:</span>
+                            <span class="info-value"><?= $penerimaan['header']['user_name'] ?? 'System' ?></span>
                         </div>
                     </div>
 
                     <div class="info-box">
-                        <h4>INFORMASI TUJUAN</h4>
+                        <h4>INFORMASI PENGIRIM</h4>
                         <div class="info-row">
-                            <div class="info-label">Kepada Yth:</div>
-                            <div class="info-value"><?= $pengiriman['header']['to_name'] ?></div>
+                            <span class="info-label">Dari:</span>
+                            <span class="info-value"><?= $penerimaan['header']['from_name'] ?? '-' ?></span>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Jenis Tujuan:</div>
-                            <div class="info-value"><?= $tipe_pengiriman ?></div>
+                            <span class="info-label">Jenis Pengirim:</span>
+                            <span class="info-value"><?= $tipe_penerimaan ?></span>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Keterangan:</div>
-                            <div class="info-value"><?= $pengiriman['header']['stockout_note'] ?: 'Tidak ada keterangan' ?>
-                            </div>
+                            <span class="info-label">No. Surat Jalan:</span>
+                            <span class="info-value"><?= $penerimaan['header']['stockin_invoice'] ?? '-' ?></span>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Dibuat Oleh:</div>
-                            <div class="info-value"><?= $pengiriman['header']['user_name'] ?></div>
+                            <span class="info-label">Keterangan:</span>
+                            <span class="info-value"><?= $penerimaan['header']['stockin_note'] ?: '-' ?></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Alamat:</span>
+                            <span class="info-value"><?= $penerimaan['header']['from_address'] ?? '-' ?></span>
                         </div>
                     </div>
                 </div>
@@ -118,7 +125,7 @@ $config = get_app_config();
             <!-- Konten Utama -->
             <div class="content-wrapper">
                 <?php if ($is_first_page): ?>
-                    <div class="table-title">DAFTAR BARANG YANG DIKIRIM</div>
+                    <div class="table-title">DAFTAR BARANG YANG DITERIMA</div>
                 <?php endif; ?>
 
                 <div class="table-container">
@@ -180,7 +187,7 @@ $config = get_app_config();
                             <?php if ($is_last_page): ?>
                                 <?php
                                 $total_qty_all = 0;
-                                foreach ($pengiriman['detail'] as $item) {
+                                foreach ($penerimaan['detail'] as $item) {
                                     $total_qty_all += $item['qty'];
                                 }
                                 ?>
@@ -206,28 +213,22 @@ $config = get_app_config();
                     <div class="signature-section">
                         <div class="signature-grid">
                             <div class="signature-box">
-                                <div class="signature-title">Dibuat oleh</div>
-                                <div class="signature-line"></div>
-                                <div class="signature-name">&nbsp;</div>
-                                <!-- <div class="signature-note">Nama & Tanda Tangan</div> -->
-                            </div>
-                            <div class="signature-box">
-                                <div class="signature-title">Pengirim</div>
+                                <div class="signature-title">Diterima oleh</div>
                                 <div class="signature-line"></div>
                                 <div class="signature-name">&nbsp;</div>
                                 <!-- <div class="signature-note">Nama & Tanda Tangan</div> -->
                             </div>
 
                             <div class="signature-box">
-                                <div class="signature-title">Dikeluarkan oleh</div>
+                                <div class="signature-title">Diketahui</div>
                                 <div class="signature-line"></div>
                                 <div class="signature-name">&nbsp;</div>
-                                <!-- <div class="signature-name"><?= $pengiriman['header']['user_name'] ?? 'System' ?></div>
+                                <!-- <div class="signature-name"><?= $penerimaan['header']['user_name'] ?? 'System' ?></div>
                                 <div class="signature-note">Staff Gudang</div> -->
                             </div>
 
                             <div class="signature-box">
-                                <div class="signature-title">Penerima</div>
+                                <div class="signature-title">Diserahkan oleh</div>
                                 <div class="signature-line"></div>
                                 <div class="signature-name">&nbsp;</div>
                                 <!-- <div class="signature-note">Kepala Gudang</div> -->
@@ -239,7 +240,7 @@ $config = get_app_config();
                 <!-- Footer -->
                 <div class="footer">
                     <p>Dokumen ini dicetak secara elektronik dari <?= $config['app_name'] ?? 'WMS' ?>
-                        pada <?= date('d/m/Y H:i:s') ?> | <?= $pengiriman['header']['stockout_code'] ?></p>
+                        pada <?= date('d/m/Y H:i:s') ?> | <?= $penerimaan['header']['stockin_code'] ?></p>
                 </div>
             </div>
 
@@ -252,8 +253,11 @@ $config = get_app_config();
 
     <!-- Tombol Aksi (Screen Only) -->
     <div class="action-buttons no-print">
+        <!-- <button onclick="printDocument()" class="btn-print">
+            <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA
+        </button> -->
         <button onclick="window.print()" class="btn-print">
-            <span style="font-size:20px;">🖨️</span> CETAK SURAT JALAN
+            <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA
         </button>
     </div>
 

@@ -12,8 +12,19 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-    </div>
 
+        <!-- TAMBAHKAN TOMBOL CETAK DISINI -->
+        <div class="btn-group" role="group">
+            <a href="<?= site_url('penerimaan/cetak/' . $penerimaan['header']['stockin_id']) ?>" target="_blank"
+                class="btn btn-primary">
+                <i class="fas fa-eye"></i> Preview Cetak
+            </a>
+            <a href="<?= site_url('penerimaan/cetak_langsung/' . $penerimaan['header']['stockin_id']) ?>"
+                target="_blank" class="btn btn-success">
+                <i class="fas fa-print"></i> Cetak Langsung
+            </a>
+        </div>
+    </div>
     <!-- Detail Card -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
