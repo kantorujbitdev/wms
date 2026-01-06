@@ -16,9 +16,16 @@ class Dashboard extends MY_Controller
         // Get summary data from API
         $summary = api_request('GET', 'product', ['action' => 'summary']);
         $this->data['summary'] = $summary['success'] ? $summary['data'] : [];
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+        $data_login = data_login_user();
+        save_log('warehouse_id_session: ' . $warehouse_id_session, 'info');
+        if ($warehouse_id_session == 0 || $warehouse_id_session === null) {
+            $stok_response = $this->Api_model->get_stock_all($data_login);
+        } else {
+            $stok_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+        }
 
         // Get stock data from API
-        $stok_response = $this->Api_model->get_stock_all(data_login_user());
         $stocks = $stok_response['success'] ? $stok_response['data'] : [];
 
         $this->data['stoks'] = $stocks;
@@ -27,8 +34,8 @@ class Dashboard extends MY_Controller
         $this->data['chart_data'] = $this->prepare_stock_chart_data($stocks);
 
         // Get low stock items
-        $low_stock = $this->Api_model->get_barang(['action' => 'low_stock', 'limit' => 5]);
-        $this->data['low_stock_items'] = $low_stock['success'] ? $low_stock['data'] : [];
+        // $low_stock = $this->Api_model->get_barang(data_login_user(['action' => 'low_stock', 'limit' => 5]));
+        // $this->data['low_stock_items'] = $low_stock['success'] ? $low_stock['data'] : [];
 
         // Render view
         $this->render_view('pages/dashboard');
