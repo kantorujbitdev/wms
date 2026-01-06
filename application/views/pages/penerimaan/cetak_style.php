@@ -17,8 +17,8 @@
     }
 
     .page {
-        width: 210mm;
-        min-height: 297mm;
+        width: 216mm;
+        min-height: 279mm;
         margin: 0 auto;
         padding: 10mm 15mm;
         background: white;
@@ -237,7 +237,7 @@
     }
 
     .col-name {
-        width: 30%;
+        width: 45%;
     }
 
     .col-qty {
@@ -249,7 +249,7 @@
     }
 
     .col-note {
-        width: 20%;
+        width: 15%;
     }
 
     .text-right {
@@ -369,10 +369,10 @@
         }
 
         .page {
-            width: 210mm;
-            min-height: 297mm;
+            width: 216mm;
+            min-height: 279mm;
             margin: 0;
-            padding: 15mm 10mm;
+            /* padding: 15mm 10mm; */
             page-break-after: always;
             box-shadow: none;
         }
@@ -413,8 +413,11 @@
 
         /* Page margins */
         @page {
-            /* margin: 15mm 10mm; */
-            size: A4;
+            margin-top: 5mm;
+            margin-bottom: 5mm;
+            margin-left: 5mm;
+            margin-right: 5mm;
+            size: letter;
         }
     }
 

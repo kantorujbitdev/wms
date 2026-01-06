@@ -137,7 +137,7 @@ $config = get_app_config();
                                 <th class="col-name">NAMA BARANG</th>
                                 <th class="col-qty">QTY</th>
                                 <th class="col-unit">SATUAN</th>
-                                <th class="col-note">KETERANGAN</th>
+                                <th class="col-note">KET</th>
                             </tr>
                         </thead>
 
@@ -160,7 +160,8 @@ $config = get_app_config();
                                         ?>
                                     </td>
                                     <td class="text-center"><?= $item['unit_code'] ?></td>
-                                    <td><?= !empty($item['detail_note']) ? $item['detail_note'] : '-' ?></td>
+                                    <td class="text-center"><?= !empty($item['detail_note']) ? $item['detail_note'] : '-' ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
 
@@ -268,13 +269,51 @@ $config = get_app_config();
             const printStyle = document.createElement('style');
             printStyle.textContent = `
                  @media print {
+                    /* Reset semua margin browser */
                     @page {
-                        margin: 15mm 10mm;
-                        size: A4;
+                        margin: 0mm !important;
+                        size: Letter portrait !important;
+                        padding: 0 !important;
                     }
+                    
+                    /* Reset body untuk full page */
                     body {
-                        margin: 0;
-                        padding: 0;
+                        width: 216mm !important;
+                        min-height: 279mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        background: white !important;
+                    }
+                    
+                    /* Atur page layout */
+                    .page {
+                        width: 216mm !important;
+                        min-height: 279mm !important;
+                        margin: 0 !important;
+                        padding: 15mm 20mm !important;
+                        page-break-after: always;
+                        page-break-inside: avoid;
+                        box-shadow: none !important;
+                        border: none !important;
+                    }
+                    
+                    /* Pastikan elemen penting tidak terpotong */
+                    .signature-section {
+                        page-break-inside: avoid !important;
+                        page-break-before: avoid !important;
+                    }
+                    
+                    .detail-table {
+                        page-break-inside: avoid !important;
+                    }
+                    
+                    .detail-table tr {
+                        page-break-inside: avoid !important;
+                    }
+                    
+                    /* Sembunyikan tombol print */
+                    .action-buttons {
+                        display: none !important;
                     }
                 }
             `;
