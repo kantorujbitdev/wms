@@ -277,6 +277,7 @@ class Barang extends MY_Controller
             // Prepare data according to API format
             $data = data_login_user([
                 'product_id' => $id,
+                'bos_code' => $this->input->post('bos_code'),
                 'product_name' => $this->input->post('product_name'),
                 'type_id' => $this->input->post('product_type_id'),
                 'unit_id' => $this->input->post('unit_type_id'),
@@ -287,6 +288,7 @@ class Barang extends MY_Controller
             // Add new product - sesuaikan dengan nama fungsi di model
             // Prepare data according to API format
             $data = data_login_user([
+                'bos_code' => $this->input->post('bos_code'),
                 'product_name' => $this->input->post('product_name'),
                 'type_id' => $this->input->post('product_type_id'),
                 'unit_id' => $this->input->post('unit_type_id'),

@@ -26,10 +26,16 @@
 
 
                 <div class="col-md-6">
+                    <label class="form-label">Kode BOS</label>
+                    <input type="text" class="form-control" name="bos_code"
+                        value="<?php echo isset($product) ? $product['bos_code'] : set_value('bos_code'); ?>"
+                        required>
+                </div>
+
+                <div class="col-md-6">
                     <label class="form-label">Nama Produk</label>
                     <input type="text" class="form-control" name="product_name"
-                        value="<?php echo isset($product) ? $product['product_name'] : set_value('product_name'); ?>"
-                        required>
+                        value="<?php echo isset($product) ? $product['product_name'] : set_value('product_name'); ?>" required>
                 </div>
             </div>
 

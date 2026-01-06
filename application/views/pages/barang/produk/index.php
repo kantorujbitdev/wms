@@ -24,6 +24,7 @@
                     <thead class="text-center align-middle">
                         <tr>
                             <th>No</th>
+                            <th>ID BOS</th>
                             <th>Kode</th>
                             <th>Nama Produk</th>
                             <th>Satuan</th>
@@ -37,6 +38,7 @@
                             foreach ($products as $product): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $no++; ?></td>
+                                    <td><?php echo $product['bos_code']; ?></td>
                                     <td><?php echo $product['product_code']; ?></td>
                                     <td><?php echo $product['product_name']; ?></td>
                                     <td><?php echo $product['unit_code']; ?></td>
