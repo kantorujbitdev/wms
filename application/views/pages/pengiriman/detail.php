@@ -113,7 +113,7 @@
                                 <td><?= $no++ ?></td>
                                 <td><?= $detail['product_code'] ?></td>
                                 <td><?= $detail['product_name'] ?></td>
-                                <td><?= number_format($detail['qty'], 2) ?></td>
+                                <td><?= viewNumber($detail['qty']) ?></td>
                                 <td><?= $detail['unit_code'] ?></td>
                                 <td><?= $detail['detail_note'] ?: '-' ?></td>
                             </tr>

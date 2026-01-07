@@ -134,8 +134,8 @@
                                         <td><?= $item['product_code'] ?? '-' ?></td>
                                         <td><?= $item['product_name'] ?? '-' ?></td>
                                         <td class="text-center"><?= $item['unit_code'] ?? '-' ?></td>
-                                        <td class="text-right"><?= number_format($item['qty'] ?? 0, 2) ?></td>
-                                        <td class="text-right"><?= number_format($item['current_stock'] ?? 0, 2) ?></td>
+                                        <td class="text-right"><?= viewNumber($item['qty']) ?></td>
+                                        <td class="text-right"><?= viewNumber($item['current_stock']) ?></td>
                                         <td><?= $item['detail_note'] ?? '-' ?></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -150,7 +150,7 @@
                                 <tr class="font-weight-bold">
                                     <td colspan="4" class="text-right">Total:</td>
                                     <td class="text-right">
-                                        <?= number_format(array_sum(array_column($detail, 'qty')), 2) ?>
+                                        <?= viewNumber(array_sum(array_column($detail, 'qty'))) ?>
                                     </td>
                                     <td colspan="2"></td>
                                 </tr>

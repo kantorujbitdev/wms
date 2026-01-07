@@ -17,6 +17,20 @@ if (!function_exists('data_login_user')) {
         return array_merge($data, $extra);
     }
 }
+if (!function_exists('viewNumber')) {
+    function viewNumber($nilai)
+    {
+        // 1. Beri format ribuan dengan titik (.) dan desimal dengan koma (,)
+        // Kita set 2 desimal sebagai standar awal
+        $formatted = number_format($nilai, 2, ',', '.');
+
+        // 2. Hapus angka '0' di paling kanan desimal
+        $formatted = rtrim($formatted, '0');
+
+        // 3. Jika setelah dihapus ternyata karakter terakhirnya adalah koma (misal "1.000,"), hapus komanya
+        return rtrim($formatted, ',');
+    }
+}
 
 if (!function_exists('monthToRoman')) {
     function monthToRoman($month)

@@ -155,7 +155,7 @@ $config = get_app_config();
                                     <td class="text-right">
                                         <?php
                                         $qty = $item['qty'];
-                                        echo number_format($qty, 2);
+                                        echo viewNumber($qty);
                                         $total_qty_page += $qty;
                                         ?>
                                     </td>
@@ -194,14 +194,14 @@ $config = get_app_config();
                                 ?>
                                 <tr class="total-row">
                                     <td colspan="3" class="text-center">TOTAL KESELURUHAN</td>
-                                    <td class="text-right"><?= number_format($total_qty_all, 2) ?></td>
+                                    <td class="text-right"><?= viewNumber($total_qty_all) ?></td>
                                     <td colspan="2">&nbsp;</td>
                                 </tr>
                             <?php else: ?>
                                 <!-- Baris Sub Total untuk halaman non-terakhir -->
                                 <tr class="subtotal-row">
                                     <td colspan="3" class="text-center">SUB TOTAL HALAMAN <?= $current_page ?></td>
-                                    <td class="text-right"><?= number_format($total_qty_page, 2) ?></td>
+                                    <td class="text-right"><?= viewNumber($total_qty_page) ?></td>
                                     <td colspan="2">&nbsp;</td>
                                 </tr>
                             <?php endif; ?>

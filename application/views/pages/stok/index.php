@@ -69,7 +69,7 @@
                                     <td><?= $stok['warehouse_name']; ?></td>
                                     <td><?= $stok['product_name']; ?></td>
                                     <td><?= $stok['type_name']; ?></td>
-                                    <td><?= $stok['current_stock']; ?></td>
+                                    <td><?= viewNumber($stok['current_stock']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>

@@ -111,7 +111,7 @@
                                     <td><?= $stok['unit_code'] ?></td>
                                     <td
                                         class="text-right <?= ($current_stock <= $min_stock) ? 'text-danger font-weight-bold' : '' ?>">
-                                        <?= number_format($current_stock, 2) ?>
+                                        <?= viewNumber($current_stock) ?>
                                         <?php if ($current_stock <= $min_stock): ?>
                                             <span class="badge bg-<?= $status_class ?>"><?= $status_text ?></span>
                                         <?php endif; ?>
@@ -141,7 +141,7 @@
                                     foreach ($stoks as $stok) {
                                         $total_stok += isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
                                     }
-                                    echo number_format($total_stok, 2);
+                                    echo viewNumber($total_stok);
                                     ?>
                                 </strong>
                             </td>

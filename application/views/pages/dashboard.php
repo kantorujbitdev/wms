@@ -63,7 +63,7 @@
                                 foreach ($stoks as $stok) {
                                     $total_qty += isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
                                 }
-                                echo number_format($total_qty, 2);
+                                echo viewNumber($total_qty);
                                 ?>
                             </div>
                             <div class="text-xs text-muted">Total quantity semua barang</div>
