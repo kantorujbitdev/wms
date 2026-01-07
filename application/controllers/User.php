@@ -61,7 +61,6 @@ class User extends MY_Controller
 
         // Get roles from API
         $roles = $this->Api_model->get_user(['action' => 'roles']);
-        $this->handle_response($roles);
         $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Superadmin', 'Admin', 'Staff'];
 
         // ✅ Get Warehouse
