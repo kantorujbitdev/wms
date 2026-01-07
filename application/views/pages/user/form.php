@@ -279,10 +279,10 @@ $(document).ready(function () {
             }
             
             // VALIDASI 3: Password length for new user or when changing password
-            if (password.length > 0 && password.length < 6) {
+            if (password.length > 0 && password.length < 1) {
                 isValid = false;
                 if (errorMessage) errorMessage += '\n';
-                errorMessage += 'Password minimal 6 karakter!';
+                errorMessage += 'Password minimal 1 karakter!';
             }
         }
 
