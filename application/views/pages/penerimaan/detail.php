@@ -5,30 +5,35 @@
         $back_url = 'penerimaan/dari_pengguna';
     elseif ($active_submenu == 'penerimaan_antar_gudang')
         $back_url = 'penerimaan/antar_gudang'; ?>
-    <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
-        <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
-    </a>
+
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
+        <!-- <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1> -->
 
         <!-- TAMBAHKAN TOMBOL CETAK DISINI -->
-        <div class="btn-group" role="group">
-            <a href="<?= site_url('penerimaan/cetak/' . $penerimaan['header']['stockin_id']) ?>" target="_blank"
-                class="btn btn-primary">
-                <i class="fas fa-eye"></i> Preview Cetak
-            </a>
-            <a href="<?= site_url('penerimaan/cetak_langsung/' . $penerimaan['header']['stockin_id']) ?>"
-                target="_blank" class="btn btn-success">
-                <i class="fas fa-print"></i> Cetak Langsung
-            </a>
-        </div>
+
     </div>
     <!-- Detail Card -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Informasi Penerimaan</h6>
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
+                    <i class="fas fa-arrow-left fa-sm text-white-50"></i>
+                    <?= $wording['back']; ?>
+                </a>
+                <h6 class="m-0 font-weight-bold text-primary">Informasi Penerimaan</h6>
+                <div class="btn-group" role="group">
+                    <a href="<?= site_url('penerimaan/cetak/' . $penerimaan['header']['stockin_id']) ?>" target="_blank"
+                        class="btn btn-primary">
+                        <i class="fas fa-eye"></i> Preview Cetak
+                    </a>
+                    <a href="<?= site_url('penerimaan/cetak_langsung/' . $penerimaan['header']['stockin_id']) ?>"
+                        target="_blank" class="btn btn-success">
+                        <i class="fas fa-print"></i> Cetak Langsung
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <?php if (isset($penerimaan) && isset($penerimaan['header'])): ?>

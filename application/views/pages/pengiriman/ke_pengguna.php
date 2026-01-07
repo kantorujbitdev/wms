@@ -1,16 +1,21 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
         <a href="<?= site_url('pengiriman/add_pengguna') ?>" class="btn btn-primary btn-sm">
             <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengiriman
         </a>
-    </div>
+    </div> -->
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman ke Pengguna</h6>
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman ke Pengguna</h6>
+                <a href="<?= site_url('pengiriman/add_pengguna') ?>" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengiriman
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">

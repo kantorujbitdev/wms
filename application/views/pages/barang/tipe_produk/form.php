@@ -1,15 +1,18 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">
             <?php echo isset($product_type) ? 'Edit Tipe Produk' : 'Tambah Tipe Produk'; ?>
         </h1>
-    </div>
+    </div> -->
 
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Form Tipe Produk</h6>
+            <h6 class="m-0 font-weight-bold text-primary">
+
+                <?php echo isset($product_type) ? 'Edit Tipe Produk' : 'Tambah Tipe Produk'; ?>
+            </h6>
         </div>
         <div class="card-body">
             <?php echo form_open('barang/save_tipe_produk'); ?>

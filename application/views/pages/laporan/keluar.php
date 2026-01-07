@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
         <div>
             <a href="<?= site_url('laporan/export_keluar') . '?' . http_build_query($_GET) ?>"
@@ -8,13 +8,16 @@
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
         </div>
-    </div>
+    </div> -->
 
     <!-- Filter Card -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Filter Laporan</h6>
-        </div>
+        <a href="<?= site_url('laporan/export_keluar') . '?' . http_build_query($_GET) ?>" class="btn btn-success btn-sm">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </a>
+    </div>
         <div class="card-body">
             <form method="GET" action="<?= site_url('laporan/keluar') ?>">
                 <div class="row">

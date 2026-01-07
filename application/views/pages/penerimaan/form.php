@@ -1,23 +1,25 @@
 <div class="container-fluid">
     <?php 
     $back_url = 'penerimaan/dari_supplier';
-    if ($from_status == '1')
+    if ($from_status == '1') {
         $back_url = 'penerimaan/dari_pengguna';
-    elseif ($from_status == '3')
-        $back_url = 'penerimaan/antar_gudang';?>
+    } elseif ($from_status == '3') {
+        $back_url = 'penerimaan/antar_gudang';
+    }?>
     
-    <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
-        <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
-    </a>
     
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-    </div>
+    </div> -->
 
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
+            <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i>
+                <?= $wording['back']; ?>
+            </a>
             <h6 class="m-0 font-weight-bold text-primary">Form <?= $title ?></h6>
         </div>
         <div class="card-body">

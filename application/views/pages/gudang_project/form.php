@@ -1,20 +1,23 @@
 <div class="container-fluid">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">
             <?php echo isset($warehouse) ? 'Edit Gudang Project' : 'Tambah Gudang Project'; ?>
         </h1>
-    </div>
+    </div> -->
 
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary"><?= $wording['gudang_form_project']; ?></h6>
+            <h6 class="m-0 font-weight-bold text-primary">
+                
+
+                            <?php echo isset($warehouse) ? 'Edit Gudang Project' : 'Tambah Gudang Project'; ?></h6>
         </div>
         <div class="card-body">
             <?php echo form_open('gudang/save_warehouse_project'); ?>
-            <?php if (isset($warehouse)): ?>
-                <input type="hidden" name="id" id="warehouse_id" value="<?php echo $warehouse['warehouse_id']; ?>">
+        <?php if (isset($warehouse)): ?>
+                    <input type="hidden" name="id" id="warehouse_id" value="<?php echo $warehouse['warehouse_id']; ?>">
             <?php endif; ?>
 
             <div class="row mb-3">
