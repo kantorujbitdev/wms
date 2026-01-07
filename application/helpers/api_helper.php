@@ -201,9 +201,7 @@ if (!function_exists('api_request')) {
         // Eksekusi CURL 
         $curl = curl_init();
         curl_setopt_array($curl, $options);
-        save_log("🔗 Request {$method} → {$url}", 'info');
-        if (!empty($data))
-            save_log("Payload: " . json_encode($data), 'info');
+        // save_log("🔗 Request {$method} → {$url}", 'info');
         $response = curl_exec($curl);
         $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $error = curl_error($curl);
@@ -216,7 +214,8 @@ if (!function_exists('api_request')) {
         }
 
         $result = json_decode($response, true);
-        save_log("DATA RESPONSE: " . $response, 'info');
+
+
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $msg = 'JSON Decode Error: ' . json_last_error_msg();
@@ -225,7 +224,9 @@ if (!function_exists('api_request')) {
         }
 
         $result['http_code'] = $http_code;
-        log_http_response($http_code, $response, strtoupper($endpoint));
+        $str_url = "[URL: " . $url . "]";
+        $str_payload = "[Payload]: " . json_encode($data);
+        log_http_response($str_url, $method, $str_payload, $response, $http_code, strtoupper($endpoint));
 
         // Token expired 
         if ($http_code === 401 && strtolower($endpoint) !== 'login') {

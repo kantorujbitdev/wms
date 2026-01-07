@@ -18,7 +18,6 @@ class Dashboard extends MY_Controller
         $this->data['summary'] = $summary['success'] ? $summary['data'] : [];
         $warehouse_id_session = $this->session->userdata('warehouse_id');
         $data_login = data_login_user();
-        save_log('warehouse_id_session: ' . $warehouse_id_session, 'info');
         if ($warehouse_id_session == 0 || $warehouse_id_session === null) {
             $stok_response = $this->Api_model->get_stock_all($data_login);
         } else {

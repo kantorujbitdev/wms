@@ -57,17 +57,23 @@ if (!function_exists('log_http_response')) {
      * @param string $response
      * @param string|null $prefix Pesan tambahan opsional (misal nama API)
      */
-    function log_http_response($http_code, $response, $prefix = null)
+    function log_http_response($url, $method, $payload, $response, $http_code, $prefix = null)
     {
         $prefixText = $prefix ? "{$prefix} " : "";
         $shortResponse = substr($response, 0, 500); // batasi isi log agar tidak terlalu panjang
 
-        if ($http_code >= 200 && $http_code < 300) {
-            save_log("✅ Response API - {$prefixText}-[{$http_code}]: {$response}", 'success');
-        } elseif ($http_code >= 300 && $http_code < 500) {
-            save_log("⚠️ Response API - {$prefixText}-[{$http_code}]: {$response}", 'warning');
+        if ($method == 'GET') {
+            $pesan = "[RESPONSE]: BERHASIL DIDAPATKAN";
         } else {
-            save_log("❌ Response API - {$prefixText}-[{$http_code}]: {$response}", 'error');
+            $pesan = "[RESPONSE]: " . $shortResponse;
+        }
+
+        if ($http_code >= 200 && $http_code < 300) {
+            save_log("✅ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'success');
+        } elseif ($http_code >= 300 && $http_code < 500) {
+            save_log("⚠️ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'warning');
+        } else {
+            save_log("❌ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'error');
         }
     }
 }

@@ -37,13 +37,23 @@ class User extends MY_Controller
         // Set title
         $this->data['title'] = 'Tambah User';
 
-        $gudang = $this->Api_model->get_gudang(data_login_user());
-        $this->data['warehouses'] = $this->handle_response($gudang);
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+        $response = $this->Api_model->get_gudang($data);
+        $this->handle_response($response);
+        // Get initial stock data
+        if ($warehouse_id == 0 || $warehouse_id == null) {
+            $this->data['warehouses'] = $response['success'] ? $response['data'] : [];
+        }
 
         // Get roles from API
-        $roles = $this->Api_model->get_user(['action' => 'roles']);
-        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['superadmin', 'admin', 'Staff'];
-
+        // $roles = $this->Api_model->get_user(['action' => 'roles']);
+        $user_role = $this->session->userdata('role');
+        if ($user_role != 'superadmin') {
+            $this->data['roles'] = ['admin', 'Staff'];
+        } else {
+            $this->data['roles'] = ['Superadmin', 'Admin', 'Staff'];
+        }
         // Render view
         $this->render_view('pages/user/form');
     }
@@ -111,8 +121,9 @@ class User extends MY_Controller
             }
             // Add new user
             $response = $this->Api_model->add_user($data);
+            $message = 'User berhasil ditambahkan!';
         }
-        $this->handle_response($response, 'User berhasil ditambahkan!');
+        $this->handle_response($response, $message);
         redirect('user');
     }
 
