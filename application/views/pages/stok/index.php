@@ -55,9 +55,10 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Gudang</th>
+                            <th>Kode Barang</th>
                             <th>Nama Barang</th>
                             <th>Tipe Barang</th>
-                            <th>Jumlah</th>
+                            <th>Stok Terakhir</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,6 +68,7 @@
                                 <tr>
                                     <td class="text-center"><?= $no++; ?></td>
                                     <td><?= $stok['warehouse_name']; ?></td>
+                                    <td><?= $stok['product_code']; ?></td>
                                     <td><?= $stok['product_name']; ?></td>
                                     <td><?= $stok['type_name']; ?></td>
                                     <td><?= viewNumber($stok['current_stock']); ?></td>
@@ -86,6 +88,16 @@
 
 <script>
     $(document).ready(function () {
+
+        function viewNumber(value) {
+            let num = parseFloat(value || 0).toFixed(2);
+            num = num.replace('.', ',');
+            num = num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            num = num.replace(/,00$/, '');
+            num = num.replace(/,(\d*[1-9])0+$/, ',$1');
+            return num;
+        }
+
         // Inisialisasi sudah dilakukan oleh main.js, kita cukup ambil instance-nya
         let table = getDataTableInstance();
 
@@ -107,12 +119,14 @@
                     if (res.success && res.data.length > 0) {
                         // Format data untuk DataTables
                         const newData = res.data.map(function (stok, index) {
+                            $view_stok = viewNumber(stok.current_stock);
                             return [
-                                index + 1,
+                                `<span class="text-center d-block">${index + 1}</span>`,
                                 stok.warehouse_name || '-',
+                                stok.product_code || '-',
                                 stok.product_name || '-',
                                 stok.type_name || '-',
-                                stok.current_stock || '0.00'
+                                $view_stok
                             ];
                         });
 
