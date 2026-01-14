@@ -406,7 +406,7 @@
             const currentYear = new Date().getFullYear();
             let kode_prefix = 'DO/';
             <?php if ($to_status == '3'): ?>
-                kode_prefix = 'AG/';
+                kode_prefix = 'TO/';
             <?php endif; ?>
             const newStockoutCode = `${kode_prefix}${warehouseCode}/${romanMonth}/${currentYear}`;
 
