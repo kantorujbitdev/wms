@@ -1,8 +1,4 @@
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $wording['barang']; ?></h1>
-    </div> -->
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -19,56 +15,141 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="text-center align-middle">
-                        <tr>
-                            <th>No</th>
-                            <th>ID BOS</th>
-                            <th>Kode</th>
-                            <th>Nama Produk</th>
-                            <th>Satuan</th>
-                            <th>Tipe</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($products)): ?>
-                            <?php $no = 1;
-                            foreach ($products as $product): ?>
-                                <tr>
-                                    <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $product['bos_code']; ?></td>
-                                    <td><?php echo $product['product_code']; ?></td>
-                                    <td><?php echo $product['product_name']; ?></td>
-                                    <td><?php echo $product['unit_code']; ?></td>
-                                    <td><?php echo $product['type_name']; ?></td>
-                                    <td class="text-center">
-                                        <?php if (has_permission('barang', 'delete')): ?>
-                                            <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
-                                                class="btn btn-info btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if (has_permission('barang', 'delete')): ?>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?php echo $product['product_id']; ?>" data-name="<?php echo '<br>Kode : ' . $product['product_code'] .
-                                                       '<br>Barang : ' . $product['product_name']; ?>"
-                                                data-url="<?= site_url('barang/delete_produk'); ?>">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+            <div class="row mb-3">
+                <!-- Tampilkan dropdown jika user BUKAN user gudang -->
+                <div class="col-md-4">
+                    <label>Tipe Barang:</label>
+                    <select id="tipe_filter" class="form-control">
+                        <option value="">Semua Tipe Barang</option>
+                        <?php foreach ($product_types as $w): ?>
+                            <option value="<?= $w['Product_Type_Id']; ?>">
+                                <?= $w['Product_Type_Code'] . ' - ' . $w['Product_Type_Name']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="text-center align-middle">
                             <tr>
-                                <td colspan="6" class="text-center">Tidak ada data produk</td>
+                                <th width="5%">No</th>
+                                <th width="8%">ID BOS</th>
+                                <th width="8%">Kode</th>
+                                <th width="48%">Nama Produk</th>
+                                <th width="8%">Satuan</th>
+                                <th width="10%">Tipe</th>
+                                <th width="10%">Aksi</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($products)): ?>
+                                <?php $no = 1;
+                                foreach ($products as $product): ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $no++; ?></td>
+                                        <td><?php echo $product['bos_code']; ?></td>
+                                        <td><?php echo $product['product_code']; ?></td>
+                                        <td><?php echo $product['product_name']; ?></td>
+                                        <td><?php echo $product['unit_code']; ?></td>
+                                        <td><?php echo $product['type_name']; ?></td>
+                                        <td class="text-center">
+                                            <?php if (has_permission('barang', 'delete')): ?>
+                                                <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
+                                                    class="btn btn-info btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (has_permission('barang', 'delete')): ?>
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                    data-id="<?php echo $product['product_id']; ?>" data-name="<?php echo '<br>Kode : ' . $product['product_code'] .
+                                                           '<br>Barang : ' . $product['product_name']; ?>"
+                                                    data-url="<?= site_url('barang/delete_produk'); ?>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" class="text-center">Tidak ada data produk</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+
+        // Ambil instance DataTable
+        let table = getDataTableInstance();
+        if (!table) {
+            table = initializeDataTables();
+        }
+
+        // Filter berdasarkan TIPE BARANG
+        $("#tipe_filter").on("change", function () {
+            let type_id = $(this).val();
+
+            $.ajax({
+                url: "<?= site_url('barang/get_barang_by_type'); ?>",
+                type: "POST",
+                data: { Product_Type_Id: type_id },
+                dataType: "json",
+                success: function (res) {
+
+                    if (res.success && res.data.length > 0) {
+
+                        const newData = res.data.map(function (item, index) {
+
+                            return [
+                                `<div class="text-center">${index + 1}</div>`,
+                                item.bos_code ?? '-',
+                                item.product_code ?? '-',
+                                item.product_name ?? '-',
+                                item.unit_code ?? '-',
+                                item.type_name ?? '-',
+                                `
+                                <div class="text-center">
+                                    <a href="<?= site_url('barang/edit_produk/'); ?>${item.product_id}"
+                                       class="btn btn-info btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <button type="button"
+                                        class="btn btn-danger btn-sm actionBtnDelete"
+                                        data-id="${item.product_id}"
+                                        data-name="<br>Kode : ${item.product_code}<br>Barang : ${item.product_name}"
+                                        data-url="<?= site_url('barang/delete_produk'); ?>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                `
+                            ];
+                        });
+
+                        refreshDataTable(newData);
+
+                    } else {
+                        refreshDataTable([]);
+                        showDataTableEmptyState('Tidak ada data produk untuk tipe yang dipilih');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert('Terjadi kesalahan saat memuat data');
+                }
+            });
+        });
+
+    });
+</script>

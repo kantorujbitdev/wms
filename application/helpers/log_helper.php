@@ -63,7 +63,12 @@ if (!function_exists('log_http_response')) {
         $shortResponse = substr($response, 0, 500); // batasi isi log agar tidak terlalu panjang
 
         if ($method == 'GET') {
-            $pesan = "[RESPONSE]: BERHASIL DIDAPATKAN";
+            if (ENVIRONMENT === 'development') {
+                $pesan = "[RESPONSE]: " . $shortResponse;
+            } else {
+                $pesan = "[RESPONSE]: BERHASIL DIDAPATKAN";
+            }
+            // $pesan = "[RESPONSE]: BERHASIL DIDAPATKAN";
         } else {
             $pesan = "[RESPONSE]: " . $shortResponse;
         }

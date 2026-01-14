@@ -223,6 +223,19 @@ class Barang extends MY_Controller
         // Render view
         $this->render_view('pages/barang/produk/index');
     }
+    public function get_barang_by_type()
+    {
+        $Product_Type_Id = $this->input->post('Product_Type_Id');
+
+        if (empty($Product_Type_Id)) {
+            $data = data_login_user();
+        } else {
+            $data = data_login_user(['type_id' => $Product_Type_Id]);
+        }
+        $response = $this->Api_model->get_barang($data);
+        $this->handle_response($response);
+        echo json_encode($response);
+    }
 
     public function add_produk()
     {
