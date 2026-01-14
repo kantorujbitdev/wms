@@ -101,7 +101,7 @@ class Pengiriman extends MY_Controller
         $this->render_view('pages/pengiriman/antar_gudang');
     }
 
-    public function add_antar_gudang()
+    public function add_antar_gudang1()
     {
         $this->data['title'] = 'Tambah Pengiriman Antar Gudang';
         $this->data['active_menu'] = 'pengiriman';
@@ -147,7 +147,62 @@ class Pengiriman extends MY_Controller
 
         $this->render_view('pages/pengiriman/form');
     }
+    public function add_antar_gudang()
+    {
+        $this->data['title'] = 'Tambah Pengiriman Antar Gudang';
+        $this->data['active_menu'] = 'pengiriman';
+        $this->data['active_submenu'] = 'pengiriman_antar_gudang';
 
+        $data_login = data_login_user();
+
+        // Get user role from session
+        $user_role = $this->session->userdata('role');
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // Get warehouses for superadmin or specific warehouse for others
+        if ($user_role == 'superadmin') {
+            $warehouse_response = $this->Api_model->get_all_gudang($data_login);
+        } else {
+            $warehouse_response = $this->Api_model->get_gudang($data_login);
+        }
+        $this->handle_response($warehouse_response);
+        $this->data['warehouses'] = $warehouse_response['success'] ? $warehouse_response['data'] : [];
+
+        // Get user's warehouse info for display
+        $this->data['user_warehouse_id'] = $warehouse_id_session;
+        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+        $this->data['user_role'] = $user_role;
+
+        // Get products from stock based on warehouse
+        if ($user_role == 'superadmin') {
+            // For superadmin, initially no products
+            $this->data['stocks'] = [];
+            $this->data['products'] = [];
+        } else {
+            // Get stock from current warehouse
+            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $this->handle_response($stock_response);
+
+            if ($stock_response['success']) {
+                $this->data['stocks'] = $stock_response['data'];
+                $this->data['products'] = $stock_response['data'];
+            } else {
+                $this->data['stocks'] = [];
+                $this->data['products'] = [];
+            }
+        }
+
+        // Convert products data to JSON for JavaScript
+        $this->data['products_json'] = json_encode($this->data['products']);
+
+        $this->data['to_status'] = '3';
+        $this->data['form_type'] = 'antar_gudang';
+
+        // Get old form data from session if exists (after error)
+        $this->data['old_form_data'] = $this->session->flashdata('form_data_3_out');
+
+        $this->render_view('pages/pengiriman/form');
+    }
     // ==================== AJAX: LOAD PRODUCTS BY WAREHOUSE ====================
     public function load_products_by_warehouse()
     {

@@ -57,7 +57,12 @@
                                 }
                             }
 
-                            $kode_prefix = 'DO/' . $default_warehouse_code . '/';
+                            if ($to_status == '3') {
+                                $kode_prefix = 'TO/' . $default_warehouse_code . '/';
+                            }   else {
+                                $kode_prefix = 'DO/' . $default_warehouse_code . '/';
+                            }
+
                             $romanMonth = monthToRoman(date('m'));
                             $stockout_code = $kode_prefix . $romanMonth . '/' . date('Y');
 
@@ -399,7 +404,11 @@
             // Generate new stockout code
             const romanMonth = getRomanMonth(new Date().getMonth() + 1);
             const currentYear = new Date().getFullYear();
-            const newStockoutCode = `DO/${warehouseCode}/${romanMonth}/${currentYear}`;
+            let kode_prefix = 'DO/';
+            <?php if ($to_status == '3'): ?>
+                kode_prefix = 'AG/';
+            <?php endif; ?>
+            const newStockoutCode = `${kode_prefix}${warehouseCode}/${romanMonth}/${currentYear}`;
 
             // Update the input field
             $('#stockout_code').val(newStockoutCode);

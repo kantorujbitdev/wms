@@ -7,12 +7,6 @@
         $back_url = 'penerimaan/antar_gudang';
     }?>
     
-    
-    <!-- Page Heading -->
-    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-    </div> -->
-
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -63,7 +57,10 @@
                                     }
                                 }
                             }
+                            if ($from_status == '3' && isset($old_form_data['to_id']) && !empty($old_form_data['to_id'])) {
+                                $kode_prefix = 'TI/' . $default_warehouse_code . '/';
 
+                            }
                             $kode_prefix = 'RI/' . $default_warehouse_code . '/';
                             $romanMonth = monthToRoman(date('m'));
                             $stockin_code = $kode_prefix . $romanMonth . '/' . date('Y');
@@ -384,8 +381,12 @@
             // Generate new stockin code
             const romanMonth = getRomanMonth(new Date().getMonth() + 1);
             const currentYear = new Date().getFullYear();
-            const newStockinCode = `RI/${warehouseCode}/${romanMonth}/${currentYear}`;
-
+             let kode_prefix = 'RI/';
+            <?php if ($from_status == '3'): ?>
+                    kode_prefix = 'TI/';
+            <?php endif; ?>
+            const newStockinCode = `${kode_prefix}${warehouseCode}/${romanMonth}/${currentYear}`; 
+            
             // Update the input field
             $('#stockin_code').val(newStockinCode);
 
