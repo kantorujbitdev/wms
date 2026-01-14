@@ -1,14 +1,8 @@
 <div class="container-fluid">
-    <?php 
-    $back_url = 'penerimaan/dari_supplier';
-    if ($from_status == '1') {
-        $back_url = 'penerimaan/dari_pengguna';
-    }?>
-    
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
+            <a href="<?= site_url('penerimaan/antar_gudang') ?>" class="btn btn-secondary btn-sm mb-4">
                 <i class="fas fa-arrow-left fa-sm text-white-50"></i>
                 <?= $wording['back']; ?>
             </a>
@@ -335,7 +329,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Simpan Penerimaan
                         </button>
-                        <a href="<?= site_url($back_url) ?>" class="btn btn-secondary">
+                        <a href="<?= site_url('penerimaan/antar_gudang') ?>" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Batal
                         </a>
                         <?php if (isset($old_form_data)): ?>

@@ -178,7 +178,7 @@ class Penerimaan extends MY_Controller
         // Ambil data form dari session jika ada (setelah error)
         $this->data['old_form_data'] = $this->session->flashdata('form_data_3');
 
-        $this->render_view('pages/penerimaan/form');
+        $this->render_view('pages/penerimaan/form_antar_gudang');
     }
 
     // ==================== CREATE PENERIMAAN ====================
