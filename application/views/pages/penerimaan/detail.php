@@ -1,19 +1,12 @@
+<?php
+$back_url = 'penerimaan/dari_supplier';
+if ($active_submenu == 'pengguna')
+    $back_url = 'penerimaan/dari_pengguna';
+elseif ($active_submenu == 'penerimaan_antar_gudang')
+    $back_url = 'penerimaan/antar_gudang'; ?>
+
 <div class="container-fluid">
-    <?php
-    $back_url = 'penerimaan/dari_supplier';
-    if ($active_submenu == 'pengguna')
-        $back_url = 'penerimaan/dari_pengguna';
-    elseif ($active_submenu == 'penerimaan_antar_gudang')
-        $back_url = 'penerimaan/antar_gudang'; ?>
 
-
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <!-- <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1> -->
-
-        <!-- TAMBAHKAN TOMBOL CETAK DISINI -->
-
-    </div>
     <!-- Detail Card -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -28,10 +21,10 @@
                         class="btn btn-primary">
                         <i class="fas fa-eye"></i> Preview Cetak
                     </a>
-                    <a href="<?= site_url('penerimaan/cetak_langsung/' . $penerimaan['header']['stockin_id']) ?>"
+                    <!-- <a href="<?= site_url('penerimaan/cetak_langsung/' . $penerimaan['header']['stockin_id']) ?>"
                         target="_blank" class="btn btn-success">
                         <i class="fas fa-print"></i> Cetak Langsung
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
@@ -169,3 +162,70 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Fungsi untuk print halaman saat ini
+    function printPage() {
+        window.print();
+    }
+
+    // Event listener untuk auto-hide tombol saat print
+    window.addEventListener('beforeprint', function () {
+        // Sembunyikan tombol aksi saat print
+        document.querySelectorAll('.btn').forEach(function (btn) {
+            btn.classList.add('d-print-none');
+        });
+        // Sembunyikan sidebar jika ada
+        var sidebar = document.getElementById('accordionSidebar');
+        if (sidebar) sidebar.classList.add('d-print-none');
+    });
+
+    // Tambahkan style untuk print di CSS
+</script>
+
+<style>
+    @media print {
+        .d - print - none {
+            display: none !important;
+        }
+
+        body {
+            font - size: 12pt !important;
+            color: #000 !important;
+            background: #fff !important;
+        }
+
+        .card {
+            border: 1px solid #ddd !important;
+            box-shadow: none !important;
+        }
+
+        .table {
+            border - collapse: collapse !important;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #000 !important;
+            padding: 5px !important;
+        }
+
+        .table thead th {
+            background - color: #f2f2f2 !important;
+            font-weight: bold !important;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: #000 !important;
+        }
+
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>

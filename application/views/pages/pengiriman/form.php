@@ -6,12 +6,6 @@
         $back_url = 'pengiriman/antar_gudang';
     }    ?>
          
-    
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-1">
-        <!-- <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1> -->
-    </div>
-
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -36,9 +30,9 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-    <div class="form-group">
-        <label for="stockout_code">Kode Pengiriman *</label>
-        <?php
+                        <div class="form-group">
+                            <label for="stockout_code">Kode Pengiriman *</label>
+                            <?php
                             // Generate kode awal berdasarkan gudang default
                             $default_warehouse_code = 'WH';
                             $default_warehouse_name = 'Pilih Gudang';
@@ -268,7 +262,7 @@
                                                     <div class="form-group">
                                                         <label class="form-label">Qty *</label>
                                                         <input type="number" class="form-control qty-input" name="qty[]" 
-                                                            data-index="<?= $index ?>" step="0.01" min="0.01" 
+                                                            data-index="<?= $index ?>" 
                                                             value="<?= isset($item['qty']) ? $item['qty'] : '' ?>" required>
                                                         <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>" style="display: none;">
                                                             Melebihi stok tersedia
@@ -518,24 +512,44 @@
         });
 
         // Handle qty input validation
-        $(document).on('input', '.qty-input', function () {
-            const index = $(this).data('index');
-            const qty = parseFloat($(this).val()) || 0;
-            const maxQty = parseFloat($(this).attr('max')) || 0;
+       $(document).on('input', '.qty-input', function () {
+            const index  = $(this).data('index');
+            const rawVal = $(this).val();
+            const qty    = parseFloat(rawVal);
+            const maxQty = parseFloat($(this).attr('max'));
 
-            if (qty > maxQty) {
-                $('#qtyError' + index).show();
-                $(this).addClass('is-invalid');
-            } else {
-                $('#qtyError' + index).hide();
-                $(this).removeClass('is-invalid');
+            const $error = $('#qtyError' + index);
+            const $input = $(this);
+
+            // Reset state
+            $input.removeClass('is-invalid');
+            $error.hide();
+
+            // Jika input kosong → jangan validasi dulu
+            if (rawVal === '') {
+                return;
             }
 
-            // Validate minimum value
+            // Validasi angka
+            if (isNaN(qty)) {
+                $input.addClass('is-invalid');
+                return;
+            }
+
+            // Validasi minimum
             if (qty <= 0) {
-                $(this).addClass('is-invalid');
+                $input.addClass('is-invalid');
+                return;
+            }
+
+            // Validasi maksimum (stok)
+            if (qty > maxQty) {
+                $input.addClass('is-invalid');
+                $error.show();
+                return;
             }
         });
+
 
         // Clear form button
         $('#clearForm').click(function () {

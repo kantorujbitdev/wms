@@ -577,6 +577,58 @@ class Penerimaan extends MY_Controller
             redirect('penerimaan');
         }
     }
+
+    public function cetak_langsung($id)
+    {
+        // Ambil data penerimaan
+        $data_login = data_login_user(['stockin_id' => $id]);
+        $response = $this->Api_model->penerimaan_by_id($data_login);
+
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Normalize header keys
+            $normalized_header = [];
+            foreach ($header as $key => $value) {
+                $normalized_header[strtolower($key)] = $value;
+            }
+
+            // Normalize detail keys
+            $normalized_detail = [];
+            foreach ($detail as $item) {
+                $normalized_item = [];
+                foreach ($item as $key => $value) {
+                    $normalized_item[strtolower($key)] = $value;
+                }
+                $normalized_detail[] = $normalized_item;
+            }
+
+            $this->data['penerimaan'] = [
+                'header' => $normalized_header,
+                'detail' => $normalized_detail
+            ];
+
+            // Tentukan jenis surat penerimaan
+            if ($normalized_header['from_status'] == '1') {
+                $this->data['jenis_surat'] = 'SURAT TERIMA BARANG - DARI PENGGUNA';
+                $this->data['tipe_penerimaan'] = 'Pengguna';
+            } elseif ($normalized_header['from_status'] == '2') {
+                $this->data['jenis_surat'] = 'SURAT TERIMA BARANG - DARI SUPPLIER';
+                $this->data['tipe_penerimaan'] = 'Supplier';
+            } else {
+                $this->data['jenis_surat'] = 'SURAT TERIMA BARANG - ANTAR GUDANG';
+                $this->data['tipe_penerimaan'] = 'Gudang';
+            }
+
+            // Load view cetak surat penerimaan
+            $this->load->view('pages/penerimaan/cetak_surat_terima', $this->data);
+
+        } else {
+            $this->handle_response($response);
+            redirect('penerimaan');
+        }
+    }
     // Helper function untuk redirect back
     private function redirect_back()
     {

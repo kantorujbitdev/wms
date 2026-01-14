@@ -39,3 +39,6 @@ $route['pengiriman/delete/(:num)'] = 'pengiriman/delete/$1';
 
 $route['pengiriman/cetak/(:num)'] = 'pengiriman/cetak/$1';
 $route['pengiriman/cetak_pdf/(:num)'] = 'pengiriman/cetak_pdf/$1';
+
+$route['penerimaan/cetak/(:num)'] = 'penerimaan/cetak/$1';
+$route['penerimaan/cetak_pdf/(:num)'] = 'penerimaan/cetak_pdf/$1';

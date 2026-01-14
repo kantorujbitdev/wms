@@ -1,15 +1,9 @@
+<?php
+$back_url = 'pengiriman/penggunaan';
+if ($pengiriman['header']['to_status'] == '3')
+    $back_url = 'pengiriman/antar_gudang'; ?>
+
 <div class="container-fluid">
-    <?php
-    $back_url = 'pengiriman/penggunaan';
-    if ($pengiriman['header']['to_status'] == '3')
-        $back_url = 'pengiriman/antar_gudang'; ?>
-
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <!-- <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1> -->
-
-
-    </div>
 
     <!-- Data Pengiriman -->
     <div class="card shadow mb-4">
@@ -26,10 +20,10 @@
                         target="_blank" class="btn btn-primary">
                         <i class="fas fa-eye"></i> Preview Cetak
                     </a>
-                    <a href="<?= site_url('pengiriman/cetak_langsung/' . $pengiriman['header']['stockout_id']) ?>"
+                    <!-- <a href="<?= site_url('pengiriman/cetak_langsung/' . $pengiriman['header']['stockout_id']) ?>"
                         target="_blank" class="btn btn-success">
                         <i class="fas fa-print"></i> Cetak Langsung
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
