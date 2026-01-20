@@ -205,9 +205,9 @@
                                         placeholder="Keterangan tambahan untuk barang ini">
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-2 mt-4">
                                 <div class="form-group">
-                                    <label>&nbsp;</label>
+                                    <label class="form-label">&nbsp;</label>
                                     <button type="button" class="btn btn-danger btn-block remove-item">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -344,9 +344,9 @@
                         <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan tambahan untuk barang ini">
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2 mt-4">
                     <div class="form-group">
-                        <label>&nbsp;</label>
+                        <label class="form-label">&nbsp;</label>
                         <button type="button" class="btn btn-danger btn-block remove-item">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -481,9 +481,9 @@
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-4">
                                     <div class="form-group">
-                                        <label>&nbsp;</label>
+                                    <label class="form-label">&nbsp;</label>
                                         <button type="button" class="btn btn-danger btn-block remove-item" disabled>
                                             <i class="fas fa-trash"></i>
                                         </button>

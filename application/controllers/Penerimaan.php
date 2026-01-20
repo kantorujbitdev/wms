@@ -334,7 +334,7 @@ class Penerimaan extends MY_Controller
                 $this->data['active_submenu'] = 'pengguna';
                 $this->data['title'] = 'Edit Penerimaan dari Pengguna';
             } elseif ($from_status == '2') {
-                $this->data['active_submenu'] = 'supplier';
+                $this->data['active_submenu'] = 'supplier_penerimaan';
                 $this->data['title'] = 'Edit Penerimaan dari Supplier';
             } else {
                 $this->data['active_submenu'] = 'penerimaan_antar_gudang';

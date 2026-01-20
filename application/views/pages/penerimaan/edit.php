@@ -223,22 +223,22 @@
                                                         data-stock-id="<?= $product['product_id'] ?>"
                                                         <?= ($detail['product_id'] == $product['product_id']) ? 'selected' : '' ?>>
                                                         <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                                        (Unit: <?= $product['unit_code'] ?>)
+                                                        (Satuan: <?= $product['unit_code'] ?>)
                                                     </option>
                                             <?php endforeach; ?>
                                         </select>
                                         <input type="hidden" name="stock_id[]" value="<?= $detail['product_id'] ?>">
                                         <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
-                                            Unit: <?= $unit_code ?>
+                                            Satuan: <?= $unit_code ?>
                                         </small>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Qty *</label>
-                                        <input type="number" class="form-control qty-input" name="qty[]"
-                                            data-index="<?= $index ?>" step="0.01" min="0.01" 
-                                            value="<?= number_format($qty, 2) ?>" required>
+                                            <input type="number" class="form-control qty-input" name="qty[]"
+                                        data-index="<?= $index ?>" min="0"
+                                        value="<?= $detail['qty'] ?>" required>
                                         <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>"
                                             style="display: none;">
                                             Quantity harus lebih dari 0
@@ -253,9 +253,9 @@
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-4">
                                     <div class="form-group">
-                                        <label>&nbsp;</label>
+                                        <label class="form-label">&nbsp;</label>
                                         <button type="button" class="btn btn-danger btn-block remove-item">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -345,11 +345,11 @@
 
             // Extract unit from option text
             const optionText = selectedOption.text();
-            const unitMatch = optionText.match(/\(Unit: (.+?)\)/);
+            const unitMatch = optionText.match(/\(Satuan: (.+?)\)/);
             const unit = unitMatch ? unitMatch[1] : '';
 
             // Update unit info
-            $('#stockInfo' + index).text('Unit: ' + unit);
+            $('#stockInfo' + index).text('Satuan: ' + unit);
         });
 
         // Handle qty input validation
@@ -376,7 +376,7 @@
                         <option value="${product.product_id}" 
                             data-stock-id="${product.product_id}">
                             ${product.product_code} - ${product.product_name}
-                            (Unit: ${product.unit_code})
+                            (Satuan: ${product.unit_code})
                         </option>
                     `;
                 });
@@ -540,12 +540,12 @@
             if (selectedOption.length > 0 && selectedOption.val()) {
                 // Extract unit from option text
                 const optionText = selectedOption.text();
-                const unitMatch = optionText.match(/\(Unit: (.+?)\)/);
+                const unitMatch = optionText.match(/\(Satuan: (.+?)\)/);
                 const unit = unitMatch ? unitMatch[1] : '';
                 
                 // Update unit info display
                 if ($('#stockInfo' + index).length) {
-                    $('#stockInfo' + index).text('Unit: ' + unit);
+                    $('#stockInfo' + index).text('Satuan: ' + unit);
                 }
             }
         });
