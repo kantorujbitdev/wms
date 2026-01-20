@@ -29,7 +29,6 @@
                             <input type="date" class="form-control" id="stockout_date" name="stockout_date"
                                 value="<?= date('Y-m-d', strtotime($pengiriman['header']['stockout_date'])) ?>"
                                 max="<?= date('Y-m-d') ?>" required>
-                            <small class="form-text text-muted">Tidak bisa memilih tanggal yang akan datang</small>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -38,7 +37,6 @@
                             <input type="text" class="form-control bg-light" id="stockout_code" name="stockout_code"
                                 value="<?= $pengiriman['header']['stockout_code'] ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Kode tidak dapat diubah</small>
                         </div>
                     </div>
                 </div>
@@ -48,7 +46,6 @@
                         <div class="form-group">
                             <label for="from_warehouse_id">Dari Gudang *</label>
                             <?php if ($user_role == 'superadmin'): ?>
-                                <!-- Superadmin dapat mengubah gudang asal -->
                                 <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id"
                                     required>
                                     <option value="">Pilih Gudang Asal</option>
@@ -59,7 +56,6 @@
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <small class="form-text text-muted">Superadmin dapat mengubah gudang asal</small>
                             <?php else: ?>
                                 <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
                                 <input type="text" class="form-control bg-light"
@@ -98,6 +94,18 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="to_status">Tipe Pengiriman</label>
+                                <?php
+                                $tipe_text = 'Ke Pengguna';
+                                if ($to_status == '3')
+                                    $tipe_text = 'Antar Gudang';
+                                ?>
+                                <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
+                                    style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
+                            </div>
+                        </div>
 
                     </div>
 
@@ -124,26 +132,13 @@
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <small class="form-text text-muted">Pilih gudang tujuan pengiriman</small>
                             </div>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="to_status">Tipe Pengiriman</label>
-                            <?php
-                            $tipe_text = 'Ke Pengguna';
-                            if ($to_status == '3')
-                                $tipe_text = 'Antar Gudang';
-                            ?>
-                            <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
-                                style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Tipe pengiriman tidak dapat diubah</small>
-                        </div>
-                    </div>
+
                 </div>
 
                 <hr class="my-4">

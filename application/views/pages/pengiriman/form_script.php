@@ -1,260 +1,11 @@
-<!-- C:\xampp\htdocs\wms\application\views\pages\pengiriman\edit.php -->
-<div class="container-fluid">
-    <?php
-    $back_url = 'pengiriman/penggunaan';
-    if ($to_status == '3')
-        $back_url = 'pengiriman/antar_gudang'; ?>
-         <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
-        <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
-    </a>
-    
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-1">
-        <!-- <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1> -->
-    </div>
-
-    <!-- Form -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Form Edit <?= $title ?></h6>
-        </div>
-        <div class="card-body">
-            <form id="pengirimanForm" action="<?= site_url('pengiriman/update/' . $pengiriman['header']['stockout_id']) ?>" method="POST">
-                <input type="hidden" name="to_status" value="<?= $to_status ?>">
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockout_date">Tanggal Pengiriman *</label>
-                            <input type="date" class="form-control" id="stockout_date" name="stockout_date"
-                                value="<?= date('Y-m-d', strtotime($pengiriman['header']['stockout_date'])) ?>"
-                                max="<?= date('Y-m-d') ?>" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockout_code">Kode Pengiriman *</label>
-                            <input type="text" class="form-control bg-light" id="stockout_code" name="stockout_code"
-                                value="<?= $pengiriman['header']['stockout_code'] ?>" readonly
-                                style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="from_warehouse_id">Dari Gudang *</label>
-                            <?php if ($user_role == 'superadmin'): ?>
-                                <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id"
-                                    required>
-                                    <option value="">Pilih Gudang Asal</option>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($pengiriman['header']['warehouse_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            <?php else: ?>
-                                <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
-                                <input type="text" class="form-control bg-light"
-                                    value="<?= $pengiriman['header']['warehouse_name'] ?>" readonly
-                                    style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                                <input type="hidden" id="from_warehouse_id" name="from_warehouse_id"
-                                    value="<?= $pengiriman['header']['warehouse_id'] ?>">
-                                <small class="form-text text-muted">Gudang asal tidak dapat diubah</small>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockout_note">Keterangan</label>
-                            <textarea class="form-control" id="stockout_note" name="stockout_note"
-                                placeholder="Masukkan keterangan tambahan"
-                                rows="2"><?= $pengiriman['header']['stockout_note'] ?></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Form untuk Pengiriman ke Pengguna (to_status = 1) -->
-                <?php if ($to_status == '1'): ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="customer_id">Ke Pengguna *</label>
-                                <select class="form-control select2" id="customer_id" name="customer_id" required>
-                                    <option value="">Pilih Pengguna</option>
-                                    <?php foreach ($customers as $customer): ?>
-                                        <option value="<?= $customer['id'] ?>"
-                                            <?= ($pengiriman['header']['to_id'] == $customer['id']) ? 'selected' : '' ?>>
-                                            <?= $customer['name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockout_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockout_invoice" name="stockout_invoice"
-                                    value="<?= $pengiriman['header']['stockout_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi" required>
-                            </div>
-                        </div>
-                    </div>
-
-                <!-- Form untuk Pengiriman Antar Gudang (to_status = 3) -->
-                <?php elseif ($to_status == '3'): ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="to_warehouse_id">Ke Gudang *</label>
-                                <select class="form-control select2" id="to_warehouse_id" name="to_warehouse_id" required>
-                                    <option value="">Pilih Gudang Tujuan</option>
-                                    <?php foreach ($warehouses as $warehouse):
-                                        // Jangan tampilkan gudang yang sama dengan asal
-                                        $disabled = '';
-                                        if ($warehouse['warehouse_id'] == $pengiriman['header']['warehouse_id']) {
-                                            $disabled = 'disabled';
-                                        }
-                                        ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($pengiriman['header']['to_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>
-                                            <?= $disabled ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                            <?= ($disabled) ? ' (Gudang Asal)' : '' ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockout_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockout_invoice" name="stockout_invoice"
-                                    value="<?= $pengiriman['header']['stockout_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi transfer" required>
-                            </div>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="to_status">Tipe Pengiriman</label>
-                            <?php
-                            $tipe_text = 'Ke Pengguna';
-                            if ($to_status == '3')
-                                $tipe_text = 'Antar Gudang';
-                            ?>
-                            <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
-                                style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-4">
-
-                <!-- Items Section -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <h5 class="font-weight-bold">Detail Barang</h5>
-                        <button type="button" id="addItem" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Barang
-                        </button>
-                    </div>
-                </div>
-
-                <div id="itemsContainer">
-                    <?php foreach ($pengiriman['detail'] as $index => $detail): 
-                        $available_qty = floatval($detail['available_qty'] ?? 0);
-                        $qty = floatval($detail['qty'] ?? 0);
-                        $stock_display = $available_qty < 0 ? '0.00' : number_format($available_qty, 2);
-                    ?>
-                        <div class="item-row row mb-3">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Produk *</label>
-                                    <select class="form-control select2 product-select" name="product_id[]"
-                                        data-index="<?= $index ?>" required>
-                                        <option value="">Pilih Produk</option>
-                                        <?php foreach ($products as $product): 
-                                            $current_stock = floatval($product['current_stock']);
-                                            $product_stock_display = $current_stock < 0 ? '0.00' : number_format($current_stock, 2);
-                                            ?>
-                                            <option value="<?= $product['product_id'] ?>"
-                                                data-stock-id="<?= $product['stock_id'] ?>"
-                                                data-available-qty="<?= $current_stock < 0 ? 0 : $current_stock ?>"
-                                                <?= ($detail['product_id'] == $product['product_id']) ? 'selected' : '' ?>
-                                                <?= ($current_stock <= 0 && $detail['product_id'] != $product['product_id']) ? 'disabled style="color: #dc3545;"' : '' ?>>
-                                                <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                                (Stok: <?= $product_stock_display ?> <?= $product['unit_code'] ?>)
-                                                <?= ($current_stock <= 0 && $detail['product_id'] != $product['product_id']) ? ' - Stok Habis/Tidak Tersedia' : '' ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <input type="hidden" name="stock_id[]" value="<?= $detail['stock_id'] ?>">
-                                    <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
-                                        Stok tersedia: <?= number_format($available_qty, 2) ?> <?= $detail['unit_code'] ?? '' ?>
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Qty *</label>
-                                    <input type="number" class="form-control qty-input" name="qty[]"
-                                        data-index="<?= $index ?>" step="0.01" min="0.01" 
-                                        max="<?= $available_qty ?>" value="<?= number_format($qty, 2) ?>" required>
-                                    <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>"
-                                        style="display: none;">
-                                        Melebihi stok tersedia
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Keterangan Barang</label>
-                                    <input type="text" class="form-control" name="detail_note[]"
-                                        value="<?= $detail['detail_note'] ?>"
-                                        placeholder="Keterangan tambahan untuk barang ini">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button type="button" class="btn btn-danger btn-block remove-item">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <hr class="my-4">
-
-                <div class="row">
-                    <div class="col-12 text-right">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Update Pengiriman
-                        </button>
-                        <a href="<?= site_url($back_url) ?>" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Batal
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <script>
     $(document).ready(function () {
         // Store products data from PHP - use window object for global access
         window.productsData = <?= $products_json ?: '[]' ?>;
-        let itemCounter = <?= count($pengiriman['detail']) ?>;
+        let itemCounter = <?= isset($old_form_data['items']) ? count($old_form_data['items']) : 1 ?>;
+
+        // Get warehouse data from hidden input
+        const warehouseData = JSON.parse($('#warehouse_data').val() || '{}');
 
         // Initialize Select2
         $('.select2').select2({
@@ -262,17 +13,95 @@
             dropdownParent: $('.card-body')
         });
 
+        // Function to update stockout code based on warehouse selection
+        function updateStockoutCode() {
+            let selectedWarehouseId = '';
+
+            <?php if ($user_role == 'superadmin'): ?>
+                // For superadmin, get from dropdown selection
+                selectedWarehouseId = $('#from_warehouse_id').val();
+            <?php else: ?>
+                // For non-superadmin, use their warehouse
+                selectedWarehouseId = '<?= $user_warehouse_id ?>';
+            <?php endif; ?>
+
+            // Get warehouse code from data
+            let warehouseCode = 'WH'; // default
+            if (selectedWarehouseId && warehouseData[selectedWarehouseId]) {
+                warehouseCode = warehouseData[selectedWarehouseId];
+            }
+
+            // Generate new stockout code
+            const romanMonth = getRomanMonth(new Date().getMonth() + 1);
+            const currentYear = new Date().getFullYear();
+            let kode_prefix = 'DO/';
+            <?php if ($to_status == '3'): ?>
+                kode_prefix = 'TO/';
+            <?php endif; ?>
+            const newStockoutCode = `${kode_prefix}${warehouseCode}/${romanMonth}/${currentYear}`;
+
+            // Update the input field
+            $('#stockout_code').val(newStockoutCode);
+
+            // Update the help text
+            let warehouseName = 'Gudang';
+            <?php if ($user_role == 'superadmin'): ?>
+                if (selectedWarehouseId) {
+                    const selectedOption = $('#from_warehouse_id option:selected').text();
+                    warehouseName = selectedOption || 'Gudang';
+                }
+            <?php else: ?>
+                warehouseName = '<?= $user_warehouse_name ?>';
+            <?php endif; ?>
+
+            // $('#stockout_code').next('small').html(
+            //     `Kode otomatis berdasarkan Gudang Asal: <strong>${warehouseName}</strong>`
+            // );
+        }
+
+        // Function to convert month to Roman numeral
+        function getRomanMonth(month) {
+            const romanNumerals = {
+                1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI',
+                7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII'
+            };
+            return romanNumerals[month] || 'I';
+        }
+
+        // Update code when warehouse selection changes (for superadmin)
+        <?php if ($user_role == 'superadmin'): ?>
+            $('#from_warehouse_id').on('change', function () {
+                updateStockoutCode();
+            });
+        <?php endif; ?>
+
+        // Update code on page load
+        updateStockoutCode();
+
         // For superadmin: Load products when warehouse changes
         <?php if ($user_role == 'superadmin'): ?>
             $('#from_warehouse_id').on('change', function () {
                 const warehouseId = $(this).val();
                 if (warehouseId) {
-                    if (confirm('Mengubah gudang akan mereset daftar barang. Lanjutkan?')) {
-                        loadProductsByWarehouse(warehouseId);
-                    } else {
-                        // Reset to original value
-                        $(this).val('<?= $pengiriman['header']['warehouse_id'] ?>').trigger('change');
-                    }
+                    loadProductsByWarehouse(warehouseId);
+                    updateStockoutCode(); // Update kode juga
+
+                    // Disable same warehouse in destination dropdown
+                    <?php if ($to_status == '3'): ?>
+                        $('#to_warehouse_id option').each(function () {
+                            const optionValue = $(this).val();
+                            if (optionValue == warehouseId) {
+                                $(this).prop('disabled', true);
+                                if ($(this).is(':selected')) {
+                                    $(this).prop('selected', false);
+                                    $('#to_warehouse_id').trigger('change.select2');
+                                }
+                            } else {
+                                $(this).prop('disabled', false);
+                            }
+                        });
+                        $('#to_warehouse_id').trigger('change.select2');
+                    <?php endif; ?>
                 }
             });
         <?php endif; ?>
@@ -285,7 +114,7 @@
 
             if (selectedDate > today) {
                 alert('Tidak bisa memilih tanggal yang akan datang');
-                this.value = '<?= date('Y-m-d', strtotime($pengiriman['header']['stockout_date'])) ?>';
+                this.value = '<?= date('Y-m-d') ?>';
             }
         });
 
@@ -324,24 +153,44 @@
         // Handle qty input validation
         $(document).on('input', '.qty-input', function () {
             const index = $(this).data('index');
-            const qty = parseFloat($(this).val()) || 0;
-            const maxQty = parseFloat($(this).attr('max')) || 0;
+            const rawVal = $(this).val();
+            const qty = parseFloat(rawVal);
+            const maxQty = parseFloat($(this).attr('max'));
 
-            if (qty > maxQty) {
-                $('#qtyError' + index).show();
-                $(this).addClass('is-invalid');
-            } else {
-                $('#qtyError' + index).hide();
-                $(this).removeClass('is-invalid');
+            const $error = $('#qtyError' + index);
+            const $input = $(this);
+
+            // Reset state
+            $input.removeClass('is-invalid');
+            $error.hide();
+
+            // Jika input kosong → jangan validasi dulu
+            if (rawVal === '') {
+                return;
             }
 
-            // Validate minimum value
+            // Validasi angka
+            if (isNaN(qty)) {
+                $input.addClass('is-invalid');
+                return;
+            }
+
+            // Validasi minimum
             if (qty <= 0) {
-                $(this).addClass('is-invalid');
+                $input.addClass('is-invalid');
+                return;
+            }
+
+            // Validasi maksimum (stok)
+            if (qty > maxQty) {
+                $input.addClass('is-invalid');
+                $error.show();
+                return;
             }
         });
 
-        // Clear form button (if exists)
+
+        // Clear form button
         $('#clearForm').click(function () {
             if (confirm('Apakah Anda yakin ingin membersihkan semua data form?')) {
                 // Reset form
@@ -351,6 +200,8 @@
                 // Reset items to single row
                 $('.item-row:gt(0)').remove();
                 $('.remove-item').prop('disabled', true);
+                // Reset stockout code
+                updateStockoutCode();
                 // Refresh page to clear all data
                 window.location.href = window.location.href.split('?')[0];
             }
@@ -385,7 +236,7 @@
             <div class="item-row row mb-3">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Produk *</label>
+                        <label class="form-label">Produk *</label>
                         <select class="form-control select2 product-select" name="product_id[]" data-index="${itemCounter}" required>
                             ${optionsHtml}
                         </select>
@@ -395,7 +246,7 @@
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label>Qty *</label>
+                        <label class="form-label">Qty *</label>
                         <input type="number" class="form-control qty-input" name="qty[]" 
                             data-index="${itemCounter}" step="0.01" min="0.01" max="0" required>
                         <small class="form-text text-danger qty-error" id="qtyError${itemCounter}" style="display: none;">
@@ -405,13 +256,13 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Keterangan Barang</label>
+                        <label class="form-label">Keterangan Barang</label>
                         <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan tambahan untuk barang ini">
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2 mt-4">
                     <div class="form-group">
-                        <label>&nbsp;</label>
+                        <label class="form-label">&nbsp;</label>
                         <button type="button" class="btn btn-danger btn-block remove-item">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -467,11 +318,11 @@
                     valid = false;
                 }
 
-                if (!$('#stockout_invoice').val()) {
-                    errorMessages.push('Harap isi nomor referensi');
-                    $('#stockout_invoice').focus();
-                    valid = false;
-                }
+                // if (!$('#stockout_invoice').val()) {
+                //     errorMessages.push('Harap isi nomor referensi');
+                //     $('#stockout_invoice').focus();
+                //     valid = false;
+                // }
             <?php elseif ($to_status == '3'): ?>
                 // Validasi untuk pengiriman antar gudang
                 if (!$('#to_warehouse_id').val()) {
@@ -488,11 +339,11 @@
                     valid = false;
                 }
 
-                if (!$('#stockout_invoice').val()) {
-                    errorMessages.push('Harap isi nomor referensi');
-                    $('#stockout_invoice').focus();
-                    valid = false;
-                }
+                // if (!$('#stockout_invoice').val()) {
+                //     errorMessages.push('Harap isi nomor referensi');
+                //     $('#stockout_invoice').focus();
+                //     valid = false;
+                // }
             <?php endif; ?>
 
             // Check if at least one item has product selected
@@ -533,6 +384,12 @@
             });
 
             if (hasQuantityError) {
+                valid = false;
+            }
+
+            // Validasi kode pengiriman
+            if (!$('#stockout_code').val()) {
+                errorMessages.push('Kode pengiriman tidak valid');
                 valid = false;
             }
 
@@ -589,7 +446,7 @@
                             <div class="item-row row mb-3">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Produk *</label>
+                                        <label class="form-label">Produk *</label>
                                         <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
                                             ${optionsHtml}
                                         </select>
@@ -599,7 +456,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <label>Qty *</label>
+                                        <label class="form-label">Qty *</label>
                                         <input type="number" class="form-control qty-input" name="qty[]" 
                                             data-index="0" step="0.01" min="0.01" max="0" required>
                                         <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
@@ -609,14 +466,14 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Keterangan Barang</label>
+                                        <label class="form-label">Keterangan Barang</label>
                                         <input type="text" class="form-control" name="detail_note[]"
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-4">
                                     <div class="form-group">
-                                        <label>&nbsp;</label>
+                                        <label class="form-label">&nbsp;</label>
                                         <button type="button" class="btn btn-danger btn-block remove-item" disabled>
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -630,10 +487,10 @@
                             width: '100%',
                             dropdownParent: $('.card-body')
                         });
-                        
+
                         // Reset item counter
                         itemCounter = 1;
-                        
+
                         // Initialize product selection for the first row
                         setTimeout(() => {
                             const firstSelect = $('#itemsContainer .product-select').first();
@@ -641,7 +498,7 @@
                                 firstSelect.trigger('change');
                             }
                         }, 100);
-                        
+
                     } else {
                         alert(response.message || 'Gagal memuat data produk');
                         // Reset to empty products data
@@ -651,7 +508,7 @@
                             <div class="item-row row mb-3">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Produk *</label>
+                                        <label class="form-label">Produk *</label>
                                         <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
                                             <option value="">Pilih Produk</option>
                                         </select>
@@ -661,7 +518,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <label>Qty *</label>
+                                        <label class="form-label">Qty *</label>
                                         <input type="number" class="form-control qty-input" name="qty[]" 
                                             data-index="0" step="0.01" min="0.01" max="0" required>
                                         <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
@@ -671,14 +528,14 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Keterangan Barang</label>
+                                        <label class="form-label">Keterangan Barang</label>
                                         <input type="text" class="form-control" name="detail_note[]"
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-2 mt-4">
                                     <div class="form-group">
-                                        <label>&nbsp;</label>
+                                        <label class="form-label">&nbsp;</label>
                                         <button type="button" class="btn btn-danger btn-block remove-item" disabled>
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -717,24 +574,5 @@
                 }
             });
         <?php endif; ?>
-        
-        // Initialize existing product selections
-        $('.product-select').each(function() {
-            const index = $(this).data('index');
-            const selectedOption = $(this).find('option:selected');
-            if (selectedOption.length > 0 && selectedOption.val()) {
-                const availableQty = parseFloat(selectedOption.data('available-qty')) || 0;
-                
-                // Extract unit from option text
-                const optionText = selectedOption.text();
-                const unitMatch = optionText.match(/\(Stok: [\d.,]+ (.+?)\)/);
-                const unit = unitMatch ? unitMatch[1] : '';
-                
-                // Update stock info display
-                if ($('#stockInfo' + index).length) {
-                    $('#stockInfo' + index).text('Stok tersedia: ' + availableQty.toFixed(2) + ' ' + unit);
-                }
-            }
-        });
     });
 </script>

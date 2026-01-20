@@ -33,7 +33,6 @@
                             <input type="date" class="form-control" id="stockin_date" name="stockin_date"
                                 value="<?= date('Y-m-d', strtotime($penerimaan['header']['stockin_date'])) ?>"
                                 max="<?= date('Y-m-d') ?>" required>
-                            <small class="form-text text-muted">Tidak bisa memilih tanggal yang akan datang</small>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -42,7 +41,6 @@
                             <input type="text" class="form-control bg-light" id="stockin_code" name="stockin_code"
                                 value="<?= $penerimaan['header']['stockin_code'] ?>" readonly
                                 style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Kode tidak dapat diubah</small>
                         </div>
                     </div>
                 </div>
