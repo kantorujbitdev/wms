@@ -23,7 +23,7 @@
                         <option value="">Semua Tipe Barang</option>
                         <?php foreach ($product_types as $w): ?>
                             <option value="<?= $w['Product_Type_Id']; ?>">
-                                <?= $w['Product_Type_Code'] . ' - ' . $w['Product_Type_Name']; ?>
+                                <?= $w['Product_Type_Name'] . ' - ' . $w['Product_Type_Code'] . ' (' . $w['Product_Type_Id'] . ')'; ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

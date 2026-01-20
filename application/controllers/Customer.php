@@ -26,7 +26,7 @@ class Customer extends MY_Controller
     public function add()
     {
         // Set title
-        $this->data['title'] = 'Tambah Customer';
+        $this->data['title'] = 'Tambah Pengguna}';
         $this->data['active_menu'] = 'customer';
         $this->data['active_submenu'] = 'customer';
 

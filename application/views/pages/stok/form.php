@@ -15,8 +15,8 @@ $session_warehouse_id = $this->session->userdata('warehouse_id');
                 <!-- Jika superadmin, tampilkan dropdown -->
                 <?php if ($role_id === 'superadmin'): ?>
                     <div class="mb-3">
-                        <label class="form-label">Warehouse</label>
-                        <select name="warehouse_id" class="form-control" required>
+                        <label class="form-label">Nama Gudang</label>
+                        <select name="warehouse_id" class="form-control select2-gudang" required>
                             <option value="">-- Pilih Gudang --</option>
                             <?php foreach ($warehouses as $w): ?>
                                 <option value="<?= $w['warehouse_id'] ?>">
@@ -38,11 +38,11 @@ $session_warehouse_id = $this->session->userdata('warehouse_id');
 
                 <div class="mb-3">
                     <label class="form-label">Produk</label>
-                    <select name="product_id" class="form-control" required>
+                    <select name="product_id" class="form-control select2-produk" required>
                         <option value="">-- Pilih Produk --</option>
                         <?php foreach ($products as $p): ?>
                             <option value="<?= $p['product_id'] ?>">
-                                <?= $p['product_name'] ?>
+                                <?= $p['product_name'] . ' || ' . $p['product_code'] . ' (' . $p['bos_code'] . ')' ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -63,3 +63,49 @@ $session_warehouse_id = $this->session->userdata('warehouse_id');
         </div>
     </div>
 </div>
+
+<!-- Tambahkan script Select2 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inisialisasi Select2 untuk Gudang
+        $('.select2-gudang').select2({
+            placeholder: '-- Pilih Gudang --',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Inisialisasi Select2 untuk Produk dengan pencarian
+        $('.select2-produk').select2({
+            placeholder: '-- Pilih Produk --',
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 3, // Minimal karakter untuk mulai mencari
+            language: {
+                noResults: function () {
+                    return "Produk tidak ditemukan";
+                },
+                searching: function () {
+                    return "Mencari...";
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    /* Styling untuk Select2 */
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        padding: 5px;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 26px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+    }
+</style>

@@ -7,10 +7,16 @@
                 <h6 class="m-0 font-weight-bold text-primary">
                     <?= $wording['stok_list']; ?>
                 </h6>
-                <!-- <a href="<?= site_url('gudang_stok/add') ?>" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus fa-sm text-white-50"></i>
-                    <?= $wording['stok_add']; ?>
-                </a> -->
+
+                <!-- add stock -->
+                <?php $usernames = strtolower($this->session->userdata('username')); ?>
+
+                <?php if ($usernames == 'adminwms'): ?><a href="<?= site_url('gudang_stok/add') ?>"
+                        class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus fa-sm text-white-50"></i>
+                        <?= $wording['stok_add']; ?>
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -25,7 +31,7 @@
                             <option value="">Semua Gudang</option>
                             <?php foreach ($warehouses as $w): ?>
                                 <option value="<?= $w['warehouse_id']; ?>">
-                                    <?= $w['warehouse_name']; ?>
+                                    <?= $w['warehouse_name'] . ' || ' . $w['warehouse_code']; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -51,6 +57,7 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Gudang</th>
+                            <th>ID BOS</th>
                             <th>Kode Barang</th>
                             <th>Nama Barang</th>
                             <th>Tipe Barang</th>
@@ -64,6 +71,7 @@
                                 <tr>
                                     <td class="text-center"><?= $no++; ?></td>
                                     <td><?= $stok['warehouse_name']; ?></td>
+                                    <td><?= $stok['bos_code']; ?></td>
                                     <td><?= $stok['product_code']; ?></td>
                                     <td><?= $stok['product_name']; ?></td>
                                     <td><?= $stok['type_name']; ?></td>

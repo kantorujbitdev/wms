@@ -8,7 +8,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
-                <?php echo isset($customer) ? 'Edit Customer' : 'Tambah Customer'; ?>
+                <?php echo isset($customer) ? 'Edit Pengguna' : 'Tambah Pengguna'; ?>
             </h6>
         </div>
         <div class="card-body">
@@ -19,7 +19,7 @@
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="name" class="form-label">Nama Customer</label>
+                    <label for="name" class="form-label">Nama Pengguna</label>
                     <input type="text" class="form-control" id="name" name="name"
                         value="<?php echo isset($customer) ? $customer['name'] : set_value('name'); ?>" required>
                 </div>
