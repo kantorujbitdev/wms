@@ -127,6 +127,7 @@
                             return [
                                 `<span class="text-center d-block">${index + 1}</span>`,
                                 stok.warehouse_name || '-',
+                                stok.bos_code || '-',
                                 stok.product_code || '-',
                                 stok.product_name || '-',
                                 stok.type_name || '-',

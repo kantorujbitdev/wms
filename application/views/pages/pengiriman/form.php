@@ -147,14 +147,14 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <!-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="stockout_invoice">No Referensi *</label>
                                     <input type="text" class="form-control" id="stockout_invoice" name="stockout_invoice"
                                         value="<?= isset($old_form_data['stockout_invoice']) ? $old_form_data['stockout_invoice'] : '' ?>"
                                         placeholder="Masukkan nomor referensi" required>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
                         <!-- Form untuk Pengiriman Antar Gudang (to_status = 3) -->
@@ -186,14 +186,14 @@
                                     <small class="form-text text-muted">Pilih gudang tujuan pengiriman</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <!-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="stockout_invoice">No Referensi *</label>
                                     <input type="text" class="form-control" id="stockout_invoice" name="stockout_invoice"
                                         value="<?= isset($old_form_data['stockout_invoice']) ? $old_form_data['stockout_invoice'] : '' ?>"
                                         placeholder="Masukkan nomor referensi transfer" required>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                 <?php endif; ?>
 
@@ -694,11 +694,11 @@
                         valid = false;
                     }
 
-                    if (!$('#stockout_invoice').val()) {
-                        errorMessages.push('Harap isi nomor referensi');
-                        $('#stockout_invoice').focus();
-                        valid = false;
-                    }
+                    // if (!$('#stockout_invoice').val()) {
+                    //     errorMessages.push('Harap isi nomor referensi');
+                    //     $('#stockout_invoice').focus();
+                    //     valid = false;
+                    // }
             <?php elseif ($to_status == '3'): ?>
                     // Validasi untuk pengiriman antar gudang
                     if (!$('#to_warehouse_id').val()) {
@@ -715,11 +715,11 @@
                         valid = false;
                     }
 
-                    if (!$('#stockout_invoice').val()) {
-                        errorMessages.push('Harap isi nomor referensi');
-                        $('#stockout_invoice').focus();
-                        valid = false;
-                    }
+                    // if (!$('#stockout_invoice').val()) {
+                    //     errorMessages.push('Harap isi nomor referensi');
+                    //     $('#stockout_invoice').focus();
+                    //     valid = false;
+                    // }
             <?php endif; ?>
 
             // Check if at least one item has product selected

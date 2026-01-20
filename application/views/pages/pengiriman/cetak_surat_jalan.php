@@ -86,10 +86,10 @@ $config = get_app_config();
                             <div class="info-label">Dari Gudang:</div>
                             <div class="info-value"><?= $pengiriman['header']['warehouse_name'] ?></div>
                         </div>
-                        <div class="info-row">
+                        <!-- <div class="info-row">
                             <div class="info-label">No. Referensi:</div>
                             <div class="info-value"><?= $pengiriman['header']['stockout_invoice'] ?? '-' ?></div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="info-box">

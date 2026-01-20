@@ -251,7 +251,7 @@ class Pengiriman extends MY_Controller
             $post_data = data_login_user([
                 'stockout_date' => $this->input->post('stockout_date'),
                 'stockout_code' => $this->input->post('stockout_code'),
-                'stockout_invoice' => $this->input->post('stockout_invoice') ?: '-',
+                // 'stockout_invoice' => $this->input->post('stockout_invoice') ?: '-',
                 'stockout_note' => $this->input->post('stockout_note'),
                 'from_warehouse_id' => $from_warehouse_id,
                 'to_status' => $this->input->post('to_status'),
@@ -316,7 +316,7 @@ class Pengiriman extends MY_Controller
                 $form_data = [
                     'stockout_date' => $this->input->post('stockout_date'),
                     'stockout_code' => $this->input->post('stockout_code'),
-                    'stockout_invoice' => $this->input->post('stockout_invoice'),
+                    // 'stockout_invoice' => $this->input->post('stockout_invoice'),
                     'stockout_note' => $this->input->post('stockout_note'),
                     'to_status' => $to_status,
                     'to_id' => $this->input->post($to_id_field),
@@ -481,7 +481,7 @@ class Pengiriman extends MY_Controller
             $post_data = data_login_user([
                 'stockout_id' => $id,
                 'stockout_date' => $this->input->post('stockout_date'),
-                'stockout_invoice' => $this->input->post('stockout_invoice') ?: '-',
+                // 'stockout_invoice' => $this->input->post('stockout_invoice') ?: '-',
                 'stockout_note' => $this->input->post('stockout_note'),
                 'from_warehouse_id' => $from_warehouse_id,
                 'to_status' => $this->input->post('to_status'),

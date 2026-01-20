@@ -43,10 +43,10 @@ if ($pengiriman['header']['to_status'] == '3')
                             <th>Dari Gudang</th>
                             <td><?= $pengiriman['header']['warehouse_name'] ?></td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <th>Referensi</th>
                             <td><?= $pengiriman['header']['stockout_invoice'] ?? '-' ?></td>
-                        </tr>
+                        </tr> -->
                     </table>
                 </div>
                 <div class="col-md-6">

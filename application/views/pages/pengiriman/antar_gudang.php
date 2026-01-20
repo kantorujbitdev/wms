@@ -27,7 +27,7 @@
                             <th>Tanggal</th>
                             <th>Dari Gudang</th>
                             <th>Ke Gudang</th>
-                            <th>Referensi</th>
+                            <!-- <th>Referensi</th> -->
                             <th>Keterangan</th>
                             <th>Dibuat Oleh</th>
                             <th>Aksi</th>
@@ -44,7 +44,7 @@
                                 <td><?= $pengiriman['warehouse_name'] ?></td>
                                 <td><?= $pengiriman['to_name'] ? $pengiriman['to_name'] : ($pengiriman['to_id'] ?? '-') ?>
                                 </td>
-                                <td>-</td> <!-- stockout_invoice tidak ada -->
+                                <!-- <td>-</td> stockout_invoice tidak ada -->
                                 <td><?= $pengiriman['stockout_note'] ?: '-' ?></td>
                                 <td><?= $pengiriman['user_name'] ?></td>
                                 <td>
