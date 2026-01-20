@@ -70,6 +70,12 @@ class Api_model extends CI_Model
         return api_request('POST', 'login', $data);
     }
 
+    // ---- Stock Movement ----
+    public function get_card_stok($data)
+    {
+        return api_request('GET', 'Card Stock', $data);
+    }
+
     // ---- Barang ----
     public function get_barang($data)
     {

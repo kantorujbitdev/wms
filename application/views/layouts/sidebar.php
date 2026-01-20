@@ -235,6 +235,16 @@
                         </li>
                     <?php endif; ?>
 
+                    <?php if (can_access_menu('laporan')): ?>
+                        <li>
+                            <a href="<?= site_url('laporan/stok_card'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_stok_card') ? 'active' : ''; ?>">
+                                <i class="<?= get_menu_icon('laporan_stok_card'); ?> me-2"></i>
+                                <span>Laporan Stok Card</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <!-- <?php if (can_access_menu('laporan')): ?>
                         <li>
                             <a href="<?= site_url('laporan/keluar'); ?>"

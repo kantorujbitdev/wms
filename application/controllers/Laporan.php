@@ -223,6 +223,78 @@ class Laporan extends MY_Controller
         // Render view
         $this->render_view('pages/laporan/stok');
     }
+    public function stok_card()
+    {
+        $this->check_permission('laporan', 'view');
+        // Set title
+        $this->data['title'] = 'Stok Card';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_stok_card';
+
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+
+        // Get filter parameters
+        $filter_warehouse = $this->input->get('warehouse_id');
+        $filter_product = $this->input->get('product_id');
+        $filter_category = $this->input->get('category_id');
+        $filter_status = $this->input->get('status'); // stok_normal, stok_menipis, stok_kosong
+
+        // Get warehouses for filter (superadmin can see all)
+        if ($user_role == 'superadmin') {
+            $warehouse_response = $this->Api_model->get_all_gudang($data);
+        } else {
+            $warehouse_response = $this->Api_model->get_gudang($data);
+        }
+        $this->data['warehouses'] = $this->handle_response($warehouse_response);
+
+        // Get all products for filter
+        $products_response = $this->Api_model->get_barang($data);
+        $this->data['products'] = $this->handle_response($products_response);
+
+        // Get product categories for filter
+        $categories_response = $this->Api_model->get_product_type($data);
+        $this->data['categories'] = $this->handle_response($categories_response);
+        // Prepare filter data for API
+        $filter_data = $data;
+
+        // Apply warehouse filter
+        if ($filter_warehouse) {
+            $filter_data['warehouse_id'] = $filter_warehouse;
+        } elseif ($warehouse_id && $user_role != 'superadmin') {
+            // Non-superadmin default to their warehouse
+            $filter_data['warehouse_id'] = $warehouse_id;
+        }
+
+        // Apply product filter
+        if ($filter_product) {
+            $filter_data['product_id'] = $filter_product;
+        }
+
+        // Apply category filter
+        if ($filter_category) {
+            $filter_data['category_id'] = $filter_category;
+        }
+
+        // Get stock data from API
+        $stok_response = $this->Api_model->get_card_stok($filter_data);
+        $stocks = $this->handle_response($stok_response);
+
+        $this->data['stoks'] = $stocks;
+
+        // Pass filter values back to view
+        $this->data['filter_warehouse_id'] = $filter_warehouse;
+        $this->data['filter_product_id'] = $filter_product;
+        $this->data['filter_category_id'] = $filter_category;
+        $this->data['filter_status'] = $filter_status;
+        $this->data['user_role'] = $user_role;
+        $this->data['user_warehouse_id'] = $warehouse_id;
+        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+
+        // Render view
+        $this->render_view('pages/laporan/stok');
+    }
 
     public function export_stok()
     {
@@ -483,7 +555,7 @@ class Laporan extends MY_Controller
 
             // =================== FOOTER ===================
             $footer_row = $stats_row + 3;
-            $sheet->setCellValue('A' . $footer_row, 'Dibuat oleh:');
+            $sheet->setCellValue('A' . $footer_row, 'Diexport oleh:');
             $sheet->getStyle('A' . $footer_row)->getFont()->setItalic(true);
 
             $sheet->setCellValue('B' . $footer_row, $this->session->userdata('name') ?: 'System');
