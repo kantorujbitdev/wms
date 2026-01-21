@@ -143,6 +143,7 @@ class Penerimaan extends MY_Controller
 
         $this->render_view('pages/penerimaan/antar_gudang');
     }
+
     public function add_antar_gudang()
     {
         $this->check_permission('penerimaan_antar_gudang', 'edit');
@@ -162,6 +163,11 @@ class Penerimaan extends MY_Controller
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data_login);
         }
+
+        // Get list of pengiriman (stockout) for dropdown
+        $list_pengiriman_response = $this->Api_model->get_list_pengiriman(data_login_user(['from_status' => 3, 'transfer_status' => 1]));
+        $this->data['list_pengiriman'] = $this->handle_response($list_pengiriman_response);
+
         $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get user's warehouse info for display
@@ -169,16 +175,84 @@ class Penerimaan extends MY_Controller
         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
         $this->data['user_role'] = $user_role;
 
+        // Get products data (will be populated via API later)
         $products_response = $this->Api_model->get_barang($data_login);
         $this->data['products'] = $this->handle_response($products_response);
 
+        $this->data['filter_stockout_id'] = $this->input->get('filter_stockout_id') ?? '';
         $this->data['from_status'] = '3';
         $this->data['form_type'] = 'antar_gudang';
 
         // Ambil data form dari session jika ada (setelah error)
         $this->data['old_form_data'] = $this->session->flashdata('form_data_3');
 
+        // Generate stockin code
+        $this->generate_stockin_code();
+
         $this->render_view('pages/penerimaan/form_antar_gudang');
+    }
+
+    private function generate_stockin_code()
+    {
+        $romanMonth = monthToRoman(date('m'));
+        $default_warehouse_code = 'WH';
+
+        if ($this->data['user_role'] != 'superadmin' && isset($this->data['user_warehouse_id'])) {
+            foreach ($this->data['warehouses'] as $wh) {
+                if ($wh['warehouse_id'] == $this->data['user_warehouse_id']) {
+                    $default_warehouse_code = $wh['warehouse_code'];
+                    break;
+                }
+            }
+        }
+
+        $this->data['stockin_code'] = 'TI/' . $default_warehouse_code . '/' . $romanMonth . '/' . date('Y');
+
+        if (isset($this->data['old_form_data']['stockin_code'])) {
+            $this->data['stockin_code'] = $this->data['old_form_data']['stockin_code'];
+        }
+    }
+
+    public function get_pengiriman_detail()
+    {
+        $this->check_permission('penerimaan_antar_gudang', 'view');
+
+        $stockout_id = $this->input->post('stockout_id');
+        $data_login = data_login_user();
+
+        if (!$stockout_id) {
+            echo json_encode(['success' => false, 'message' => 'Stockout ID is required']);
+            return;
+        }
+
+        // Add stockout_id to request data
+        $request_data = data_login_user(['stockout_id' => $stockout_id]);
+
+        // Get pengiriman detail from API
+        $response = $this->Api_model->get_list_pengiriman_details($request_data);
+
+        // Debug log (optional)
+        // error_log('API Response: ' . json_encode($response));
+
+        if ($response) {
+            // Response langsung berisi header dan detail, bukan di dalam data
+            $api_data = $response; // Response sudah langsung berisi header dan detail
+
+            echo json_encode([
+                'success' => true,
+                'header' => isset($api_data['header']) ? $api_data['header'] : [],
+                'detail' => isset($api_data['detail']) ? $api_data['detail'] : []
+            ]);
+        } else {
+            $error_message = isset($response['message']) ? $response['message'] : 'Failed to get pengiriman details';
+            if (isset($response['error'])) {
+                $error_message = $response['error'];
+            }
+            echo json_encode([
+                'success' => false,
+                'message' => $error_message
+            ]);
+        }
     }
 
     // ==================== CREATE PENERIMAAN ====================

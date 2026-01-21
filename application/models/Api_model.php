@@ -37,6 +37,16 @@ class Api_model extends CI_Model
         return api_request('GET', 'edit penerimaan', $data);
     }
 
+    public function get_list_pengiriman($data)
+    {
+        return api_request('GET', 'List Kode Pengiriman', $data);
+    }
+
+    public function get_list_pengiriman_details($data)
+    {
+        return api_request('GET', 'Pengiriman Details', $data);
+    }
+
     public function get_pengiriman($data)
     {
         return api_request('GET', 'pengiriman', $data);
