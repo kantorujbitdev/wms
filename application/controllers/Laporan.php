@@ -17,140 +17,6 @@ class Laporan extends MY_Controller
         $this->check_permission('laporan', 'view');
     }
 
-    public function export_stok_simple()
-    {
-        $this->check_permission('laporan', 'export');
-
-        $user_role = $this->session->userdata('role');
-        $warehouse_id = $this->session->userdata('warehouse_id');
-        $data = data_login_user();
-
-        // Get filter parameters
-        $filter_warehouse = $this->input->get('warehouse_id');
-        $filter_product = $this->input->get('product_id');
-        $filter_category = $this->input->get('category_id');
-        $filter_status = $this->input->get('status');
-
-        // Prepare filter data
-        $filter_data = $data;
-
-        if ($filter_warehouse) {
-            $filter_data['warehouse_id'] = $filter_warehouse;
-        } elseif ($warehouse_id && $user_role != 'superadmin') {
-            $filter_data['warehouse_id'] = $warehouse_id;
-        }
-
-        if ($filter_product) {
-            $filter_data['product_id'] = $filter_product;
-        }
-
-        if ($filter_category) {
-            $filter_data['category_id'] = $filter_category;
-        }
-
-        // Get stock report from API
-        $response = $this->Api_model->get_stock_all($filter_data);
-
-        if ($response['success'] && !empty($response['data'])) {
-            // Create new Spreadsheet
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-
-            // Set title
-            $sheet->setCellValue('A1', 'Laporan Stok Barang');
-            $sheet->mergeCells('A1:K1');
-            $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-
-            // Set headers
-            $headers = [
-                'No',
-                'Kode Barang',
-                'Nama Barang',
-                'Kategori',
-                'Satuan',
-                'Stok Tersedia',
-                'Stok Minimum',
-                'Gudang',
-                'Lokasi',
-                'Status',
-                'Keterangan'
-            ];
-
-            $sheet->fromArray($headers, NULL, 'A3');
-
-            // Style headers
-            $headerStyle = [
-                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4F81BD']],
-                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
-            ];
-            $sheet->getStyle('A3:K3')->applyFromArray($headerStyle);
-
-            // Fill data
-            $row = 4;
-            $no = 1;
-            $total_stock = 0;
-
-            foreach ($response['data'] as $item) {
-                $min_stock = isset($item['min_stock']) ? (float) $item['min_stock'] : 0;
-                $current_stock = isset($item['current_stock']) ? (float) $item['current_stock'] : 0;
-                $total_stock += $current_stock;
-
-                // Determine status
-                $status = 'Normal';
-                if ($current_stock <= 0) {
-                    $status = 'Kosong';
-                } elseif ($current_stock <= $min_stock) {
-                    $status = 'Menipis';
-                }
-
-                $sheet->setCellValue('A' . $row, $no);
-                $sheet->setCellValue('B' . $row, $item['product_code'] ?? '');
-                $sheet->setCellValue('C' . $row, $item['product_name'] ?? '');
-                $sheet->setCellValue('D' . $row, $item['product_type_name'] ?? '-');
-                $sheet->setCellValue('E' . $row, $item['unit_name'] ?? '');
-                $sheet->setCellValue('F' . $row, $current_stock);
-                $sheet->setCellValue('G' . $row, $min_stock);
-                $sheet->setCellValue('H' . $row, $item['warehouse_name'] ?? '-');
-                $sheet->setCellValue('I' . $row, $item['location'] ?? '-');
-                $sheet->setCellValue('J' . $row, $status);
-                $sheet->setCellValue('K' . $row, $item['product_note'] ?? '-');
-
-                // Number format
-                $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
-                $sheet->getStyle('G' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
-
-                $row++;
-                $no++;
-            }
-
-            // Add summary
-            $sheet->setCellValue('E' . $row, 'TOTAL STOK:');
-            $sheet->getStyle('E' . $row)->getFont()->setBold(true);
-            $sheet->setCellValue('F' . $row, $total_stock);
-            $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode('#,##0.00');
-            $sheet->getStyle('F' . $row)->getFont()->setBold(true);
-
-            // Auto size columns
-            foreach (range('A', 'K') as $columnID) {
-                $sheet->getColumnDimension($columnID)->setAutoSize(true);
-            }
-
-            // Set headers for download
-            $filename = 'laporan_stok_' . date('Ymd_His') . '.xlsx';
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename="' . $filename . '"');
-            header('Cache-Control: max-age=0');
-
-            $writer = new Xlsx($spreadsheet);
-            $writer->save('php://output');
-            exit;
-
-        } else {
-            $this->session->set_flashdata('error', 'Tidak ada data stok untuk diekspor!');
-            redirect('laporan/stok');
-        }
-    }
     public function stok()
     {
         $this->check_permission('laporan', 'view');
@@ -223,11 +89,12 @@ class Laporan extends MY_Controller
         // Render view
         $this->render_view('pages/laporan/stok');
     }
+
     public function stok_card()
     {
         $this->check_permission('laporan', 'view');
         // Set title
-        $this->data['title'] = 'Stok Card';
+        $this->data['title'] = 'Stock Card';
         $this->data['active_menu'] = 'laporan';
         $this->data['active_submenu'] = 'laporan_stok_card';
 
@@ -237,9 +104,9 @@ class Laporan extends MY_Controller
 
         // Get filter parameters
         $filter_warehouse = $this->input->get('warehouse_id');
-        $filter_product = $this->input->get('product_id');
-        $filter_category = $this->input->get('category_id');
-        $filter_status = $this->input->get('status'); // stok_normal, stok_menipis, stok_kosong
+        $filter_product = $this->input->get('stock_id');
+        $filter_date_start = $this->input->get('date_start');
+        $filter_date_end = $this->input->get('date_end');
 
         // Get warehouses for filter (superadmin can see all)
         if ($user_role == 'superadmin') {
@@ -250,16 +117,13 @@ class Laporan extends MY_Controller
         $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get all products for filter
-        $products_response = $this->Api_model->get_barang($data);
+        $products_response = $this->Api_model->get_stock_all($data);
         $this->data['products'] = $this->handle_response($products_response);
 
-        // Get product categories for filter
-        $categories_response = $this->Api_model->get_product_type($data);
-        $this->data['categories'] = $this->handle_response($categories_response);
         // Prepare filter data for API
         $filter_data = $data;
 
-        // Apply warehouse filter
+        // Apply filters
         if ($filter_warehouse) {
             $filter_data['warehouse_id'] = $filter_warehouse;
         } elseif ($warehouse_id && $user_role != 'superadmin') {
@@ -267,34 +131,200 @@ class Laporan extends MY_Controller
             $filter_data['warehouse_id'] = $warehouse_id;
         }
 
-        // Apply product filter
         if ($filter_product) {
-            $filter_data['product_id'] = $filter_product;
+            $filter_data['stock_id'] = $filter_product;
         }
 
-        // Apply category filter
-        if ($filter_category) {
-            $filter_data['category_id'] = $filter_category;
+        if ($filter_date_start) {
+            $filter_data['date_start'] = $filter_date_start;
+        } else {
+            // Default: start of current month
+            $filter_data['date_start'] = date('Y-m-01');
         }
 
-        // Get stock data from API
-        $stok_response = $this->Api_model->get_card_stok($filter_data);
-        $stocks = $this->handle_response($stok_response);
+        if ($filter_date_end) {
+            $filter_data['date_end'] = $filter_date_end;
+        } else {
+            // Default: current date
+            $filter_data['date_end'] = date('Y-m-d');
+        }
 
-        $this->data['stoks'] = $stocks;
+        // Get stock card data from API
+        $stock_card_response = $this->Api_model->get_card_stok($filter_data);
+        $stock_cards = [];
+
+        if (isset($stock_card_response['success']) && $stock_card_response['success']) {
+            $stock_cards = $stock_card_response['data'];
+        }
+
+        $this->data['stock_cards'] = $stock_cards;
 
         // Pass filter values back to view
         $this->data['filter_warehouse_id'] = $filter_warehouse;
-        $this->data['filter_product_id'] = $filter_product;
-        $this->data['filter_category_id'] = $filter_category;
-        $this->data['filter_status'] = $filter_status;
+        $this->data['filter_stock_id'] = $filter_product;
+        $this->data['filter_date_start'] = $filter_date_start;
+        $this->data['filter_date_end'] = $filter_date_end;
         $this->data['user_role'] = $user_role;
         $this->data['user_warehouse_id'] = $warehouse_id;
         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
 
         // Render view
-        $this->render_view('pages/laporan/stok');
+        $this->render_view('pages/laporan/stok_card');
     }
+
+    public function export_stok_card()
+    {
+        $this->check_permission('laporan', 'export');
+
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+        $data = data_login_user();
+
+        // Get filter parameters
+        $filter_warehouse = $this->input->get('warehouse_id');
+        $filter_product = $this->input->get('stock_id');
+        $filter_date_start = $this->input->get('date_start');
+        $filter_date_end = $this->input->get('date_end');
+
+        // Prepare filter data for API
+        $filter_data = $data;
+
+        // Apply filters
+        if ($filter_warehouse) {
+            $filter_data['warehouse_id'] = $filter_warehouse;
+        } elseif ($warehouse_id && $user_role != 'superadmin') {
+            $filter_data['warehouse_id'] = $warehouse_id;
+        }
+
+        if ($filter_product) {
+            $filter_data['stock_id'] = $filter_product;
+        }
+
+        if ($filter_date_start) {
+            $filter_data['date_start'] = $filter_date_start;
+        } else {
+            $filter_data['date_start'] = date('Y-m-01');
+        }
+
+        if ($filter_date_end) {
+            $filter_data['date_end'] = $filter_date_end;
+        } else {
+            $filter_data['date_end'] = date('Y-m-d');
+        }
+
+        // Get stock card data from API
+        $response = $this->Api_model->get_card_stok($filter_data);
+
+        if ($response['success'] && !empty($response['data'])) {
+            // Create new Spreadsheet
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set title
+            $sheet->setCellValue('A1', 'STOCK CARD REPORT');
+            $sheet->mergeCells('A1:P1');
+            $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+            $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Set period info
+            $sheet->setCellValue('A2', 'Periode: ' . $filter_data['date_start'] . ' s/d ' . $filter_data['date_end']);
+            $sheet->mergeCells('A2:P2');
+            $sheet->getStyle('A2')->getFont()->setBold(true)->setSize(12);
+            $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Set headers
+            $headers = [
+                'No',
+                'Tanggal',
+                'No. Referensi',
+                'Keterangan',
+                'Tipe',
+                'Gudang',
+                'Kode Barang',
+                'Nama Barang',
+                'Qty',
+                'Stok Awal',
+                'Stok Akhir',
+                'Status',
+                'Status ID',
+                'User',
+                'Status Gudang',
+                'Tipe Name'
+            ];
+
+            $sheet->fromArray($headers, NULL, 'A4');
+
+            // Style headers
+            $headerStyle = [
+                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4F81BD']],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ]
+            ];
+            $sheet->getStyle('A4:P4')->applyFromArray($headerStyle);
+
+            // Fill data
+            $row = 5;
+            $no = 1;
+
+            foreach ($response['data'] as $item) {
+                $sheet->setCellValue('A' . $row, $no);
+                $sheet->setCellValue('B' . $row, $item['movement_date'] ?? '');
+                $sheet->setCellValue('C' . $row, $item['movement_refno'] ?? '');
+                $sheet->setCellValue('D' . $row, $item['movement_note'] ?? '');
+                $sheet->setCellValue('E' . $row, $item['movement_type'] ?? '');
+                $sheet->setCellValue('F' . $row, $item['warehouse_name'] ?? '');
+                $sheet->setCellValue('G' . $row, $item['product_code'] ?? '');
+                $sheet->setCellValue('H' . $row, $item['product_name'] ?? '');
+                $sheet->setCellValue('I' . $row, $item['qty'] ?? '0');
+                $sheet->setCellValue('J' . $row, $item['begin_stock'] ?? '0');
+                $sheet->setCellValue('K' . $row, $item['last_stock'] ?? '0');
+                $sheet->setCellValue('L' . $row, $item['movement_status'] ?? '');
+                $sheet->setCellValue('M' . $row, $item['movement_status_id'] ?? '');
+                $sheet->setCellValue('N' . $row, $item['user_name'] ?? '');
+                $sheet->setCellValue('O' . $row, $item['warehouse_status_name'] ?? '');
+                $sheet->setCellValue('P' . $row, $item['movement_type_name'] ?? '');
+
+                // Apply borders to data rows
+                $sheet->getStyle('A' . $row . ':P' . $row)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ],
+                    ]
+                ]);
+
+                $row++;
+                $no++;
+            }
+
+            // Auto size columns
+            foreach (range('A', 'P') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+
+            // Set headers for download
+            $filename = 'stock_card_' . date('Ymd_His') . '.xlsx';
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+            exit;
+
+        } else {
+            $this->session->set_flashdata('error', 'Tidak ada data stock card untuk diekspor!');
+            redirect('laporan/stok_card');
+        }
+    }
+
 
     public function export_stok()
     {
@@ -652,7 +682,6 @@ class Laporan extends MY_Controller
         ];
         return $statuses[$status] ?? 'Semua Status';
     }
-
 
     public function masuk()
     {
@@ -1264,7 +1293,6 @@ class Laporan extends MY_Controller
             redirect('laporan/keluar');
         }
     }
-
     public function transaksi()
     {
         $this->check_permission('laporan', 'view');
