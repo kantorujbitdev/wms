@@ -415,13 +415,13 @@ class Laporan extends MY_Controller
 
             // =================== TITLE AND HEADER ===================
             $sheet->setCellValue('A1', 'LAPORAN STOK BARANG');
-            $sheet->mergeCells('A1:J1');
+            $sheet->mergeCells('A1:I1');
             $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
             $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Company/System Info
             $sheet->setCellValue('A2', 'Sistem Warehouse Management');
-            $sheet->mergeCells('A2:J2');
+            $sheet->mergeCells('A2:I2');
             $sheet->getStyle('A2')->getFont()->setSize(11);
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -460,6 +460,8 @@ class Laporan extends MY_Controller
 
             // =================== TABLE HEADER ===================
             $header_row = max($row + 6, 10);
+
+            // Header sesuai dengan view (9 kolom)
             $headers = [
                 'No',
                 'Kode Barang',
@@ -468,7 +470,6 @@ class Laporan extends MY_Controller
                 'Satuan',
                 'Stok Tersedia',
                 'Gudang',
-                'Lokasi',
                 'Status',
                 'Keterangan'
             ];
@@ -500,80 +501,102 @@ class Laporan extends MY_Controller
             $total_stock = 0;
 
             foreach ($response['data'] as $item) {
-                $min_stock = 10;
+                $min_stock = 0; // Sesuai dengan view yang menggunakan $min_stock = 0
                 $current_stock = isset($item['current_stock']) ? (float) $item['current_stock'] : 0;
                 $total_stock += $current_stock;
 
-                // Determine status
+                // Determine status sesuai dengan view
                 $status = 'Normal';
-                $status_color = '92D050'; // Green
+                $status_class = 'success';
                 if ($current_stock <= 0) {
                     $status = 'Kosong';
-                    $status_color = 'FF0000'; // Red
+                    $status_class = 'danger';
                 } elseif ($current_stock <= $min_stock) {
                     $status = 'Menipis';
-                    $status_color = 'FFC000'; // Orange
+                    $status_class = 'warning';
                 }
 
-                // Fill data
+                // Fill data sesuai dengan urutan view
                 $sheet->setCellValue('A' . $data_row, $no);
                 $sheet->setCellValue('B' . $data_row, $item['product_code'] ?? '');
                 $sheet->setCellValue('C' . $data_row, $item['product_name'] ?? '');
-                $sheet->setCellValue('D' . $data_row, $item['product_type_name'] ?? '-');
-                $sheet->setCellValue('E' . $data_row, $item['unit_name'] ?? '');
+                $sheet->setCellValue('D' . $data_row, $item['type_name'] ?? ($item['product_type_name'] ?? '-'));
+                $sheet->setCellValue('E' . $data_row, $item['unit_code'] ?? ($item['unit_name'] ?? ''));
                 $sheet->setCellValue('F' . $data_row, $current_stock);
                 $sheet->setCellValue('G' . $data_row, $item['warehouse_name'] ?? '-');
-                $sheet->setCellValue('H' . $data_row, $item['location'] ?? '-');
-                $sheet->setCellValue('I' . $data_row, $status);
-                $sheet->setCellValue('J' . $data_row, $item['product_note'] ?? '-');
+                $sheet->setCellValue('H' . $data_row, $status);
+                $sheet->setCellValue('I' . $data_row, $item['product_note'] ?? '-');
 
-                // Number format for stock columns
+                // Number format for stock column
                 $sheet->getStyle('F' . $data_row)->getNumberFormat()->setFormatCode('#,##0.00');
-                // $sheet->getStyle('G' . $data_row)->getNumberFormat()->setFormatCode('#,##0.00');
 
-                // Style status cell
-                $sheet->getStyle('I' . $data_row)
+                // Apply styling untuk status berdasarkan warna
+                $status_color = '92D050'; // Green default (Normal)
+                if ($status_class == 'danger') {
+                    $status_color = 'FF0000'; // Red (Kosong)
+                } elseif ($status_class == 'warning') {
+                    $status_color = 'FFC000'; // Orange (Menipis)
+                }
+
+                $sheet->getStyle('H' . $data_row)
                     ->getFill()->setFillType(Fill::FILL_SOLID)
                     ->getStartColor()->setRGB($status_color);
-                $sheet->getStyle('I' . $data_row)
+                $sheet->getStyle('H' . $data_row)
                     ->getFont()->getColor()->setRGB('FFFFFF');
-                $sheet->getStyle('I' . $data_row)
+                $sheet->getStyle('H' . $data_row)
                     ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
+                // Warna teks untuk stok yang rendah
+                if ($current_stock <= $min_stock) {
+                    $sheet->getStyle('F' . $data_row)
+                        ->getFont()->setBold(true);
+                    if ($status_class == 'danger') {
+                        $sheet->getStyle('F' . $data_row)->getFont()->getColor()->setRGB('FF0000');
+                    } elseif ($status_class == 'warning') {
+                        $sheet->getStyle('F' . $data_row)->getFont()->getColor()->setRGB('FF9900');
+                    }
+                }
+
                 // Add borders to all cells
-                $sheet->getStyle('A' . $data_row . ':J' . $data_row)
+                $sheet->getStyle('A' . $data_row . ':I' . $data_row)
                     ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-                // Highlight low stock
-                if ($current_stock <= $min_stock && $current_stock >= 0) {
-                    $sheet->getStyle('F' . $data_row)
-                        ->getFont()->setBold(true)->getColor()->setRGB('FF0000');
-                }
+                // Alignment untuk kolom tertentu
+                $sheet->getStyle('A' . $data_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER); // No
+                $sheet->getStyle('F' . $data_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT); // Stok Tersedia
 
                 $data_row++;
                 $no++;
             }
 
-            // =================== SUMMARY ===================
-            $summary_row = $data_row + 2;
+            // =================== FOOTER TOTAL ===================
+            $footer_row = $data_row + 1;
 
-            $sheet->setCellValue('E' . $summary_row, 'TOTAL STOK:');
-            $sheet->getStyle('E' . $summary_row)
-                ->getFont()->setBold(true)->setSize(11);
-            $sheet->getStyle('E' . $summary_row)
+            // "Total:" di kolom E (colspan dari A-E sesuai view)
+            $sheet->setCellValue('E' . $footer_row, 'Total:');
+            $sheet->getStyle('E' . $footer_row)
+                ->getFont()->setBold(true);
+            $sheet->getStyle('E' . $footer_row)
                 ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-            $sheet->setCellValue('F' . $summary_row, $total_stock);
-            $sheet->getStyle('F' . $summary_row)
+            // Total stok di kolom F
+            $sheet->setCellValue('F' . $footer_row, $total_stock);
+            $sheet->getStyle('F' . $footer_row)
                 ->getNumberFormat()->setFormatCode('#,##0.00');
-            $sheet->getStyle('F' . $summary_row)
-                ->getFont()->setBold(true)->setSize(11);
-            $sheet->getStyle('F' . $summary_row)
+            $sheet->getStyle('F' . $footer_row)
+                ->getFont()->setBold(true);
+            $sheet->getStyle('F' . $footer_row)
                 ->getFill()->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB('E2EFDA');
+            $sheet->getStyle('F' . $footer_row)
+                ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            // Add borders untuk footer
+            $sheet->getStyle('E' . $footer_row . ':F' . $footer_row)
+                ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             // =================== STATISTICS ===================
-            $stats_row = $summary_row + 2;
+            $stats_row = $footer_row + 3;
             $sheet->setCellValue('A' . $stats_row, 'STATISTIK STOK');
             $sheet->mergeCells('A' . $stats_row . ':C' . $stats_row);
             $sheet->getStyle('A' . $stats_row)
@@ -587,7 +610,7 @@ class Laporan extends MY_Controller
             $stok_kosong = 0;
 
             foreach ($response['data'] as $item) {
-                $min_stock = 10;
+                $min_stock = 0;
                 $current_stock = isset($item['current_stock']) ? (float) $item['current_stock'] : 0;
 
                 if ($current_stock <= 0) {
@@ -619,20 +642,20 @@ class Laporan extends MY_Controller
             $sheet->getStyle('A' . $stats_row)->getFont()->setBold(true);
             $sheet->getStyle('B' . $stats_row)->getFont()->setBold(true);
 
-            // =================== FOOTER ===================
-            $footer_row = $stats_row + 3;
-            $sheet->setCellValue('A' . $footer_row, 'Diexport oleh:');
-            $sheet->getStyle('A' . $footer_row)->getFont()->setItalic(true);
+            // =================== FOOTER USER INFO ===================
+            $user_row = $stats_row + 3;
+            $sheet->setCellValue('A' . $user_row, 'Diexport oleh:');
+            $sheet->getStyle('A' . $user_row)->getFont()->setItalic(true);
 
-            $sheet->setCellValue('B' . $footer_row, $this->session->userdata('name') ?: 'System');
-            $sheet->getStyle('B' . $footer_row)->getFont()->setBold(true);
+            $sheet->setCellValue('B' . $user_row, $this->session->userdata('name') ?: 'System');
+            $sheet->getStyle('B' . $user_row)->getFont()->setBold(true);
 
-            $footer_row++;
-            $sheet->setCellValue('A' . $footer_row, 'Jabatan:');
-            $sheet->getStyle('A' . $footer_row)->getFont()->setItalic(true);
+            $user_row++;
+            $sheet->setCellValue('A' . $user_row, 'Lever:');
+            $sheet->getStyle('A' . $user_row)->getFont()->setItalic(true);
 
-            $sheet->setCellValue('B' . $footer_row, $this->session->userdata('role') ?: 'User');
-            $sheet->getStyle('B' . $footer_row)->getFont()->setBold(true);
+            $sheet->setCellValue('B' . $user_row, $this->session->userdata('role') ?: 'User');
+            $sheet->getStyle('B' . $user_row)->getFont()->setBold(true);
 
             // =================== SET COLUMN WIDTHS ===================
             $sheet->getColumnDimension('A')->setWidth(8);  // No
@@ -642,12 +665,11 @@ class Laporan extends MY_Controller
             $sheet->getColumnDimension('E')->setWidth(10); // Satuan
             $sheet->getColumnDimension('F')->setWidth(15); // Stok Tersedia
             $sheet->getColumnDimension('G')->setWidth(25); // Gudang
-            $sheet->getColumnDimension('H')->setWidth(15); // Lokasi
-            $sheet->getColumnDimension('I')->setWidth(12); // Status
-            $sheet->getColumnDimension('J')->setWidth(30); // Keterangan
+            $sheet->getColumnDimension('H')->setWidth(12); // Status
+            $sheet->getColumnDimension('I')->setWidth(30); // Keterangan
 
             // Set auto filter
-            $sheet->setAutoFilter('A' . $header_row . ':J' . ($data_row - 1));
+            $sheet->setAutoFilter('A' . $header_row . ':I' . ($data_row - 1));
 
             // =================== OUTPUT ===================
             $filename = 'Laporan_Stok_' . date('Ymd_His') . '.xlsx';
@@ -656,14 +678,11 @@ class Laporan extends MY_Controller
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             header('Content-Disposition: attachment;filename="' . $filename . '"');
             header('Cache-Control: max-age=0');
-            // If you're serving to IE 9, then the following may be needed
             header('Cache-Control: max-age=1');
-
-            // If you're serving to IE over SSL, then the following may be needed
-            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-            header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-            header('Pragma: public'); // HTTP/1.0
+            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+            header('Cache-Control: cache, must-revalidate');
+            header('Pragma: public');
 
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');

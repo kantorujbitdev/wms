@@ -134,6 +134,7 @@ if (!function_exists('get_menu_icon')) {
             'penggunaan' => 'fas fa-users',
             'laporan' => 'fas fa-chart-bar',
             'laporan_stok' => 'fas fa-boxes',
+            'laporan_stok_card' => 'fas fa-clipboard-list',
             'laporan_keluar' => 'fas fa-arrow-up-right-from-square',
             'laporan_masuk' => 'fas fa-inbox',
             'laporan_transaksi' => 'fas fa-receipt',
