@@ -122,7 +122,7 @@
                                 <th>Qty</th>
                                 <th>Stok<br>Awal</th>
                                 <th>Stok<br>Akhir</th>
-                                <th>User</th>
+                                <!-- <th>User</th> -->
                                 <th>Ket</th>
                             </tr>
                         </thead>
@@ -172,7 +172,7 @@
                                         <strong><?= $card['last_stock']; ?></strong>
                                     </td>
 
-                                    <td><?= $card['user_name']; ?></td>
+                                    <!-- <td><?= $card['user_name']; ?></td> -->
                                     <td><?= $card['movement_note']; ?></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -183,7 +183,7 @@
                                 <td colspan="7" class="text-right">
                                     <strong>Total Transaksi:</strong>
                                 </td>
-                                <td colspan="5" class="text-center">
+                                <td colspan="4" class="text-center">
                                     <strong><?= count($stock_cards); ?></strong>
                                 </td>
                             </tr>
