@@ -79,7 +79,7 @@ $session_warehouse_id = $this->session->userdata('warehouse_id');
             placeholder: '-- Pilih Produk --',
             allowClear: true,
             width: '100%',
-            minimumInputLength: 3, // Minimal karakter untuk mulai mencari
+            minimumInputLength: 0, // Minimal karakter untuk mulai mencari
             language: {
                 noResults: function () {
                     return "Produk tidak ditemukan";
@@ -91,21 +91,3 @@ $session_warehouse_id = $this->session->userdata('warehouse_id');
         });
     });
 </script>
-
-<style>
-    /* Styling untuk Select2 */
-    .select2-container--default .select2-selection--single {
-        height: 38px;
-        padding: 5px;
-        border: 1px solid #ced4da;
-        border-radius: 0.375rem;
-    }
-
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 26px;
-    }
-
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px;
-    }
-</style>

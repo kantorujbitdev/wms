@@ -174,8 +174,6 @@ class Laporan extends MY_Controller
 
     public function export_stok_card()
     {
-        $this->check_permission('laporan', 'export');
-
         $user_role = $this->session->userdata('role');
         $warehouse_id = $this->session->userdata('warehouse_id');
         $data = data_login_user();
@@ -222,34 +220,30 @@ class Laporan extends MY_Controller
 
             // Set title
             $sheet->setCellValue('A1', 'STOCK CARD REPORT');
-            $sheet->mergeCells('A1:P1');
+            $sheet->mergeCells('A1:L1');
             $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
             $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Set period info
             $sheet->setCellValue('A2', 'Periode: ' . $filter_data['date_start'] . ' s/d ' . $filter_data['date_end']);
-            $sheet->mergeCells('A2:P2');
+            $sheet->mergeCells('A2:L2');
             $sheet->getStyle('A2')->getFont()->setBold(true)->setSize(12);
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-            // Set headers
+            // Set headers sesuai dengan view
             $headers = [
                 'No',
                 'Tanggal',
                 'No. Referensi',
-                'Keterangan',
-                'Tipe',
-                'Gudang',
+                'Dari',
+                'Ke',
                 'Kode Barang',
                 'Nama Barang',
                 'Qty',
                 'Stok Awal',
                 'Stok Akhir',
-                'Status',
-                'Status ID',
                 'User',
-                'Status Gudang',
-                'Tipe Name'
+                'Ket'
             ];
 
             $sheet->fromArray($headers, NULL, 'A4');
@@ -266,9 +260,9 @@ class Laporan extends MY_Controller
                     ],
                 ]
             ];
-            $sheet->getStyle('A4:P4')->applyFromArray($headerStyle);
+            $sheet->getStyle('A4:L4')->applyFromArray($headerStyle);
 
-            // Fill data
+            // Fill data sesuai dengan view
             $row = 5;
             $no = 1;
 
@@ -276,22 +270,41 @@ class Laporan extends MY_Controller
                 $sheet->setCellValue('A' . $row, $no);
                 $sheet->setCellValue('B' . $row, $item['movement_date'] ?? '');
                 $sheet->setCellValue('C' . $row, $item['movement_refno'] ?? '');
-                $sheet->setCellValue('D' . $row, $item['movement_note'] ?? '');
-                $sheet->setCellValue('E' . $row, $item['movement_type'] ?? '');
-                $sheet->setCellValue('F' . $row, $item['warehouse_name'] ?? '');
-                $sheet->setCellValue('G' . $row, $item['product_code'] ?? '');
-                $sheet->setCellValue('H' . $row, $item['product_name'] ?? '');
-                $sheet->setCellValue('I' . $row, $item['qty'] ?? '0');
-                $sheet->setCellValue('J' . $row, $item['begin_stock'] ?? '0');
-                $sheet->setCellValue('K' . $row, $item['last_stock'] ?? '0');
-                $sheet->setCellValue('L' . $row, $item['movement_status'] ?? '');
-                $sheet->setCellValue('M' . $row, $item['movement_status_id'] ?? '');
-                $sheet->setCellValue('N' . $row, $item['user_name'] ?? '');
-                $sheet->setCellValue('O' . $row, $item['warehouse_status_name'] ?? '');
-                $sheet->setCellValue('P' . $row, $item['movement_type_name'] ?? '');
+                $sheet->setCellValue('D' . $row, $item['warehouse_name'] ?? '');
+                $sheet->setCellValue('E' . $row, $item['warehouse_status_name'] ?? '');
+                $sheet->setCellValue('F' . $row, $item['product_code'] ?? '');
+                $sheet->setCellValue('G' . $row, $item['product_name'] ?? '');
+
+                // Format Qty dengan tanda + atau - berdasarkan movement_type
+                $qty_value = ($item['movement_type'] ?? '') == '1' ? '+' . ($item['qty'] ?? '0') : '-' . ($item['qty'] ?? '0');
+                $sheet->setCellValue('H' . $row, $qty_value);
+
+                $sheet->setCellValue('I' . $row, $item['begin_stock'] ?? '0');
+                $sheet->setCellValue('J' . $row, $item['last_stock'] ?? '0');
+                $sheet->setCellValue('K' . $row, $item['user_name'] ?? '');
+                $sheet->setCellValue('L' . $row, $item['movement_note'] ?? '');
+
+                // Apply styling untuk Qty berdasarkan movement_type
+                $qty_cell = 'H' . $row;
+                if (($item['movement_type'] ?? '') == '1') {
+                    // MASUK - warna hijau
+                    $sheet->getStyle($qty_cell)->getFont()->getColor()->setARGB('FF006400'); // Dark Green
+                } else {
+                    // KELUAR - warna merah
+                    $sheet->getStyle($qty_cell)->getFont()->getColor()->setARGB('FFFF0000'); // Red
+                }
+
+                // Center align untuk kolom tertentu
+                $center_align_columns = ['A', 'H', 'I', 'J'];
+                foreach ($center_align_columns as $col) {
+                    $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                }
+
+                // Bold untuk Stok Akhir
+                $sheet->getStyle('J' . $row)->getFont()->setBold(true);
 
                 // Apply borders to data rows
-                $sheet->getStyle('A' . $row . ':P' . $row)->applyFromArray([
+                $sheet->getStyle('A' . $row . ':L' . $row)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -304,10 +317,37 @@ class Laporan extends MY_Controller
                 $no++;
             }
 
+            // Tambahkan total transaksi di footer
+            $footer_row = $row + 1;
+            $sheet->setCellValue('A' . $footer_row, 'Total Transaksi:');
+            $sheet->mergeCells('A' . $footer_row . ':G' . $footer_row);
+            $sheet->getStyle('A' . $footer_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle('A' . $footer_row)->getFont()->setBold(true);
+
+            $sheet->setCellValue('H' . $footer_row, count($response['data']));
+            $sheet->mergeCells('H' . $footer_row . ':L' . $footer_row);
+            $sheet->getStyle('H' . $footer_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('H' . $footer_row)->getFont()->setBold(true);
+
+            // Apply borders untuk footer
+            $sheet->getStyle('A' . $footer_row . ':L' . $footer_row)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                ]
+            ]);
+
             // Auto size columns
-            foreach (range('A', 'P') as $columnID) {
+            foreach (range('A', 'L') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
+
+            // Set wrap text untuk kolom yang mungkin panjang
+            $sheet->getStyle('C')->getAlignment()->setWrapText(true); // No. Referensi
+            $sheet->getStyle('G')->getAlignment()->setWrapText(true); // Nama Barang
+            $sheet->getStyle('L')->getAlignment()->setWrapText(true); // Keterangan
 
             // Set headers for download
             $filename = 'stock_card_' . date('Ymd_His') . '.xlsx';
@@ -324,7 +364,6 @@ class Laporan extends MY_Controller
             redirect('laporan/stok_card');
         }
     }
-
 
     public function export_stok()
     {
