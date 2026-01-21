@@ -50,42 +50,47 @@
 
             </div>
 
-
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="text-center align-middle">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Gudang</th>
-                            <th>ID BOS</th>
-                            <th>Kode Barang</th>
-                            <th>Nama Barang</th>
-                            <th>Tipe Barang</th>
-                            <th>Stok Terakhir</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($stoks)): ?>
-                            <?php $no = 1;
-                            foreach ($stoks as $stok): ?>
-                                <tr>
-                                    <td class="text-center"><?= $no++; ?></td>
-                                    <td><?= $stok['warehouse_name']; ?></td>
-                                    <td><?= $stok['bos_code']; ?></td>
-                                    <td><?= $stok['product_code']; ?></td>
-                                    <td><?= $stok['product_name']; ?></td>
-                                    <td><?= $stok['type_name']; ?></td>
-                                    <td><?= viewNumber($stok['current_stock']); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+            <?php if (empty($stoks)): ?>
+                <div class="alert alert-info">
+                    Tidak ada data Penerimaan dari Supplier.
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="text-center align-middle">
                             <tr>
-                                <td colspan="5" class="text-center">Tidak ada data stok</td>
+                                <th>No</th>
+                                <th>Nama Gudang</th>
+                                <th>ID BOS</th>
+                                <th>Kode Barang</th>
+                                <th>Nama Barang</th>
+                                <th>Tipe Barang</th>
+                                <th>Stok Terakhir</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($stoks)): ?>
+                                <?php $no = 1;
+                                foreach ($stoks as $stok): ?>
+                                    <tr>
+                                        <td class="text-center"><?= $no++; ?></td>
+                                        <td><?= $stok['warehouse_name']; ?></td>
+                                        <td><?= $stok['bos_code']; ?></td>
+                                        <td><?= $stok['product_code']; ?></td>
+                                        <td><?= $stok['product_name']; ?></td>
+                                        <td><?= $stok['type_name']; ?></td>
+                                        <td><?= viewNumber($stok['current_stock']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="text-center">Tidak ada data stok</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

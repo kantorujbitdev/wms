@@ -23,54 +23,60 @@
         </div>
 
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="text-center align-middle">
-                        <tr>
-                            <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <?php if (has_permission('tipe_produk', 'edit')): ?>
-                                <th>Aksi</th>
-                            <?php endif; ?>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($product_types)): ?>
-                            <?php $no = 1;
-                            foreach ($product_types as $type): ?>
-                                <tr>
-                                    <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $type['Product_Type_Code']; ?></td>
-                                    <td><?php echo !empty($type['Product_Type_Name']) ? $type['Product_Type_Name'] : '-'; ?>
-                                    </td>
-                                    <?php if (has_permission('tipe_produk', 'edit')): ?>
-                                        <td class="text-center">
-                                            <a href="<?php echo site_url('barang/edit_tipe_produk/' . $type['Product_Type_Id']); ?>"
-                                                class="btn btn-info btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if (has_permission('tipe_produk', 'delete')): ?>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?php echo $type['Product_Type_Id']; ?>" data-name="<?php echo '<br>Kode : ' . $type['Product_Type_Code'] .
-                                                       '<br>Nama : ' . $type['Product_Type_Name']; ?>"
-                                                data-url="<?= site_url('barang/delete_tipe_produk'); ?>">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+            <?php if (empty($product_types)): ?>
+                <div class="alert alert-info">
+                    Tidak ada data Tipe Produk.
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="text-center align-middle">
                             <tr>
-                                <td colspan="4" class="text-center">Tidak ada data tipe produk</td>
+                                <th>No</th>
+                                <th>Kode</th>
+                                <th>Nama</th>
+                                <?php if (has_permission('tipe_produk', 'edit')): ?>
+                                    <th>Aksi</th>
+                                <?php endif; ?>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($product_types)): ?>
+                                <?php $no = 1;
+                                foreach ($product_types as $type): ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $no++; ?></td>
+                                        <td><?php echo $type['Product_Type_Code']; ?></td>
+                                        <td><?php echo !empty($type['Product_Type_Name']) ? $type['Product_Type_Name'] : '-'; ?>
+                                        </td>
+                                        <?php if (has_permission('tipe_produk', 'edit')): ?>
+                                            <td class="text-center">
+                                                <a href="<?php echo site_url('barang/edit_tipe_produk/' . $type['Product_Type_Id']); ?>"
+                                                    class="btn btn-info btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (has_permission('tipe_produk', 'delete')): ?>
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                    data-id="<?php echo $type['Product_Type_Id']; ?>" data-name="<?php echo '<br>Kode : ' . $type['Product_Type_Code'] .
+                                                           '<br>Nama : ' . $type['Product_Type_Name']; ?>"
+                                                    data-url="<?= site_url('barang/delete_tipe_produk'); ?>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4" class="text-center">Tidak ada data tipe produk</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

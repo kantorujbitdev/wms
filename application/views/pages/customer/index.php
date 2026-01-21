@@ -20,54 +20,60 @@
         </div>
 
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="text-center align-middle">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Kontak</th>
-                            <th>Telepon</th>
-                            <th>Alamat</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($customers)): ?>
-                            <?php $no = 1;
-                            foreach ($customers as $customer): ?>
-                                <tr>
-                                    <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $customer['name']; ?></td>
-                                    <td><?php echo $customer['person']; ?></td>
-                                    <td><?php echo $customer['phone']; ?></td>
-                                    <td><?php echo $customer['address']; ?></td>
-                                    <td class="text-center">
-                                        <?php if (has_permission('customer', 'edit')): ?>
-                                            <a href="<?php echo site_url('customer/edit/' . $customer['id']); ?>"
-                                                class="btn btn-info btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if (has_permission('customer', 'delete')): ?>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?php echo $customer['id']; ?>"
-                                                data-name="<?php echo $customer['name']; ?>"
-                                                data-url="<?= site_url('customer/delete'); ?>">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+            <?php if (empty($customers)): ?>
+                <div class="alert alert-info">
+                    Tidak ada data Customer.
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="text-center align-middle">
                             <tr>
-                                <td colspan="5" class="text-center">Tidak ada data customer</td>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Kontak</th>
+                                <th>Telepon</th>
+                                <th>Alamat</th>
+                                <th>Aksi</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($customers)): ?>
+                                <?php $no = 1;
+                                foreach ($customers as $customer): ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $no++; ?></td>
+                                        <td><?php echo $customer['name']; ?></td>
+                                        <td><?php echo $customer['person']; ?></td>
+                                        <td><?php echo $customer['phone']; ?></td>
+                                        <td><?php echo $customer['address']; ?></td>
+                                        <td class="text-center">
+                                            <?php if (has_permission('customer', 'edit')): ?>
+                                                <a href="<?php echo site_url('customer/edit/' . $customer['id']); ?>"
+                                                    class="btn btn-info btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (has_permission('customer', 'delete')): ?>
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                    data-id="<?php echo $customer['id']; ?>"
+                                                    data-name="<?php echo $customer['name']; ?>"
+                                                    data-url="<?= site_url('customer/delete'); ?>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="text-center">Tidak ada data customer</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

@@ -62,90 +62,98 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Kode Barang</th>
-                            <th>Nama Barang</th>
-                            <th>Kategori</th>
-                            <th>Satuan</th>
-                            <th>Stok Tersedia</th>
-                            <th>Gudang</th>
-                            <th>Status</th>
-                            <th>Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($stoks)): ?>
-                            <?php $no = 1; ?>
-                            <?php foreach ($stoks as $stok): ?>
-                                <?php
-                                $min_stock = 0;
-                                $current_stock = isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
+            <?php if (empty($stoks)): ?>
+                <div class="alert alert-info">
+                    Tidak ada data Kartu Stok untuk periode yang dipilih.
+                </div>
+            <?php else: ?>
 
-                                // Determine status
-                                $status_class = '';
-                                $status_text = '';
-                                if ($current_stock <= 0) {
-                                    $status_class = 'danger';
-                                    $status_text = 'Kosong';
-                                } elseif ($current_stock <= $min_stock) {
-                                    $status_class = 'warning';
-                                    $status_text = 'Menipis';
-                                } else {
-                                    $status_class = 'success';
-                                    $status_text = 'Normal';
-                                }
-                                ?>
-                                <tr>
-                                    <td><?= $no++ ?></td>
-                                    <td><?= $stok['product_code'] ?></td>
-                                    <td><?= $stok['product_name'] ?></td>
-                                    <td><?= $stok['type_name'] ?? '-' ?></td>
-                                    <td><?= $stok['unit_code'] ?></td>
-                                    <td
-                                        class="text-right <?= ($current_stock <= $min_stock) ? 'text-danger font-weight-bold' : '' ?>">
-                                        <?= viewNumber($current_stock) ?>
-                                        <?php if ($current_stock <= $min_stock): ?>
-                                            <span class="badge bg-<?= $status_class ?>"><?= $status_text ?></span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?= $stok['warehouse_name'] ?? '-' ?></td>
-                                    <td>
-                                        <span class="badge bg-<?= $status_class ?>">
-                                            <?= $status_text ?>
-                                        </span>
-                                    </td>
-                                    <td><?= $stok['product_note'] ?? '-' ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
                             <tr>
-                                <td colspan="11" class="text-center">Tidak ada data stok</td>
+                                <th>No</th>
+                                <th>Kode Barang</th>
+                                <th>Nama Barang</th>
+                                <th>Kategori</th>
+                                <th>Satuan</th>
+                                <th>Stok Tersedia</th>
+                                <th>Gudang</th>
+                                <th>Status</th>
+                                <th>Keterangan</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="5" class="text-right"><strong>Total:</strong></td>
-                            <td class="text-right">
-                                <strong>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($stoks)): ?>
+                                <?php $no = 1; ?>
+                                <?php foreach ($stoks as $stok): ?>
                                     <?php
-                                    $total_stok = 0;
-                                    foreach ($stoks as $stok) {
-                                        $total_stok += isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
+                                    $min_stock = 0;
+                                    $current_stock = isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
+
+                                    // Determine status
+                                    $status_class = '';
+                                    $status_text = '';
+                                    if ($current_stock <= 0) {
+                                        $status_class = 'danger';
+                                        $status_text = 'Kosong';
+                                    } elseif ($current_stock <= $min_stock) {
+                                        $status_class = 'warning';
+                                        $status_text = 'Menipis';
+                                    } else {
+                                        $status_class = 'success';
+                                        $status_text = 'Normal';
                                     }
-                                    echo viewNumber($total_stok);
                                     ?>
-                                </strong>
-                            </td>
-                            <td colspan="3"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                                    <tr>
+                                        <td><?= $no++ ?></td>
+                                        <td><?= $stok['product_code'] ?></td>
+                                        <td><?= $stok['product_name'] ?></td>
+                                        <td><?= $stok['type_name'] ?? '-' ?></td>
+                                        <td><?= $stok['unit_code'] ?></td>
+                                        <td
+                                            class="text-right <?= ($current_stock <= $min_stock) ? 'text-danger font-weight-bold' : '' ?>">
+                                            <?= viewNumber($current_stock) ?>
+                                            <?php if ($current_stock <= $min_stock): ?>
+                                                <span class="badge bg-<?= $status_class ?>"><?= $status_text ?></span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= $stok['warehouse_name'] ?? '-' ?></td>
+                                        <td>
+                                            <span class="badge bg-<?= $status_class ?>">
+                                                <?= $status_text ?>
+                                            </span>
+                                        </td>
+                                        <td><?= $stok['product_note'] ?? '-' ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="11" class="text-center">Tidak ada data stok</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" class="text-right"><strong>Total:</strong></td>
+                                <td class="text-right">
+                                    <strong>
+                                        <?php
+                                        $total_stok = 0;
+                                        foreach ($stoks as $stok) {
+                                            $total_stok += isset($stok['current_stock']) ? (float) $stok['current_stock'] : 0;
+                                        }
+                                        echo viewNumber($total_stok);
+                                        ?>
+                                    </strong>
+                                </td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            <?php endif; ?>
+
         </div>
     </div>
 </div>

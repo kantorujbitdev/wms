@@ -111,13 +111,15 @@ class Laporan extends MY_Controller
         // Get warehouses for filter (superadmin can see all)
         if ($user_role == 'superadmin') {
             $warehouse_response = $this->Api_model->get_all_gudang($data);
+            $products_response = $this->Api_model->get_stock_all($data);
         } else {
             $warehouse_response = $this->Api_model->get_gudang($data);
+            $products_response = $this->Api_model->get_stock_by_warehous(data_login_user(['warehouse_id' => $warehouse_id]));
         }
         $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get all products for filter
-        $products_response = $this->Api_model->get_stock_all($data);
+        // $products_response = $this->Api_model->get_stock_all($data);
         $this->data['products'] = $this->handle_response($products_response);
 
         // Prepare filter data for API

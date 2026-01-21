@@ -32,56 +32,62 @@
             </div>
 
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead class="text-center align-middle">
-                            <tr>
-                                <th width="5%">No</th>
-                                <th width="8%">ID BOS</th>
-                                <th width="8%">Kode</th>
-                                <th width="48%">Nama Produk</th>
-                                <th width="8%">Satuan</th>
-                                <th width="10%">Tipe</th>
-                                <th width="10%">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($products)): ?>
-                                <?php $no = 1;
-                                foreach ($products as $product): ?>
-                                    <tr>
-                                        <td class="text-center"><?php echo $no++; ?></td>
-                                        <td><?php echo $product['bos_code']; ?></td>
-                                        <td><?php echo $product['product_code']; ?></td>
-                                        <td><?php echo $product['product_name']; ?></td>
-                                        <td><?php echo $product['unit_code']; ?></td>
-                                        <td><?php echo $product['type_name']; ?></td>
-                                        <td class="text-center">
-                                            <?php if (has_permission('barang', 'delete')): ?>
-                                                <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
-                                                    class="btn btn-info btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                            <?php if (has_permission('barang', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                    data-id="<?php echo $product['product_id']; ?>" data-name="<?php echo '<br>Kode : ' . $product['product_code'] .
-                                                           '<br>Barang : ' . $product['product_name']; ?>"
-                                                    data-url="<?= site_url('barang/delete_produk'); ?>">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
+                <?php if (empty($products)): ?>
+                    <div class="alert alert-info">
+                        Tidak ada data Produk.
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="text-center align-middle">
                                 <tr>
-                                    <td colspan="6" class="text-center">Tidak ada data produk</td>
+                                    <th width="5%">No</th>
+                                    <th width="8%">ID BOS</th>
+                                    <th width="8%">Kode</th>
+                                    <th width="48%">Nama Produk</th>
+                                    <th width="8%">Satuan</th>
+                                    <th width="10%">Tipe</th>
+                                    <th width="10%">Aksi</th>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($products)): ?>
+                                    <?php $no = 1;
+                                    foreach ($products as $product): ?>
+                                        <tr>
+                                            <td class="text-center"><?php echo $no++; ?></td>
+                                            <td><?php echo $product['bos_code']; ?></td>
+                                            <td><?php echo $product['product_code']; ?></td>
+                                            <td><?php echo $product['product_name']; ?></td>
+                                            <td><?php echo $product['unit_code']; ?></td>
+                                            <td><?php echo $product['type_name']; ?></td>
+                                            <td class="text-center">
+                                                <?php if (has_permission('barang', 'delete')): ?>
+                                                    <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
+                                                        class="btn btn-info btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                                <?php if (has_permission('barang', 'delete')): ?>
+                                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                        data-id="<?php echo $product['product_id']; ?>" data-name="<?php echo '<br>Kode : ' . $product['product_code'] .
+                                                               '<br>Barang : ' . $product['product_name']; ?>"
+                                                        data-url="<?= site_url('barang/delete_produk'); ?>">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center">Tidak ada data produk</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

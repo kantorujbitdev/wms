@@ -21,67 +21,74 @@
 
 
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="text-center align-middle">
-                        <tr>
-                            <th>No</th>
-                            <th>Username</th>
-                            <th>Nama Lengkap</th>
-                            <th>Role</th>
-                            <th>Lingkup</th>
-                            <th>Tanggal Dibuat</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($users)): ?>
-                            <?php $no = 1;
-                            foreach ($users as $user): ?>
-                                <tr>
-                                    <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $user['user_name']; ?></td>
-                                    <td><?php echo !empty($user['full_name']) ? $user['full_name'] : '-'; ?></td>
-                                    <td class="text-center">
-                                        <?php
-                                        $roleColors = [
-                                            'superadmin' => 'danger',
-                                            'admin' => 'warning',
-                                            'staff' => 'info'
-                                        ];
+            <?php if (empty($users)): ?>
+                <div class="alert alert-info">
+                    Tidak ada data User.
+                </div>
+            <?php else: ?>
 
-                                        $badgeColor = $roleColors[$user['user_role']] ?? 'secondary'; // default jika role tidak dikenal
-                                        ?>
-                                        <span class="badge bg-<?= $badgeColor ?>">
-                                            <?= ucfirst($user['user_role']); ?>
-                                        </span>
-
-                                    </td>
-                                    <td><?php echo $user['warehouse_name']; ?></td>
-                                    <td><?php echo date('d-m-Y H:i:s', strtotime($user['create_at'])); ?></td>
-                                    <td class="text-center">
-                                        <a href="<?php echo site_url('user/edit/' . $user['user_id']); ?>"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                            data-id="<?php echo $user['user_id']; ?>"
-                                            data-name="<?php echo $user['full_name']; ?>"
-                                            data-url="<?= site_url('user/delete'); ?>">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                            <?php endforeach; ?>
-                        <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="text-center align-middle">
                             <tr>
-                                <td colspan="6" class="text-center">Tidak ada data user</td>
+                                <th>No</th>
+                                <th>Username</th>
+                                <th>Nama Lengkap</th>
+                                <th>Role</th>
+                                <th>Lingkup</th>
+                                <th>Tanggal Dibuat</th>
+                                <th>Aksi</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($users)): ?>
+                                <?php $no = 1;
+                                foreach ($users as $user): ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $no++; ?></td>
+                                        <td><?php echo $user['user_name']; ?></td>
+                                        <td><?php echo !empty($user['full_name']) ? $user['full_name'] : '-'; ?></td>
+                                        <td class="text-center">
+                                            <?php
+                                            $roleColors = [
+                                                'superadmin' => 'danger',
+                                                'admin' => 'warning',
+                                                'staff' => 'info'
+                                            ];
+
+                                            $badgeColor = $roleColors[$user['user_role']] ?? 'secondary'; // default jika role tidak dikenal
+                                            ?>
+                                            <span class="badge bg-<?= $badgeColor ?>">
+                                                <?= ucfirst($user['user_role']); ?>
+                                            </span>
+
+                                        </td>
+                                        <td><?php echo $user['warehouse_name']; ?></td>
+                                        <td><?php echo date('d-m-Y H:i:s', strtotime($user['create_at'])); ?></td>
+                                        <td class="text-center">
+                                            <a href="<?php echo site_url('user/edit/' . $user['user_id']); ?>"
+                                                class="btn btn-info btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                data-id="<?php echo $user['user_id']; ?>"
+                                                data-name="<?php echo $user['full_name']; ?>"
+                                                data-url="<?= site_url('user/delete'); ?>">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" class="text-center">Tidak ada data user</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

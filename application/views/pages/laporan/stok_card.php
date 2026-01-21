@@ -11,23 +11,26 @@
 
                 <div class="row">
 
-                    <!-- Warehouse Filter -->
-                    <div class="col-md-3">
-                        <div class="form-group">
+                    <?php if ($user_role == 'superadmin'): ?>
+                        <!-- Warehouse Filter -->
+                        <div class="col-md-3">
+                            <div class="form-group">
 
-                            <label class="form-label">Nama Gudang</label>
-                            <select name="warehouse_id" class="form-control select2-gudang">
-                                <option value="">-- Pilih Gudang --</option>
-                                <?php foreach ($warehouses as $w): ?>
-                                    <option value="<?= $w['warehouse_id'] ?>" <?= ($w['warehouse_id'] == $filter_warehouse_id) ? 'selected' : ''; ?>>
-                                        <?= $w['warehouse_name'] ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                                <label class="form-label">Nama Gudang</label>
+                                <select name="warehouse_id" class="form-control select2-gudang">
+                                    <option value="">-- Pilih Gudang --</option>
+                                    <?php foreach ($warehouses as $w): ?>
+                                        <option value="<?= $w['warehouse_id'] ?>" <?= ($w['warehouse_id'] == $filter_warehouse_id) ? 'selected' : ''; ?>>
+                                            <?= $w['warehouse_name'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
 
+                            </div>
                         </div>
-                    </div>
-
+                    <?php else: ?>
+                        <input type="hidden" name="warehouse_id" value="<?= $user_warehouse_id ?>">
+                    <?php endif; ?>
                     <!-- Product Filter -->
                     <div class="col-md-3">
                         <div class="form-group">
@@ -35,8 +38,7 @@
                             <select name="stock_id" class="form-control select2-produk">
                                 <option value="">-- Pilih Produk --</option>
                                 <?php foreach ($products as $product): ?>
-                                    <option value="<?= $product['product_id'] ?>"
-                                        <?= ($product['product_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
+                                    <option value="<?= $product['stock_id'] ?>" <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
                                         <?= $product['product_name'] . ' || ' . $product['product_code'] . ' (' . $product['bos_code'] . ')' ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -83,7 +85,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Data Stock Card</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Data Kartu Stok</h6>
 
                 <?php if (!empty($stock_cards)): ?>
                     <a href="<?= site_url('laporan/export_stok_card?' . http_build_query([
@@ -102,7 +104,7 @@
 
             <?php if (empty($stock_cards)): ?>
                 <div class="alert alert-info">
-                    Tidak ada data stock card untuk periode yang dipilih.
+                    Tidak ada data Kartu Stok untuk periode yang dipilih.
                 </div>
             <?php else: ?>
 

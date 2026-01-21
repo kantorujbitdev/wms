@@ -19,50 +19,56 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead class="text-center align-middle">
-                        <tr>
-                            <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($unit_types)): ?>
-                            <?php $no = 1;
-                            foreach ($unit_types as $type): ?>
-                                <tr>
-                                    <td class="text-center"><?php echo $no++; ?></td>
-                                    <td><?php echo $type['code']; ?></td>
-                                    <td><?php echo !empty($type['name']) ? $type['name'] : '-'; ?></td>
-                                    <td class="text-center">
-                                        <?php if (has_permission('tipe_satuan', 'edit')): ?>
-                                            <a href="<?php echo site_url('barang/edit_tipe_satuan/' . $type['id']); ?>"
-                                                class="btn btn-info btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if (has_permission('tipe_satuan', 'delete')): ?>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                data-id="<?php echo $type['id']; ?>" data-name="<?php echo '<br>Code : ' . $type['code'] .
-                                                       ' <br>Name : ' . $type['name']; ?>"
-                                                data-url="<?= site_url('barang/delete_tipe_satuan'); ?>">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+            <?php if (empty($unit_types)): ?>
+                <div class="alert alert-info">
+                    Tidak ada data Tipe Satuan.
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="text-center align-middle">
                             <tr>
-                                <td colspan="4" class="text-center">Tidak ada data tipe satuan</td>
+                                <th>No</th>
+                                <th>Kode</th>
+                                <th>Nama</th>
+                                <th>Aksi</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($unit_types)): ?>
+                                <?php $no = 1;
+                                foreach ($unit_types as $type): ?>
+                                    <tr>
+                                        <td class="text-center"><?php echo $no++; ?></td>
+                                        <td><?php echo $type['code']; ?></td>
+                                        <td><?php echo !empty($type['name']) ? $type['name'] : '-'; ?></td>
+                                        <td class="text-center">
+                                            <?php if (has_permission('tipe_satuan', 'edit')): ?>
+                                                <a href="<?php echo site_url('barang/edit_tipe_satuan/' . $type['id']); ?>"
+                                                    class="btn btn-info btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (has_permission('tipe_satuan', 'delete')): ?>
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                    data-id="<?php echo $type['id']; ?>" data-name="<?php echo '<br>Code : ' . $type['code'] .
+                                                           ' <br>Name : ' . $type['name']; ?>"
+                                                    data-url="<?= site_url('barang/delete_tipe_satuan'); ?>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4" class="text-center">Tidak ada data tipe satuan</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
