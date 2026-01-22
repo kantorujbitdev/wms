@@ -60,21 +60,21 @@
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if (has_permission('penerimaan', 'edit')): ?>
-                                                <a href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
-                                                    class="btn btn-warning btn-sm" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            <?php endif; ?>
+                                            <!-- <?php if (has_permission('penerimaan', 'edit')): ?>
+                                <a href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
+                                    class="btn btn-warning btn-sm" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <?php endif; ?>
 
-                                            <?php if (has_permission('penerimaan', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
-                                                    data-id="<?= $penerimaan['stockin_id']; ?>"
-                                                    data-name="<?= $penerimaan['stockin_code']; ?>"
-                                                    data-url="<?= site_url('penerimaan/delete'); ?>">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            <?php endif; ?>
+                                <?php if (has_permission('penerimaan', 'delete')): ?>
+                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                    data-id="<?= $penerimaan['stockin_id']; ?>"
+                                    data-name="<?= $penerimaan['stockin_code']; ?>"
+                                    data-url="<?= site_url('penerimaan/delete'); ?>">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <?php endif; ?> -->
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

@@ -120,6 +120,8 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="mb-3">
+
+                                    //dimasukin secara otomatis sesuai data to_id dan to_name
                                         <label for="to_warehouse_id" class="form-label">Gudang Penerima *</label>
                                         <?php 
                                         $selected_to_warehouse = '';
@@ -194,11 +196,11 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Simpan Penerimaan
                             </button>
-                            <a href="<?= site_url('penerimaan/antar_gudang') ?>" class="btn btn-secondary">
+                            <!-- <a href="<?= site_url('penerimaan/antar_gudang') ?>" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Batal
-                            </a>
-                            <button type="button" id="resetForm" class="btn btn-warning">
-                                <i class="fas fa-redo"></i> Reset Form
+                            </a> -->
+                            <button type="button" id="resetForm" class="btn btn-secondary">
+                                <i class="fas fa-redo"></i> Batal
                             </button>
                         </div>
                     </div>
