@@ -112,11 +112,12 @@ class Laporan extends MY_Controller
         if ($user_role == 'superadmin') {
             $warehouse_response = $this->Api_model->get_all_gudang($data);
             $products_response = $this->Api_model->get_stock_all($data);
+            $this->data['warehouses'] = $this->handle_response($warehouse_response);
         } else {
-            $warehouse_response = $this->Api_model->get_gudang($data);
+            // $warehouse_response = $this->Api_model->get_gudang($data);
+            // $this->data['warehouses'] = $this->handle_response($warehouse_response);
             $products_response = $this->Api_model->get_stock_by_warehous(data_login_user(['warehouse_id' => $warehouse_id]));
         }
-        $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
         // Get all products for filter
         // $products_response = $this->Api_model->get_stock_all($data);
