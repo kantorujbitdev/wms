@@ -1,8 +1,8 @@
+<!-- C:\xampp\htdocs\wms\application\views\pages\penerimaan\form_antar_gudang_js.php -->
 <script>
     $(document).ready(function () {
         // Initialize Select2
         $('.select2').select2({
-            theme: 'bootstrap4',
             width: '100%'
         });
 
@@ -40,8 +40,6 @@
                     <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
                 },
                 success: function (response) {
-                    console.log('API Response:', response); // Untuk debugging
-
                     $('#loadingIndicator').addClass('d-none');
 
                     if (response.success) {
@@ -63,14 +61,14 @@
                             scrollTop: $('#formDataSection').offset().top - 100
                         }, 500);
                     } else {
-                        showError(response.message || 'Gagal memuat data pengiriman');
+                        showToastrError(response.message || 'Gagal memuat data pengiriman');
                         $('#formDataSection').addClass('d-none');
                     }
                 },
                 error: function (xhr, status, error) {
                     $('#loadingIndicator').addClass('d-none');
                     console.error('AJAX Error:', xhr.responseText);
-                    showError('Terjadi kesalahan saat memuat data: ' + error);
+                    showToastrError('Terjadi kesalahan saat memuat data: ' + error);
                 }
             });
         });
@@ -89,7 +87,7 @@
 
             // Set default stockin_invoice from stockout_code
             if (header.stockout_code) {
-                $('#stockin_invoice').val('TI-' + header.stockout_code);
+                $('#stockin_invoice').val(header.stockout_code);
             }
         }
 
@@ -220,26 +218,25 @@
             }
         }
 
-        // Show error message
-        function showError(message) {
-            // Use Bootstrap alert
-            const alertHtml = `
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
+        // Show toastr success message
+        function showToastrSuccess(message) {
+            toastr.success(message, '<?= $wording['success'] ?>');
+        }
 
-            // Remove existing alerts
-            $('.alert-danger').remove();
+        // Show toastr error message using modal
+        function showToastrError(message) {
+            $('#errorMessage').text(message);
+            $('#errorModal').modal('show');
+        }
 
-            // Add new alert
-            $('#penerimaanForm').prepend(alertHtml);
+        // Show toastr warning message
+        function showToastrWarning(message) {
+            toastr.warning(message, '<?= $wording['warning'] ?>');
+        }
 
-            // Auto remove after 5 seconds
-            setTimeout(function () {
-                $('.alert-danger').alert('close');
-            }, 5000);
+        // Show toastr info message
+        function showToastrInfo(message) {
+            toastr.info(message, '<?= $wording['info'] ?>');
         }
 
         // Reset form
@@ -265,6 +262,7 @@
         $('#penerimaanForm').on('submit', function (e) {
             e.preventDefault();
 
+            // Validasi form
             let isValid = true;
             let hasItems = false;
             let totalQty = 0;
@@ -286,12 +284,12 @@
             });
 
             if (!hasItems) {
-                showError('Pilih minimal satu barang dengan qty > 0');
+                showToastrWarning('Pilih minimal satu barang dengan qty > 0');
                 isValid = false;
             }
 
             if (totalQty === 0) {
-                showError('Total qty yang diterima harus lebih dari 0');
+                showToastrWarning('Total qty yang diterima harus lebih dari 0');
                 isValid = false;
             }
 
@@ -299,10 +297,17 @@
                 return false;
             }
 
+            // Prepare data for submission
+            const formData = new FormData(this);
+
             // Disable items that are not checked
             $('.item-checkbox:not(:checked)').each(function () {
                 const $row = $(this).closest('.item-row');
+                const index = $row.index();
                 $row.find('input, select').prop('disabled', true);
+
+                // Juga nonaktifkan dalam FormData
+                formData.set(`qty[${index}]`, '0');
             });
 
             // Show loading on submit button
@@ -310,26 +315,67 @@
             const originalText = $submitBtn.html();
             $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
 
-            // Submit form
+            // Submit form via AJAX
             $.ajax({
                 url: $(this).attr('action'),
                 type: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 success: function (response) {
                     $submitBtn.prop('disabled', false).html(originalText);
 
+                    // Re-enable all inputs
+                    $('input, select').prop('disabled', false);
+
                     if (response.success) {
-                        alert('Penerimaan berhasil disimpan');
-                        window.location.href = '<?= site_url("penerimaan/antar_gudang") ?>';
+                        // Tampilkan pesan sukses
+                        showToastrSuccess(response.message || 'Penerimaan berhasil disimpan');
+
+                        // Delay redirect untuk menampilkan toastr
+                        setTimeout(function () {
+                            // Redirect berdasarkan from_status
+                            const fromStatus = $('input[name="from_status"]').val();
+                            if (fromStatus === '1') {
+                                window.location.href = '<?= site_url("penerimaan/dari_pengguna") ?>';
+                            } else if (fromStatus === '2') {
+                                window.location.href = '<?= site_url("penerimaan/dari_supplier") ?>';
+                            } else {
+                                window.location.href = '<?= site_url("penerimaan/antar_gudang") ?>';
+                            }
+                        }, 1500); // Delay 1.5 detik untuk menampilkan toastr
                     } else {
-                        showError('Gagal menyimpan penerimaan: ' + (response.message || 'Terjadi kesalahan'));
+                        showToastrError('Gagal menyimpan penerimaan: ' + (response.message || 'Terjadi kesalahan'));
+                        console.error('Error response:', response);
                     }
                 },
                 error: function (xhr, status, error) {
                     $submitBtn.prop('disabled', false).html(originalText);
-                    showError('Terjadi kesalahan saat menyimpan data');
-                    console.error('Error:', error, xhr.responseText);
+
+                    // Re-enable all inputs
+                    $('input, select').prop('disabled', false);
+
+                    console.log('XHR Response:', xhr.responseText.substring(0, 100)); // Debug
+
+                    // Coba parse response meski error
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.message) {
+                            showToastrError('Terjadi kesalahan: ' + response.message);
+                        } else {
+                            showToastrError('Terjadi kesalahan saat menyimpan data (Error: ' + xhr.status + ')');
+                        }
+                    } catch (e) {
+                        // Jika bukan JSON, cek apakah itu HTML error page
+                        if (xhr.responseText.includes('<!DOCTYPE') || xhr.responseText.includes('<html')) {
+                            showToastrError('Terjadi kesalahan server. Kemungkinan ada masalah dengan CSRF token atau session.');
+                        } else {
+                            showToastrError('Terjadi kesalahan server. Silakan coba lagi atau hubungi administrator.');
+                        }
+                    }
+                    console.error('AJAX Error:', error, xhr.responseText);
                 }
             });
         });

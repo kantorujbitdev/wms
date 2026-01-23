@@ -138,7 +138,10 @@ class Penerimaan extends MY_Controller
         $this->data['active_submenu'] = 'penerimaan_antar_gudang';
 
         $data_login = data_login_user(['from_status' => '3']);
-        $response = $this->Api_model->get_penerimaan($data_login);
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+        $data_request_penerimaan = data_login_user(['from_status' => 3, 'transfer_status' => 1, 'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null]);
+
+        $response = $this->Api_model->get_penerimaan($data_request_penerimaan);
         $this->data['penerimaan_list'] = $this->handle_response($response);
 
         $this->render_view('pages/penerimaan/antar_gudang');
@@ -164,8 +167,10 @@ class Penerimaan extends MY_Controller
             $warehouse_response = $this->Api_model->get_gudang($data_login);
         }
 
+        $data_request_penerimaan = data_login_user(['from_status' => 3, 'transfer_status' => 1, 'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null]);
+
         // Get list of pengiriman (stockout) for dropdown
-        $list_pengiriman_response = $this->Api_model->get_list_pengiriman(data_login_user(['from_status' => 3, 'transfer_status' => 1]));
+        $list_pengiriman_response = $this->Api_model->get_list_pengiriman($data_request_penerimaan);
         $this->data['list_pengiriman'] = $this->handle_response($list_pengiriman_response);
 
         $this->data['warehouses'] = $this->handle_response($warehouse_response);
@@ -174,10 +179,6 @@ class Penerimaan extends MY_Controller
         $this->data['user_warehouse_id'] = $warehouse_id_session;
         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
         $this->data['user_role'] = $user_role;
-
-        // Get products data (will be populated via API later)
-        $products_response = $this->Api_model->get_barang($data_login);
-        $this->data['products'] = $this->handle_response($products_response);
 
         $this->data['filter_stockout_id'] = $this->input->get('filter_stockout_id') ?? '';
         $this->data['from_status'] = '3';
@@ -231,9 +232,6 @@ class Penerimaan extends MY_Controller
         // Get pengiriman detail from API
         $response = $this->Api_model->get_list_pengiriman_details($request_data);
 
-        // Debug log (optional)
-        // error_log('API Response: ' . json_encode($response));
-
         if ($response) {
             // Response langsung berisi header dan detail, bukan di dalam data
             $api_data = $response; // Response sudah langsung berisi header dan detail
@@ -256,8 +254,126 @@ class Penerimaan extends MY_Controller
     }
 
     // ==================== CREATE PENERIMAAN ====================
+    // public function create()
+    // {
+    //     if ($_POST) {
+    //         $data_login = data_login_user();
+
+    //         // Get user role and warehouse from session
+    //         $user_role = $this->session->userdata('role');
+    //         $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+    //         // Determine to_warehouse_id based on user role
+    //         $to_warehouse_id = $warehouse_id_session;
+    //         if ($user_role == 'superadmin') {
+    //             // Superadmin can select destination warehouse
+    //             $to_warehouse_id = $this->input->post('to_warehouse_id');
+    //         }
+
+    //         $post_data = [
+    //             'stockin_date' => $this->input->post('stockin_date'),
+    //             'stockin_code' => $this->input->post('stockin_code'),
+    //             'stockin_invoice' => $this->input->post('stockin_invoice'),
+    //             'stockin_note' => $this->input->post('stockin_note'),
+    //             'to_warehouse_id' => $to_warehouse_id,
+    //             'from_status' => $this->input->post('from_status'),
+    //             'login_id' => $data_login['login_id'],
+    //             'login_name' => $data_login['login_name'],
+    //             'items' => []
+    //         ];
+
+    //         // Tambahkan from_id berdasarkan tipe
+    //         $from_status = $this->input->post('from_status');
+    //         $from_id_field = '';
+
+    //         if ($from_status == '1') {
+    //             $post_data['from_id'] = $this->input->post('customer_id');
+    //             $from_id_field = 'customer_id';
+    //         } elseif ($from_status == '2') {
+    //             $post_data['from_id'] = $this->input->post('supplier_id');
+    //             $from_id_field = 'supplier_id';
+    //         } elseif ($from_status == '3') {
+    //             $post_data['from_id'] = $this->input->post('from_warehouse_id');
+    //             $from_id_field = 'from_warehouse_id';
+    //         }
+
+    //         // Prepare items data
+    //         $product_ids = $this->input->post('product_id');
+    //         $qtys = $this->input->post('qty');
+    //         $notes = $this->input->post('detail_note');
+
+    //         $items_data = [];
+    //         if (!empty($product_ids)) {
+    //             foreach ($product_ids as $index => $product_id) {
+    //                 if (!empty($product_id) && !empty($qtys[$index])) {
+    //                     $items_data[] = [
+    //                         'stock_id' => $product_id,
+    //                         'qty' => (float) $qtys[$index],
+    //                         'detail_note' => $notes[$index] ?? ''
+    //                     ];
+
+    //                     $post_data['items'][] = [
+    //                         'stock_id' => $product_id,
+    //                         'qty' => (float) $qtys[$index],
+    //                         'detail_note' => $notes[$index] ?? ''
+    //                     ];
+    //                 }
+    //             }
+    //         }
+
+    //         // Send to API
+    //         $response = $this->Api_model->add_penerimaan($post_data);
+
+    //         if ($response['success']) {
+    //             $this->handle_response($response, 'Penerimaan barang berhasil ditambahkan');
+    //             // Hapus form data dari session jika berhasil
+    //             $this->session->unset_userdata('form_data_' . $from_status);
+
+    //             // Redirect berdasarkan tipe penerimaan
+    //             if ($from_status == '1') {
+    //                 redirect('penerimaan/dari_pengguna');
+    //             } elseif ($from_status == '2') {
+    //                 redirect('penerimaan/dari_supplier');
+    //             } else {
+    //                 redirect('penerimaan/antar_gudang');
+    //             }
+    //         } else {
+    //             $this->handle_response($response);
+    //             // Simpan data form ke session untuk ditampilkan kembali
+    //             $form_data = [
+    //                 'stockin_date' => $this->input->post('stockin_date'),
+    //                 'stockin_code' => $this->input->post('stockin_code'),
+    //                 'stockin_invoice' => $this->input->post('stockin_invoice'),
+    //                 'stockin_note' => $this->input->post('stockin_note'),
+    //                 'from_status' => $from_status,
+    //                 'from_id' => $this->input->post($from_id_field),
+    //                 'items' => $items_data
+    //             ];
+
+    //             // Simpan ke warehouse_id untuk superadmin
+    //             if ($user_role == 'superadmin' && $this->input->post('to_warehouse_id')) {
+    //                 $form_data['to_warehouse_id'] = $this->input->post('to_warehouse_id');
+    //             }
+
+    //             $this->session->set_flashdata('form_data_' . $from_status, $form_data);
+
+    //             // Redirect back based on from_status
+    //             if ($from_status == '1') {
+    //                 redirect('penerimaan/add_pengguna');
+    //             } elseif ($from_status == '2') {
+    //                 redirect('penerimaan/add_supplier');
+    //             } else {
+    //                 redirect('penerimaan/add_antar_gudang');
+    //             }
+    //         }
+    //     }
+    // }
+
     public function create()
     {
+        // Cek apakah request AJAX
+        $is_ajax = $this->input->is_ajax_request();
+
         if ($_POST) {
             $data_login = data_login_user();
 
@@ -327,8 +443,20 @@ class Penerimaan extends MY_Controller
             $response = $this->Api_model->add_penerimaan($post_data);
 
             if ($response['success']) {
+                // Jika request AJAX, kirim response JSON
+                if ($is_ajax) {
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => true,
+                            'message' => $response['message'] ?? 'Penerimaan barang berhasil ditambahkan',
+                            'stockin_id' => $response['stockin_id'] ?? null
+                        ]));
+                    return;
+                }
+
+                // Jika bukan AJAX (fallback)
                 $this->handle_response($response, 'Penerimaan barang berhasil ditambahkan');
-                // Hapus form data dari session jika berhasil
                 $this->session->unset_userdata('form_data_' . $from_status);
 
                 // Redirect berdasarkan tipe penerimaan
@@ -340,7 +468,20 @@ class Penerimaan extends MY_Controller
                     redirect('penerimaan/antar_gudang');
                 }
             } else {
+                // Jika request AJAX, kirim error dalam JSON
+                if ($is_ajax) {
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => false,
+                            'message' => $response['message'] ?? 'Gagal menyimpan penerimaan'
+                        ]));
+                    return;
+                }
+
+                // Jika bukan AJAX (fallback)
                 $this->handle_response($response);
+
                 // Simpan data form ke session untuk ditampilkan kembali
                 $form_data = [
                     'stockin_date' => $this->input->post('stockin_date'),
@@ -367,6 +508,18 @@ class Penerimaan extends MY_Controller
                 } else {
                     redirect('penerimaan/add_antar_gudang');
                 }
+            }
+        } else {
+            // Jika bukan POST request
+            if ($is_ajax) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([
+                        'success' => false,
+                        'message' => 'Invalid request method'
+                    ]));
+            } else {
+                show_404();
             }
         }
     }
