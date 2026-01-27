@@ -498,18 +498,33 @@ class Penerimaan extends MY_Controller
                 // Superadmin can select destination warehouse
                 $to_warehouse_id = $this->input->post('to_id');
             }
-
-            $post_data = [
-                'stockin_date' => $this->input->post('stockin_date'),
-                'stockin_code' => $this->input->post('stockin_code'),
-                'stockin_invoice' => $this->input->post('stockin_invoice'),
-                'stockin_note' => $this->input->post('stockin_note'),
-                'to_warehouse_id' => $to_warehouse_id,
-                'from_status' => $this->input->post('from_status'),
-                'login_id' => $data_login['login_id'],
-                'login_name' => $data_login['login_name'],
-                'items' => []
-            ];
+            $stockout_id = $this->input->post('stockout_id');
+            if ($stockout_id) {
+                $post_data = [
+                    'stockout_id' => $stockout_id,
+                    'stockin_date' => $this->input->post('stockin_date'),
+                    'stockin_code' => $this->input->post('stockin_code'),
+                    'stockin_invoice' => $this->input->post('stockin_invoice'),
+                    'stockin_note' => $this->input->post('stockin_note'),
+                    'to_warehouse_id' => $to_warehouse_id,
+                    'from_status' => $this->input->post('from_status'),
+                    'login_id' => $data_login['login_id'],
+                    'login_name' => $data_login['login_name'],
+                    'items' => []
+                ];
+            } else {
+                $post_data = [
+                    'stockin_date' => $this->input->post('stockin_date'),
+                    'stockin_code' => $this->input->post('stockin_code'),
+                    'stockin_invoice' => $this->input->post('stockin_invoice'),
+                    'stockin_note' => $this->input->post('stockin_note'),
+                    'to_warehouse_id' => $to_warehouse_id,
+                    'from_status' => $this->input->post('from_status'),
+                    'login_id' => $data_login['login_id'],
+                    'login_name' => $data_login['login_name'],
+                    'items' => []
+                ];
+            }
 
             // Tambahkan from_id berdasarkan tipe
             $from_status = $this->input->post('from_status');
