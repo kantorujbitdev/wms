@@ -252,10 +252,10 @@
                                             <?php if (isset($item['stock_id'])): ?>
                                                 <?php foreach ($products as $product): ?>
                                                     <?php if ($item['stock_id'] == $product['stock_id']):
-                                                        $current_stock = floatval($product['current_stock']);
+                                                        $current_stock = $product['current_stock'];
                                                         $available_stock = $current_stock < 0 ? 0 : $current_stock;
                                                         ?>
-                                                        Stok tersedia: <?= number_format($available_stock, 2) ?>
+                                                        Stok tersedia: <?= $available_stock?>
                                                         <?= $product['unit_code'] ?>
                                                         <?php break; ?>
                                                     <?php endif; ?>

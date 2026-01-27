@@ -53,10 +53,6 @@
             <?php else: ?>
                 warehouseName = '<?= $user_warehouse_name ?>';
             <?php endif; ?>
-
-            // $('#stockout_code').next('small').html(
-            //     `Kode otomatis berdasarkan Gudang Asal: <strong>${warehouseName}</strong>`
-            // );
         }
 
         // Function to convert month to Roman numeral
@@ -84,7 +80,7 @@
                 const warehouseId = $(this).val();
                 if (warehouseId) {
                     loadProductsByWarehouse(warehouseId);
-                    updateStockoutCode(); // Update kode juga
+                    updateStockoutCode();
 
                     // Disable same warehouse in destination dropdown
                     <?php if ($to_status == '3'): ?>
@@ -128,20 +124,20 @@
             const index = $(this).data('index');
             const selectedOption = $(this).find('option:selected');
             const stockId = selectedOption.data('stock-id');
-            const availableQty = parseFloat(selectedOption.data('available-qty')) || 0;
+            const availableQty = parseInt(selectedOption.data('available-qty')) || 0;
 
             // Update hidden stock_id input
             $(this).closest('.item-row').find('input[name="stock_id[]"]').val(stockId);
 
             // Extract unit from option text
             const optionText = selectedOption.text();
-            const unitMatch = optionText.match(/\(Stok: [\d.,]+ (.+?)\)/);
-            const unit = unitMatch ? unitMatch[1] : '';
+            const unitMatch = optionText.match(/\(Stok: (\d+) (.+?)\)/);
+            const unit = unitMatch ? unitMatch[2] : '';
 
             // Update stock info
-            $('#stockInfo' + index).text('Stok tersedia: ' + availableQty.toFixed(2) + ' ' + unit);
+            $('#stockInfo' + index).text('Stok tersedia: ' + availableQty + ' ' + unit);
 
-            // Update max qty
+            // Update max qty (gunakan bilangan bulat)
             const qtyInput = $(this).closest('.item-row').find('.qty-input');
             qtyInput.attr('max', availableQty);
 
@@ -154,8 +150,8 @@
         $(document).on('input', '.qty-input', function () {
             const index = $(this).data('index');
             const rawVal = $(this).val();
-            const qty = parseFloat(rawVal);
-            const maxQty = parseFloat($(this).attr('max'));
+            const qty = parseInt(rawVal);
+            const maxQty = parseInt($(this).attr('max')) || 0;
 
             const $error = $('#qtyError' + index);
             const $input = $(this);
@@ -172,23 +168,24 @@
             // Validasi angka
             if (isNaN(qty)) {
                 $input.addClass('is-invalid');
+                $error.text('Quantity harus berupa angka').show();
                 return;
             }
 
-            // Validasi minimum
-            if (qty <= 0) {
+            // Validasi bilangan bulat positif
+            if (qty <= 0 || !Number.isInteger(qty)) {
                 $input.addClass('is-invalid');
+                $error.text('Quantity harus bilangan bulat positif').show();
                 return;
             }
 
             // Validasi maksimum (stok)
             if (qty > maxQty) {
                 $input.addClass('is-invalid');
-                $error.show();
+                $error.text('Quantity melebihi stok tersedia (' + maxQty + ')').show();
                 return;
             }
         });
-
 
         // Clear form button
         $('#clearForm').click(function () {
@@ -213,9 +210,9 @@
             let optionsHtml = '<option value="">Pilih Produk</option>';
             if (window.productsData && window.productsData.length > 0) {
                 window.productsData.forEach(product => {
-                    const currentStock = parseFloat(product.current_stock) || 0;
+                    const currentStock = parseInt(product.current_stock) || 0;
                     const availableStock = currentStock < 0 ? 0 : currentStock;
-                    const stockDisplay = currentStock < 0 ? '0.00' : currentStock.toFixed(2);
+                    const stockDisplay = currentStock < 0 ? '0' : currentStock.toString();
                     const isDisabled = currentStock <= 0;
                     const unitCode = product.unit_code || '';
 
@@ -248,7 +245,7 @@
                     <div class="form-group">
                         <label class="form-label">Qty *</label>
                         <input type="number" class="form-control qty-input" name="qty[]" 
-                            data-index="${itemCounter}" step="0.01" min="0.01" max="0" required>
+                            data-index="${itemCounter}" step="1" min="1" max="0" required>
                         <small class="form-text text-danger qty-error" id="qtyError${itemCounter}" style="display: none;">
                             Melebihi stok tersedia
                         </small>
@@ -317,12 +314,6 @@
                     $('#customer_id').focus();
                     valid = false;
                 }
-
-                // if (!$('#stockout_invoice').val()) {
-                //     errorMessages.push('Harap isi nomor referensi');
-                //     $('#stockout_invoice').focus();
-                //     valid = false;
-                // }
             <?php elseif ($to_status == '3'): ?>
                 // Validasi untuk pengiriman antar gudang
                 if (!$('#to_warehouse_id').val()) {
@@ -338,12 +329,6 @@
                     errorMessages.push('Tidak bisa mengirim ke gudang yang sama');
                     valid = false;
                 }
-
-                // if (!$('#stockout_invoice').val()) {
-                //     errorMessages.push('Harap isi nomor referensi');
-                //     $('#stockout_invoice').focus();
-                //     valid = false;
-                // }
             <?php endif; ?>
 
             // Check if at least one item has product selected
@@ -369,16 +354,16 @@
             // Check quantity values and stock availability
             let hasQuantityError = false;
             $('.qty-input').each(function (index) {
-                const qty = parseFloat($(this).val()) || 0;
-                const maxQty = parseFloat($(this).attr('max')) || 0;
+                const qty = parseInt($(this).val()) || 0;
+                const maxQty = parseInt($(this).attr('max')) || 0;
 
                 if (qty <= 0 || isNaN(qty)) {
-                    errorMessages.push('Quantity harus lebih dari 0');
+                    errorMessages.push('Quantity harus bilangan bulat positif');
                     hasQuantityError = true;
                 }
 
                 if (qty > maxQty) {
-                    errorMessages.push('Quantity melebihi stok tersedia');
+                    errorMessages.push('Quantity melebihi stok tersedia (' + maxQty + ')');
                     hasQuantityError = true;
                 }
             });
@@ -423,9 +408,9 @@
                         // Generate options HTML
                         let optionsHtml = '<option value="">Pilih Produk</option>';
                         response.data.forEach(product => {
-                            const currentStock = parseFloat(product.current_stock) || 0;
+                            const currentStock = parseInt(product.current_stock) || 0;
                             const availableStock = currentStock < 0 ? 0 : currentStock;
-                            const stockDisplay = currentStock < 0 ? '0.00' : currentStock.toFixed(2);
+                            const stockDisplay = currentStock < 0 ? '0' : currentStock.toString();
                             const isDisabled = currentStock <= 0;
                             const unitCode = product.unit_code || '';
 
@@ -458,7 +443,7 @@
                                     <div class="form-group">
                                         <label class="form-label">Qty *</label>
                                         <input type="number" class="form-control qty-input" name="qty[]" 
-                                            data-index="0" step="0.01" min="0.01" max="0" required>
+                                            data-index="0" step="1" min="1" max="0" required>
                                         <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
                                             Melebihi stok tersedia
                                         </small>
@@ -520,7 +505,7 @@
                                     <div class="form-group">
                                         <label class="form-label">Qty *</label>
                                         <input type="number" class="form-control qty-input" name="qty[]" 
-                                            data-index="0" step="0.01" min="0.01" max="0" required>
+                                            data-index="0" step="1" min="1" max="0" required>
                                         <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
                                             Melebihi stok tersedia
                                         </small>
@@ -560,14 +545,14 @@
                 const index = $(this).data('index');
                 const selectedOption = $(this).find('option:selected');
                 if (selectedOption.length > 0 && selectedOption.val()) {
-                    const availableQty = parseFloat(selectedOption.data('available-qty')) || 0;
+                    const availableQty = parseInt(selectedOption.data('available-qty')) || 0;
 
                     // Extract unit from option text
                     const optionText = selectedOption.text();
-                    const unitMatch = optionText.match(/\(Stok: [\d.,]+ (.+?)\)/);
-                    const unit = unitMatch ? unitMatch[1] : '';
+                    const unitMatch = optionText.match(/\(Stok: (\d+) (.+?)\)/);
+                    const unit = unitMatch ? unitMatch[2] : '';
 
-                    $('#stockInfo' + index).text('Stok tersedia: ' + availableQty.toFixed(2) + ' ' + unit);
+                    $('#stockInfo' + index).text('Stok tersedia: ' + availableQty + ' ' + unit);
 
                     const qtyInput = $(this).closest('.item-row').find('.qty-input');
                     qtyInput.attr('max', availableQty);
