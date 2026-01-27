@@ -215,7 +215,7 @@
                 window.productsData.forEach(product => {
                     const currentStock = parseInt(product.current_stock) || 0;
                     const availableStock = currentStock < 0 ? 0 : currentStock;
-                    const stockDisplay = currentStock < 0 ? '0' : currentStock.toFixed(2);
+                    const stockDisplay = currentStock < 0 ? '0' : currentStock;
                     const isDisabled = currentStock <= 0;
                     const unitCode = product.unit_code || '';
 
@@ -425,7 +425,7 @@
                         response.data.forEach(product => {
                             const currentStock = parseInt(product.current_stock) || 0;
                             const availableStock = currentStock < 0 ? 0 : currentStock;
-                            const stockDisplay = currentStock < 0 ? '0' : currentStock.toFixed(2);
+                            const stockDisplay = currentStock < 0 ? '0' : currentStock;
                             const isDisabled = currentStock <= 0;
                             const unitCode = product.unit_code || '';
 
