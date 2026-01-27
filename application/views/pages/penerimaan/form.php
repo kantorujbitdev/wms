@@ -287,7 +287,7 @@
                                 <div class="col-md-2">
                                     <div class="mb-3">
                                         <label class="form-label">Qty *</label>
-                                        <input type="number" class="form-control qty-input" name="qty[]" step="0.01" min="0.01" 
+                                        <input type="number" class="form-control qty-input" name="qty[]" step="1" min="1" 
                                             value="<?= isset($item['qty']) ? $item['qty'] : '' ?>" required>
                                     </div>
                                 </div>
@@ -330,7 +330,7 @@
                             <div class="col-md-2">
                                 <div class="mb-3">
                                     <label class="form-label">Qty *</label>
-                                    <input type="number" class="form-control qty-input" name="qty[]" step="0.01" min="0.01" required>
+                                    <input type="number" class="form-control qty-input" name="qty[]" step="1" min="1" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -575,7 +575,7 @@
                 <div class="col-md-2">
                     <div class="mb-3">
                         <label class="form-label">Qty *</label>
-                        <input type="number" class="form-control qty-input" name="qty[]" step="0.01" min="0.01" required>
+                        <input type="number" class="form-control qty-input" name="qty[]" step="1" min="1" required>
                     </div>
                 </div>
                 <div class="col-md-4">
