@@ -101,10 +101,10 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="customer_id" class="form-label">Dari Pengguna *</label>
-                                <select class="form-control select2" id="customer_id" name="from_id" required>
+                                <select class="form-control select2" id="customer_id" name="customer_id" required>
                                     <option value="">Pilih Pengguna</option>
                                     <?php 
-                                    $selected_customer = isset($old_form_data['from_id']) ? $old_form_data['from_id'] : '';
+                                    $selected_customer = isset($old_form_data['customer_id']) ? $old_form_data['customer_id'] : '';
                                     foreach ($customers as $customer): 
                                     ?>
                                         <option value="<?= $customer['id'] ?>" 

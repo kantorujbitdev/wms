@@ -530,6 +530,8 @@ class Penerimaan extends MY_Controller
             $from_status = $this->input->post('from_status');
             $from_id_field = '';
 
+            $post_data['data tambahan'] = "ini dummy";
+
             if ($from_status == '1') {
                 $post_data['from_id'] = $this->input->post('customer_id');
                 $from_id_field = 'customer_id';

@@ -62,18 +62,18 @@ if (!function_exists('log_http_response')) {
         $prefixText = $prefix ? "{$prefix} " : "";
         $shortResponse = substr($response, 0, 500); // batasi isi log agar tidak terlalu panjang
 
-        // if ($method == 'GET') {
-        //     if (ENVIRONMENT === 'development') {
-        //         $pesan = "[RESPONSE]: " . $shortResponse;
-        //     } else {
-        //         $pesan = "[RESPONSE]: BERHASIL DIDAPATKAN";
-        //     }
-        // } else {
-        //     $pesan = "[RESPONSE]: " . $shortResponse;
-        // }
+        if ($method == 'GET') {
+            if (ENVIRONMENT === 'development') {
+                $pesan = "[RESPONSE]: " . $shortResponse;
+            } else {
+                $pesan = "[RESPONSE]: BERHASIL DIDAPATKAN";
+            }
+        } else {
+            $pesan = "[RESPONSE]: " . $shortResponse;
+        }
 
         // all debug
-        $pesan = "[RESPONSE]: " . $response;
+        // $pesan = "[RESPONSE]: " . $response;
 
         if ($http_code >= 200 && $http_code < 300) {
             save_log("✅ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'success');
