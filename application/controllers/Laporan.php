@@ -223,13 +223,13 @@ class Laporan extends MY_Controller
 
             // Set title
             $sheet->setCellValue('A1', 'STOCK CARD REPORT');
-            $sheet->mergeCells('A1:L1');
+            $sheet->mergeCells('A1:I1');
             $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
             $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Set period info
             $sheet->setCellValue('A2', 'Periode: ' . $filter_data['date_start'] . ' s/d ' . $filter_data['date_end']);
-            $sheet->mergeCells('A2:K2');
+            $sheet->mergeCells('A2:I2');
             $sheet->getStyle('A2')->getFont()->setBold(true)->setSize(12);
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -238,8 +238,6 @@ class Laporan extends MY_Controller
                 'No',
                 'Tanggal',
                 'No. Referensi',
-                'Dari',
-                'Ke',
                 'Kode Barang',
                 'Nama Barang',
                 'Qty',
@@ -262,7 +260,7 @@ class Laporan extends MY_Controller
                     ],
                 ]
             ];
-            $sheet->getStyle('A4:K4')->applyFromArray($headerStyle);
+            $sheet->getStyle('A4:I4')->applyFromArray($headerStyle);
 
             // Fill data sesuai dengan view
             $row = 5;
@@ -272,18 +270,16 @@ class Laporan extends MY_Controller
                 $sheet->setCellValue('A' . $row, $no);
                 $sheet->setCellValue('B' . $row, $item['movement_date'] ?? '');
                 $sheet->setCellValue('C' . $row, $item['movement_refno'] ?? '');
-                $sheet->setCellValue('D' . $row, $item['warehouse_name'] ?? '');
-                $sheet->setCellValue('E' . $row, $item['warehouse_status_name'] ?? '');
-                $sheet->setCellValue('F' . $row, $item['product_code'] ?? '');
-                $sheet->setCellValue('G' . $row, $item['product_name'] ?? '');
+                $sheet->setCellValue('D' . $row, $item['product_code'] ?? '');
+                $sheet->setCellValue('E' . $row, $item['product_name'] ?? '');
 
                 // Format Qty dengan tanda + atau - berdasarkan movement_type
                 $qty_value = ($item['movement_type'] ?? '') == '1' ? '+' . ($item['qty'] ?? '0') : '-' . ($item['qty'] ?? '0');
-                $sheet->setCellValue('H' . $row, $qty_value);
+                $sheet->setCellValue('F' . $row, $qty_value);
 
-                $sheet->setCellValue('I' . $row, $item['begin_stock'] ?? '0');
-                $sheet->setCellValue('J' . $row, $item['last_stock'] ?? '0');
-                $sheet->setCellValue('K' . $row, $item['movement_note'] ?? '');
+                $sheet->setCellValue('G' . $row, $item['begin_stock'] ?? '0');
+                $sheet->setCellValue('H' . $row, $item['last_stock'] ?? '0');
+                $sheet->setCellValue('I' . $row, $item['movement_note'] ?? '');
 
                 // Apply styling untuk Qty berdasarkan movement_type
                 $qty_cell = 'H' . $row;
@@ -296,16 +292,18 @@ class Laporan extends MY_Controller
                 }
 
                 // Center align untuk kolom tertentu
-                $center_align_columns = ['A', 'H', 'I', 'J'];
+                $center_align_columns = ['A', 'F', 'G', 'H'];
                 foreach ($center_align_columns as $col) {
                     $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }
 
                 // Bold untuk Stok Akhir
-                $sheet->getStyle('J' . $row)->getFont()->setBold(true);
+                $sheet->getStyle('F' . $row)->getFont()->setBold(true);
+                $sheet->getStyle('G' . $row)->getFont()->setBold(true);
+                $sheet->getStyle('H' . $row)->getFont()->setBold(true);
 
                 // Apply borders to data rows
-                $sheet->getStyle('A' . $row . ':K' . $row)->applyFromArray([
+                $sheet->getStyle('A' . $row . ':I' . $row)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -321,17 +319,17 @@ class Laporan extends MY_Controller
             // Tambahkan total transaksi di footer
             $footer_row = $row + 1;
             $sheet->setCellValue('A' . $footer_row, 'Total Transaksi:');
-            $sheet->mergeCells('A' . $footer_row . ':G' . $footer_row);
+            $sheet->mergeCells('A' . $footer_row . ':E' . $footer_row);
             $sheet->getStyle('A' . $footer_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
             $sheet->getStyle('A' . $footer_row)->getFont()->setBold(true);
 
-            $sheet->setCellValue('H' . $footer_row, count($response['data']));
-            $sheet->mergeCells('H' . $footer_row . ':K' . $footer_row);
-            $sheet->getStyle('H' . $footer_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('H' . $footer_row)->getFont()->setBold(true);
+            $sheet->setCellValue('F' . $footer_row, count($response['data']));
+            $sheet->mergeCells('F' . $footer_row . ':I' . $footer_row);
+            $sheet->getStyle('F' . $footer_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('F' . $footer_row)->getFont()->setBold(true);
 
             // Apply borders untuk footer
-            $sheet->getStyle('A' . $footer_row . ':K' . $footer_row)->applyFromArray([
+            $sheet->getStyle('A' . $footer_row . ':I' . $footer_row)->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
@@ -341,14 +339,13 @@ class Laporan extends MY_Controller
             ]);
 
             // Auto size columns
-            foreach (range('A', 'K') as $columnID) {
+            foreach (range('A', 'I') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
 
             // Set wrap text untuk kolom yang mungkin panjang
             $sheet->getStyle('C')->getAlignment()->setWrapText(true); // No. Referensi
-            $sheet->getStyle('G')->getAlignment()->setWrapText(true); // Nama Barang
-            $sheet->getStyle('K')->getAlignment()->setWrapText(true); // Keterangan
+            $sheet->getStyle('E')->getAlignment()->setWrapText(true); // Nama Barang
 
             // Set headers for download
             $filename = 'stock_card_' . date('Ymd_His') . '.xlsx';

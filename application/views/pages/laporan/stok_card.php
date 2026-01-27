@@ -167,7 +167,7 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <?= $card['begin_stock']; ?>
+                                        <strong><?= $card['begin_stock']; ?></strong>
                                     </td>
                                     <td class="text-center">
                                         <strong><?= $card['last_stock']; ?></strong>

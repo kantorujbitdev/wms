@@ -95,7 +95,10 @@ class Pengiriman extends MY_Controller
         $this->data['active_submenu'] = 'pengiriman_antar_gudang';
 
         $data_login = data_login_user(['to_status' => '3']);
-        $response = $this->Api_model->get_pengiriman($data_login);
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+        $data_request_penerimaan = data_login_user(['to_status' => 3, 'transfer_status' => 1, 'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null]);
+
+        $response = $this->Api_model->get_pengiriman($data_request_penerimaan);
         $this->data['pengiriman_list'] = $this->handle_response($response);
 
         $this->render_view('pages/pengiriman/antar_gudang');
