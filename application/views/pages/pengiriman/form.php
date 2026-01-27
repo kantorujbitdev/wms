@@ -233,8 +233,8 @@
                                             data-index="<?= $index ?>" required>
                                             <option value="">Pilih Produk</option>
                                             <?php foreach ($products as $product):
-                                                $current_stock = floatval($product['current_stock']);
-                                                $stock_display = $current_stock < 0 ? '0.00' : number_format($current_stock, 2);
+                                                $current_stock = $product['current_stock'];
+                                                $stock_display = $current_stock < 0 ? '0' : $current_stock;
                                                 ?>
                                                 <option value="<?= $product['product_id'] ?>"
                                                     data-stock-id="<?= $product['stock_id'] ?>"
@@ -255,7 +255,7 @@
                                                         $current_stock = $product['current_stock'];
                                                         $available_stock = $current_stock < 0 ? 0 : $current_stock;
                                                         ?>
-                                                        Stok tersedia: <?= $available_stock?>
+                                                        Stok tersedia: <?= number_format($available_stock, 2) ?>
                                                         <?= $product['unit_code'] ?>
                                                         <?php break; ?>
                                                     <?php endif; ?>
@@ -304,8 +304,8 @@
                                         required>
                                         <option value="">Pilih Produk</option>
                                         <?php foreach ($products as $product):
-                                            $current_stock = floatval($product['current_stock']);
-                                            $stock_display = $current_stock < 0 ? '0.00' : number_format($current_stock, 2);
+                                            $current_stock = $product['current_stock'];
+                                            $stock_display = $current_stock < 0 ? '0' : $current_stock;
                                             ?>
                                             <option value="<?= $product['product_id'] ?>"
                                                 data-stock-id="<?= $product['stock_id'] ?>"
@@ -325,7 +325,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Qty *</label>
                                     <input type="number" class="form-control qty-input" name="qty[]" data-index="0"
-                                        step="0.01" min="0.01" max="0" required>
+                                        step="1" min="1" max="0" required>
                                     <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
                                         Melebihi stok tersedia
                                     </small>
