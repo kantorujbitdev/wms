@@ -194,12 +194,12 @@
 <!-- Hidden template for items -->
 <div id="itemTemplate" class="d-none">
     <div class="item-row row mb-3 align-items-center">
-        <div class="col-md-1">
-            <div class="form-check text-center">
+        <!-- <div class="col-md-1">
+             <div class="form-check text-center">
                 <input class="form-check-input item-checkbox" type="checkbox" checked>
-            </div>
-        </div>
-        <div class="col-md-3">
+            </div> 
+        </div> -->
+        <div class="col-md-6">
             <div class="mb-3">
                 <label class="form-label">Produk</label>
                 <input type="text" class="form-control bg-light product-display" readonly>
@@ -208,15 +208,11 @@
                 <input type="hidden" class="detail-id" name="detail_id[]">
             </div>
         </div>
+        <input type="hidden" class="form-control bg-light qty-sent" readonly>
+
         <div class="col-md-2">
             <div class="mb-3">
-                <label class="form-label">Qty Dikirim</label>
-                <input type="text" class="form-control bg-light qty-sent" readonly>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="mb-3">
-                <label class="form-label">Qty Diterima *</label>
+                <label class="form-label">Qty</label>
                 <input type="text" class="form-control qty-received-input" name="qty[]" readonly>
             </div>
         </div>
@@ -236,5 +232,14 @@
         </div>
     </div>
 </div>
-
+<!-- Di bagian head atau sebelum script.js -->
+<script>
+    // Data yang perlu di-pass ke JavaScript
+    var appData = {
+        warehouses: <?= json_encode($warehouses) ?>,
+        userWarehouseCode: '<?= $user_warehouse_code ?>',
+        userRole: '<?= $user_role ?>',
+        userWarehouseId: '<?= $user_warehouse_id ?>'
+    };
+</script>
 <?php include_once 'application/views/pages/penerimaan/form_antar_gudang_js.php'; ?>

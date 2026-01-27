@@ -117,8 +117,8 @@
                                 <th>Tanggal</th>
                                 <th>No. Referensi</th>
                                 <!-- <th>Tipe</th> -->
-                                <th>Dari</th>
-                                <th>Ke</th>
+                                <!-- <th>Dari</th> -->
+                                <!-- <th>Ke</th> -->
                                 <th>Kode Barang</th>
                                 <th>Nama Barang</th>
                                 <th>Qty</th>
@@ -149,9 +149,8 @@
                                         <?php endif; ?>
                                     </td> -->
 
-                                    <td><?= $card['warehouse_name']; ?></td>
-                                    <td><?= $card['warehouse_status_name']; ?>
-                                    </td>
+                                    <!-- <td><?= $card['warehouse_status_name']; ?></td> -->
+                                    <!-- <td><?= $card['warehouse_name']; ?></td> -->
                                     <td><?= $card['product_code']; ?></td>
                                     <td><?= $card['product_name']; ?></td>
 
@@ -182,7 +181,7 @@
 
                         <tfoot>
                             <tr>
-                                <td colspan="7" class="text-right">
+                                <td colspan="5" class="text-right">
                                     <strong>Total Transaksi:</strong>
                                 </td>
                                 <td colspan="4" class="text-center">
