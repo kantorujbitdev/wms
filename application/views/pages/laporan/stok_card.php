@@ -116,16 +116,11 @@
                                 <th>No</th>
                                 <th>Tanggal</th>
                                 <th>No. Referensi</th>
-                                <!-- <th>Tipe</th> -->
-                                <!-- <th>Dari</th> -->
-                                <!-- <th>Ke</th> -->
                                 <th>Kode Barang</th>
                                 <th>Nama Barang</th>
                                 <th>Qty</th>
                                 <th>Stok<br>Awal</th>
                                 <th>Stok<br>Akhir</th>
-                                <!-- <th>User</th> -->
-                                <th>Ket</th>
                             </tr>
                         </thead>
 
@@ -136,21 +131,6 @@
                                     <td class="text-center"><?= $no++; ?></td>
                                     <td><?= $card['movement_date']; ?></td>
                                     <td><?= $card['movement_refno']; ?></td>
-
-                                    <!-- <td class="text-center">
-                                        <?php if ($card['movement_type'] == '1'): ?>
-                                            <span class="badge bg-success">
-                                                <?= $card['movement_type_name']; ?>
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger">
-                                                <?= $card['movement_type_name']; ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </td> -->
-
-                                    <!-- <td><?= $card['warehouse_status_name']; ?></td> -->
-                                    <!-- <td><?= $card['warehouse_name']; ?></td> -->
                                     <td><?= $card['product_code']; ?></td>
                                     <td><?= $card['product_name']; ?></td>
 
@@ -173,8 +153,6 @@
                                         <strong><?= $card['last_stock']; ?></strong>
                                     </td>
 
-                                    <!-- <td><?= $card['user_name']; ?></td> -->
-                                    <td><?= $card['movement_note']; ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -184,7 +162,7 @@
                                 <td colspan="5" class="text-right">
                                     <strong>Total Transaksi:</strong>
                                 </td>
-                                <td colspan="4" class="text-center">
+                                <td colspan="3" class="text-center">
                                     <strong><?= count($stock_cards); ?></strong>
                                 </td>
                             </tr>

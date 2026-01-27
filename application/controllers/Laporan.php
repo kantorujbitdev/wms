@@ -223,13 +223,13 @@ class Laporan extends MY_Controller
 
             // Set title
             $sheet->setCellValue('A1', 'STOCK CARD REPORT');
-            $sheet->mergeCells('A1:I1');
+            $sheet->mergeCells('A1:H1');
             $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
             $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Set period info
             $sheet->setCellValue('A2', 'Periode: ' . $filter_data['date_start'] . ' s/d ' . $filter_data['date_end']);
-            $sheet->mergeCells('A2:I2');
+            $sheet->mergeCells('A2:H2');
             $sheet->getStyle('A2')->getFont()->setBold(true)->setSize(12);
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -242,8 +242,7 @@ class Laporan extends MY_Controller
                 'Nama Barang',
                 'Qty',
                 'Stok Awal',
-                'Stok Akhir',
-                'Ket'
+                'Stok Akhir'
             ];
 
             $sheet->fromArray($headers, NULL, 'A4');
@@ -260,7 +259,7 @@ class Laporan extends MY_Controller
                     ],
                 ]
             ];
-            $sheet->getStyle('A4:I4')->applyFromArray($headerStyle);
+            $sheet->getStyle('A4:H4')->applyFromArray($headerStyle);
 
             // Fill data sesuai dengan view
             $row = 5;
@@ -274,15 +273,14 @@ class Laporan extends MY_Controller
                 $sheet->setCellValue('E' . $row, $item['product_name'] ?? '');
 
                 // Format Qty dengan tanda + atau - berdasarkan movement_type
-                $qty_value = ($item['movement_type'] ?? '') == '1' ? '+' . ($item['qty'] ?? '0') : '-' . ($item['qty'] ?? '0');
+                $qty_value = ($item['movement_type'] ?? '') == '1' ? ' + ' . ($item['qty'] ?? '0') : ' - ' . ($item['qty'] ?? '0');
                 $sheet->setCellValue('F' . $row, $qty_value);
 
                 $sheet->setCellValue('G' . $row, $item['begin_stock'] ?? '0');
                 $sheet->setCellValue('H' . $row, $item['last_stock'] ?? '0');
-                $sheet->setCellValue('I' . $row, $item['movement_note'] ?? '');
 
                 // Apply styling untuk Qty berdasarkan movement_type
-                $qty_cell = 'H' . $row;
+                $qty_cell = 'F' . $row;
                 if (($item['movement_type'] ?? '') == '1') {
                     // MASUK - warna hijau
                     $sheet->getStyle($qty_cell)->getFont()->getColor()->setARGB('FF006400'); // Dark Green
@@ -303,7 +301,7 @@ class Laporan extends MY_Controller
                 $sheet->getStyle('H' . $row)->getFont()->setBold(true);
 
                 // Apply borders to data rows
-                $sheet->getStyle('A' . $row . ':I' . $row)->applyFromArray([
+                $sheet->getStyle('A' . $row . ':H' . $row)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -324,12 +322,12 @@ class Laporan extends MY_Controller
             $sheet->getStyle('A' . $footer_row)->getFont()->setBold(true);
 
             $sheet->setCellValue('F' . $footer_row, count($response['data']));
-            $sheet->mergeCells('F' . $footer_row . ':I' . $footer_row);
+            $sheet->mergeCells('F' . $footer_row . ':H' . $footer_row);
             $sheet->getStyle('F' . $footer_row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('F' . $footer_row)->getFont()->setBold(true);
 
             // Apply borders untuk footer
-            $sheet->getStyle('A' . $footer_row . ':I' . $footer_row)->applyFromArray([
+            $sheet->getStyle('A' . $footer_row . ':H' . $footer_row)->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
@@ -339,7 +337,7 @@ class Laporan extends MY_Controller
             ]);
 
             // Auto size columns
-            foreach (range('A', 'I') as $columnID) {
+            foreach (range('A', 'H') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
 
