@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3307
--- Generation Time: Dec 22, 2025 at 09:29 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: 127.0.0.1
+-- Generation Time: Jan 27, 2026 at 03:57 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -56,7 +56,10 @@ INSERT INTO `api` (`id_api`, `nama_api`, `endpoint`, `status_aktif`, `created_at
 (13, 'Penerimaan', '/inventory/api/stockin', 1, '2025-11-06 14:17:28', '2025-11-21 17:28:56'),
 (14, 'Pengiriman', '/inventory/api/stockout', 1, '2025-11-06 14:17:28', '2025-11-21 17:28:56'),
 (15, 'Edit Penerimaan', '/inventory/api/stockin_edit', 1, '2025-11-06 14:17:28', '2025-12-10 16:43:08'),
-(16, 'Edit Pengiriman', '/inventory/api/stockout_edit', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25');
+(16, 'Edit Pengiriman', '/inventory/api/stockout_edit', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25'),
+(17, 'Card Stock', '/inventory/api/stockmovement', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25'),
+(18, 'List Kode Pengiriman', '/inventory/api/stockin_transfer', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25'),
+(19, 'Pengiriman Details', '/inventory/api/stockin_transfer_getdetail', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25');
 
 -- --------------------------------------------------------
 
@@ -140,13 +143,13 @@ INSERT INTO `role_permissions` (`id`, `role_name`, `menu_key`, `can_view`, `can_
 (30, 'admin', 'tipe_satuan', 1, 1, 0, '2025-12-02 17:05:59'),
 (31, 'admin', 'produk', 1, 1, 0, '2025-12-02 17:05:59'),
 (32, 'admin', 'gudang_stok', 1, 1, 0, '2025-12-02 17:05:59'),
-(33, 'admin', 'penerimaan', 1, 1, 1, '2025-12-02 17:05:59'),
-(34, 'admin', 'penerimaan_antar_gudang', 1, 1, 1, '2025-12-02 17:05:59'),
-(35, 'admin', 'supplier_penerimaan', 1, 1, 1, '2025-12-02 17:05:59'),
-(36, 'admin', 'pengguna_penerimaan', 1, 1, 1, '2025-12-02 17:05:59'),
-(37, 'admin', 'pengiriman', 1, 1, 1, '2025-12-02 17:05:59'),
-(38, 'admin', 'pengiriman_antar_gudang', 1, 1, 1, '2025-12-02 17:05:59'),
-(39, 'admin', 'penggunaan', 1, 1, 1, '2025-12-02 17:05:59'),
+(33, 'admin', 'penerimaan', 1, 1, 0, '2025-12-02 17:05:59'),
+(34, 'admin', 'penerimaan_antar_gudang', 1, 1, 0, '2025-12-02 17:05:59'),
+(35, 'admin', 'supplier_penerimaan', 1, 1, 0, '2025-12-02 17:05:59'),
+(36, 'admin', 'pengguna_penerimaan', 1, 1, 0, '2025-12-02 17:05:59'),
+(37, 'admin', 'pengiriman', 1, 1, 0, '2025-12-02 17:05:59'),
+(38, 'admin', 'pengiriman_antar_gudang', 1, 1, 0, '2025-12-02 17:05:59'),
+(39, 'admin', 'penggunaan', 1, 1, 0, '2025-12-02 17:05:59'),
 (40, 'admin', 'laporan', 1, 1, 0, '2025-12-02 17:05:59'),
 (41, 'admin', 'customer', 1, 1, 0, '2025-12-02 17:05:59'),
 (42, 'admin', 'supplier', 1, 1, 0, '2025-12-02 17:05:59'),
@@ -196,7 +199,7 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `api`
 --
 ALTER TABLE `api`
-  MODIFY `id_api` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_api` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `pengaturan`
