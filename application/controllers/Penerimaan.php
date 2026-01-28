@@ -518,7 +518,7 @@ class Penerimaan extends MY_Controller
                     'stockin_code' => $this->input->post('stockin_code'),
                     'stockin_invoice' => $this->input->post('stockin_invoice'),
                     'stockin_note' => $this->input->post('stockin_note'),
-                    'to_warehouse_id' => $to_warehouse_id,
+                    'to_warehouse_id' => $this->input->post('to_warehouse_id'),
                     'from_status' => $this->input->post('from_status'),
                     'login_id' => $data_login['login_id'],
                     'login_name' => $data_login['login_name'],
@@ -529,8 +529,6 @@ class Penerimaan extends MY_Controller
             // Tambahkan from_id berdasarkan tipe
             $from_status = $this->input->post('from_status');
             $from_id_field = '';
-
-            $post_data['data tambahan'] = "ini dummy";
 
             if ($from_status == '1') {
                 $post_data['from_id'] = $this->input->post('customer_id');
