@@ -214,11 +214,11 @@ class Laporan extends MY_Controller
         }
 
         if ($start_date !== null && $start_date !== '') {
-            $data_request_penerimaan['start_date'] = date('Y-m-d', strtotime($start_date));
+            $data_request_penerimaan['date_start'] = date('Y-m-d', strtotime($start_date));
         }
 
         if ($end_date !== null && $end_date !== '') {
-            $data_request_penerimaan['end_date'] = date('Y-m-d', strtotime($end_date));
+            $data_request_penerimaan['date_end'] = date('Y-m-d', strtotime($end_date));
         }
 
         // Get warehouse list untuk dropdown filter
@@ -285,6 +285,7 @@ class Laporan extends MY_Controller
 
         $this->render_view('pages/laporan/detail');
     }
+
     public function export_stok_card()
     {
         $user_role = $this->session->userdata('role');
