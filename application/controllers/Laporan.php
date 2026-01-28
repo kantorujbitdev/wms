@@ -174,7 +174,117 @@ class Laporan extends MY_Controller
         // Render view
         $this->render_view('pages/laporan/stok_card');
     }
+    public function barang_proses()
+    {
+        $this->check_permission('laporan', 'view');
+        // Set title
+        $this->data['title'] = 'Barang dalam Proses';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_barang_proses';
 
+        // Ambil warehouse_id dari session
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // Ambil parameter filter dari input GET
+        $status = $this->input->get('status');
+        $warehouse_id = $this->input->get('warehouse_id');
+        $start_date = $this->input->get('start_date');
+        $end_date = $this->input->get('end_date');
+
+        // Set default tanggal jika tidak ada parameter
+        if (empty($start_date) && empty($end_date) && !$this->input->get()) {
+            $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
+            $end_date = date('Y-m-d');   // Tanggal hari ini
+        }
+
+        // Prepare data request
+        $data_request_penerimaan = data_login_user([
+            'to_status' => 3,
+            'on_transfer_status' => null,
+            'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null
+        ]);
+
+        // Apply filters jika ada
+        if ($status !== null && $status !== '') {
+            $data_request_penerimaan['on_transfer_status'] = $status;
+        }
+
+        if ($warehouse_id !== null && $warehouse_id !== '' && $warehouse_id !== 'all') {
+            $data_request_penerimaan['warehouse_id'] = $warehouse_id;
+        }
+
+        if ($start_date !== null && $start_date !== '') {
+            $data_request_penerimaan['start_date'] = date('Y-m-d', strtotime($start_date));
+        }
+
+        if ($end_date !== null && $end_date !== '') {
+            $data_request_penerimaan['end_date'] = date('Y-m-d', strtotime($end_date));
+        }
+
+        // Get warehouse list untuk dropdown filter
+        $warehouse_response = $this->Api_model->get_all_gudang(data_login_user());
+        $this->data['warehouse_list'] = $this->handle_response($warehouse_response);
+
+        // Get pengiriman data dengan filter
+        $response = $this->Api_model->get_pengiriman($data_request_penerimaan);
+        $this->data['pengiriman_list'] = $this->handle_response($response);
+
+        // Kirim filter value ke view untuk form
+        $this->data['filter_status'] = $status;
+        $this->data['filter_warehouse_id'] = $warehouse_id;
+        $this->data['filter_start_date'] = $start_date;
+        $this->data['filter_end_date'] = $end_date;
+
+        // Render view
+        $this->render_view('pages/laporan/barang_dalam_proses');
+    }
+    // ==================== DETAIL PENGIRIMAN ====================
+    public function detail($id)
+    {
+        $this->data['title'] = 'Detail Pengiriman Barang';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_barang_proses';
+
+        $data_login = data_login_user(['stockout_id' => $id]);
+        $response = $this->Api_model->pengiriman_by_id($data_login);
+
+        // Periksa struktur response API
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Normalize header keys to lowercase
+            $normalized_header = [];
+            foreach ($header as $key => $value) {
+                $normalized_key = strtolower($key);
+                $normalized_header[$normalized_key] = $value;
+            }
+
+            // Normalize detail keys
+            $normalized_detail = [];
+            foreach ($detail as $item) {
+                $normalized_item = [];
+                foreach ($item as $key => $value) {
+                    $normalized_item[strtolower($key)] = $value;
+                }
+                $normalized_detail[] = $normalized_item;
+            }
+
+            // Format data untuk view
+            $pengiriman = [
+                'header' => $normalized_header,
+                'detail' => $normalized_detail
+            ];
+
+            $this->data['pengiriman'] = $pengiriman;
+        } else {
+            // Jika header false atau tidak ada data
+            $this->handle_response($response);
+            $this->redirect_back();
+        }
+
+        $this->render_view('pages/laporan/detail');
+    }
     public function export_stok_card()
     {
         $user_role = $this->session->userdata('role');

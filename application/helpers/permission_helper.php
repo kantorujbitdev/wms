@@ -143,6 +143,7 @@ if (!function_exists('get_menu_icon')) {
             'user' => 'fas fa-users-cog',
             'pengaturan' => 'fas fa-cog',
             'web_pengaturan' => 'fas fa-globe',
+            'barang_proses' => 'fas fa-spinner',
             'api_pengaturan' => 'fas fa-plug'
         );
 
