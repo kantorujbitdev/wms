@@ -7,7 +7,7 @@
     }
 
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         line-height: 1.3;
         color: #000;
         background: #fff;
@@ -81,6 +81,7 @@
     }
 
     .info-perusahaan h1 {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 16px;
         font-weight: bold;
         margin-bottom: 2px;
@@ -90,6 +91,7 @@
     }
 
     .info-perusahaan h2 {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 14px;
         font-weight: bold;
         margin-bottom: 2px;
@@ -97,12 +99,14 @@
     }
 
     .info-perusahaan p {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 12px;
         font-weight: bold;
         margin-top: 2px;
     }
 
     .stamp-original {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         width: 80px;
         text-align: center;
         flex-shrink: 0;
@@ -137,6 +141,7 @@
     }
 
     .info-box h4 {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 12px;
         font-weight: bold;
         text-align: center;
@@ -146,6 +151,7 @@
     }
 
     .info-row {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         display: flex;
         margin-bottom: 3px;
         font-size: 14px;
@@ -153,6 +159,7 @@
     }
 
     .info-label {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         width: 120px;
         font-weight: bold;
         flex-shrink: 0;
@@ -173,6 +180,7 @@
     }
 
     .table-title {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         text-align: center;
         font-weight: bold;
         font-size: 14px;
@@ -189,6 +197,7 @@
     }
 
     .detail-table {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         width: 100%;
         border-collapse: collapse;
         font-size: 10px;
@@ -201,6 +210,7 @@
     }
 
     .detail-table th {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-weight: bold;
         padding: 4px 3px;
         text-align: center;
@@ -213,6 +223,7 @@
     }
 
     .detail-table td {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         padding: 3px 3px;
         border: 1px solid #000;
         vertical-align: top;
@@ -292,6 +303,7 @@
     }
 
     .signature-title {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-weight: bold;
         font-size: 12px;
         text-transform: uppercase;
@@ -305,12 +317,14 @@
     }
 
     .signature-name {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 11px;
         margin-top: 5px;
         min-height: 15px;
     }
 
     .signature-note {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 9px;
         color: #666;
         margin-top: 2px;
@@ -318,6 +332,7 @@
 
     /* Footer */
     .footer {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         margin-top: 10px;
         font-size: 9px;
         color: #666;
@@ -328,6 +343,7 @@
 
     /* Nomor Halaman */
     .page-number {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         position: absolute;
         bottom: 5mm;
         right: 15mm;
@@ -344,6 +360,7 @@
     }
 
     .btn-print {
+        font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         background: #28a745;
         color: white;
         border: none;
@@ -362,6 +379,7 @@
     ============================================ */
     @media print {
         body {
+            font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             font-size: 14px;
             background: white;
             margin: 0;
