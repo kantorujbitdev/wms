@@ -11,7 +11,6 @@ class Pengaturan extends MY_Controller
         $this->load->library('form_validation');
         $this->check_permission('pengaturan', 'view');
     }
-    // percobaan commit push  github
 
     public function index()
     {

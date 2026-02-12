@@ -273,7 +273,8 @@
                                         <select class="form-control select2 product-select" name="product_id[]" required>
                                             <option value="">Pilih Produk</option>
                                             <?php foreach ($products as $product): 
-                                                $display_name = htmlspecialchars($product['product_code'] . ' - ' . $product['product_name'], ENT_QUOTES, 'UTF-8');
+                                                $display_name = htmlspecialchars($product['product_code'] . ' - ' .
+                                                 $product['product_name'] . ' || ' . $product['unit_code'], ENT_QUOTES, 'UTF-8');
                                             ?>
                                                 <option value="<?= $product['product_id'] ?>"
                                                     <?= (isset($item['product_id']) && $item['product_id'] == $product['product_id']) ? 'selected' : '' ?>
