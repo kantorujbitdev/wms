@@ -50,7 +50,7 @@ class User extends MY_Controller
         // $roles = $this->Api_model->get_user(['action' => 'roles']);
         $user_role = $this->session->userdata('role');
         if ($user_role != 'superadmin') {
-            $this->data['roles'] = ['admin', 'Staff'];
+            $this->data['roles'] = ['Admin', 'Staff'];
         } else {
             $this->data['roles'] = ['Superadmin', 'Admin', 'Staff'];
         }
@@ -70,8 +70,12 @@ class User extends MY_Controller
         $this->data['user_data'] = $user['success'] ? $user['data'][0] : [];
 
         // Get roles from API
-        $roles = $this->Api_model->get_user(['action' => 'roles']);
-        $this->data['roles'] = $roles['success'] ? $roles['data'] : ['Superadmin', 'Admin', 'Staff'];
+        $user_role = $this->session->userdata('role');
+        if ($user_role != 'superadmin') {
+            $this->data['roles'] = ['Admin', 'Staff'];
+        } else {
+            $this->data['roles'] = ['Superadmin', 'Admin', 'Staff'];
+        }
 
         // ✅ Get Warehouse
         $warehouse = $this->Api_model->get_gudang(data_login_user());
