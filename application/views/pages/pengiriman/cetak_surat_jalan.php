@@ -72,7 +72,7 @@ $config = get_app_config();
                 <!-- Informasi pengiriman (hanya di halaman pertama) -->
                 <div class="info-grid">
                     <div class="info-box">
-                        <h4>INFORMASI PENGIRIMAN</h4>
+                        <h4>INFORMASI PENGIRIM</h4>
                         <div class="info-row">
                             <div class="info-label">No. Surat Jalan:</div>
                             <div class="info-value"><?= $pengiriman['header']['stockout_code'] ?></div>

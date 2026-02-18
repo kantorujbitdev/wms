@@ -72,7 +72,7 @@ $config = get_app_config();
                 <!-- Informasi Penerimaan (hanya di halaman pertama) -->
                 <div class="info-grid">
                     <div class="info-box">
-                        <h4>INFORMASI PENERIMAAN</h4>
+                        <h4>INFORMASI PENERIMA</h4>
                         <div class="info-row">
                             <span class="info-label">No. Surat Terima:</span>
                             <span class="info-value"><?= $penerimaan['header']['stockin_code'] ?></span>

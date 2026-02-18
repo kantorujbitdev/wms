@@ -43,7 +43,7 @@ elseif ($active_submenu == 'penerimaan_antar_gudang')
                             </tr>
                             <tr>
                                 <th>Tanggal</th>
-                                <td><?= $header['stockin_date'] ?? '-' ?></td>
+                                <td><?= date('d F Y', strtotime($header['stockin_date'])) ?></td>
                             </tr>
                             <tr>
                                 <th>No Invoice/Referensi</th>
@@ -115,12 +115,11 @@ elseif ($active_submenu == 'penerimaan_antar_gudang')
                         <thead class="text-center align-middle">
                             <tr>
                                 <th>No</th>
-                                <th>Kode Produk</th>
-                                <th>Nama Produk</th>
+                                <th>Kode Barang</th>
+                                <th>Nama Barang</th>
+                                <th>QTY</th>
                                 <th>Satuan</th>
-                                <th>Qty Diterima</th>
-                                <th>Stok Saat Ini</th>
-                                <th>Keterangan Barang</th>
+                                <th>Ket</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -131,9 +130,8 @@ elseif ($active_submenu == 'penerimaan_antar_gudang')
                                         <td class="text-center"><?= $no++; ?></td>
                                         <td><?= $item['product_code'] ?? '-' ?></td>
                                         <td><?= $item['product_name'] ?? '-' ?></td>
-                                        <td class="text-center"><?= $item['unit_code'] ?? '-' ?></td>
                                         <td class="text-right"><?= viewNumber($item['qty']) ?></td>
-                                        <td class="text-right"><?= viewNumber($item['current_stock']) ?></td>
+                                        <td class="text-center"><?= $item['unit_code'] ?? '-' ?></td>
                                         <td><?= $item['detail_note'] ?? '-' ?></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -145,12 +143,19 @@ elseif ($active_submenu == 'penerimaan_antar_gudang')
                         </tbody>
                         <?php if (!empty($detail)): ?>
                             <tfoot>
-                                <tr class="font-weight-bold">
-                                    <td colspan="4" class="text-right">Total:</td>
+                                <!-- <tr class="font-weight-bold">
+                                    <td colspan="4" class="text-center">TOTAL KESELURUHAN</td>
                                     <td class="text-right">
                                         <?= viewNumber(array_sum(array_column($detail, 'qty'))) ?>
                                     </td>
                                     <td colspan="2"></td>
+                                </tr> -->
+
+                                <tr class="total-row">
+                                    <td colspan="3" class="text-center">TOTAL KESELURUHAN</td>
+                                    <td class="text-right"><?= viewNumber(array_sum(array_column($detail, 'qty'))) ?>
+                                    </td>
+                                    <td colspan="2">&nbsp;</td>
                                 </tr>
                             </tfoot>
                         <?php endif; ?>
@@ -184,8 +189,12 @@ elseif ($active_submenu == 'penerimaan_antar_gudang')
 </script>
 
 <style>
+    .total-row {
+        font-weight: bold;
+    }
+
     @media print {
-        .d - print - none {
+        .d-print-none {
             display: none !important;
         }
 
