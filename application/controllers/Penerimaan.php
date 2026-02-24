@@ -364,122 +364,8 @@ class Penerimaan extends MY_Controller
         }
     }
 
+
     // ==================== CREATE PENERIMAAN ====================
-    // public function create()
-    // {
-    //     if ($_POST) {
-    //         $data_login = data_login_user();
-
-    //         // Get user role and warehouse from session
-    //         $user_role = $this->session->userdata('role');
-    //         $warehouse_id_session = $this->session->userdata('warehouse_id');
-
-    //         // Determine to_warehouse_id based on user role
-    //         $to_warehouse_id = $warehouse_id_session;
-    //         if ($user_role == 'superadmin') {
-    //             // Superadmin can select destination warehouse
-    //             $to_warehouse_id = $this->input->post('to_warehouse_id');
-    //         }
-
-    //         $post_data = [
-    //             'stockin_date' => $this->input->post('stockin_date'),
-    //             'stockin_code' => $this->input->post('stockin_code'),
-    //             'stockin_invoice' => $this->input->post('stockin_invoice'),
-    //             'stockin_note' => $this->input->post('stockin_note'),
-    //             'to_warehouse_id' => $to_warehouse_id,
-    //             'from_status' => $this->input->post('from_status'),
-    //             'login_id' => $data_login['login_id'],
-    //             'login_name' => $data_login['login_name'],
-    //             'items' => []
-    //         ];
-
-    //         // Tambahkan from_id berdasarkan tipe
-    //         $from_status = $this->input->post('from_status');
-    //         $from_id_field = '';
-
-    //         if ($from_status == '1') {
-    //             $post_data['from_id'] = $this->input->post('customer_id');
-    //             $from_id_field = 'customer_id';
-    //         } elseif ($from_status == '2') {
-    //             $post_data['from_id'] = $this->input->post('supplier_id');
-    //             $from_id_field = 'supplier_id';
-    //         } elseif ($from_status == '3') {
-    //             $post_data['from_id'] = $this->input->post('from_warehouse_id');
-    //             $from_id_field = 'from_warehouse_id';
-    //         }
-
-    //         // Prepare items data
-    //         $product_ids = $this->input->post('product_id');
-    //         $qtys = $this->input->post('qty');
-    //         $notes = $this->input->post('detail_note');
-
-    //         $items_data = [];
-    //         if (!empty($product_ids)) {
-    //             foreach ($product_ids as $index => $product_id) {
-    //                 if (!empty($product_id) && !empty($qtys[$index])) {
-    //                     $items_data[] = [
-    //                         'stock_id' => $product_id,
-    //                         'qty' => (float) $qtys[$index],
-    //                         'detail_note' => $notes[$index] ?? ''
-    //                     ];
-
-    //                     $post_data['items'][] = [
-    //                         'stock_id' => $product_id,
-    //                         'qty' => (float) $qtys[$index],
-    //                         'detail_note' => $notes[$index] ?? ''
-    //                     ];
-    //                 }
-    //             }
-    //         }
-
-    //         // Send to API
-    //         $response = $this->Api_model->add_penerimaan($post_data);
-
-    //         if ($response['success']) {
-    //             $this->handle_response($response, 'Penerimaan barang berhasil ditambahkan');
-    //             // Hapus form data dari session jika berhasil
-    //             $this->session->unset_userdata('form_data_' . $from_status);
-
-    //             // Redirect berdasarkan tipe penerimaan
-    //             if ($from_status == '1') {
-    //                 redirect('penerimaan/dari_pengguna');
-    //             } elseif ($from_status == '2') {
-    //                 redirect('penerimaan/dari_supplier');
-    //             } else {
-    //                 redirect('penerimaan/antar_gudang');
-    //             }
-    //         } else {
-    //             $this->handle_response($response);
-    //             // Simpan data form ke session untuk ditampilkan kembali
-    //             $form_data = [
-    //                 'stockin_date' => $this->input->post('stockin_date'),
-    //                 'stockin_code' => $this->input->post('stockin_code'),
-    //                 'stockin_invoice' => $this->input->post('stockin_invoice'),
-    //                 'stockin_note' => $this->input->post('stockin_note'),
-    //                 'from_status' => $from_status,
-    //                 'from_id' => $this->input->post($from_id_field),
-    //                 'items' => $items_data
-    //             ];
-
-    //             // Simpan ke warehouse_id untuk superadmin
-    //             if ($user_role == 'superadmin' && $this->input->post('to_warehouse_id')) {
-    //                 $form_data['to_warehouse_id'] = $this->input->post('to_warehouse_id');
-    //             }
-
-    //             $this->session->set_flashdata('form_data_' . $from_status, $form_data);
-
-    //             // Redirect back based on from_status
-    //             if ($from_status == '1') {
-    //                 redirect('penerimaan/add_pengguna');
-    //             } elseif ($from_status == '2') {
-    //                 redirect('penerimaan/add_supplier');
-    //             } else {
-    //                 redirect('penerimaan/add_antar_gudang');
-    //             }
-    //         }
-    //     }
-    // }
-
     public function create()
     {
         // Cek apakah request AJAX
@@ -673,12 +559,11 @@ class Penerimaan extends MY_Controller
             }
 
             // Format data untuk view
-            $penerimaan = [
+            $this->data['penerimaan'] = [
                 'header' => $normalized_header,
                 'detail' => $detail
             ];
 
-            $this->data['penerimaan'] = $penerimaan;
             $from_status = $normalized_header['from_status'];
             $this->data['from_status'] = $from_status;
 
@@ -724,7 +609,28 @@ class Penerimaan extends MY_Controller
             $products_response = $this->Api_model->get_barang($data_login);
             $products = $this->handle_response($products_response);
 
-            // Add current_stock to detail items from products
+            // OPTIMASI: Ambil hanya field yang diperlukan untuk JSON
+            $optimized_products = [];
+            foreach ($products as $product) {
+                $optimized_products[] = [
+                    'id' => $product['product_id'],
+                    'text' => $product['product_code'] . ' - ' . $product['product_name'],
+                    'product_id' => $product['product_id'],
+                    'product_code' => $product['product_code'],
+                    'product_name' => $product['product_name'],
+                    'unit_code' => $product['unit_code'] ?? ''
+                ];
+            }
+
+            // Konversi ke JSON untuk JavaScript
+            $this->data['products_json'] = json_encode($optimized_products);
+
+            // Tambahkan unit_code, product_code, product_name ke detail items
+            $product_lookup = [];
+            foreach ($products as $product) {
+                $product_lookup[$product['product_id']] = $product;
+            }
+
             foreach ($this->data['penerimaan']['detail'] as &$item) {
                 // Normalize detail item keys
                 $normalized_detail = [];
@@ -732,21 +638,18 @@ class Penerimaan extends MY_Controller
                     $normalized_key = strtolower($key);
                     $normalized_detail[$normalized_key] = $value;
                 }
-                $item = $normalized_detail;
 
-                // Add unit code from products
-                foreach ($products as $product) {
-                    if (isset($item['product_id']) && $item['product_id'] == $product['product_id']) {
-                        $item['unit_code'] = $product['unit_code'] ?? '';
-                        break;
-                    }
+                $product_id = $normalized_detail['product_id'] ?? null;
+
+                if ($product_id && isset($product_lookup[$product_id])) {
+                    $product = $product_lookup[$product_id];
+                    $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
+                    $normalized_detail['product_code'] = $product['product_code'] ?? '';
+                    $normalized_detail['product_name'] = $product['product_name'] ?? '';
                 }
+
+                $item = $normalized_detail;
             }
-
-            $this->data['products'] = $products;
-
-            // Convert products data to JSON for JavaScript
-            $this->data['products_json'] = json_encode($products);
 
             $this->render_view('pages/penerimaan/edit');
         } else {
@@ -755,6 +658,113 @@ class Penerimaan extends MY_Controller
             $this->redirect_back();
         }
     }
+
+
+    // // ==================== EDIT PENERIMAAN ====================
+    // public function edit_konsep_outofmemory($id)
+    // {
+    //     $this->check_permission('penerimaan', 'edit');
+    //     $this->data['title'] = 'Edit Penerimaan Barang';
+    //     $this->data['active_menu'] = 'penerimaan';
+
+    //     $data_login = data_login_user(['stockin_id' => $id]);
+    //     $response = $this->Api_model->penerimaan_by_id($data_login);
+
+    //     // Periksa struktur response API
+    //     if (isset($response['header']) && $response['header'] !== false) {
+    //         $header = $response['header'];
+    //         $detail = $response['detail'] ?? [];
+
+    //         // Normalize header keys to lowercase
+    //         $normalized_header = [];
+    //         foreach ($header as $key => $value) {
+    //             $normalized_key = strtolower($key);
+    //             $normalized_header[$normalized_key] = $value;
+    //         }
+
+    //         // Format data untuk view
+    //         $penerimaan = [
+    //             'header' => $normalized_header,
+    //             'detail' => $detail
+    //         ];
+
+    //         $this->data['penerimaan'] = $penerimaan;
+    //         $from_status = $normalized_header['from_status'];
+    //         $this->data['from_status'] = $from_status;
+
+    //         // Set active submenu dan title berdasarkan from_status
+    //         if ($from_status == '1') {
+    //             $this->data['active_submenu'] = 'pengguna';
+    //             $this->data['title'] = 'Edit Penerimaan dari Pengguna';
+    //         } elseif ($from_status == '2') {
+    //             $this->data['active_submenu'] = 'supplier_penerimaan';
+    //             $this->data['title'] = 'Edit Penerimaan dari Supplier';
+    //         } else {
+    //             $this->data['active_submenu'] = 'penerimaan_antar_gudang';
+    //             $this->data['title'] = 'Edit Penerimaan Antar Gudang';
+    //         }
+
+    //         // Get user role from session
+    //         $user_role = $this->session->userdata('role');
+    //         $this->data['user_role'] = $user_role;
+    //         $this->data['user_warehouse_id'] = $this->session->userdata('warehouse_id');
+    //         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+
+    //         // Get warehouses
+    //         if ($user_role == 'superadmin') {
+    //             $warehouse_response = $this->Api_model->get_all_gudang($data_login);
+    //         } else {
+    //             $warehouse_response = $this->Api_model->get_gudang($data_login);
+    //         }
+    //         $this->data['warehouses'] = $this->handle_response($warehouse_response);
+
+    //         // Get customers if from_status = 1
+    //         if ($from_status == '1') {
+    //             $customer_response = $this->Api_model->get_customer($data_login);
+    //             $this->data['customers'] = $this->handle_response($customer_response);
+    //         }
+
+    //         // Get suppliers if from_status = 2
+    //         if ($from_status == '2') {
+    //             $supplier_response = $this->Api_model->get_supplier($data_login);
+    //             $this->data['suppliers'] = $this->handle_response($supplier_response);
+    //         }
+
+    //         // Get products
+    //         $products_response = $this->Api_model->get_barang($data_login);
+    //         $products = $this->handle_response($products_response);
+
+    //         // Add current_stock to detail items from products
+    //         foreach ($this->data['penerimaan']['detail'] as &$item) {
+    //             // Normalize detail item keys
+    //             $normalized_detail = [];
+    //             foreach ($item as $key => $value) {
+    //                 $normalized_key = strtolower($key);
+    //                 $normalized_detail[$normalized_key] = $value;
+    //             }
+    //             $item = $normalized_detail;
+
+    //             // Add unit code from products
+    //             foreach ($products as $product) {
+    //                 if (isset($item['product_id']) && $item['product_id'] == $product['product_id']) {
+    //                     $item['unit_code'] = $product['unit_code'] ?? '';
+    //                     break;
+    //                 }
+    //             }
+    //         }
+
+    //         $this->data['products'] = $products;
+
+    //         // Convert products data to JSON for JavaScript
+    //         $this->data['products_json'] = json_encode($products);
+
+    //         $this->render_view('pages/penerimaan/edit');
+    //     } else {
+    //         // Jika header false atau tidak ada data
+    //         $this->handle_response($response);
+    //         $this->redirect_back();
+    //     }
+    // }
 
     // ==================== UPDATE PENERIMAAN ====================
     public function update($id)
@@ -831,7 +841,6 @@ class Penerimaan extends MY_Controller
             }
         }
     }
-
 
     // ==================== DETAIL PENERIMAAN ====================
     public function detail($id)

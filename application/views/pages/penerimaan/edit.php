@@ -1,3 +1,95 @@
+<style>
+    /* Loading Screen */
+    #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.5);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.3s ease;
+    }
+
+    .loader {
+        text-align: center;
+        max-width: 400px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .spinner {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 20px;
+        border: 5px solid #36b9cc;
+        border-top: 5px solid #4e73df;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loader h4 {
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .loader p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .progress {
+        height: 8px;
+        margin-top: 20px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #4e73df, #36b9cc);
+        animation: progress 2s ease-in-out infinite;
+    }
+
+    @keyframes progress {
+        0% { width: 0%; }
+        50% { width: 70%; }
+        100% { width: 100%; }
+    }
+
+    /* Fade out animation */
+    .fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
+</style>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+    <div class="loader">
+        <div class="spinner"></div>
+        <h4>Memuat Data Penerimaan</h4>
+        <p>Mohon tunggu sebentar...</p>
+        <p class="small text-muted" id="loading-status">Mengambil data penerimaan</p>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar"></div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <?php
     $back_url = 'penerimaan/dari_pengguna';
@@ -7,12 +99,6 @@
         $back_url = 'penerimaan/antar_gudang';
     ?>
     
-    
-    <!-- Page Heading -->
-    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-1">
-        <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-    </div> -->
-
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -205,40 +291,35 @@
                 </div>
 
                 <div id="itemsContainer">
-                    <?php foreach ($penerimaan['detail'] as $index => $detail):
-                        $qty = floatval($detail['qty'] ?? 0);
-                        $unit_code = $detail['unit_code'] ?? '';
-                        ?>
-                            <div class="item-row row mb-3">
+                    <?php if (!empty($penerimaan['detail'])): ?>
+                        <?php foreach ($penerimaan['detail'] as $index => $detail): ?>
+                            <div class="item-row row mb-3" data-index="<?= $index ?>">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Produk *</label>
-                                        <select class="form-control select2 product-select" name="product_id[]"
-                                            data-index="<?= $index ?>" required>
-                                            <option value="">Pilih Produk</option>
-                                            <?php foreach ($products as $product): ?>
-                                                    <option value="<?= $product['product_id'] ?>"
-                                                        data-stock-id="<?= $product['product_id'] ?>"
-                                                        <?= ($detail['product_id'] == $product['product_id']) ? 'selected' : '' ?>>
-                                                        <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                                        (Satuan: <?= $product['unit_code'] ?>)
-                                                    </option>
-                                            <?php endforeach; ?>
+                                        <select class="form-control product-select-ajax" name="product_id[]" data-index="<?= $index ?>"
+                                            data-selected-id="<?= $detail['product_id'] ?>"
+                                            data-selected-text="<?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan: <?= ($detail['unit_code'] ?? '') ?>)"
+                                            style="width: 100%;" required>
+                                            <?php if (!empty($detail['product_id'])): ?>
+                                                <option value="<?= $detail['product_id'] ?>" selected>
+                                                    <?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan:
+                                                    <?= ($detail['unit_code'] ?? '') ?>)
+                                                </option>
+                                            <?php endif; ?>
                                         </select>
                                         <input type="hidden" name="stock_id[]" value="<?= $detail['product_id'] ?>">
                                         <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
-                                            Satuan: <?= $unit_code ?>
+                                            Satuan: <?= $detail['unit_code'] ?? '' ?>
                                         </small>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Qty *</label>
-                                            <input type="number" class="form-control qty-input" name="qty[]"
-                                        data-index="<?= $index ?>" min="0"
-                                        value="<?= $detail['qty'] ?>" required>
-                                        <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>"
-                                            style="display: none;">
+                                        <input type="number" class="form-control qty-input" name="qty[]" data-index="<?= $index ?>" min="0.01"
+                                            step="0.01" value="<?= $detail['qty'] ?? 0 ?>" required>
+                                        <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>" style="display: none;">
                                             Quantity harus lebih dari 0
                                         </small>
                                     </div>
@@ -246,8 +327,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Keterangan Barang</label>
-                                        <input type="text" class="form-control" name="detail_note[]"
-                                            value="<?= $detail['detail_note'] ?>"
+                                        <input type="text" class="form-control" name="detail_note[]" value="<?= $detail['detail_note'] ?? '' ?>"
                                             placeholder="Keterangan tambahan untuk barang ini">
                                     </div>
                                 </div>
@@ -260,7 +340,8 @@
                                     </div>
                                 </div>
                             </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
 
                 <hr class="my-4">
@@ -281,76 +362,147 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        // Store products data from PHP - use window object for global access
-        window.productsData = <?= $products_json ?: '[]' ?>;
+$(document).ready(function () {
+    // Tampilkan loading
+    showLoading('Mengambil data penerimaan...');
+    
+    // Parse products data dari PHP JSON
+    var productsData = <?= $products_json ?: '[]' ?>;
+        updateLoadingStatus('Memproses data produk (' + productsData.length + ' produk)');
+
         let itemCounter = <?= count($penerimaan['detail']) ?>;
 
-        // Initialize Select2
-        $('.select2').select2({
-            width: '100%',
-            dropdownParent: $('.card-body')
+        /**
+         * Function untuk menampilkan loading
+         */
+        function showLoading(message) {
+            $('#loading-overlay').show();
+            if (message) {
+                $('#loading-status').text(message);
+            }
+        }
+
+        /**
+         * Function untuk mengupdate status loading
+         */
+        function updateLoadingStatus(message) {
+            $('#loading-status').text(message);
+        }
+
+        /**
+         * Function untuk menyembunyikan loading
+         */
+        function hideLoading() {
+            $('#loading-overlay').addClass('fade-out');
+            setTimeout(function () {
+                $('#loading-overlay').hide();
+                $('#loading-overlay').removeClass('fade-out');
+                $('#main-content').fadeIn(500);
+            }, 300);
+        }
+
+        /**
+         * Inisialisasi Select2 dengan client-side filtering
+         */
+        function initSelect2Client(element) {
+            updateLoadingStatus('Menginisialisasi form...');
+
+            element.select2({
+                width: '100%',
+                dropdownParent: $('.card-body'),
+                data: productsData,
+                minimumInputLength: 2,
+                placeholder: 'Cari produk (min. 2 karakter)',
+                allowClear: false,
+                matcher: function (params, data) {
+                    if ($.trim(params.term) === '') {
+                        return null;
+                    }
+                    var searchTerm = params.term.toLowerCase();
+                    var text = data.text.toLowerCase();
+                    if (text.indexOf(searchTerm) > -1) {
+                        return data;
+                    }
+                    return null;
+                },
+                templateResult: function (product) {
+                    if (product.loading) {
+                        return product.text;
+                    }
+                    if (!product.id) {
+                        return product.text;
+                    }
+                    var $container = $(
+                        '<div class="clearfix">' +
+                        '<div class="font-weight-bold">' + product.text + '</div>' +
+                        '<small class="text-muted">Kode: ' + (product.product_code || '') + '</small>' +
+                        '</div>'
+                    );
+                    return $container;
+                },
+                templateSelection: function (product) {
+                    if (!product.id) {
+                        return product.text;
+                    }
+                    return product.text || $(product.element).text();
+                },
+                language: {
+                    searching: function () {
+                        return 'Mencari...';
+                    },
+                    noResults: function () {
+                        return 'Produk tidak ditemukan';
+                    },
+                    inputTooShort: function () {
+                        return 'Masukkan minimal 2 karakter';
+                    }
+                }
+            });
+
+            // Set initial value jika ada
+            var selectedId = element.data('selected-id');
+            var selectedText = element.data('selected-text');
+
+            if (selectedId && selectedText) {
+                if (element.find('option[value="' + selectedId + '"]').length === 0) {
+                    var option = new Option(selectedText, selectedId, true, true);
+                    element.append(option);
+                }
+                element.val(selectedId).trigger('change');
+            }
+        }
+
+        // Inisialisasi semua select produk yang sudah ada
+        let initCount = 0;
+        let totalSelects = $('.product-select-ajax').length;
+
+        $('.product-select-ajax').each(function (index) {
+            initSelect2Client($(this));
+            initCount++;
+            updateLoadingStatus('Memuat form barang (' + initCount + '/' + totalSelects + ')');
         });
 
-        // For superadmin: Handle warehouse change for antar gudang
-        <?php if ($user_role == 'superadmin' && $from_status == '3'): ?>
-                $('#to_warehouse_id').on('change', function () {
-                    const warehouseId = $(this).val();
-                    if (warehouseId) {
-                        // Disable same warehouse in from dropdown
-                        $('#from_warehouse_id option').each(function () {
-                            const optionValue = $(this).val();
-                            if (optionValue == warehouseId) {
-                                $(this).prop('disabled', true);
-                                if ($(this).is(':selected')) {
-                                    $(this).prop('selected', false);
-                                    $('#from_warehouse_id').trigger('change.select2');
-                                }
-                            } else {
-                                $(this).prop('disabled', false);
-                            }
-                        });
-                        $('#from_warehouse_id').trigger('change.select2');
-                    }
-                });
-        <?php endif; ?>
+        /**
+         * Handle perubahan pilihan produk
+         */
+        $(document).on('change', '.product-select-ajax', function () {
+            const index = $(this).data('index');
+            const selectedData = $(this).select2('data')[0];
 
-        // Prevent future date selection
-        $('#stockin_date').on('change', function () {
-            const selectedDate = new Date(this.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (selectedDate > today) {
-                alert('Tidak bisa memilih tanggal yang akan datang');
-                this.value = '<?= date('Y-m-d', strtotime($penerimaan['header']['stockin_date'])) ?>';
+            if (selectedData && selectedData.id) {
+                $(this).closest('.item-row').find('input[name="stock_id[]"]').val(selectedData.id);
+                $('#stockInfo' + index).text('Satuan: ' + (selectedData.unit_code || ''));
+                $(this).attr('data-selected-id', selectedData.id);
+                $(this).attr('data-selected-text', selectedData.text);
+            } else {
+                $(this).closest('.item-row').find('input[name="stock_id[]"]').val('');
+                $('#stockInfo' + index).text('');
             }
         });
 
-        // Prevent typing future dates
-        $('#stockin_date').on('keydown', function (e) {
-            e.preventDefault();
-        });
-
-        // Handle product selection
-        $(document).on('change', '.product-select', function () {
-            const index = $(this).data('index');
-            const selectedOption = $(this).find('option:selected');
-            const stockId = selectedOption.data('stock-id');
-
-            // Update hidden stock_id input
-            $(this).closest('.item-row').find('input[name="stock_id[]"]').val(stockId);
-
-            // Extract unit from option text
-            const optionText = selectedOption.text();
-            const unitMatch = optionText.match(/\(Satuan: (.+?)\)/);
-            const unit = unitMatch ? unitMatch[1] : '';
-
-            // Update unit info
-            $('#stockInfo' + index).text('Satuan: ' + unit);
-        });
-
-        // Handle qty input validation
+        /**
+         * Handle validasi input quantity
+         */
         $(document).on('input', '.qty-input', function () {
             const index = $(this).data('index');
             const qty = parseFloat($(this).val()) || 0;
@@ -364,138 +516,117 @@
             }
         });
 
-        // Add item row
+        /**
+         * Tambah item baru
+         */
         $('#addItem').click(function () {
-            // Generate options HTML from global productsData
-            let optionsHtml = '<option value="">Pilih Produk</option>';
-            if (window.productsData && window.productsData.length > 0) {
-                window.productsData.forEach(product => {
-                    optionsHtml += `
-                        <option value="${product.product_id}" 
-                            data-stock-id="${product.product_id}">
-                            ${product.product_code} - ${product.product_name}
-                            (Satuan: ${product.unit_code})
-                        </option>
-                    `;
-                });
-            }
+            const newIndex = itemCounter;
 
             const newRow = `
-            <div class="item-row row mb-3">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>Produk *</label>
-                        <select class="form-control select2 product-select" name="product_id[]" data-index="${itemCounter}" required>
-                            ${optionsHtml}
-                        </select>
-                        <input type="hidden" name="stock_id[]" value="">
-                        <small class="form-text text-info stock-info" id="stockInfo${itemCounter}"></small>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label>Qty *</label>
-                        <input type="number" class="form-control qty-input" name="qty[]" 
-                            data-index="${itemCounter}" step="0.01" min="0.01" required>
-                        <small class="form-text text-danger qty-error" id="qtyError${itemCounter}" style="display: none;">
-                            Quantity harus lebih dari 0
-                        </small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>Keterangan Barang</label>
-                        <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan tambahan untuk barang ini">
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="button" class="btn btn-danger btn-block remove-item">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+        <div class="item-row row mb-3" data-index="${newIndex}">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Produk *</label>
+                    <select class="form-control product-select-ajax" 
+                            name="product_id[]"
+                            data-index="${newIndex}"
+                            style="width: 100%;" required>
+                        <option value="">Pilih Produk</option>
+                    </select>
+                    <input type="hidden" name="stock_id[]" value="">
+                    <small class="form-text text-info stock-info" id="stockInfo${newIndex}"></small>
                 </div>
             </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Qty *</label>
+                    <input type="number" class="form-control qty-input" name="qty[]" 
+                        data-index="${newIndex}" step="0.01" min="0.01" required>
+                    <small class="form-text text-danger qty-error" id="qtyError${newIndex}" style="display: none;">
+                        Quantity harus lebih dari 0
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Keterangan Barang</label>
+                    <input type="text" class="form-control" name="detail_note[]" 
+                           placeholder="Keterangan tambahan untuk barang ini">
+                </div>
+            </div>
+            <div class="col-md-2 mt-4">
+                <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-danger btn-block remove-item">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
         `;
+
             $('#itemsContainer').append(newRow);
-
-            // Reinitialize Select2 for new row
-            $('#itemsContainer .item-row:last-child .select2').select2({
-                width: '100%',
-                dropdownParent: $('.card-body')
-            });
-
-            // Enable remove buttons if more than one row
-            if ($('.item-row').length > 1) {
-                $('.remove-item').prop('disabled', false);
-            }
-
+            initSelect2Client($('#itemsContainer .item-row:last-child .product-select-ajax'));
             itemCounter++;
         });
 
-        // Remove item row
+        /**
+         * Hapus item
+         */
         $(document).on('click', '.remove-item', function () {
             if ($('.item-row').length > 1) {
                 $(this).closest('.item-row').remove();
             }
-            if ($('.item-row').length === 1) {
-                $('.remove-item').prop('disabled', true);
-            }
         });
 
-        // Form validation
+        /**
+         * Validasi form sebelum submit
+         */
         $('#penerimaanForm').submit(function (e) {
             let valid = true;
             let errorMessages = [];
 
-            // Validasi untuk superadmin - harus memilih gudang tujuan
-            <?php if ($user_role == 'superadmin'): ?>
-                    if (!$('#to_warehouse_id').val()) {
-                        errorMessages.push('Harap pilih gudang tujuan');
-                        $('#to_warehouse_id').focus();
-                        valid = false;
-                    }
-            <?php endif; ?>
+        <?php if ($user_role == 'superadmin'): ?>
+            if (!$('#to_warehouse_id').val()) {
+                    errorMessages.push('Harap pilih gudang tujuan');
+                    $('#to_warehouse_id').focus();
+                    valid = false;
+                }
+        <?php endif; ?>
 
-            // Validasi untuk penerimaan dari pengguna
-            <?php if ($from_status == '1'): ?>
-                    if (!$('#customer_id').val()) {
-                        errorMessages.push('Harap pilih pengguna');
-                        $('#customer_id').focus();
-                        valid = false;
-                    }
-            <?php elseif ($from_status == '2'): ?>
-                    // Validasi untuk penerimaan dari supplier
-                    if (!$('#supplier_id').val()) {
-                        errorMessages.push('Harap pilih supplier');
-                        $('#supplier_id').focus();
-                        valid = false;
-                    }
-            <?php elseif ($from_status == '3'): ?>
-                    // Validasi untuk penerimaan antar gudang
-                    if (!$('#from_warehouse_id').val()) {
-                        errorMessages.push('Harap pilih gudang asal');
-                        $('#from_warehouse_id').focus();
-                        valid = false;
-                    }
+        <?php if ($from_status == '1'): ?>
+            if (!$('#customer_id').val()) {
+                    errorMessages.push('Harap pilih pengguna');
+                    $('#customer_id').focus();
+                    valid = false;
+                }
+        <?php elseif ($from_status == '2'): ?>
+            if (!$('#supplier_id').val()) {
+                    errorMessages.push('Harap pilih supplier');
+                    $('#supplier_id').focus();
+                    valid = false;
+                }
+        <?php elseif ($from_status == '3'): ?>
+            if (!$('#from_warehouse_id').val()) {
+                    errorMessages.push('Harap pilih gudang asal');
+                    $('#from_warehouse_id').focus();
+                    valid = false;
+                }
 
-                    // Validasi: jangan terima dari gudang yang sama
-                    const fromWarehouseId = $('#from_warehouse_id').val();
-                    const toWarehouseId = $('#to_warehouse_id').val();
-                    if (fromWarehouseId && toWarehouseId && fromWarehouseId === toWarehouseId) {
-                        errorMessages.push('Tidak bisa menerima dari gudang yang sama');
-                        valid = false;
-                    }
-            <?php endif; ?>
+                const fromWarehouseId = $('#from_warehouse_id').val();
+                const toWarehouseId = $('#to_warehouse_id').val();
+                if (fromWarehouseId && toWarehouseId && fromWarehouseId === toWarehouseId) {
+                    errorMessages.push('Tidak bisa menerima dari gudang yang sama');
+                    valid = false;
+                }
+        <?php endif; ?>
 
-            if (!$('#stockin_invoice').val()) {
+        if (!$('#stockin_invoice').val()) {
                 errorMessages.push('Harap isi nomor referensi');
                 $('#stockin_invoice').focus();
                 valid = false;
             }
 
-            // Check if at least one item has product selected
             let hasItems = false;
             $('select[name="product_id[]"]').each(function () {
                 if ($(this).val()) {
@@ -508,18 +639,16 @@
                 valid = false;
             }
 
-            // Check quantity values
             let hasQuantityError = false;
-            $('.qty-input').each(function (index) {
+            $('.qty-input').each(function () {
                 const qty = parseFloat($(this).val()) || 0;
-
                 if (qty <= 0 || isNaN(qty)) {
-                    errorMessages.push('Quantity harus lebih dari 0');
                     hasQuantityError = true;
                 }
             });
 
             if (hasQuantityError) {
+                errorMessages.push('Quantity harus lebih dari 0');
                 valid = false;
             }
 
@@ -528,24 +657,39 @@
                 if (errorMessages.length > 0) {
                     alert(errorMessages.join('\n'));
                 }
+            } else {
+                // Tampilkan loading saat submit
+                showLoading('Menyimpan data...');
             }
         });
 
-        // Initialize existing product selections
-        $('.product-select').each(function() {
-            const index = $(this).data('index');
-            const selectedOption = $(this).find('option:selected');
-            if (selectedOption.length > 0 && selectedOption.val()) {
-                // Extract unit from option text
-                const optionText = selectedOption.text();
-                const unitMatch = optionText.match(/\(Satuan: (.+?)\)/);
-                const unit = unitMatch ? unitMatch[1] : '';
-                
-                // Update unit info display
-                if ($('#stockInfo' + index).length) {
-                    $('#stockInfo' + index).text('Satuan: ' + unit);
-                }
-            }
+        // Sembunyikan loading setelah semua selesai
+        $(window).on('load', function () {
+            // Beri jeda sedikit untuk memastikan semua sudah render
+            setTimeout(hideLoading, 500);
         });
-    });
+
+        // Jika window sudah load tapi kita perlu menunggu Select2
+        if (document.readyState === 'complete') {
+            setTimeout(hideLoading, 500);
+        }
+
+    <?php if ($user_role == 'superadmin' && $from_status == '3'): ?>
+                $('#to_warehouse_id').on('change', function () {
+                    const toWarehouse = $(this).val();
+                    $('#from_warehouse_id option').each(function () {
+                        if ($(this).val() == toWarehouse) {
+                            $(this).prop('disabled', true);
+                            if ($(this).is(':selected')) {
+                                $(this).prop('selected', false);
+                            }
+                        } else {
+                            $(this).prop('disabled', false);
+                        }
+                    });
+                    $('#from_warehouse_id').trigger('change.select2');
+                });
+    <?php endif; ?>
+
+});
 </script>
