@@ -127,6 +127,9 @@ class User extends MY_Controller
             $response = $this->Api_model->add_user($data);
             $message = 'User berhasil ditambahkan!';
         }
+
+        // save_log('Menambahkan / merubah user: ' . json_encode($data));
+
         $this->handle_response($response, $message);
         redirect('user');
     }
