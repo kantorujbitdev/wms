@@ -112,7 +112,6 @@ if (!function_exists('load_appdata_to_session')) {
 
         // --- Load pengaturan ---
         $pengaturan = $CI->db->get('pengaturan')->result_array();
-        save_log('Load pengaturan: ' . json_encode($pengaturan));
         $config = [];
         foreach ($pengaturan as $row) {
             $config[$row['nama_pengaturan']] = $row['value'];
@@ -130,8 +129,10 @@ if (!function_exists('load_appdata_to_session')) {
         }
 
         $CI->session->set_userdata('api_list', $apis);
-        save_log('Load data enpoint API: ' . json_encode($apis));
-
+        if (isset($_SERVER['CI_ENV']) && $_SERVER['CI_ENV'] == 'development') {
+            save_log('Load data pengaturan: ' . json_encode($config));
+            save_log('Load data enpoint API: ' . json_encode($apis));
+        }
     }
 }
 
