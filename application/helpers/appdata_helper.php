@@ -52,6 +52,36 @@ if (!function_exists('monthToRoman')) {
         return $romawi[intval($month)];
     }
 }
+if (!function_exists('tanggal_indo_singkat')) {
+    function tanggal_indo_singkat($tanggal)
+    {
+        if (empty($tanggal))
+            return '-';
+
+        $bulan = [
+            1 => 'Jan',
+            2 => 'Feb',
+            3 => 'Mar',
+            4 => 'Apr',
+            5 => 'Mei',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Agu',
+            9 => 'Sep',
+            10 => 'Okt',
+            11 => 'Nov',
+            12 => 'Des'
+        ];
+
+        $time = strtotime($tanggal);
+        if (!$time)
+            return '-';
+
+        return date('d', $time) . ' ' .
+            $bulan[(int) date('m', $time)] . ' ' .
+            date('Y', $time);
+    }
+}
 
 if (!function_exists('is_role')) {
 

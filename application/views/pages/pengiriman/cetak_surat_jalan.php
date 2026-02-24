@@ -58,8 +58,6 @@ $config = get_app_config();
 
                         <div class="info-perusahaan">
                             <h1><?= strtoupper($config['app_pt_name'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?></h1>
-                            <h2><?= strtoupper($config['app_fullname'] ?? 'WAREHOUSE MANAGEMENT SYSTEM') ?></h2>
-                            <div class="header-line"></div>
                             <p><?= $jenis_surat ?></p>
                         </div>
 
@@ -74,22 +72,19 @@ $config = get_app_config();
                     <div class="info-box">
                         <h4>INFORMASI PENGIRIM</h4>
                         <div class="info-row">
-                            <div class="info-label">No. Surat Jalan:</div>
+                            <div class="info-label">No. Surat:</div>
                             <div class="info-value"><?= $pengiriman['header']['stockout_code'] ?></div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Tanggal:</div>
-                            <div class="info-value"><?= date('d F Y', strtotime($pengiriman['header']['stockout_date'])) ?>
+                            <div class="info-value">
+                                <?= tanggal_indo_singkat($pengiriman['header']['stockout_date']) ?>
                             </div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Dari Gudang:</div>
+                            <div class="info-label">Dari:</div>
                             <div class="info-value"><?= $pengiriman['header']['warehouse_name'] ?></div>
                         </div>
-                        <!-- <div class="info-row">
-                            <div class="info-label">No. Referensi:</div>
-                            <div class="info-value"><?= $pengiriman['header']['stockout_invoice'] ?? '-' ?></div>
-                        </div> -->
                     </div>
 
                     <div class="info-box">
@@ -99,7 +94,7 @@ $config = get_app_config();
                             <div class="info-value"><?= $pengiriman['header']['to_name'] ?></div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Jenis Tujuan:</div>
+                            <div class="info-label">Jenis:</div>
                             <div class="info-value"><?= $tipe_pengiriman ?></div>
                         </div>
                         <div class="info-row">
@@ -117,9 +112,6 @@ $config = get_app_config();
 
             <!-- Konten Utama -->
             <div class="content-wrapper">
-                <?php if ($is_first_page): ?>
-                    <div class="table-title">DAFTAR BARANG YANG DIKIRIM</div>
-                <?php endif; ?>
 
                 <div class="table-container">
                     <table class="detail-table">
@@ -130,7 +122,7 @@ $config = get_app_config();
                                 <th class="col-name">NAMA BARANG</th>
                                 <th class="col-qty">QTY</th>
                                 <th class="col-unit">SATUAN</th>
-                                <th class="col-note">KETERANGAN</th>
+                                <th class="col-note">KET</th>
                             </tr>
                         </thead>
 
@@ -143,9 +135,9 @@ $config = get_app_config();
                             <?php foreach ($page_items as $index => $item): ?>
                                 <tr>
                                     <td class="text-center"><?= $start_number + $index ?></td>
-                                    <td><?= $item['product_code'] ?></td>
+                                    <td class="text-center"><?= $item['product_code'] ?></td>
                                     <td><?= $item['product_name'] ?></td>
-                                    <td class="text-right">
+                                    <td class="text-center">
                                         <?php
                                         $qty = $item['qty'];
                                         echo viewNumber($qty);
@@ -153,7 +145,7 @@ $config = get_app_config();
                                         ?>
                                     </td>
                                     <td class="text-center"><?= $item['unit_code'] ?></td>
-                                    <td><?= !empty($item['detail_note']) ? $item['detail_note'] : '-' ?></td>
+                                    <td><?= $item['detail_note'] ?> </td>
                                 </tr>
                             <?php endforeach; ?>
 
@@ -185,8 +177,8 @@ $config = get_app_config();
                                 }
                                 ?>
                                 <tr class="total-row">
-                                    <td colspan="3" class="text-center">TOTAL KESELURUHAN</td>
-                                    <td class="text-right"><?= viewNumber($total_qty_all) ?></td>
+                                    <td colspan="3" class="text-center">TOTAL</td>
+                                    <td class="text-center"><?= viewNumber($total_qty_all) ?></td>
                                     <td colspan="2">&nbsp;</td>
                                 </tr>
                             <?php else: ?>
@@ -238,8 +230,7 @@ $config = get_app_config();
 
                 <!-- Footer -->
                 <div class="footer">
-                    <p>Dokumen ini dicetak secara elektronik dari <?= $config['app_name'] ?? 'WMS' ?>
-                        pada <?= date('d/m/Y H:i:s') ?> | <?= $pengiriman['header']['stockout_code'] ?></p>
+                    <p>Tanggal cetak: <?= date('d/m/Y') ?></p>
                 </div>
             </div>
 

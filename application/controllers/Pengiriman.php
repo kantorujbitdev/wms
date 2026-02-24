@@ -632,12 +632,12 @@ class Pengiriman extends MY_Controller
             $total_items = count($normalized_detail) + 10; // +10 baris kosong
             $this->data['total_pages'] = ceil($total_items / $items_per_page);
 
+            $this->data['jenis_surat'] = 'SURAT JALAN';
+
             // Tentukan jenis surat jalan
             if ($normalized_header['to_status'] == '1') {
-                $this->data['jenis_surat'] = 'SURAT JALAN - PENGIRIMAN KE PENGGUNA';
                 $this->data['tipe_pengiriman'] = 'Pengguna';
             } else {
-                $this->data['jenis_surat'] = 'SURAT JALAN - PENGIRIMAN ANTAR GUDANG';
                 $this->data['tipe_pengiriman'] = 'Gudang';
             }
 

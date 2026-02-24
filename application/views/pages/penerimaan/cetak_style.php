@@ -13,14 +13,14 @@
         background: #fff;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        font-size: 14px;
+        font-size: 17px;
     }
 
     .page {
         width: 216mm;
         min-height: 279mm;
         margin: 0 auto;
-        padding: 10mm 15mm;
+        padding: 5mm 10mm;
         background: white;
         position: relative;
         page-break-after: always;
@@ -47,8 +47,6 @@
 
     /* Header Surat */
     .header-surat {
-        border-bottom: 2px solid #000;
-        padding-bottom: 8px;
         margin-bottom: 10px;
     }
 
@@ -82,7 +80,7 @@
 
     .info-perusahaan h1 {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 16px;
+        font-size: 19px;
         font-weight: bold;
         margin-bottom: 2px;
         color: #000;
@@ -92,27 +90,27 @@
 
     .info-perusahaan h2 {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 14px;
+        font-size: 17px;
         font-weight: bold;
         margin-bottom: 2px;
-        color: #333;
+        color: #000;
     }
 
     .info-perusahaan p {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 12px;
+        font-size: 30px;
         font-weight: bold;
         margin-top: 2px;
     }
 
     .stamp-original {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        width: 80px;
+        width: 100px;
         text-align: center;
         flex-shrink: 0;
         border: 1px solid #000;
-        padding: 5px;
-        font-size: 12px;
+        padding: 15px;
+        font-size: 17px;
         font-weight: bold;
         margin-top: 10px;
     }
@@ -142,7 +140,7 @@
 
     .info-box h4 {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 12px;
+        font-size: 17px;
         font-weight: bold;
         text-align: center;
         margin-bottom: 4px;
@@ -154,7 +152,7 @@
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         display: flex;
         margin-bottom: 3px;
-        font-size: 14px;
+        font-size: 17px;
         margin-top: 5px;
     }
 
@@ -163,7 +161,7 @@
         width: 120px;
         font-weight: bold;
         flex-shrink: 0;
-        font-size: 14px;
+        font-size: 17px;
         margin-top: 3px;
     }
 
@@ -183,7 +181,7 @@
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         text-align: center;
         font-weight: bold;
-        font-size: 14px;
+        font-size: 17px;
         margin: 5px 0 8px;
         text-transform: uppercase;
     }
@@ -200,7 +198,7 @@
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         width: 100%;
         border-collapse: collapse;
-        font-size: 10px;
+        font-size: 17px;
         table-layout: fixed;
         border: 1px solid #000;
     }
@@ -218,7 +216,7 @@
         /* background-color: #f0f0f0; */
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
-        font-size: 14px;
+        font-size: 17px;
         height: 25px;
     }
 
@@ -228,7 +226,7 @@
         border: 1px solid #000;
         vertical-align: top;
         word-wrap: break-word;
-        font-size: 14px;
+        font-size: 17px;
         height: 20px;
     }
 
@@ -305,8 +303,7 @@
     .signature-title {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-weight: bold;
-        font-size: 12px;
-        text-transform: uppercase;
+        font-size: 17px;
         margin-bottom: 75px;
     }
 
@@ -317,16 +314,16 @@
     }
 
     .signature-name {
+        font-size: 17px;
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 11px;
         margin-top: 5px;
         min-height: 15px;
     }
 
     .signature-note {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 9px;
-        color: #666;
+        font-size: 14px;
+        color: #000;
         margin-top: 2px;
     }
 
@@ -334,11 +331,10 @@
     .footer {
         font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         margin-top: 10px;
-        font-size: 9px;
-        color: #666;
-        text-align: center;
+        font-size: 14px;
+        color: #000;
+        text-align: left;
         padding-top: 5px;
-        border-top: 1px solid #ddd;
     }
 
     /* Nomor Halaman */
@@ -347,8 +343,8 @@
         position: absolute;
         bottom: 5mm;
         right: 15mm;
-        font-size: 9px;
-        color: #666;
+        font-size: 14px;
+        color: #000;
     }
 
     /* Tombol Aksi (Screen Only) */
@@ -367,7 +363,7 @@
         padding: 8px 15px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 17px;
         display: flex;
         align-items: center;
         gap: 5px;
@@ -380,7 +376,7 @@
     @media print {
         body {
             font-family: 'Calibri', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 14px;
+            font-size: 17px;
             background: white;
             margin: 0;
             padding: 0;

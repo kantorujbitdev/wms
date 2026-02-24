@@ -909,16 +909,14 @@ class Penerimaan extends MY_Controller
                 'header' => $normalized_header,
                 'detail' => $normalized_detail
             ];
+            $this->data['jenis_surat'] = 'SURAT TERIMA BARANG';
 
             // Tentukan jenis surat penerimaan
             if ($normalized_header['from_status'] == '1') {
-                $this->data['jenis_surat'] = 'SURAT TERIMA BARANG - DARI PENGGUNA';
                 $this->data['tipe_penerimaan'] = 'Pengguna';
             } elseif ($normalized_header['from_status'] == '2') {
-                $this->data['jenis_surat'] = 'SURAT TERIMA BARANG - DARI SUPPLIER';
                 $this->data['tipe_penerimaan'] = 'Supplier';
             } else {
-                $this->data['jenis_surat'] = 'SURAT TERIMA BARANG - ANTAR GUDANG';
                 $this->data['tipe_penerimaan'] = 'Gudang';
             }
 
