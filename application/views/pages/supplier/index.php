@@ -49,13 +49,13 @@
                                         <td class="text-center">
                                             <?php if (has_permission('supplier', 'edit')): ?>
                                                 <a href="<?php echo site_url('supplier/edit/' . $supplier['id']); ?>"
-                                                    class="btn btn-info btn-sm">
+                                                    class="btn btn-info btn-sm" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             <?php endif; ?>
 
                                             <?php if (has_permission('supplier', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                     data-id="<?php echo $supplier['id']; ?>"
                                                     data-name="<?php echo $supplier['name']; ?>"
                                                     data-url="<?= site_url('supplier/delete'); ?>">

@@ -67,10 +67,10 @@
                                         <td><?php echo date('d-m-Y H:i:s', strtotime($user['create_at'])); ?></td>
                                         <td class="text-center">
                                             <a href="<?php echo site_url('user/edit/' . $user['user_id']); ?>"
-                                                class="btn btn-info btn-sm">
+                                                class="btn btn-info btn-sm" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                 data-id="<?php echo $user['user_id']; ?>"
                                                 data-name="<?php echo $user['full_name']; ?>"
                                                 data-url="<?= site_url('user/delete'); ?>">

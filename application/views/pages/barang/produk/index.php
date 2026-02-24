@@ -64,12 +64,12 @@
                                             <td class="text-center">
                                                 <?php if (has_permission('barang', 'delete')): ?>
                                                     <a href="<?php echo site_url('barang/edit_produk/' . $product['product_id']); ?>"
-                                                        class="btn btn-info btn-sm">
+                                                        class="btn btn-info btn-sm" title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                 <?php endif; ?>
                                                 <?php if (has_permission('barang', 'delete')): ?>
-                                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                         data-id="<?php echo $product['product_id']; ?>" data-name="<?php echo '<br>Kode : ' . $product['product_code'] .
                                                                '<br>Barang : ' . $product['product_name']; ?>"
                                                         data-url="<?= site_url('barang/delete_produk'); ?>">
@@ -127,12 +127,12 @@
                                 `
                                 <div class="text-center">
                                     <a href="<?= site_url('barang/edit_produk/'); ?>${item.product_id}"
-                                       class="btn btn-info btn-sm">
+                                       class="btn btn-info btn-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
 
                                     <button type="button"
-                                        class="btn btn-danger btn-sm actionBtnDelete"
+                                        class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                         data-id="${item.product_id}"
                                         data-name="<br>Kode : ${item.product_code}<br>Barang : ${item.product_name}"
                                         data-url="<?= site_url('barang/delete_produk'); ?>">

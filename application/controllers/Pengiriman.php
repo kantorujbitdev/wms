@@ -15,10 +15,23 @@ class Pengiriman extends MY_Controller
         $this->data['active_menu'] = 'pengiriman';
         $this->data['active_submenu'] = 'penggunaan';
         $warehouse_id = $this->session->userdata('warehouse_id');
+
+        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
+        $end_date = date('Y-m-d');   // Tanggal hari ini
+
         if ($warehouse_id == 0 || $warehouse_id == null) {
-            $data_login = data_login_user(['to_status' => '1']);
+            $data_login = data_login_user([
+                'date_start' => $start_date,
+                'date_end' => $end_date,
+                'to_status' => '1'
+            ]);
         } else {
-            $data_login = data_login_user(['to_status' => '1', 'warehouse_id' => $warehouse_id]);
+            $data_login = data_login_user([
+                'date_start' => $start_date,
+                'date_end' => $end_date,
+                'to_status' => '1',
+                'warehouse_id' => $warehouse_id
+            ]);
         }
         $response = $this->Api_model->get_pengiriman($data_login);
 
@@ -94,9 +107,20 @@ class Pengiriman extends MY_Controller
         $this->data['active_menu'] = 'pengiriman';
         $this->data['active_submenu'] = 'pengiriman_antar_gudang';
 
+        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
+        $end_date = date('Y-m-d');   // Tanggal hari ini
+
         $data_login = data_login_user(['to_status' => '3']);
         $warehouse_id_session = $this->session->userdata('warehouse_id');
-        $data_request_penerimaan = data_login_user(['to_status' => 3, 'transfer_status' => 1, 'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null]);
+        $data_request_penerimaan = data_login_user(
+            [
+                'date_start' => $start_date,
+                'date_end' => $end_date,
+                'to_status' => 3,
+                'transfer_status' => 1,
+                'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null
+            ]
+        );
 
         $response = $this->Api_model->get_pengiriman($data_request_penerimaan);
         $this->data['pengiriman_list'] = $this->handle_response($response);

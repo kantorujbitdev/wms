@@ -52,12 +52,12 @@
                                         <?php if (has_permission('tipe_produk', 'edit')): ?>
                                             <td class="text-center">
                                                 <a href="<?php echo site_url('barang/edit_tipe_produk/' . $type['Product_Type_Id']); ?>"
-                                                    class="btn btn-info btn-sm">
+                                                    class="btn btn-info btn-sm" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (has_permission('tipe_produk', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                     data-id="<?php echo $type['Product_Type_Id']; ?>" data-name="<?php echo '<br>Kode : ' . $type['Product_Type_Code'] .
                                                            '<br>Nama : ' . $type['Product_Type_Name']; ?>"
                                                     data-url="<?= site_url('barang/delete_tipe_produk'); ?>">

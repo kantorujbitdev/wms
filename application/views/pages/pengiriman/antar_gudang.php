@@ -30,8 +30,8 @@
                                 <th>No</th>
                                 <th>Kode Pengiriman</th>
                                 <th>Tanggal</th>
-                                <th>Dari Gudang</th>
-                                <th>Ke Gudang</th>
+                                <th>Asal</th>
+                                <th>Tujuan</th>
                                 <!-- <th>Referensi</th> -->
                                 <th>Keterangan</th>
                                 <th>Dibuat Oleh</th>
@@ -39,9 +39,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                                <?php $no = 1; ?>
+                            <?php $no = 1; ?>
                             <!-- Dalam loop pengiriman -->
-                                <?php foreach ($pengiriman_list as $pengiriman): ?>
+                            <?php foreach ($pengiriman_list as $pengiriman): ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
                                     <td><?= $pengiriman['stockout_code'] ?></td>
@@ -58,24 +58,24 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
 
-                                            <?php if (has_permission('pengiriman', 'edit')): ?>
+                                        <?php if (has_permission('pengiriman', 'edit')): ?>
                                             <a href="<?= site_url('pengiriman/edit/' . $pengiriman['stockout_id']) ?>"
                                                 class="btn btn-warning btn-sm" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <?php endif; ?>
+                                        <?php endif; ?>
 
-                                            <?php if (has_permission('pengiriman', 'delete')): ?>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                        <?php if (has_permission('pengiriman', 'delete')): ?>
+                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                 data-id="<?= $pengiriman['stockout_id']; ?>"
                                                 data-name="<?= $pengiriman['stockout_code']; ?>"
                                                 data-url="<?= site_url('pengiriman/delete'); ?>">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                            <?php endif; ?>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
-                                <?php endforeach; ?>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

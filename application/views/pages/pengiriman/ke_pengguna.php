@@ -30,8 +30,8 @@
                                 <th>No</th>
                                 <th>Kode Pengiriman</th>
                                 <th>Tanggal</th>
-                                <th>Dari Gudang</th>
-                                <th>Ke Pengguna</th>
+                                <th>Asal</th>
+                                <th>Tujuan</th>
                                 <!-- <th>Referensi</th> -->
                                 <th>Keterangan</th>
                                 <th>Dibuat Oleh</th>
@@ -66,7 +66,7 @@
                                         <?php endif; ?>
 
                                         <?php if (has_permission('pengiriman', 'delete')): ?>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                 data-id="<?= $pengiriman['stockout_id']; ?>"
                                                 data-name="<?= $pengiriman['stockout_code']; ?>"
                                                 data-url="<?= site_url('pengiriman/delete'); ?>">

@@ -55,9 +55,9 @@ if ($pengiriman['header']['to_status'] == '3')
                             <th width="40%">Tujuan</th>
                             <td>
                                 <?php if ($pengiriman['header']['to_status'] == '1'): ?>
-                                    Pengguna: <?= $pengiriman['header']['to_name'] ?>
+                                    <?= $pengiriman['header']['to_name'] ?>
                                 <?php else: ?>
-                                    Gudang: <?= $pengiriman['header']['to_name'] ?>
+                                    <?= $pengiriman['header']['to_name'] ?>
                                 <?php endif; ?>
                             </td>
                         </tr>

@@ -55,13 +55,13 @@
                                     <td class="text-center">
                                         <?php if (has_permission('gudang', 'delete')): ?>
                                             <a href="<?php echo site_url('gudang/edit_gudang_project/' . $warehouse['warehouse_id']); ?>"
-                                                class="btn btn-info btn-sm">
+                                                class="btn btn-info btn-sm" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         <?php endif; ?>
 
                                         <?php if (has_permission('gudang', 'delete')): ?>
-                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                            <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                 data-id="<?php echo $warehouse['warehouse_id']; ?>"
                                                 data-name="<?php echo $warehouse['warehouse_name']; ?>"
                                                 data-url="<?= site_url('gudang/delete'); ?>">

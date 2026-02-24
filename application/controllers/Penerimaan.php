@@ -16,11 +16,23 @@ class Penerimaan extends MY_Controller
         $this->data['title'] = 'Penerimaan dari Pengguna';
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'pengguna';
+        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
+        $end_date = date('Y-m-d');   // Tanggal hari ini
+
         $warehouse_id = $this->session->userdata('warehouse_id');
         if ($warehouse_id == 0 || $warehouse_id == null) {
-            $data_login = data_login_user(['from_status' => '1']);
+            $data_login = data_login_user([
+                'date_start' => $start_date,
+                'date_end' => $end_date,
+                'from_status' => '1'
+            ]);
         } else {
-            $data_login = data_login_user(['from_status' => '1', 'warehouse_id' => $warehouse_id]);
+            $data_login = data_login_user([
+                'date_start' => $start_date,
+                'date_end' => $end_date,
+                'from_status' => '1',
+                'warehouse_id' => $warehouse_id
+            ]);
         }
         $response = $this->Api_model->get_penerimaan($data_login);
         $this->data['penerimaan_list'] = $this->handle_response($response);
@@ -77,10 +89,22 @@ class Penerimaan extends MY_Controller
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'supplier_penerimaan';
         $warehouse_id = $this->session->userdata('warehouse_id');
+
+        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
+        $end_date = date('Y-m-d');   // Tanggal hari ini
         if ($warehouse_id == 0 || $warehouse_id == null) {
-            $data_login = data_login_user(['from_status' => '2']);
+            $data_login = data_login_user([
+                'date_start' => $start_date,
+                'date_end' => $end_date,
+                'from_status' => '2'
+            ]);
         } else {
-            $data_login = data_login_user(['from_status' => '2', 'warehouse_id' => $warehouse_id]);
+            $data_login = data_login_user([
+                'date_start' => $start_date,
+                'date_end' => $end_date,
+                'from_status' => '2',
+                'warehouse_id' => $warehouse_id
+            ]);
         }
         $response = $this->Api_model->get_penerimaan($data_login);
         $this->data['penerimaan_list'] = $this->handle_response($response);
@@ -137,9 +161,18 @@ class Penerimaan extends MY_Controller
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'penerimaan_antar_gudang';
 
+        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
+        $end_date = date('Y-m-d');   // Tanggal hari ini
+
         $data_login = data_login_user(['from_status' => '3']);
         $warehouse_id_session = $this->session->userdata('warehouse_id');
-        $data_request_penerimaan = data_login_user(['from_status' => 3, 'transfer_status' => 1, 'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null]);
+        $data_request_penerimaan = data_login_user([
+            'date_start' => $start_date,
+            'date_end' => $end_date,
+            'from_status' => 3,
+            'transfer_status' => 1,
+            'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null
+        ]);
 
         $response = $this->Api_model->get_penerimaan($data_request_penerimaan);
         $this->data['penerimaan_list'] = $this->handle_response($response);

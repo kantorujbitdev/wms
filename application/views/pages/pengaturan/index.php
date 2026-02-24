@@ -67,7 +67,7 @@
                                 </td>
                                 <td class="text-center">
                                     <a href="<?= site_url('pengaturan/edit/' . $row['id_pengaturan']); ?>"
-                                        class="btn btn-info btn-sm">
+                                        class="btn btn-info btn-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 </td>

@@ -40,10 +40,11 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= site_url('api/edit/' . $api['id_api']); ?>" class="btn btn-info btn-sm">
+                                    <a href="<?= site_url('api/edit/' . $api['id_api']); ?>" class="btn btn-info btn-sm"
+                                        title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                         data-id="<?php echo $api['id_api']; ?>" data-name="<?php echo $api['nama_api']; ?>"
                                         data-url="<?= site_url('api/delete'); ?>">
                                         <i class="fas fa-trash"></i>

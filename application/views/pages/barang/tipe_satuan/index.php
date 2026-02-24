@@ -45,12 +45,12 @@
                                         <td class="text-center">
                                             <?php if (has_permission('tipe_satuan', 'edit')): ?>
                                                 <a href="<?php echo site_url('barang/edit_tipe_satuan/' . $type['id']); ?>"
-                                                    class="btn btn-info btn-sm">
+                                                    class="btn btn-info btn-sm" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (has_permission('tipe_satuan', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                     data-id="<?php echo $type['id']; ?>" data-name="<?php echo '<br>Code : ' . $type['code'] .
                                                            ' <br>Name : ' . $type['name']; ?>"
                                                     data-url="<?= site_url('barang/delete_tipe_satuan'); ?>">

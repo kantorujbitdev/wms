@@ -32,8 +32,8 @@
                                 <th>No</th>
                                 <th>Kode Penerimaan</th>
                                 <th>Tanggal</th>
-                                <th>Dari</th>
-                                <th>Ke Gudang</th>
+                                <th>Asal</th>
+                                <th>Tujuan</th>
                                 <th>No Invoice</th>
                                 <th>Keterangan</th>
                                 <th>Dibuat</th>
@@ -67,7 +67,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (has_permission('penerimaan', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                     data-id="<?= $penerimaan['stockin_id']; ?>"
                                                     data-name="<?= $penerimaan['stockin_code']; ?>"
                                                     data-url="<?= site_url('penerimaan/delete'); ?>">

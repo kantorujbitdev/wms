@@ -50,12 +50,12 @@
                                         <td class="text-center">
                                             <?php if (has_permission('customer', 'edit')): ?>
                                                 <a href="<?php echo site_url('customer/edit/' . $customer['id']); ?>"
-                                                    class="btn btn-info btn-sm">
+                                                    class="btn btn-info btn-sm" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (has_permission('customer', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete"
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
                                                     data-id="<?php echo $customer['id']; ?>"
                                                     data-name="<?php echo $customer['name']; ?>"
                                                     data-url="<?= site_url('customer/delete'); ?>">
