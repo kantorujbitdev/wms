@@ -127,12 +127,12 @@ $is_edit = isset($user_data);
                     <div class="input-group">
                         <input type="password" class="form-control" id="password" name="password"
                                <?= $is_edit ? '' : 'required'; ?>
-                               minlength="6" maxlength="50">
+                               minlength="1" maxlength="50">
                         <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
-                    <small class="form-text text-muted">Minimal 6 karakter</small>
+                    <small class="form-text text-muted">Minimal 1 karakter</small>
                 </div>
 
                 <div class="col-md-6">
