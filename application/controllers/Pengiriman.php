@@ -16,8 +16,32 @@ class Pengiriman extends MY_Controller
         $this->data['active_submenu'] = 'penggunaan';
         $warehouse_id = $this->session->userdata('warehouse_id');
 
-        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
-        $end_date = date('Y-m-d');   // Tanggal hari ini
+        // Ambil parameter filter dari URL
+        $start_date = $this->input->get('start_date');
+        $end_date = $this->input->get('end_date');
+
+        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        if (!empty($start_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $start_date)) {
+            $date_parts = explode('/', $start_date);
+            $start_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        if (!empty($end_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $end_date)) {
+            $date_parts = explode('/', $end_date);
+            $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        if (empty($start_date)) {
+            $start_date = date('Y-m-01');
+        }
+        if (empty($end_date)) {
+            $end_date = date('Y-m-d');
+        }
+
+        // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
+        $this->data['filter_start_date'] = $start_date;
+        $this->data['filter_end_date'] = $end_date;
 
         if ($warehouse_id == 0 || $warehouse_id == null) {
             $data_login = data_login_user([
@@ -107,8 +131,32 @@ class Pengiriman extends MY_Controller
         $this->data['active_menu'] = 'pengiriman';
         $this->data['active_submenu'] = 'pengiriman_antar_gudang';
 
-        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
-        $end_date = date('Y-m-d');   // Tanggal hari ini
+        // Ambil parameter filter dari URL
+        $start_date = $this->input->get('start_date');
+        $end_date = $this->input->get('end_date');
+
+        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        if (!empty($start_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $start_date)) {
+            $date_parts = explode('/', $start_date);
+            $start_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        if (!empty($end_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $end_date)) {
+            $date_parts = explode('/', $end_date);
+            $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        if (empty($start_date)) {
+            $start_date = date('Y-m-01');
+        }
+        if (empty($end_date)) {
+            $end_date = date('Y-m-d');
+        }
+
+        // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
+        $this->data['filter_start_date'] = $start_date;
+        $this->data['filter_end_date'] = $end_date;
 
         $data_login = data_login_user(['to_status' => '3']);
         $warehouse_id_session = $this->session->userdata('warehouse_id');

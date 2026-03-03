@@ -13,9 +13,6 @@ class Dashboard extends MY_Controller
         // Set title
         $this->data['title'] = 'Dashboard';
 
-        // Get summary data from API
-        $summary = api_request('GET', 'product', ['action' => 'summary']);
-        $this->data['summary'] = $summary['success'] ? $summary['data'] : [];
         $warehouse_id_session = $this->session->userdata('warehouse_id');
         $data_login = data_login_user();
         if ($warehouse_id_session == 0 || $warehouse_id_session === null) {

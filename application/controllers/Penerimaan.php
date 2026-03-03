@@ -16,8 +16,33 @@ class Penerimaan extends MY_Controller
         $this->data['title'] = 'Penerimaan dari Pengguna';
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'pengguna';
-        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
-        $end_date = date('Y-m-d');   // Tanggal hari ini
+
+        // Ambil parameter filter dari URL
+        $start_date = $this->input->get('start_date');
+        $end_date = $this->input->get('end_date');
+
+        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        if (!empty($start_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $start_date)) {
+            $date_parts = explode('/', $start_date);
+            $start_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        if (!empty($end_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $end_date)) {
+            $date_parts = explode('/', $end_date);
+            $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        if (empty($start_date)) {
+            $start_date = date('Y-m-01');
+        }
+        if (empty($end_date)) {
+            $end_date = date('Y-m-d');
+        }
+
+        // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
+        $this->data['filter_start_date'] = $start_date;
+        $this->data['filter_end_date'] = $end_date;
 
         $warehouse_id = $this->session->userdata('warehouse_id');
         if ($warehouse_id == 0 || $warehouse_id == null) {
@@ -88,24 +113,51 @@ class Penerimaan extends MY_Controller
         $this->data['title'] = 'Penerimaan dari Supplier';
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'supplier_penerimaan';
+
         $warehouse_id = $this->session->userdata('warehouse_id');
 
-        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
-        $end_date = date('Y-m-d');   // Tanggal hari ini
+        // Ambil parameter filter dari URL
+        $start_date = $this->input->get('start_date');
+        $end_date = $this->input->get('end_date');
+
+        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        if (!empty($start_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $start_date)) {
+            $date_parts = explode('/', $start_date);
+            $start_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        if (!empty($end_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $end_date)) {
+            $date_parts = explode('/', $end_date);
+            $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        if (empty($start_date)) {
+            $start_date = date('Y-m-01');
+        }
+        if (empty($end_date)) {
+            $end_date = date('Y-m-d');
+        }
+
+        // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
+        $this->data['filter_start_date'] = $start_date;
+        $this->data['filter_end_date'] = $end_date;
+
         if ($warehouse_id == 0 || $warehouse_id == null) {
             $data_login = data_login_user([
-                'date_start' => $start_date,
-                'date_end' => $end_date,
+                'date_start' => date('Y-m-d', strtotime($start_date)),
+                'date_end' => date('Y-m-d', strtotime($end_date)),
                 'from_status' => '2'
             ]);
         } else {
             $data_login = data_login_user([
-                'date_start' => $start_date,
-                'date_end' => $end_date,
+                'date_start' => date('Y-m-d', strtotime($start_date)),
+                'date_end' => date('Y-m-d', strtotime($end_date)),
                 'from_status' => '2',
                 'warehouse_id' => $warehouse_id
             ]);
         }
+
         $response = $this->Api_model->get_penerimaan($data_login);
         $this->data['penerimaan_list'] = $this->handle_response($response);
 
@@ -161,10 +213,33 @@ class Penerimaan extends MY_Controller
         $this->data['active_menu'] = 'penerimaan';
         $this->data['active_submenu'] = 'penerimaan_antar_gudang';
 
-        $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
-        $end_date = date('Y-m-d');   // Tanggal hari ini
+        // Ambil parameter filter dari URL
+        $start_date = $this->input->get('start_date');
+        $end_date = $this->input->get('end_date');
 
-        $data_login = data_login_user(['from_status' => '3']);
+        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        if (!empty($start_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $start_date)) {
+            $date_parts = explode('/', $start_date);
+            $start_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        if (!empty($end_date) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $end_date)) {
+            $date_parts = explode('/', $end_date);
+            $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        if (empty($start_date)) {
+            $start_date = date('Y-m-01');
+        }
+        if (empty($end_date)) {
+            $end_date = date('Y-m-d');
+        }
+
+        // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
+        $this->data['filter_start_date'] = $start_date;
+        $this->data['filter_end_date'] = $end_date;
+
         $warehouse_id_session = $this->session->userdata('warehouse_id');
         $data_request_penerimaan = data_login_user([
             'date_start' => $start_date,
@@ -570,131 +645,7 @@ class Penerimaan extends MY_Controller
     }
 
     // ==================== EDIT PENERIMAAN ====================
-    public function edit($id)
-    {
-        $this->check_permission('penerimaan', 'edit');
-        $this->data['title'] = 'Edit Penerimaan Barang';
-        $this->data['active_menu'] = 'penerimaan';
-
-        $data_login = data_login_user(['stockin_id' => $id]);
-        $response = $this->Api_model->penerimaan_by_id($data_login);
-
-        // Periksa struktur response API
-        if (isset($response['header']) && $response['header'] !== false) {
-            $header = $response['header'];
-            $detail = $response['detail'] ?? [];
-
-            // Normalize header keys to lowercase
-            $normalized_header = [];
-            foreach ($header as $key => $value) {
-                $normalized_key = strtolower($key);
-                $normalized_header[$normalized_key] = $value;
-            }
-
-            // Format data untuk view
-            $this->data['penerimaan'] = [
-                'header' => $normalized_header,
-                'detail' => $detail
-            ];
-
-            $from_status = $normalized_header['from_status'];
-            $this->data['from_status'] = $from_status;
-
-            // Set active submenu dan title berdasarkan from_status
-            if ($from_status == '1') {
-                $this->data['active_submenu'] = 'pengguna';
-                $this->data['title'] = 'Edit Penerimaan dari Pengguna';
-            } elseif ($from_status == '2') {
-                $this->data['active_submenu'] = 'supplier_penerimaan';
-                $this->data['title'] = 'Edit Penerimaan dari Supplier';
-            } else {
-                $this->data['active_submenu'] = 'penerimaan_antar_gudang';
-                $this->data['title'] = 'Edit Penerimaan Antar Gudang';
-            }
-
-            // Get user role from session
-            $user_role = $this->session->userdata('role');
-            $this->data['user_role'] = $user_role;
-            $this->data['user_warehouse_id'] = $this->session->userdata('warehouse_id');
-            $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
-
-            // Get warehouses
-            if ($user_role == 'superadmin') {
-                $warehouse_response = $this->Api_model->get_all_gudang($data_login);
-            } else {
-                $warehouse_response = $this->Api_model->get_gudang($data_login);
-            }
-            $this->data['warehouses'] = $this->handle_response($warehouse_response);
-
-            // Get customers if from_status = 1
-            if ($from_status == '1') {
-                $customer_response = $this->Api_model->get_customer($data_login);
-                $this->data['customers'] = $this->handle_response($customer_response);
-            }
-
-            // Get suppliers if from_status = 2
-            if ($from_status == '2') {
-                $supplier_response = $this->Api_model->get_supplier($data_login);
-                $this->data['suppliers'] = $this->handle_response($supplier_response);
-            }
-
-            // Get products
-            $products_response = $this->Api_model->get_barang($data_login);
-            $products = $this->handle_response($products_response);
-
-            // OPTIMASI: Ambil hanya field yang diperlukan untuk JSON
-            $optimized_products = [];
-            foreach ($products as $product) {
-                $optimized_products[] = [
-                    'id' => $product['product_id'],
-                    'text' => $product['product_code'] . ' - ' . $product['product_name'],
-                    'product_id' => $product['product_id'],
-                    'product_code' => $product['product_code'],
-                    'product_name' => $product['product_name'],
-                    'unit_code' => $product['unit_code'] ?? ''
-                ];
-            }
-
-            // Konversi ke JSON untuk JavaScript
-            $this->data['products_json'] = json_encode($optimized_products);
-
-            // Tambahkan unit_code, product_code, product_name ke detail items
-            $product_lookup = [];
-            foreach ($products as $product) {
-                $product_lookup[$product['product_id']] = $product;
-            }
-
-            foreach ($this->data['penerimaan']['detail'] as &$item) {
-                // Normalize detail item keys
-                $normalized_detail = [];
-                foreach ($item as $key => $value) {
-                    $normalized_key = strtolower($key);
-                    $normalized_detail[$normalized_key] = $value;
-                }
-
-                $product_id = $normalized_detail['product_id'] ?? null;
-
-                if ($product_id && isset($product_lookup[$product_id])) {
-                    $product = $product_lookup[$product_id];
-                    $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
-                    $normalized_detail['product_code'] = $product['product_code'] ?? '';
-                    $normalized_detail['product_name'] = $product['product_name'] ?? '';
-                }
-
-                $item = $normalized_detail;
-            }
-
-            $this->render_view('pages/penerimaan/edit');
-        } else {
-            // Jika header false atau tidak ada data
-            $this->handle_response($response);
-            $this->redirect_back();
-        }
-    }
-
-
-    // // ==================== EDIT PENERIMAAN ====================
-    // public function edit_konsep_outofmemory($id)
+    // public function edit($id)
     // {
     //     $this->check_permission('penerimaan', 'edit');
     //     $this->data['title'] = 'Edit Penerimaan Barang';
@@ -716,12 +667,11 @@ class Penerimaan extends MY_Controller
     //         }
 
     //         // Format data untuk view
-    //         $penerimaan = [
+    //         $this->data['penerimaan'] = [
     //             'header' => $normalized_header,
     //             'detail' => $detail
     //         ];
 
-    //         $this->data['penerimaan'] = $penerimaan;
     //         $from_status = $normalized_header['from_status'];
     //         $this->data['from_status'] = $from_status;
 
@@ -767,7 +717,28 @@ class Penerimaan extends MY_Controller
     //         $products_response = $this->Api_model->get_barang($data_login);
     //         $products = $this->handle_response($products_response);
 
-    //         // Add current_stock to detail items from products
+    //         // OPTIMASI: Ambil hanya field yang diperlukan untuk JSON
+    //         $optimized_products = [];
+    //         foreach ($products as $product) {
+    //             $optimized_products[] = [
+    //                 'id' => $product['product_id'],
+    //                 'text' => $product['product_code'] . ' - ' . $product['product_name'],
+    //                 'product_id' => $product['product_id'],
+    //                 'product_code' => $product['product_code'],
+    //                 'product_name' => $product['product_name'],
+    //                 'unit_code' => $product['unit_code'] ?? ''
+    //             ];
+    //         }
+
+    //         // Konversi ke JSON untuk JavaScript
+    //         $this->data['products_json'] = json_encode($optimized_products);
+
+    //         // Tambahkan unit_code, product_code, product_name ke detail items
+    //         $product_lookup = [];
+    //         foreach ($products as $product) {
+    //             $product_lookup[$product['product_id']] = $product;
+    //         }
+
     //         foreach ($this->data['penerimaan']['detail'] as &$item) {
     //             // Normalize detail item keys
     //             $normalized_detail = [];
@@ -775,21 +746,18 @@ class Penerimaan extends MY_Controller
     //                 $normalized_key = strtolower($key);
     //                 $normalized_detail[$normalized_key] = $value;
     //             }
-    //             $item = $normalized_detail;
 
-    //             // Add unit code from products
-    //             foreach ($products as $product) {
-    //                 if (isset($item['product_id']) && $item['product_id'] == $product['product_id']) {
-    //                     $item['unit_code'] = $product['unit_code'] ?? '';
-    //                     break;
-    //                 }
+    //             $product_id = $normalized_detail['product_id'] ?? null;
+
+    //             if ($product_id && isset($product_lookup[$product_id])) {
+    //                 $product = $product_lookup[$product_id];
+    //                 $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
+    //                 $normalized_detail['product_code'] = $product['product_code'] ?? '';
+    //                 $normalized_detail['product_name'] = $product['product_name'] ?? '';
     //             }
+
+    //             $item = $normalized_detail;
     //         }
-
-    //         $this->data['products'] = $products;
-
-    //         // Convert products data to JSON for JavaScript
-    //         $this->data['products_json'] = json_encode($products);
 
     //         $this->render_view('pages/penerimaan/edit');
     //     } else {
@@ -798,6 +766,116 @@ class Penerimaan extends MY_Controller
     //         $this->redirect_back();
     //     }
     // }
+
+
+    // ==================== EDIT PENERIMAAN ====================
+    public function edit($id)
+    {
+        $this->check_permission('penerimaan', 'edit');
+        $this->data['title'] = 'Edit Penerimaan Barang';
+        $this->data['active_menu'] = 'penerimaan';
+
+        $data_login = data_login_user(['stockin_id' => $id]);
+        $response = $this->Api_model->penerimaan_by_id($data_login);
+
+        if (!isset($response['header']) || $response['header'] === false) {
+            $this->handle_response($response);
+            $this->redirect_back();
+            return;
+        }
+
+        $header = $response['header'];
+        $detail = $response['detail'] ?? [];
+
+        // Normalize header keys
+        $normalized_header = [];
+        foreach ($header as $key => $value) {
+            $normalized_header[strtolower($key)] = $value;
+        }
+
+        $from_status = $normalized_header['from_status'];
+
+        $this->data['penerimaan'] = [
+            'header' => $normalized_header,
+            'detail' => $detail
+        ];
+        $this->data['from_status'] = $from_status;
+
+        // Set title dan submenu
+        $titles = ['1' => 'Edit Penerimaan dari Pengguna', '2' => 'Edit Penerimaan dari Supplier', '3' => 'Edit Penerimaan Antar Gudang'];
+        $submenus = ['1' => 'pengguna', '2' => 'supplier_penerimaan', '3' => 'penerimaan_antar_gudang'];
+
+        $this->data['title'] = $titles[$from_status] ?? 'Edit Penerimaan Barang';
+        $this->data['active_submenu'] = $submenus[$from_status] ?? 'penerimaan_antar_gudang';
+
+        // Get user data
+        $user_role = $this->session->userdata('role');
+        $this->data['user_role'] = $user_role;
+        $this->data['user_warehouse_id'] = $this->session->userdata('warehouse_id');
+        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+
+        // Get warehouses
+        $warehouse_response = ($user_role == 'superadmin')
+            ? $this->Api_model->get_all_gudang($data_login)
+            : $this->Api_model->get_gudang($data_login);
+        $this->data['warehouses'] = $this->handle_response($warehouse_response);
+
+        // Get customers/suppliers if needed
+        if ($from_status == '1') {
+            $customer_response = $this->Api_model->get_customer($data_login);
+            $this->data['customers'] = $this->handle_response($customer_response);
+        } elseif ($from_status == '2') {
+            $supplier_response = $this->Api_model->get_supplier($data_login);
+            $this->data['suppliers'] = $this->handle_response($supplier_response);
+        }
+
+        // TETAP AMBIL SEMUA PRODUCTS (seperti awal)
+        $products_response = $this->Api_model->get_barang($data_login);
+        $products = $this->handle_response($products_response);
+
+        // OPTIMASI: Tetap optimasi struktur produk untuk JSON
+        $optimized_products = [];
+        foreach ($products as $product) {
+            $optimized_products[] = [
+                'id' => $product['product_id'],
+                'text' => $product['product_code'] . ' - ' . $product['product_name'],
+                'product_id' => $product['product_id'],
+                'product_code' => $product['product_code'],
+                'product_name' => $product['product_name'],
+                'unit_code' => $product['unit_code'] ?? ''
+            ];
+        }
+
+        // Konversi ke JSON untuk JavaScript
+        $this->data['products_json'] = json_encode($optimized_products);
+
+        // Enhance detail items
+        $product_lookup = [];
+        foreach ($products as $product) {
+            $product_lookup[$product['product_id']] = $product;
+        }
+
+        foreach ($detail as &$item) {
+            $normalized_detail = [];
+            foreach ($item as $key => $value) {
+                $normalized_detail[strtolower($key)] = $value;
+            }
+
+            $product_id = $normalized_detail['product_id'] ?? null;
+            if ($product_id && isset($product_lookup[$product_id])) {
+                $product = $product_lookup[$product_id];
+                $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
+                $normalized_detail['product_code'] = $product['product_code'] ?? '';
+                $normalized_detail['product_name'] = $product['product_name'] ?? '';
+            }
+
+            $item = $normalized_detail;
+        }
+
+        $this->data['penerimaan']['detail'] = $detail;
+
+        $this->render_view('pages/penerimaan/edit');
+    }
 
     // ==================== UPDATE PENERIMAAN ====================
     public function update($id)
@@ -855,23 +933,25 @@ class Penerimaan extends MY_Controller
                 }
             }
 
-            // Send to API - perlu endpoint update_penerimaan
-            $response = $this->Api_model->update_penerimaan($post_data);
+            save_log("Update Penerimaan - ID: $id, Data: " . json_encode($post_data));
 
-            if ($response['success']) {
-                $this->handle_response($response, 'Penerimaan barang berhasil diperbarui');
-                // Redirect berdasarkan tipe penerimaan
-                if ($from_status == '1') {
-                    redirect('penerimaan/dari_pengguna');
-                } elseif ($from_status == '2') {
-                    redirect('penerimaan/dari_supplier');
-                } else {
-                    redirect('penerimaan/antar_gudang');
-                }
-            } else {
-                $this->handle_response($response);
-                redirect('penerimaan/edit/' . $id);
-            }
+            // Send to API - perlu endpoint update_penerimaan
+            // $response = $this->Api_model->update_penerimaan($post_data);
+
+            // if ($response['success']) {
+            //     $this->handle_response($response, 'Penerimaan barang berhasil diperbarui');
+            //     // Redirect berdasarkan tipe penerimaan
+            //     if ($from_status == '1') {
+            //         redirect('penerimaan/dari_pengguna');
+            //     } elseif ($from_status == '2') {
+            //         redirect('penerimaan/dari_supplier');
+            //     } else {
+            //         redirect('penerimaan/antar_gudang');
+            //     }
+            // } else {
+            //     $this->handle_response($response);
+            //     redirect('penerimaan/edit/' . $id);
+            // }
         }
     }
 

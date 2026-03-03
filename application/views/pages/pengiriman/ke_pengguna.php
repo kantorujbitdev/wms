@@ -1,26 +1,92 @@
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-        <a href="<?= site_url('pengiriman/add_pengguna') ?>" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengiriman
-        </a>
-    </div> -->
+
+    <!-- Filter Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-filter"></i> Filter Data
+                </h6>
+                <a href="<?= site_url('pengiriman/add_pengguna') ?>" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus fa-sm text-white-50"></i>
+                    Tambah Pengiriman
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <form method="GET" action="<?= site_url('pengiriman/penggunaan') ?>" class="form-inline">
+                    <div class="row g-3 align-items-end">
+
+                        <!-- Tanggal Mulai -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="start_date">Tanggal Mulai</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
+                                        placeholder="dd/mm/yyyy"
+                                        value="<?= isset($filter_start_date) ? date('d/m/Y', strtotime($filter_start_date)) : '' ?>"
+                                        autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tanggal Akhir -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="end_date">Tanggal Akhir</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
+                                        placeholder="dd/mm/yyyy"
+                                        value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : '' ?>"
+                                        autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Button -->
+                        <div class="col-auto">
+                            <div class="form-group">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Tampilkan
+                                    </button>
+                                    <a href="<?= site_url('pengiriman/ke_pengguna') ?>" class="btn btn-secondary">
+                                        <i class="fas fa-sync"></i> Reset
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman ke Pengguna</h6>
-                <a href="<?= site_url('pengiriman/add_pengguna') ?>" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengiriman
-                </a>
+                <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman ke
+                    Pengguna<?php if (!empty($pengiriman_list)): ?>
+                        <span class="badge badge-primary ml-2"><?= count($pengiriman_list) ?> Data</span>
+                    <?php endif; ?>
+                </h6>
+                <small class="text-muted">
+                    Periode: <?= date('d/m/Y', strtotime($filter_start_date)) ?> -
+                    <?= date('d/m/Y', strtotime($filter_end_date)) ?>
+                </small>
             </div>
         </div>
         <div class="card-body">
             <?php if (empty($pengiriman_list)): ?>
                 <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
                     Tidak ada data Pengiriman ke Pengguna.
+                    <?= date('d/m/Y', strtotime($filter_start_date)) ?> -
+                    <?= date('d/m/Y', strtotime($filter_end_date)) ?>.
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
