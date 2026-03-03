@@ -51,7 +51,7 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-search"></i> Tampilkan
                                     </button>
-                                    <a href="<?= site_url('penerimaan/dari_supplier') ?>" class="btn btn-secondary">
+                                    <a href="<?= site_url('penerimaan/dari_pengguna') ?>" class="btn btn-secondary">
                                         <i class="fas fa-sync"></i> Reset
                                     </a>
                                 </div>
