@@ -157,10 +157,11 @@
     </div>
 </div>
 
-
 <!-- Tambahkan CSS dan JS Flatpickr di head -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

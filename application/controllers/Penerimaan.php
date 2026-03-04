@@ -645,130 +645,6 @@ class Penerimaan extends MY_Controller
     }
 
     // ==================== EDIT PENERIMAAN ====================
-    // public function edit($id)
-    // {
-    //     $this->check_permission('penerimaan', 'edit');
-    //     $this->data['title'] = 'Edit Penerimaan Barang';
-    //     $this->data['active_menu'] = 'penerimaan';
-
-    //     $data_login = data_login_user(['stockin_id' => $id]);
-    //     $response = $this->Api_model->penerimaan_by_id($data_login);
-
-    //     // Periksa struktur response API
-    //     if (isset($response['header']) && $response['header'] !== false) {
-    //         $header = $response['header'];
-    //         $detail = $response['detail'] ?? [];
-
-    //         // Normalize header keys to lowercase
-    //         $normalized_header = [];
-    //         foreach ($header as $key => $value) {
-    //             $normalized_key = strtolower($key);
-    //             $normalized_header[$normalized_key] = $value;
-    //         }
-
-    //         // Format data untuk view
-    //         $this->data['penerimaan'] = [
-    //             'header' => $normalized_header,
-    //             'detail' => $detail
-    //         ];
-
-    //         $from_status = $normalized_header['from_status'];
-    //         $this->data['from_status'] = $from_status;
-
-    //         // Set active submenu dan title berdasarkan from_status
-    //         if ($from_status == '1') {
-    //             $this->data['active_submenu'] = 'pengguna';
-    //             $this->data['title'] = 'Edit Penerimaan dari Pengguna';
-    //         } elseif ($from_status == '2') {
-    //             $this->data['active_submenu'] = 'supplier_penerimaan';
-    //             $this->data['title'] = 'Edit Penerimaan dari Supplier';
-    //         } else {
-    //             $this->data['active_submenu'] = 'penerimaan_antar_gudang';
-    //             $this->data['title'] = 'Edit Penerimaan Antar Gudang';
-    //         }
-
-    //         // Get user role from session
-    //         $user_role = $this->session->userdata('role');
-    //         $this->data['user_role'] = $user_role;
-    //         $this->data['user_warehouse_id'] = $this->session->userdata('warehouse_id');
-    //         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
-
-    //         // Get warehouses
-    //         if ($user_role == 'superadmin') {
-    //             $warehouse_response = $this->Api_model->get_all_gudang($data_login);
-    //         } else {
-    //             $warehouse_response = $this->Api_model->get_gudang($data_login);
-    //         }
-    //         $this->data['warehouses'] = $this->handle_response($warehouse_response);
-
-    //         // Get customers if from_status = 1
-    //         if ($from_status == '1') {
-    //             $customer_response = $this->Api_model->get_customer($data_login);
-    //             $this->data['customers'] = $this->handle_response($customer_response);
-    //         }
-
-    //         // Get suppliers if from_status = 2
-    //         if ($from_status == '2') {
-    //             $supplier_response = $this->Api_model->get_supplier($data_login);
-    //             $this->data['suppliers'] = $this->handle_response($supplier_response);
-    //         }
-
-    //         // Get products
-    //         $products_response = $this->Api_model->get_barang($data_login);
-    //         $products = $this->handle_response($products_response);
-
-    //         // OPTIMASI: Ambil hanya field yang diperlukan untuk JSON
-    //         $optimized_products = [];
-    //         foreach ($products as $product) {
-    //             $optimized_products[] = [
-    //                 'id' => $product['product_id'],
-    //                 'text' => $product['product_code'] . ' - ' . $product['product_name'],
-    //                 'product_id' => $product['product_id'],
-    //                 'product_code' => $product['product_code'],
-    //                 'product_name' => $product['product_name'],
-    //                 'unit_code' => $product['unit_code'] ?? ''
-    //             ];
-    //         }
-
-    //         // Konversi ke JSON untuk JavaScript
-    //         $this->data['products_json'] = json_encode($optimized_products);
-
-    //         // Tambahkan unit_code, product_code, product_name ke detail items
-    //         $product_lookup = [];
-    //         foreach ($products as $product) {
-    //             $product_lookup[$product['product_id']] = $product;
-    //         }
-
-    //         foreach ($this->data['penerimaan']['detail'] as &$item) {
-    //             // Normalize detail item keys
-    //             $normalized_detail = [];
-    //             foreach ($item as $key => $value) {
-    //                 $normalized_key = strtolower($key);
-    //                 $normalized_detail[$normalized_key] = $value;
-    //             }
-
-    //             $product_id = $normalized_detail['product_id'] ?? null;
-
-    //             if ($product_id && isset($product_lookup[$product_id])) {
-    //                 $product = $product_lookup[$product_id];
-    //                 $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
-    //                 $normalized_detail['product_code'] = $product['product_code'] ?? '';
-    //                 $normalized_detail['product_name'] = $product['product_name'] ?? '';
-    //             }
-
-    //             $item = $normalized_detail;
-    //         }
-
-    //         $this->render_view('pages/penerimaan/edit');
-    //     } else {
-    //         // Jika header false atau tidak ada data
-    //         $this->handle_response($response);
-    //         $this->redirect_back();
-    //     }
-    // }
-
-
-    // ==================== EDIT PENERIMAAN ====================
     public function edit($id)
     {
         $this->check_permission('penerimaan', 'edit');
@@ -778,103 +654,117 @@ class Penerimaan extends MY_Controller
         $data_login = data_login_user(['stockin_id' => $id]);
         $response = $this->Api_model->penerimaan_by_id($data_login);
 
-        if (!isset($response['header']) || $response['header'] === false) {
+        // Periksa struktur response API
+        if (isset($response['header']) && $response['header'] !== false) {
+            $header = $response['header'];
+            $detail = $response['detail'] ?? [];
+
+            // Normalize header keys to lowercase
+            $normalized_header = [];
+            foreach ($header as $key => $value) {
+                $normalized_key = strtolower($key);
+                $normalized_header[$normalized_key] = $value;
+            }
+
+            // Format data untuk view
+            $this->data['penerimaan'] = [
+                'header' => $normalized_header,
+                'detail' => $detail
+            ];
+
+            $from_status = $normalized_header['from_status'];
+            $this->data['from_status'] = $from_status;
+
+            // Set active submenu dan title berdasarkan from_status
+            if ($from_status == '1') {
+                $this->data['active_submenu'] = 'pengguna';
+                $this->data['title'] = 'Edit Penerimaan dari Pengguna';
+            } elseif ($from_status == '2') {
+                $this->data['active_submenu'] = 'supplier_penerimaan';
+                $this->data['title'] = 'Edit Penerimaan dari Supplier';
+            } else {
+                $this->data['active_submenu'] = 'penerimaan_antar_gudang';
+                $this->data['title'] = 'Edit Penerimaan Antar Gudang';
+            }
+
+            // Get user role from session
+            $user_role = $this->session->userdata('role');
+            $this->data['user_role'] = $user_role;
+            $this->data['user_warehouse_id'] = $this->session->userdata('warehouse_id');
+            $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+
+            // Get warehouses
+            if ($user_role == 'superadmin') {
+                $warehouse_response = $this->Api_model->get_all_gudang($data_login);
+            } else {
+                $warehouse_response = $this->Api_model->get_gudang($data_login);
+            }
+            $this->data['warehouses'] = $this->handle_response($warehouse_response);
+
+            // Get customers if from_status = 1
+            if ($from_status == '1') {
+                $customer_response = $this->Api_model->get_customer($data_login);
+                $this->data['customers'] = $this->handle_response($customer_response);
+            }
+
+            // Get suppliers if from_status = 2
+            if ($from_status == '2') {
+                $supplier_response = $this->Api_model->get_supplier($data_login);
+                $this->data['suppliers'] = $this->handle_response($supplier_response);
+            }
+
+            // Get products
+            $products_response = $this->Api_model->get_barang($data_login);
+            $products = $this->handle_response($products_response);
+
+            // OPTIMASI: Ambil hanya field yang diperlukan untuk JSON
+            $optimized_products = [];
+            foreach ($products as $product) {
+                $optimized_products[] = [
+                    'id' => $product['product_id'],
+                    'text' => $product['product_code'] . ' - ' . $product['product_name'],
+                    'product_id' => $product['product_id'],
+                    'product_code' => $product['product_code'],
+                    'product_name' => $product['product_name'],
+                    'unit_code' => $product['unit_code'] ?? ''
+                ];
+            }
+
+            // Konversi ke JSON untuk JavaScript
+            $this->data['products_json'] = json_encode($optimized_products);
+
+            // Tambahkan unit_code, product_code, product_name ke detail items
+            $product_lookup = [];
+            foreach ($products as $product) {
+                $product_lookup[$product['product_id']] = $product;
+            }
+
+            foreach ($this->data['penerimaan']['detail'] as &$item) {
+                // Normalize detail item keys
+                $normalized_detail = [];
+                foreach ($item as $key => $value) {
+                    $normalized_key = strtolower($key);
+                    $normalized_detail[$normalized_key] = $value;
+                }
+
+                $product_id = $normalized_detail['product_id'] ?? null;
+
+                if ($product_id && isset($product_lookup[$product_id])) {
+                    $product = $product_lookup[$product_id];
+                    $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
+                    $normalized_detail['product_code'] = $product['product_code'] ?? '';
+                    $normalized_detail['product_name'] = $product['product_name'] ?? '';
+                }
+
+                $item = $normalized_detail;
+            }
+
+            $this->render_view('pages/penerimaan/edit');
+        } else {
+            // Jika header false atau tidak ada data
             $this->handle_response($response);
             $this->redirect_back();
-            return;
         }
-
-        $header = $response['header'];
-        $detail = $response['detail'] ?? [];
-
-        // Normalize header keys
-        $normalized_header = [];
-        foreach ($header as $key => $value) {
-            $normalized_header[strtolower($key)] = $value;
-        }
-
-        $from_status = $normalized_header['from_status'];
-
-        $this->data['penerimaan'] = [
-            'header' => $normalized_header,
-            'detail' => $detail
-        ];
-        $this->data['from_status'] = $from_status;
-
-        // Set title dan submenu
-        $titles = ['1' => 'Edit Penerimaan dari Pengguna', '2' => 'Edit Penerimaan dari Supplier', '3' => 'Edit Penerimaan Antar Gudang'];
-        $submenus = ['1' => 'pengguna', '2' => 'supplier_penerimaan', '3' => 'penerimaan_antar_gudang'];
-
-        $this->data['title'] = $titles[$from_status] ?? 'Edit Penerimaan Barang';
-        $this->data['active_submenu'] = $submenus[$from_status] ?? 'penerimaan_antar_gudang';
-
-        // Get user data
-        $user_role = $this->session->userdata('role');
-        $this->data['user_role'] = $user_role;
-        $this->data['user_warehouse_id'] = $this->session->userdata('warehouse_id');
-        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
-
-        // Get warehouses
-        $warehouse_response = ($user_role == 'superadmin')
-            ? $this->Api_model->get_all_gudang($data_login)
-            : $this->Api_model->get_gudang($data_login);
-        $this->data['warehouses'] = $this->handle_response($warehouse_response);
-
-        // Get customers/suppliers if needed
-        if ($from_status == '1') {
-            $customer_response = $this->Api_model->get_customer($data_login);
-            $this->data['customers'] = $this->handle_response($customer_response);
-        } elseif ($from_status == '2') {
-            $supplier_response = $this->Api_model->get_supplier($data_login);
-            $this->data['suppliers'] = $this->handle_response($supplier_response);
-        }
-
-        // TETAP AMBIL SEMUA PRODUCTS (seperti awal)
-        $products_response = $this->Api_model->get_barang($data_login);
-        $products = $this->handle_response($products_response);
-
-        // OPTIMASI: Tetap optimasi struktur produk untuk JSON
-        $optimized_products = [];
-        foreach ($products as $product) {
-            $optimized_products[] = [
-                'id' => $product['product_id'],
-                'text' => $product['product_code'] . ' - ' . $product['product_name'],
-                'product_id' => $product['product_id'],
-                'product_code' => $product['product_code'],
-                'product_name' => $product['product_name'],
-                'unit_code' => $product['unit_code'] ?? ''
-            ];
-        }
-
-        // Konversi ke JSON untuk JavaScript
-        $this->data['products_json'] = json_encode($optimized_products);
-
-        // Enhance detail items
-        $product_lookup = [];
-        foreach ($products as $product) {
-            $product_lookup[$product['product_id']] = $product;
-        }
-
-        foreach ($detail as &$item) {
-            $normalized_detail = [];
-            foreach ($item as $key => $value) {
-                $normalized_detail[strtolower($key)] = $value;
-            }
-
-            $product_id = $normalized_detail['product_id'] ?? null;
-            if ($product_id && isset($product_lookup[$product_id])) {
-                $product = $product_lookup[$product_id];
-                $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
-                $normalized_detail['product_code'] = $product['product_code'] ?? '';
-                $normalized_detail['product_name'] = $product['product_name'] ?? '';
-            }
-
-            $item = $normalized_detail;
-        }
-
-        $this->data['penerimaan']['detail'] = $detail;
-
-        $this->render_view('pages/penerimaan/edit');
     }
 
     // ==================== UPDATE PENERIMAAN ====================

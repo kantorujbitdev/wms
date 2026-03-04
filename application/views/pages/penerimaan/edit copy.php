@@ -34,13 +34,8 @@
     }
 
     @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     .loader h4 {
@@ -70,17 +65,9 @@
     }
 
     @keyframes progress {
-        0% {
-            width: 0%;
-        }
-
-        50% {
-            width: 70%;
-        }
-
-        100% {
-            width: 100%;
-        }
+        0% { width: 0%; }
+        50% { width: 70%; }
+        100% { width: 100%; }
     }
 
     /* Fade out animation */
@@ -111,19 +98,18 @@
     elseif ($from_status == '3')
         $back_url = 'penerimaan/antar_gudang';
     ?>
-
+    
     <!-- Form -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
+           <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
                 <i class="fas fa-arrow-left fa-sm text-white-50"></i>
                 <?= $wording['back']; ?>
-            </a>
+            </a> 
             <h6 class="m-0 font-weight-bold text-primary"><?= $title ?></h6>
         </div>
         <div class="card-body">
-            <form id="penerimaanForm"
-                action="<?= site_url('penerimaan/update/' . $penerimaan['header']['stockin_id']) ?>" method="POST">
+            <form id="penerimaanForm" action="<?= site_url('penerimaan/update/' . $penerimaan['header']['stockin_id']) ?>" method="POST">
                 <input type="hidden" name="from_status" value="<?= $from_status ?>">
 
                 <div class="row">
@@ -150,25 +136,25 @@
                         <div class="form-group">
                             <label for="to_warehouse_id">Ke Gudang *</label>
                             <?php if ($user_role == 'superadmin'): ?>
-                                <!-- Superadmin dapat mengubah gudang tujuan -->
-                                <select class="form-control select2" id="to_warehouse_id" name="to_warehouse_id" required>
-                                    <option value="">Pilih Gudang Tujuan</option>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($penerimaan['header']['warehouse_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <small class="form-text text-muted">Superadmin dapat mengubah gudang tujuan</small>
+                                        <!-- Superadmin dapat mengubah gudang tujuan -->
+                                        <select class="form-control select2" id="to_warehouse_id" name="to_warehouse_id" required>
+                                            <option value="">Pilih Gudang Tujuan</option>
+                                            <?php foreach ($warehouses as $warehouse): ?>
+                                                        <option value="<?= $warehouse['warehouse_id'] ?>"
+                                                            <?= ($penerimaan['header']['warehouse_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
+                                                            <?= $warehouse['warehouse_name'] ?>
+                                                        </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <small class="form-text text-muted">Superadmin dapat mengubah gudang tujuan</small>
                             <?php else: ?>
-                                <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
-                                <input type="text" class="form-control bg-light"
-                                    value="<?= $penerimaan['header']['warehouse_name'] ?>" readonly
-                                    style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                                <input type="hidden" id="to_warehouse_id" name="to_warehouse_id"
-                                    value="<?= $penerimaan['header']['warehouse_id'] ?>">
-                                <small class="form-text text-muted">Gudang tujuan tidak dapat diubah</small>
+                                        <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
+                                        <input type="text" class="form-control bg-light"
+                                            value="<?= $penerimaan['header']['warehouse_name'] ?>" readonly
+                                            style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
+                                        <input type="hidden" id="to_warehouse_id" name="to_warehouse_id"
+                                            value="<?= $penerimaan['header']['warehouse_id'] ?>">
+                                        <small class="form-text text-muted">Gudang tujuan tidak dapat diubah</small>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -184,93 +170,93 @@
 
                 <!-- Form untuk Penerimaan dari Pengguna (from_status = 1) -->
                 <?php if ($from_status == '1'): ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="customer_id">Dari Pengguna *</label>
-                                <select class="form-control select2" id="customer_id" name="customer_id" required>
-                                    <option value="">Pilih Pengguna</option>
-                                    <?php foreach ($customers as $customer): ?>
-                                        <option value="<?= $customer['id'] ?>"
-                                            <?= ($penerimaan['header']['from_id'] == $customer['id']) ? 'selected' : '' ?>>
-                                            <?= $customer['name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="customer_id">Dari Pengguna *</label>
+                                        <select class="form-control select2" id="customer_id" name="customer_id" required>
+                                            <option value="">Pilih Pengguna</option>
+                                            <?php foreach ($customers as $customer): ?>
+                                                        <option value="<?= $customer['id'] ?>"
+                                                            <?= ($penerimaan['header']['from_id'] == $customer['id']) ? 'selected' : '' ?>>
+                                                            <?= $customer['name'] ?>
+                                                        </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="stockin_invoice">No Referensi *</label>
+                                        <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
+                                            value="<?= $penerimaan['header']['stockin_invoice'] ?>"
+                                            placeholder="Masukkan nomor referensi" required>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    value="<?= $penerimaan['header']['stockin_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi" required>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Form untuk Penerimaan dari Supplier (from_status = 2) -->
+                        <!-- Form untuk Penerimaan dari Supplier (from_status = 2) -->
                 <?php elseif ($from_status == '2'): ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="supplier_id">Dari Supplier *</label>
-                                <select class="form-control select2" id="supplier_id" name="supplier_id" required>
-                                    <option value="">Pilih Supplier</option>
-                                    <?php foreach ($suppliers as $supplier): ?>
-                                        <option value="<?= $supplier['id'] ?>"
-                                            <?= ($penerimaan['header']['from_id'] == $supplier['id']) ? 'selected' : '' ?>>
-                                            <?= $supplier['name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="supplier_id">Dari Supplier *</label>
+                                        <select class="form-control select2" id="supplier_id" name="supplier_id" required>
+                                            <option value="">Pilih Supplier</option>
+                                            <?php foreach ($suppliers as $supplier): ?>
+                                                        <option value="<?= $supplier['id'] ?>"
+                                                            <?= ($penerimaan['header']['from_id'] == $supplier['id']) ? 'selected' : '' ?>>
+                                                            <?= $supplier['name'] ?>
+                                                        </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="stockin_invoice">No Referensi *</label>
+                                        <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
+                                            value="<?= $penerimaan['header']['stockin_invoice'] ?>"
+                                            placeholder="Masukkan nomor referensi" required>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    value="<?= $penerimaan['header']['stockin_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi" required>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Form untuk Penerimaan Antar Gudang (from_status = 3) -->
+                        <!-- Form untuk Penerimaan Antar Gudang (from_status = 3) -->
                 <?php elseif ($from_status == '3'): ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="from_warehouse_id">Dari Gudang *</label>
-                                <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id"
-                                    required>
-                                    <option value="">Pilih Gudang Asal</option>
-                                    <?php foreach ($warehouses as $warehouse):
-                                        // Jangan tampilkan gudang yang sama dengan tujuan
-                                        $disabled = '';
-                                        if ($warehouse['warehouse_id'] == $penerimaan['header']['warehouse_id']) {
-                                            $disabled = 'disabled';
-                                        }
-                                        ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($penerimaan['header']['from_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>         <?= $disabled ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                            <?= ($disabled) ? ' (Gudang Tujuan)' : '' ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <small class="form-text text-muted">Pilih gudang asal penerimaan</small>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="from_warehouse_id">Dari Gudang *</label>
+                                        <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id" required>
+                                            <option value="">Pilih Gudang Asal</option>
+                                            <?php foreach ($warehouses as $warehouse):
+                                                // Jangan tampilkan gudang yang sama dengan tujuan
+                                                $disabled = '';
+                                                if ($warehouse['warehouse_id'] == $penerimaan['header']['warehouse_id']) {
+                                                    $disabled = 'disabled';
+                                                }
+                                                ?>
+                                                        <option value="<?= $warehouse['warehouse_id'] ?>"
+                                                            <?= ($penerimaan['header']['from_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>
+                                                            <?= $disabled ?>>
+                                                            <?= $warehouse['warehouse_name'] ?>
+                                                            <?= ($disabled) ? ' (Gudang Tujuan)' : '' ?>
+                                                        </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <small class="form-text text-muted">Pilih gudang asal penerimaan</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="stockin_invoice">No Referensi *</label>
+                                        <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
+                                            value="<?= $penerimaan['header']['stockin_invoice'] ?>"
+                                            placeholder="Masukkan nomor referensi transfer" required>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    value="<?= $penerimaan['header']['stockin_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi transfer" required>
-                            </div>
-                        </div>
-                    </div>
                 <?php endif; ?>
 
                 <div class="row">
@@ -306,55 +292,55 @@
 
                 <div id="itemsContainer">
                     <?php if (!empty($penerimaan['detail'])): ?>
-                                <?php foreach ($penerimaan['detail'] as $index => $detail): ?>
-                                            <div class="item-row row mb-3" data-index="<?= $index ?>">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label>Produk *</label>
-                                                        <select class="form-control product-select-ajax" name="product_id[]" data-index="<?= $index ?>"
-                                                            data-selected-id="<?= $detail['product_id'] ?>"
-                                                            data-selected-text="<?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan: <?= ($detail['unit_code'] ?? '') ?>)"
-                                                            style="width: 100%;" required>
-                                                            <?php if (!empty($detail['product_id'])): ?>
-                                                                        <option value="<?= $detail['product_id'] ?>" selected>
-                                                                            <?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan:
-                                                                            <?= ($detail['unit_code'] ?? '') ?>)
-                                                                        </option>
-                                                            <?php endif; ?>
-                                                        </select>
-                                                        <input type="hidden" name="stock_id[]" value="<?= $detail['product_id'] ?>">
-                                                        <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
-                                                            Satuan: <?= $detail['unit_code'] ?? '' ?>
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label>Qty *</label>
-                                                        <input type="number" class="form-control qty-input" name="qty[]" data-index="<?= $index ?>" min="0.01"
-                                                            step="0.01" value="<?= $detail['qty'] ?? 0 ?>" required>
-                                                        <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>" style="display: none;">
-                                                            Quantity harus lebih dari 0
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label>Keterangan Barang</label>
-                                                        <input type="text" class="form-control" name="detail_note[]" value="<?= $detail['detail_note'] ?? '' ?>"
-                                                            placeholder="Keterangan tambahan untuk barang ini">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2 mt-4">
-                                                    <div class="form-group">
-                                                        <label class="form-label">&nbsp;</label>
-                                                        <button type="button" class="btn btn-danger btn-block remove-item">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
+                            <?php foreach ($penerimaan['detail'] as $index => $detail): ?>
+                                    <div class="item-row row mb-3" data-index="<?= $index ?>">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Produk *</label>
+                                                <select class="form-control product-select-ajax" name="product_id[]" data-index="<?= $index ?>"
+                                                    data-selected-id="<?= $detail['product_id'] ?>"
+                                                    data-selected-text="<?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan: <?= ($detail['unit_code'] ?? '') ?>)"
+                                                    style="width: 100%;" required>
+                                                    <?php if (!empty($detail['product_id'])): ?>
+                                                            <option value="<?= $detail['product_id'] ?>" selected>
+                                                                <?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan:
+                                                                <?= ($detail['unit_code'] ?? '') ?>)
+                                                            </option>
+                                                    <?php endif; ?>
+                                                </select>
+                                                <input type="hidden" name="stock_id[]" value="<?= $detail['product_id'] ?>">
+                                                <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
+                                                    Satuan: <?= $detail['unit_code'] ?? '' ?>
+                                                </small>
                                             </div>
-                                <?php endforeach; ?>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Qty *</label>
+                                                <input type="number" class="form-control qty-input" name="qty[]" data-index="<?= $index ?>" min="0.01"
+                                                    step="0.01" value="<?= $detail['qty'] ?? 0 ?>" required>
+                                                <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>" style="display: none;">
+                                                    Quantity harus lebih dari 0
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Keterangan Barang</label>
+                                                <input type="text" class="form-control" name="detail_note[]" value="<?= $detail['detail_note'] ?? '' ?>"
+                                                    placeholder="Keterangan tambahan untuk barang ini">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mt-4">
+                                            <div class="form-group">
+                                                <label class="form-label">&nbsp;</label>
+                                                <button type="button" class="btn btn-danger btn-block remove-item">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
 
@@ -602,38 +588,38 @@ $(document).ready(function () {
             let errorMessages = [];
 
         <?php if ($user_role == 'superadmin'): ?>
-                    if (!$('#to_warehouse_id').val()) {
-                            errorMessages.push('Harap pilih gudang tujuan');
-                            $('#to_warehouse_id').focus();
-                            valid = false;
-                        }
+                if (!$('#to_warehouse_id').val()) {
+                        errorMessages.push('Harap pilih gudang tujuan');
+                        $('#to_warehouse_id').focus();
+                        valid = false;
+                    }
         <?php endif; ?>
 
         <?php if ($from_status == '1'): ?>
-                    if (!$('#customer_id').val()) {
-                            errorMessages.push('Harap pilih pengguna');
-                            $('#customer_id').focus();
-                            valid = false;
-                        }
+                if (!$('#customer_id').val()) {
+                        errorMessages.push('Harap pilih pengguna');
+                        $('#customer_id').focus();
+                        valid = false;
+                    }
         <?php elseif ($from_status == '2'): ?>
-                    if (!$('#supplier_id').val()) {
-                            errorMessages.push('Harap pilih supplier');
-                            $('#supplier_id').focus();
-                            valid = false;
-                        }
+                if (!$('#supplier_id').val()) {
+                        errorMessages.push('Harap pilih supplier');
+                        $('#supplier_id').focus();
+                        valid = false;
+                    }
         <?php elseif ($from_status == '3'): ?>
-                    if (!$('#from_warehouse_id').val()) {
-                            errorMessages.push('Harap pilih gudang asal');
-                            $('#from_warehouse_id').focus();
-                            valid = false;
-                        }
+                if (!$('#from_warehouse_id').val()) {
+                        errorMessages.push('Harap pilih gudang asal');
+                        $('#from_warehouse_id').focus();
+                        valid = false;
+                    }
 
-                        const fromWarehouseId = $('#from_warehouse_id').val();
-                        const toWarehouseId = $('#to_warehouse_id').val();
-                        if (fromWarehouseId && toWarehouseId && fromWarehouseId === toWarehouseId) {
-                            errorMessages.push('Tidak bisa menerima dari gudang yang sama');
-                            valid = false;
-                        }
+                    const fromWarehouseId = $('#from_warehouse_id').val();
+                    const toWarehouseId = $('#to_warehouse_id').val();
+                    if (fromWarehouseId && toWarehouseId && fromWarehouseId === toWarehouseId) {
+                        errorMessages.push('Tidak bisa menerima dari gudang yang sama');
+                        valid = false;
+                    }
         <?php endif; ?>
 
         if (!$('#stockin_invoice').val()) {
@@ -690,20 +676,20 @@ $(document).ready(function () {
         }
 
     <?php if ($user_role == 'superadmin' && $from_status == '3'): ?>
-                        $('#to_warehouse_id').on('change', function () {
-                            const toWarehouse = $(this).val();
-                            $('#from_warehouse_id option').each(function () {
-                                if ($(this).val() == toWarehouse) {
-                                    $(this).prop('disabled', true);
-                                    if ($(this).is(':selected')) {
-                                        $(this).prop('selected', false);
-                                    }
-                                } else {
-                                    $(this).prop('disabled', false);
+                    $('#to_warehouse_id').on('change', function () {
+                        const toWarehouse = $(this).val();
+                        $('#from_warehouse_id option').each(function () {
+                            if ($(this).val() == toWarehouse) {
+                                $(this).prop('disabled', true);
+                                if ($(this).is(':selected')) {
+                                    $(this).prop('selected', false);
                                 }
-                            });
-                            $('#from_warehouse_id').trigger('change.select2');
+                            } else {
+                                $(this).prop('disabled', false);
+                            }
                         });
+                        $('#from_warehouse_id').trigger('change.select2');
+                    });
     <?php endif; ?>
 
 });

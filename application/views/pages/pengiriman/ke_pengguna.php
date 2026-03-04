@@ -149,3 +149,53 @@
         </div>
     </div>
 </div>
+
+<!-- Tambahkan CSS dan JS Flatpickr di head -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inisialisasi Flatpickr
+        flatpickr(".flatpickr", {
+            dateFormat: "d/m/Y",
+            locale: {
+                firstDayOfWeek: 1 // Senin sebagai hari pertama
+            },
+            position: "below", // Paksa posisi di bawah
+            positionElement: null,
+            static: true, // Membuat kalender tetap di posisi relatif terhadap input
+            onChange: function (selectedDates, dateStr, instance) {
+                // Validasi tanggal
+                var currentInput = instance.element;
+                var startDate = document.getElementById('start_date');
+                var endDate = document.getElementById('end_date');
+
+                if (currentInput.id === 'start_date' && endDate.value) {
+                    var start = selectedDates[0];
+                    var endParts = endDate.value.split('/');
+                    var end = new Date(endParts[2], endParts[1] - 1, endParts[0]);
+
+                    if (start > end) {
+                        $('#errorMessage').text('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+                        $('#errorModal').modal('show');
+
+                        return false;
+                    }
+                } else if (currentInput.id === 'end_date' && startDate.value) {
+                    var startParts = startDate.value.split('/');
+                    var start = new Date(startParts[2], startParts[1] - 1, startParts[0]);
+                    var end = selectedDates[0];
+
+                    if (end < start) {
+                        $('#errorMessage').text('Tanggal akhir tidak boleh lebih kecil dari tanggal awal');
+                        $('#errorModal').modal('show');
+                        return false;
+                    }
+                }
+            }
+        });
+    });
+</script>

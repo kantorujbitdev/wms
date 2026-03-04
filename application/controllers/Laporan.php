@@ -90,6 +90,92 @@ class Laporan extends MY_Controller
         $this->render_view('pages/laporan/stok');
     }
 
+    // public function stok_card()
+    // {
+    //     $this->check_permission('laporan', 'view');
+    //     // Set title
+    //     $this->data['title'] = 'Stock Card';
+    //     $this->data['active_menu'] = 'laporan';
+    //     $this->data['active_submenu'] = 'laporan_stok_card';
+
+    //     $user_role = $this->session->userdata('role');
+    //     $warehouse_id = $this->session->userdata('warehouse_id');
+    //     $data = data_login_user();
+
+    //     // Get filter parameters
+    //     $filter_warehouse = $this->input->get('warehouse_id');
+    //     $filter_product = $this->input->get('stock_id');
+    //     $filter_date_start = $this->input->get('date_start');
+    //     $filter_date_end = $this->input->get('date_end');
+
+    //     // Get warehouses for filter (superadmin can see all)
+    //     if ($user_role == 'superadmin') {
+    //         $warehouse_response = $this->Api_model->get_all_gudang($data);
+    //         $products_response = $this->Api_model->get_stock_all($data);
+    //         $this->data['warehouses'] = $this->handle_response($warehouse_response);
+    //     } else {
+    //         // $warehouse_response = $this->Api_model->get_gudang($data);
+    //         // $this->data['warehouses'] = $this->handle_response($warehouse_response);
+    //         $products_response = $this->Api_model->get_stock_by_warehous(data_login_user(['warehouse_id' => $warehouse_id]));
+    //     }
+
+    //     // Get all products for filter
+    //     // $products_response = $this->Api_model->get_stock_all($data);
+    //     $this->data['products'] = $this->handle_response($products_response);
+
+    //     // Prepare filter data for API
+    //     $filter_data = $data;
+
+    //     // Apply filters
+    //     if ($filter_warehouse) {
+    //         $filter_data['warehouse_id'] = $filter_warehouse;
+    //     } elseif ($warehouse_id && $user_role != 'superadmin') {
+    //         // Non-superadmin default to their warehouse
+    //         $filter_data['warehouse_id'] = $warehouse_id;
+    //     }
+
+    //     if ($filter_product) {
+    //         $filter_data['stock_id'] = $filter_product;
+    //     }
+
+    //     if ($filter_date_start) {
+    //         $filter_data['date_start'] = $filter_date_start;
+    //     } else {
+    //         // Default: start of current month
+    //         $filter_data['date_start'] = date('Y-m-01');
+    //     }
+
+    //     if ($filter_date_end) {
+    //         $filter_data['date_end'] = $filter_date_end;
+    //     } else {
+    //         // Default: current date
+    //         $filter_data['date_end'] = date('Y-m-d');
+    //     }
+
+    //     // Get stock card data from API
+    //     $stock_card_response = $this->Api_model->get_card_stok($filter_data);
+    //     $stock_cards = [];
+
+    //     if (isset($stock_card_response['success']) && $stock_card_response['success']) {
+    //         $stock_cards = $stock_card_response['data'];
+    //     }
+
+    //     $this->data['stock_cards'] = $stock_cards;
+
+    //     // Pass filter values back to view
+    //     $this->data['filter_warehouse_id'] = $filter_warehouse;
+    //     $this->data['filter_stock_id'] = $filter_product;
+    //     $this->data['filter_date_start'] = $filter_date_start;
+    //     $this->data['filter_date_end'] = $filter_date_end;
+    //     $this->data['user_role'] = $user_role;
+    //     $this->data['user_warehouse_id'] = $warehouse_id;
+    //     $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
+
+    //     // Render view
+    //     $this->render_view('pages/laporan/stok_card');
+    // }
+
+
     public function stok_card()
     {
         $this->check_permission('laporan', 'view');
@@ -108,20 +194,39 @@ class Laporan extends MY_Controller
         $filter_date_start = $this->input->get('date_start');
         $filter_date_end = $this->input->get('date_end');
 
+        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        if (!empty($filter_date_start) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_start)) {
+            $date_parts = explode('/', $filter_date_start);
+            $filter_date_start = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        if (!empty($filter_date_end) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_end)) {
+            $date_parts = explode('/', $filter_date_end);
+            $filter_date_end = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        if (empty($filter_date_start)) {
+            $filter_date_start = date('Y-m-01');
+        }
+        if (empty($filter_date_end)) {
+            $filter_date_end = date('Y-m-d');
+        }
+
         // Get warehouses for filter (superadmin can see all)
         if ($user_role == 'superadmin') {
             $warehouse_response = $this->Api_model->get_all_gudang($data);
-            $products_response = $this->Api_model->get_stock_all($data);
             $this->data['warehouses'] = $this->handle_response($warehouse_response);
-        } else {
-            // $warehouse_response = $this->Api_model->get_gudang($data);
-            // $this->data['warehouses'] = $this->handle_response($warehouse_response);
-            $products_response = $this->Api_model->get_stock_by_warehous(data_login_user(['warehouse_id' => $warehouse_id]));
-        }
 
-        // Get all products for filter
-        // $products_response = $this->Api_model->get_stock_all($data);
-        $this->data['products'] = $this->handle_response($products_response);
+            // Untuk superadmin, ambil semua produk
+            $products_response = $this->Api_model->get_stock_all($data);
+            $this->data['products'] = $this->handle_response($products_response);
+        } else {
+            // Untuk admin, ambil produk berdasarkan warehouse mereka
+            $products_response = $this->Api_model->get_stock_by_warehous(data_login_user(['warehouse_id' => $warehouse_id]));
+            $this->data['products'] = $this->handle_response($products_response);
+            $this->data['warehouses'] = []; // Kosongkan untuk admin
+        }
 
         // Prepare filter data for API
         $filter_data = $data;
@@ -138,19 +243,8 @@ class Laporan extends MY_Controller
             $filter_data['stock_id'] = $filter_product;
         }
 
-        if ($filter_date_start) {
-            $filter_data['date_start'] = $filter_date_start;
-        } else {
-            // Default: start of current month
-            $filter_data['date_start'] = date('Y-m-01');
-        }
-
-        if ($filter_date_end) {
-            $filter_data['date_end'] = $filter_date_end;
-        } else {
-            // Default: current date
-            $filter_data['date_end'] = date('Y-m-d');
-        }
+        $filter_data['date_start'] = $filter_date_start;
+        $filter_data['date_end'] = $filter_date_end;
 
         // Get stock card data from API
         $stock_card_response = $this->Api_model->get_card_stok($filter_data);
@@ -174,6 +268,8 @@ class Laporan extends MY_Controller
         // Render view
         $this->render_view('pages/laporan/stok_card');
     }
+
+
     public function barang_proses()
     {
         $this->check_permission('laporan', 'view');
@@ -188,13 +284,13 @@ class Laporan extends MY_Controller
         // Ambil parameter filter dari input GET
         $status = $this->input->get('status');
         $warehouse_id = $this->input->get('warehouse_id');
-        $start_date = $this->input->get('start_date');
-        $end_date = $this->input->get('end_date');
+        $date_start = $this->input->get('date_start');
+        $date_end = $this->input->get('date_end');
 
         // Set default tanggal jika tidak ada parameter
-        if (empty($start_date) && empty($end_date) && !$this->input->get()) {
-            $start_date = date('Y-m-01'); // Tanggal 1 bulan ini
-            $end_date = date('Y-m-d');   // Tanggal hari ini
+        if (empty($date_start) && empty($date_end) && !$this->input->get()) {
+            $date_start = date('Y-m-01'); // Tanggal 1 bulan ini
+            $date_end = date('Y-m-d');   // Tanggal hari ini
         }
 
         // Prepare data request
@@ -213,12 +309,12 @@ class Laporan extends MY_Controller
             $data_request_penerimaan['warehouse_id'] = $warehouse_id;
         }
 
-        if ($start_date !== null && $start_date !== '') {
-            $data_request_penerimaan['date_start'] = date('Y-m-d', strtotime($start_date));
+        if ($date_start !== null && $date_start !== '') {
+            $data_request_penerimaan['date_start'] = date('Y-m-d', strtotime($date_start));
         }
 
-        if ($end_date !== null && $end_date !== '') {
-            $data_request_penerimaan['date_end'] = date('Y-m-d', strtotime($end_date));
+        if ($date_end !== null && $date_end !== '') {
+            $data_request_penerimaan['date_end'] = date('Y-m-d', strtotime($date_end));
         }
 
         // Get warehouse list untuk dropdown filter
@@ -232,8 +328,8 @@ class Laporan extends MY_Controller
         // Kirim filter value ke view untuk form
         $this->data['filter_status'] = $status;
         $this->data['filter_warehouse_id'] = $warehouse_id;
-        $this->data['filter_start_date'] = $start_date;
-        $this->data['filter_end_date'] = $end_date;
+        $this->data['filter_date_start'] = $date_start;
+        $this->data['filter_date_end'] = $date_end;
 
         // Render view
         $this->render_view('pages/laporan/barang_dalam_proses');
