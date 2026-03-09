@@ -4,7 +4,7 @@ $(document).ready(function () {
 
 	// Initialize tooltips
 	var tooltipTriggerList = [].slice.call(
-		document.querySelectorAll('[data-bs-toggle="tooltip"]')
+		document.querySelectorAll('[data-bs-toggle="tooltip"]'),
 	);
 	var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 		return new bootstrap.Tooltip(tooltipTriggerEl);
@@ -12,7 +12,7 @@ $(document).ready(function () {
 
 	// Initialize popovers
 	var popoverTriggerList = [].slice.call(
-		document.querySelectorAll('[data-bs-toggle="popover"]')
+		document.querySelectorAll('[data-bs-toggle="popover"]'),
 	);
 	var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
 		return new bootstrap.Popover(popoverTriggerEl);
@@ -163,7 +163,7 @@ $(document).ready(function () {
 						{
 							scrollTop: target.offset().top - 70,
 						},
-						1000
+						1000,
 					);
 				}
 			}
@@ -183,7 +183,7 @@ $(document).ready(function () {
 			{
 				scrollTop: 0,
 			},
-			800
+			800,
 		);
 		return false;
 	});
@@ -501,7 +501,7 @@ function showDataTableEmptyState(message = "Tidak ada data yang tersedia") {
 				message +
 				"</span>" +
 				"</td>" +
-				"</tr>"
+				"</tr>",
 		);
 	}
 }

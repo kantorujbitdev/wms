@@ -1,710 +1,546 @@
-<style>
-    /* Loading Screen */
-    #loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.5);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: opacity 0.3s ease;
-    }
-
-    .loader {
-        text-align: center;
-        max-width: 400px;
-        padding: 30px;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 10px;
-        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .spinner {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto 20px;
-        border: 5px solid #36b9cc;
-        border-top: 5px solid #4e73df;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .loader h4 {
-        color: #333;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .loader p {
-        color: #666;
-        font-size: 14px;
-        margin-bottom: 5px;
-    }
-
-    .progress {
-        height: 8px;
-        margin-top: 20px;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .progress-bar {
-        width: 0%;
-        height: 100%;
-        background: linear-gradient(90deg, #4e73df, #36b9cc);
-        animation: progress 2s ease-in-out infinite;
-    }
-
-    @keyframes progress {
-        0% {
-            width: 0%;
-        }
-
-        50% {
-            width: 70%;
-        }
-
-        100% {
-            width: 100%;
-        }
-    }
-
-    /* Fade out animation */
-    .fade-out {
-        opacity: 0;
-        pointer-events: none;
-    }
-</style>
+<?php $this->load->view('pages/penerimaan/edit_style'); ?>
 
 <!-- Loading Overlay -->
 <div id="loading-overlay">
     <div class="loader">
         <div class="spinner"></div>
-        <h4>Memuat Data Penerimaan</h4>
-        <p>Mohon tunggu sebentar...</p>
-        <p class="small text-muted" id="loading-status">Mengambil data penerimaan</p>
-        <div class="progress">
-            <div class="progress-bar" role="progressbar"></div>
-        </div>
+        <p>Memuat data...</p>
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid py-3">
     <?php
     $back_url = 'penerimaan/dari_pengguna';
-    if ($from_status == '2')
+    $tipe_penerimaan_text = 'Dari Pengguna';
+
+    if ($from_status == '2') {
         $back_url = 'penerimaan/dari_supplier';
-    elseif ($from_status == '3')
+        $tipe_penerimaan_text = 'Dari Supplier';
+    } elseif ($from_status == '3') {
         $back_url = 'penerimaan/antar_gudang';
+        $tipe_penerimaan_text = 'Antar Gudang';
+    }
     ?>
 
-    <!-- Form -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
-                <i class="fas fa-arrow-left fa-sm text-white-50"></i>
-                <?= $wording['back']; ?>
-            </a>
-            <h6 class="m-0 font-weight-bold text-primary"><?= $title ?></h6>
+    <!-- Back Button & Title -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <button type="button" class="btn btn-back" onclick="confirmBack()">
+                <i class="fas fa-arrow-left me-1"></i> Kembali
+            </button>
         </div>
-        <div class="card-body">
-            <form id="penerimaanForm"
-                action="<?= site_url('penerimaan/update/' . $penerimaan['header']['stockin_id']) ?>" method="POST">
-                <input type="hidden" name="from_status" value="<?= $from_status ?>">
+        <div class="d-flex align-items-center gap-2">
+            <span class="info-badge">
+                <i
+                    class="fas fa-<?= ($from_status == '1') ? 'user' : (($from_status == '2') ? 'building' : 'warehouse') ?> me-1"></i>
+                <?= $tipe_penerimaan_text ?>
+            </span>
+        </div>
+    </div>
 
+    <form id="penerimaanForm" action="<?= site_url('penerimaan/update/' . $penerimaan['header']['stockin_id']) ?>"
+        method="POST">
+        <input type="hidden" name="from_status" value="<?= $from_status ?>">
+
+        <!-- Header Card -->
+        <div class="edit-card">
+            <div class="edit-card-header">
+                <h5><i class="fas fa-file-alt me-2"></i>Informasi Penerimaan</h5>
+                <span class="header-subtitle"><?= $penerimaan['header']['stockin_code'] ?></span>
+            </div>
+            <div class="edit-card-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockin_date">Tanggal Penerimaan *</label>
-                            <input type="date" class="form-control" id="stockin_date" name="stockin_date"
-                                value="<?= date('Y-m-d', strtotime($penerimaan['header']['stockin_date'])) ?>"
-                                max="<?= date('Y-m-d') ?>" required>
-                        </div>
+                    <!-- Kode Penerimaan (Readonly) -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kode Penerimaan</label>
+                        <input type="text" class="form-control cell-input-readonly"
+                            value="<?= $penerimaan['header']['stockin_code'] ?>" readonly>
                     </div>
-                    <div class="col-md-6">
+
+                    <!-- Tanggal Penerimaan -->
+                    <!-- <div class="col-md-6 mb-3">
+                        <label class="form-label form-label-required">Tanggal Penerimaan</label>
+                        <input type="date" class="form-control cell-input" id="stockin_date" name="stockin_date"
+                            value="<?= date('Y-m-d', strtotime($penerimaan['header']['stockin_date'])) ?>" required>
+                    </div> -->
+
+                    <div class="col-md-6 mb-3">
                         <div class="form-group">
-                            <label for="stockin_code">Kode Penerimaan *</label>
-                            <input type="text" class="form-control bg-light" id="stockin_code" name="stockin_code"
-                                value="<?= $penerimaan['header']['stockin_code'] ?>" readonly
-                                style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
+                            <label for="start_date" class="form-label form-label-required">Tanggal Penerimaan</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control flatpickr" id="stockin_date" name="stockin_date"
+                                    value="<?= $penerimaan['header']['stockin_date'] ? date('d/m/Y', strtotime($penerimaan['header']['stockin_date'])) : '' ?>"
+                                    autocomplete="off" required>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="to_warehouse_id">Ke Gudang *</label>
-                            <?php if ($user_role == 'superadmin'): ?>
-                                <!-- Superadmin dapat mengubah gudang tujuan -->
-                                <select class="form-control select2" id="to_warehouse_id" name="to_warehouse_id" required>
-                                    <option value="">Pilih Gudang Tujuan</option>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($penerimaan['header']['warehouse_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <small class="form-text text-muted">Superadmin dapat mengubah gudang tujuan</small>
-                            <?php else: ?>
-                                <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
-                                <input type="text" class="form-control bg-light"
-                                    value="<?= $penerimaan['header']['warehouse_name'] ?>" readonly
-                                    style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                                <input type="hidden" id="to_warehouse_id" name="to_warehouse_id"
-                                    value="<?= $penerimaan['header']['warehouse_id'] ?>">
-                                <small class="form-text text-muted">Gudang tujuan tidak dapat diubah</small>
-                            <?php endif; ?>
-                        </div>
+                    <!-- Gudang Tujuan -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label form-label-required">Ke Gudang</label>
+                        <?php if ($user_role == 'superadmin'): ?>
+                            <select class="form-control cell-input select2" id="to_warehouse_id" name="to_warehouse_id"
+                                required>
+                                <option value="">Pilih Gudang</option>
+                                <?php foreach ($warehouses as $wh): ?>
+                                    <option value="<?= $wh['warehouse_id'] ?>"
+                                        <?= ($penerimaan['header']['warehouse_id'] == $wh['warehouse_id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($wh['warehouse_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <input type="text" class="form-control cell-input-readonly"
+                                value="<?= htmlspecialchars($penerimaan['header']['warehouse_name']) ?>" readonly>
+                            <input type="hidden" name="to_warehouse_id"
+                                value="<?= $penerimaan['header']['warehouse_id'] ?>">
+                        <?php endif; ?>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockin_note">Keterangan</label>
-                            <textarea class="form-control" id="stockin_note" name="stockin_note"
-                                placeholder="Masukkan keterangan tambahan"
-                                rows="2"><?= $penerimaan['header']['stockin_note'] ?></textarea>
-                        </div>
+
+                    <!-- Keterangan -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Keterangan</label>
+                        <input type="text" class="form-control cell-input" name="stockin_note"
+                            value="<?= htmlspecialchars($penerimaan['header']['stockin_note'] ?? '') ?>"
+                            placeholder="Catatan tambahan">
                     </div>
                 </div>
 
-                <!-- Form untuk Penerimaan dari Pengguna (from_status = 1) -->
-                <?php if ($from_status == '1'): ?>
+                <?php if ($from_status == '1'): // Dari Pengguna ?>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="customer_id">Dari Pengguna *</label>
-                                <select class="form-control select2" id="customer_id" name="customer_id" required>
-                                    <option value="">Pilih Pengguna</option>
-                                    <?php foreach ($customers as $customer): ?>
-                                        <option value="<?= $customer['id'] ?>"
-                                            <?= ($penerimaan['header']['from_id'] == $customer['id']) ? 'selected' : '' ?>>
-                                            <?= $customer['name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">Dari Pengguna</label>
+                            <select class="form-control cell-input select2" id="customer_id" name="customer_id" required>
+                                <option value="">Pilih Pengguna</option>
+                                <?php foreach ($customers as $c): ?>
+                                    <option value="<?= $c['id'] ?>" <?= ($penerimaan['header']['from_id'] == $c['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($c['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    value="<?= $penerimaan['header']['stockin_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi" required>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">No Referensi</label>
+                            <input type="text" class="form-control cell-input" id="stockin_invoice" name="stockin_invoice"
+                                value="<?= htmlspecialchars($penerimaan['header']['stockin_invoice']) ?>" required>
                         </div>
                     </div>
-
-                    <!-- Form untuk Penerimaan dari Supplier (from_status = 2) -->
-                <?php elseif ($from_status == '2'): ?>
+                <?php elseif ($from_status == '2'): // Dari Supplier ?>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="supplier_id">Dari Supplier *</label>
-                                <select class="form-control select2" id="supplier_id" name="supplier_id" required>
-                                    <option value="">Pilih Supplier</option>
-                                    <?php foreach ($suppliers as $supplier): ?>
-                                        <option value="<?= $supplier['id'] ?>"
-                                            <?= ($penerimaan['header']['from_id'] == $supplier['id']) ? 'selected' : '' ?>>
-                                            <?= $supplier['name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">Dari Supplier</label>
+                            <select class="form-control cell-input select2" id="supplier_id" name="supplier_id" required>
+                                <option value="">Pilih Supplier</option>
+                                <?php foreach ($suppliers as $s): ?>
+                                    <option value="<?= $s['id'] ?>" <?= ($penerimaan['header']['from_id'] == $s['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($s['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    value="<?= $penerimaan['header']['stockin_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi" required>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">No Invoice</label>
+                            <input type="text" class="form-control cell-input" id="stockin_invoice" name="stockin_invoice"
+                                value="<?= htmlspecialchars($penerimaan['header']['stockin_invoice']) ?>" required>
                         </div>
                     </div>
-
-                    <!-- Form untuk Penerimaan Antar Gudang (from_status = 3) -->
-                <?php elseif ($from_status == '3'): ?>
+                <?php elseif ($from_status == '3'): // Antar Gudang ?>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="from_warehouse_id">Dari Gudang *</label>
-                                <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id"
-                                    required>
-                                    <option value="">Pilih Gudang Asal</option>
-                                    <?php foreach ($warehouses as $warehouse):
-                                        // Jangan tampilkan gudang yang sama dengan tujuan
-                                        $disabled = '';
-                                        if ($warehouse['warehouse_id'] == $penerimaan['header']['warehouse_id']) {
-                                            $disabled = 'disabled';
-                                        }
-                                        ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($penerimaan['header']['from_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>         <?= $disabled ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                            <?= ($disabled) ? ' (Gudang Tujuan)' : '' ?>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">Dari Gudang</label>
+                            <select class="form-control cell-input select2" id="from_warehouse_id" name="from_warehouse_id"
+                                required>
+                                <option value="">Pilih Gudang</option>
+                                <?php foreach ($warehouses as $wh): ?>
+                                    <?php if ($wh['warehouse_id'] != $penerimaan['header']['warehouse_id']): ?>
+                                        <option value="<?= $wh['warehouse_id'] ?>"
+                                            <?= ($penerimaan['header']['from_id'] == $wh['warehouse_id']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($wh['warehouse_name']) ?>
                                         </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <small class="form-text text-muted">Pilih gudang asal penerimaan</small>
-                            </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="stockin_invoice">No Referensi *</label>
-                                <input type="text" class="form-control" id="stockin_invoice" name="stockin_invoice"
-                                    value="<?= $penerimaan['header']['stockin_invoice'] ?>"
-                                    placeholder="Masukkan nomor referensi transfer" required>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">No Referensi</label>
+                            <input type="text" class="form-control cell-input" id="stockin_invoice" name="stockin_invoice"
+                                value="<?= htmlspecialchars($penerimaan['header']['stockin_invoice']) ?>" required>
                         </div>
                     </div>
                 <?php endif; ?>
+            </div>
+        </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="from_status">Tipe Penerimaan</label>
-                            <?php
-                            $tipe_text = 'Dari Pengguna';
-                            if ($from_status == '2')
-                                $tipe_text = 'Dari Supplier';
-                            elseif ($from_status == '3')
-                                $tipe_text = 'Antar Gudang';
-                            ?>
-                            <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
-                                style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            <small class="form-text text-muted">Tipe penerimaan tidak dapat diubah</small>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-4">
-
-                <!-- Items Section -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <h5 class="font-weight-bold">Detail Barang</h5>
-                        <small class="text-muted">Pilih barang yang diterima</small>
-                        <button type="button" id="addItem" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Barang
-                        </button>
-                    </div>
-                </div>
-
-                <div id="itemsContainer">
-                    <?php if (!empty($penerimaan['detail'])): ?>
+        <!-- Items Card - Excel Like Table -->
+        <div class="edit-card">
+            <div class="edit-card-header">
+                <h5><i class="fas fa-boxes me-2"></i>Detail Barang</h5>
+                <button type="button" class="btn btn-success btn-sm" onclick="addNewRow()"
+                    style="background: #28a745; border: none; font-weight: 600;">
+                    <i class="fas fa-plus me-1"></i> Tambah Baris
+                </button>
+            </div>
+            <div class="edit-card-body p-0">
+                <div class="table-responsive">
+                    <table class="excel-table" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th style="width:50px">No</th>
+                                <th>Produk</th>
+                                <th style="width:100px">Qty</th>
+                                <th style="width:80px">Satuan</th>
+                                <th>Keterangan</th>
+                                <th style="width:100px">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody">
+                            <?php if (!empty($penerimaan['detail'])): ?>
                                 <?php foreach ($penerimaan['detail'] as $index => $detail): ?>
-                                            <div class="item-row row mb-3" data-index="<?= $index ?>">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label>Produk *</label>
-                                                        <select class="form-control product-select-ajax" name="product_id[]" data-index="<?= $index ?>"
-                                                            data-selected-id="<?= $detail['product_id'] ?>"
-                                                            data-selected-text="<?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan: <?= ($detail['unit_code'] ?? '') ?>)"
-                                                            style="width: 100%;" required>
-                                                            <?php if (!empty($detail['product_id'])): ?>
-                                                                        <option value="<?= $detail['product_id'] ?>" selected>
-                                                                            <?= ($detail['product_code'] ?? '') ?> - <?= ($detail['product_name'] ?? '') ?> (Satuan:
-                                                                            <?= ($detail['unit_code'] ?? '') ?>)
-                                                                        </option>
-                                                            <?php endif; ?>
-                                                        </select>
-                                                        <input type="hidden" name="stock_id[]" value="<?= $detail['product_id'] ?>">
-                                                        <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
-                                                            Satuan: <?= $detail['unit_code'] ?? '' ?>
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label>Qty *</label>
-                                                        <input type="number" class="form-control qty-input" name="qty[]" data-index="<?= $index ?>" min="0.01"
-                                                            step="0.01" value="<?= $detail['qty'] ?? 0 ?>" required>
-                                                        <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>" style="display: none;">
-                                                            Quantity harus lebih dari 0
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label>Keterangan Barang</label>
-                                                        <input type="text" class="form-control" name="detail_note[]" value="<?= $detail['detail_note'] ?? '' ?>"
-                                                            placeholder="Keterangan tambahan untuk barang ini">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2 mt-4">
-                                                    <div class="form-group">
-                                                        <label class="form-label">&nbsp;</label>
-                                                        <button type="button" class="btn btn-danger btn-block remove-item">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </div>
+                                    <tr class="item-row" data-index="<?= $index ?>">
+                                        <td style="text-align:center; font-weight: 600;"><?= $index + 1 ?></td>
+                                        <td>
+                                            <!-- Display Mode -->
+                                            <div class="product-cell product-display" id="display-<?= $index ?>">
+                                                <span
+                                                    class="product-cell-text"><?= htmlspecialchars(($detail['product_code'] ?? '') . ' - ' . ($detail['product_name'] ?? '')) ?></span>
+                                                <span
+                                                    class="product-cell-unit"><?= htmlspecialchars($detail['unit_code'] ?? '-') ?></span>
+                                                <input type="hidden" name="stock_id[]" value="<?= $detail['product_id'] ?>"
+                                                    id="stock_id_<?= $index ?>">
+                                            </div>
+                                            <!-- Edit Mode -->
+                                            <div class="product-cell product-edit hidden" id="edit-<?= $index ?>">
+                                                <select class="form-control cell-input select2-product"
+                                                    id="product_select_<?= $index ?>" style="height:32px;">
+                                                    <option value="">Pilih Produk</option>
+                                                </select>
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-action btn-action-save"
+                                                        onclick="saveProduct(<?= $index ?>)" title="Simpan">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-action btn-action-cancel"
+                                                        onclick="cancelEdit(<?= $index ?>)" title="Batal">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control cell-input" name="qty[]" min="1" step="1"
+                                                value="<?= (int) ($detail['qty'] ?? 0) ?>" required style="text-align: right;">
+                                        </td>
+                                        <td style="text-align:center; font-weight: 600;">
+                                            <?= htmlspecialchars($detail['unit_code'] ?? '-') ?></td>
+                                        <td>
+                                            <input type="text" class="form-control cell-input" name="detail_note[]"
+                                                value="<?= htmlspecialchars($detail['detail_note'] ?? '') ?>"
+                                                placeholder="Keterangan">
+                                        </td>
+                                        <td style="text-align:center">
+                                            <button type="button" class="btn btn-action btn-action-edit"
+                                                onclick="enableEdit(<?= $index ?>)" title="Ganti Produk">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-action btn-action-delete btn-delete-item"
+                                                title="Hapus Baris" <?= (count($penerimaan['detail']) <= 1) ? 'disabled' : '' ?>>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
-                    <?php endif; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
-
-                <hr class="my-4">
-
-                <div class="row">
-                    <div class="col-12 text-right">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Update Penerimaan
-                        </button>
-                        <a href="<?= site_url($back_url) ?>" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Batal
-                        </a>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <!-- Action Buttons -->
+        <div class="edit-card">
+            <div class="edit-card-body d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-back" onclick="confirmBack()">
+                    <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar
+                </button>
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save me-1"></i> Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+    rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Tambahkan CSS dan JS Flatpickr di head -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
 <script>
-$(document).ready(function () {
-    // Tampilkan loading
-    showLoading('Mengambil data penerimaan...');
-    
-    // Parse products data dari PHP JSON
-    var productsData = <?= $products_json ?: '[]' ?>;
-        updateLoadingStatus('Memproses data produk (' + productsData.length + ' produk)');
+    // Data produk dari controller - sudah termasuk unit_code
+    var productsInReceipt = <?= $products_in_receipt_json ?? '[]' ?>;
+    var allProducts = <?= $all_products_json ?? '[]' ?>;
+    var currentRowCount = <?= count($penerimaan['detail']) ?>;
+    var hasChanges = false;
 
-        let itemCounter = <?= count($penerimaan['detail']) ?>;
+    $(document).ready(function () {
 
-        /**
-         * Function untuk menampilkan loading
-         */
-        function showLoading(message) {
-            $('#loading-overlay').show();
-            if (message) {
-                $('#loading-status').text(message);
-            }
-        }
+        // Inisialisasi Flatpickr
+        flatpickr(".flatpickr", {
+            dateFormat: "d/m/Y",
+            locale: {
+                firstDayOfWeek: 1 // Senin sebagai hari pertama
+            },
+            position: "below", // Paksa posisi di bawah
+            positionElement: null,
+        });
 
-        /**
-         * Function untuk mengupdate status loading
-         */
-        function updateLoadingStatus(message) {
-            $('#loading-status').text(message);
-        }
+        // Hide loading after page load
+        setTimeout(function () {
+            $('#loading-overlay').fadeOut();
+        }, 500);
 
-        /**
-         * Function untuk menyembunyikan loading
-         */
-        function hideLoading() {
-            $('#loading-overlay').addClass('fade-out');
-            setTimeout(function () {
-                $('#loading-overlay').hide();
-                $('#loading-overlay').removeClass('fade-out');
-                $('#main-content').fadeIn(500);
-            }, 300);
-        }
-
-        /**
-         * Inisialisasi Select2 dengan client-side filtering
-         */
-        function initSelect2Client(element) {
-            updateLoadingStatus('Menginisialisasi form...');
-
-            element.select2({
+        // Initialize Select2
+        $('.select2').each(function () {
+            $(this).select2({
+                theme: 'bootstrap-5',
                 width: '100%',
-                dropdownParent: $('.card-body'),
-                data: productsData,
-                minimumInputLength: 2,
-                placeholder: 'Cari produk (min. 2 karakter)',
-                allowClear: false,
-                matcher: function (params, data) {
-                    if ($.trim(params.term) === '') {
-                        return null;
-                    }
-                    var searchTerm = params.term.toLowerCase();
-                    var text = data.text.toLowerCase();
-                    if (text.indexOf(searchTerm) > -1) {
-                        return data;
-                    }
-                    return null;
-                },
-                templateResult: function (product) {
-                    if (product.loading) {
-                        return product.text;
-                    }
-                    if (!product.id) {
-                        return product.text;
-                    }
-                    var $container = $(
-                        '<div class="clearfix">' +
-                        '<div class="font-weight-bold">' + product.text + '</div>' +
-                        '<small class="text-muted">Kode: ' + (product.product_code || '') + '</small>' +
-                        '<small class="text-muted"> Satuan: ' + (product.unit_code || '') + '</small>' +
-                        '</div>'
-                    );
-                    return $container;
-                },
-                templateSelection: function (product) {
-                    if (!product.id) {
-                        return product.text;
-                    }
-                    return product.text || $(product.element).text();
-                },
-                language: {
-                    searching: function () {
-                        return 'Mencari...';
-                    },
-                    noResults: function () {
-                        return 'Produk tidak ditemukan';
-                    },
-                    inputTooShort: function () {
-                        return 'Masukkan minimal 2 karakter';
-                    }
-                }
+                placeholder: $(this).data('placeholder') || 'Pilih opsi',
+                allowClear: true
             });
-
-            // Set initial value jika ada
-            var selectedId = element.data('selected-id');
-            var selectedText = element.data('selected-text');
-
-            if (selectedId && selectedText) {
-                if (element.find('option[value="' + selectedId + '"]').length === 0) {
-                    var option = new Option(selectedText, selectedId, true, true);
-                    element.append(option);
-                }
-                element.val(selectedId).trigger('change');
-            }
-        }
-
-        // Inisialisasi semua select produk yang sudah ada
-        let initCount = 0;
-        let totalSelects = $('.product-select-ajax').length;
-
-        $('.product-select-ajax').each(function (index) {
-            initSelect2Client($(this));
-            initCount++;
-            updateLoadingStatus('Memuat form barang (' + initCount + '/' + totalSelects + ')');
         });
 
-        /**
-         * Handle perubahan pilihan produk
-         */
-        $(document).on('change', '.product-select-ajax', function () {
-            const index = $(this).data('index');
-            const selectedData = $(this).select2('data')[0];
-
-            if (selectedData && selectedData.id) {
-                $(this).closest('.item-row').find('input[name="stock_id[]"]').val(selectedData.id);
-                $('#stockInfo' + index).text('Satuan: ' + (selectedData.unit_code || ''));
-                $(this).attr('data-selected-id', selectedData.id);
-                $(this).attr('data-selected-text', selectedData.text);
-            } else {
-                $(this).closest('.item-row').find('input[name="stock_id[]"]').val('');
-                $('#stockInfo' + index).text('');
-            }
+        // Initialize product selects in table
+        $('.select2-product').each(function () {
+            initProductSelect($(this));
         });
 
-        /**
-         * Handle validasi input quantity
-         */
-        $(document).on('input', '.qty-input', function () {
-            const index = $(this).data('index');
-            const qty = parseFloat($(this).val()) || 0;
-
-            if (qty <= 0) {
-                $('#qtyError' + index).show();
-                $(this).addClass('is-invalid');
-            } else {
-                $('#qtyError' + index).hide();
-                $(this).removeClass('is-invalid');
-            }
-        });
-
-        /**
-         * Tambah item baru
-         */
-        $('#addItem').click(function () {
-            const newIndex = itemCounter;
-
-            const newRow = `
-        <div class="item-row row mb-3" data-index="${newIndex}">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label>Produk *</label>
-                    <select class="form-control product-select-ajax" 
-                            name="product_id[]"
-                            data-index="${newIndex}"
-                            style="width: 100%;" required>
-                        <option value="">Pilih Produk</option>
-                    </select>
-                    <input type="hidden" name="stock_id[]" value="">
-                    <small class="form-text text-info stock-info" id="stockInfo${newIndex}"></small>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label>Qty *</label>
-                    <input type="number" class="form-control qty-input" name="qty[]" 
-                        data-index="${newIndex}" step="0.01" min="0.01" required>
-                    <small class="form-text text-danger qty-error" id="qtyError${newIndex}" style="display: none;">
-                        Quantity harus lebih dari 0
-                    </small>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label>Keterangan Barang</label>
-                    <input type="text" class="form-control" name="detail_note[]" 
-                           placeholder="Keterangan tambahan untuk barang ini">
-                </div>
-            </div>
-            <div class="col-md-2 mt-4">
-                <div class="form-group">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="button" class="btn btn-danger btn-block remove-item">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        `;
-
-            $('#itemsContainer').append(newRow);
-            initSelect2Client($('#itemsContainer .item-row:last-child .product-select-ajax'));
-            itemCounter++;
-        });
-
-        /**
-         * Hapus item
-         */
-        $(document).on('click', '.remove-item', function () {
+        // Delete row handler
+        $('.btn-delete-item').click(function () {
             if ($('.item-row').length > 1) {
                 $(this).closest('.item-row').remove();
+                updateRowNumbers();
+                hasChanges = true;
+            } else {
+                alert('Minimal harus ada 1 barang');
             }
         });
 
-        /**
-         * Validasi form sebelum submit
-         */
+        // Form validation
         $('#penerimaanForm').submit(function (e) {
             let valid = true;
-            let errorMessages = [];
+            let messages = [];
 
-        <?php if ($user_role == 'superadmin'): ?>
-                    if (!$('#to_warehouse_id').val()) {
-                            errorMessages.push('Harap pilih gudang tujuan');
-                            $('#to_warehouse_id').focus();
-                            valid = false;
-                        }
-        <?php endif; ?>
+            <?php if ($user_role == 'superadmin'): ?>
+                if (!$('#to_warehouse_id').val()) { messages.push('Pilih gudang tujuan'); valid = false; }
+            <?php endif; ?>
 
-        <?php if ($from_status == '1'): ?>
-                    if (!$('#customer_id').val()) {
-                            errorMessages.push('Harap pilih pengguna');
-                            $('#customer_id').focus();
-                            valid = false;
-                        }
-        <?php elseif ($from_status == '2'): ?>
-                    if (!$('#supplier_id').val()) {
-                            errorMessages.push('Harap pilih supplier');
-                            $('#supplier_id').focus();
-                            valid = false;
-                        }
-        <?php elseif ($from_status == '3'): ?>
-                    if (!$('#from_warehouse_id').val()) {
-                            errorMessages.push('Harap pilih gudang asal');
-                            $('#from_warehouse_id').focus();
-                            valid = false;
-                        }
+            <?php if ($from_status == '1'): ?>
+                if (!$('#customer_id').val()) { messages.push('Pilih pengguna'); valid = false; }
+            <?php elseif ($from_status == '2'): ?>
+                if (!$('#supplier_id').val()) { messages.push('Pilih supplier'); valid = false; }
+            <?php elseif ($from_status == '3'): ?>
+                if (!$('#from_warehouse_id').val()) { messages.push('Pilih gudang asal'); valid = false; }
+            <?php endif; ?>
 
-                        const fromWarehouseId = $('#from_warehouse_id').val();
-                        const toWarehouseId = $('#to_warehouse_id').val();
-                        if (fromWarehouseId && toWarehouseId && fromWarehouseId === toWarehouseId) {
-                            errorMessages.push('Tidak bisa menerima dari gudang yang sama');
-                            valid = false;
-                        }
-        <?php endif; ?>
+            if (!$('#stockin_invoice').val()) { messages.push('Isi nomor referensi'); valid = false; }
 
-        if (!$('#stockin_invoice').val()) {
-                errorMessages.push('Harap isi nomor referensi');
-                $('#stockin_invoice').focus();
-                valid = false;
-            }
+            let hasStock = false;
+            $('input[name="stock_id[]"]').each(function () { if ($(this).val()) hasStock = true; });
+            if (!hasStock) { messages.push('Tambah minimal 1 barang'); valid = false; }
 
-            let hasItems = false;
-            $('select[name="product_id[]"]').each(function () {
-                if ($(this).val()) {
-                    hasItems = true;
-                }
+            let hasQtyError = false;
+            $('input[name="qty[]"]').each(function () {
+                const qty = parseInt($(this).val()) || 0;
+                if (qty <= 0) hasQtyError = true;
             });
-
-            if (!hasItems) {
-                errorMessages.push('Minimal satu barang harus ditambahkan');
-                valid = false;
-            }
-
-            let hasQuantityError = false;
-            $('.qty-input').each(function () {
-                const qty = parseFloat($(this).val()) || 0;
-                if (qty <= 0 || isNaN(qty)) {
-                    hasQuantityError = true;
-                }
-            });
-
-            if (hasQuantityError) {
-                errorMessages.push('Quantity harus lebih dari 0');
-                valid = false;
-            }
+            if (hasQtyError) { messages.push('Quantity harus lebih dari 0'); valid = false; }
 
             if (!valid) {
                 e.preventDefault();
-                if (errorMessages.length > 0) {
-                    alert(errorMessages.join('\n'));
-                }
+                alert('PERBAIKI DATA:\n\n• ' + messages.join('\n• '));
+                return false;
+            }
+
+            hasChanges = false;
+        });
+    });
+
+    // Initialize product select with data -显示单位信息
+    function initProductSelect(selectElement) {
+        // Format produk dengan menampilkan kode, nama, dan satuan
+        const formattedData = allProducts.map(function (p) {
+            return {
+                id: p.id,
+                text: p.product_code + ' - ' + p.product_name + ' (' + (p.unit_code || '-') + ')',
+                product_id: p.product_id,
+                product_code: p.product_code,
+                product_name: p.product_name,
+                unit_code: p.unit_code
+            };
+        });
+
+        selectElement.select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Cari produk...',
+            allowClear: true,
+            data: formattedData
+        });
+    }
+
+    // Confirm back navigation
+    function confirmBack() {
+        if (hasChanges) {
+            if (confirm('Perubahan belum disimpan. Apakah Anda yakin ingin kembali?')) {
+                window.location.href = '<?= site_url($back_url) ?>';
+            }
+        } else {
+            window.location.href = '<?= site_url($back_url) ?>';
+        }
+    }
+
+    // Enable edit mode for product
+    function enableEdit(index) {
+        $('#display-' + index).addClass('hidden');
+        $('#edit-' + index).removeClass('hidden');
+
+        const select = $('#product_select_' + index);
+        const currentStockId = $('#stock_id_' + index).val();
+
+        // Set current value
+        if (currentStockId) {
+            select.val(currentStockId).trigger('change');
+        }
+
+        hasChanges = true;
+    }
+
+    // Save product selection
+    function saveProduct(index) {
+        const select = $('#product_select_' + index);
+        const selectedId = select.val();
+        const selectedOption = select.find('option:selected');
+        const selectedText = selectedOption.text();
+
+        if (!selectedId) {
+            alert('Pilih produk terlebih dahulu');
+            return;
+        }
+
+        // Find product info from allProducts
+        const productInfo = allProducts.find(p => p.product_id == selectedId);
+        const unitCode = productInfo ? productInfo.unit_code : '';
+
+        // Update hidden input
+        $('#stock_id_' + index).val(selectedId);
+
+        // Update display - Pisahkan kode produk dan nama dari text
+        const fullText = selectedText.replace(/\s*\([^)]*\)\s*$/, ''); // Hapus bagian (satuan)
+        const unitMatch = selectedText.match(/\(([^)]+)\)\s*$/);
+        const displayUnit = unitMatch ? unitMatch[1] : unitCode;
+
+        $('#display-' + index).html(
+            '<span class="product-cell-text">' + fullText + '</span>' +
+            '<span class="product-cell-unit">' + displayUnit + '</span>' +
+            '<input type="hidden" name="stock_id[]" value="' + selectedId + '" id="stock_id_' + index + '">'
+        );
+
+        // Update unit cell
+        const row = $('#display-' + index).closest('tr');
+        row.find('td:nth-child(4)').text(displayUnit);
+
+        // Switch back to display mode
+        $('#edit-' + index).addClass('hidden');
+        $('#display-' + index).removeClass('hidden');
+    }
+
+    // Cancel edit
+    function cancelEdit(index) {
+        $('#edit-' + index).addClass('hidden');
+        $('#display-' + index).removeClass('hidden');
+
+        // Reset select to original value
+        const originalValue = $('#stock_id_' + index).val();
+        $('#product_select_' + index).val(originalValue).trigger('change');
+    }
+
+    // Add new row
+    function addNewRow() {
+        const newIndex = currentRowCount;
+        currentRowCount++;
+
+        const newRow = `
+    <tr class="item-row" data-index="${newIndex}">
+        <td style="text-align:center; font-weight: 600;" class="row-number">${$('.item-row').length + 1}</td>
+        <td>
+            <div class="product-cell product-display" id="display-${newIndex}">
+                <span class="product-cell-text text-muted">-</span>
+                <input type="hidden" name="stock_id[]" value="" id="stock_id_${newIndex}">
+            </div>
+            <div class="product-cell product-edit hidden" id="edit-${newIndex}">
+                <select class="form-control cell-input select2-product" id="product_select_${newIndex}" style="height:32px;">
+                    <option value="">Pilih Produk</option>
+                </select>
+                <div class="mt-2">
+                    <button type="button" class="btn btn-action btn-action-save" onclick="saveProduct(${newIndex})" title="Simpan">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-action btn-action-cancel" onclick="cancelEdit(${newIndex})" title="Batal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </td>
+        <td>
+            <input type="number" class="form-control cell-input" name="qty[]" min="1" step="1" value="1" required style="text-align: right;">
+        </td>
+        <td style="text-align:center; font-weight: 600;" class="unit-cell">-</td>
+        <td>
+            <input type="text" class="form-control cell-input" name="detail_note[]" placeholder="Keterangan">
+        </td>
+        <td style="text-align:center">
+            <button type="button" class="btn btn-action btn-action-edit" onclick="enableEdit(${newIndex})" title="Pilih Produk">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button type="button" class="btn btn-action btn-action-delete btn-delete-item" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    </tr>`;
+
+        $('#itemsBody').append(newRow);
+
+        // Initialize Select2 for new row
+        initProductSelect($('#product_select_' + newIndex));
+
+        // Rebind delete button
+        $('.btn-delete-item').unbind('click').click(function () {
+            if ($('.item-row').length > 1) {
+                $(this).closest('.item-row').remove();
+                updateRowNumbers();
+                hasChanges = true;
             } else {
-                // Tampilkan loading saat submit
-                showLoading('Menyimpan data...');
+                alert('Minimal harus ada 1 barang');
             }
         });
 
-        // Sembunyikan loading setelah semua selesai
-        $(window).on('load', function () {
-            // Beri jeda sedikit untuk memastikan semua sudah render
-            setTimeout(hideLoading, 500);
+        hasChanges = true;
+    }
+
+    // Update row numbers
+    function updateRowNumbers() {
+        $('.item-row').each(function (index) {
+            $(this).find('.row-number').text(index + 1);
         });
-
-        // Jika window sudah load tapi kita perlu menunggu Select2
-        if (document.readyState === 'complete') {
-            setTimeout(hideLoading, 500);
-        }
-
-    <?php if ($user_role == 'superadmin' && $from_status == '3'): ?>
-                        $('#to_warehouse_id').on('change', function () {
-                            const toWarehouse = $(this).val();
-                            $('#from_warehouse_id option').each(function () {
-                                if ($(this).val() == toWarehouse) {
-                                    $(this).prop('disabled', true);
-                                    if ($(this).is(':selected')) {
-                                        $(this).prop('selected', false);
-                                    }
-                                } else {
-                                    $(this).prop('disabled', false);
-                                }
-                            });
-                            $('#from_warehouse_id').trigger('change.select2');
-                        });
-    <?php endif; ?>
-
-});
+    }
 </script>

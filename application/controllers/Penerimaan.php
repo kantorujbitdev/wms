@@ -713,14 +713,54 @@ class Penerimaan extends MY_Controller
                 $this->data['suppliers'] = $this->handle_response($supplier_response);
             }
 
-            // Get products
-            $products_response = $this->Api_model->get_barang($data_login);
-            $products = $this->handle_response($products_response);
+            // ============================================================
+            // OPTIMASI: Ambil HANYA produk yang ada di detail receipt
+            // + Semua produk untuk keperluan perubahan
+            // ============================================================
+            
+            // Ambil product_id dari detail items
+            $product_ids_in_detail = [];
+            foreach ($detail as $item) {
+                $product_id = isset($item['product_id']) ? $item['product_id'] : 
+                              (isset($item['Product_ID']) ? $item['Product_ID'] : 
+                              (isset($item['stock_id']) ? $item['stock_id'] : null));
+                if ($product_id) {
+                    $product_ids_in_detail[] = $product_id;
+                }
+            }
 
-            // OPTIMASI: Ambil hanya field yang diperlukan untuk JSON
-            $optimized_products = [];
-            foreach ($products as $product) {
-                $optimized_products[] = [
+            // Normalize detail items keys to lowercase
+            $normalized_detail = [];
+            foreach ($detail as $item) {
+                $normalized_item = [];
+                foreach ($item as $key => $value) {
+                    $normalized_key = strtolower($key);
+                    $normalized_item[$normalized_key] = $value;
+                }
+                $normalized_detail[] = $normalized_item;
+            }
+
+            // 1. Ambil produk yang ada di receipt (untuk display awal)
+            $products_in_receipt = [];
+            if (!empty($product_ids_in_detail)) {
+                $unique_product_ids = array_unique($product_ids_in_detail);
+                foreach ($unique_product_ids as $prod_id) {
+                    $product_response = $this->Api_model->get_barang_by_id(data_login_user(['product_id' => $prod_id]));
+                    $product_data = $this->handle_response($product_response);
+                    if (!empty($product_data)) {
+                        if (isset($product_data[0])) {
+                            $products_in_receipt[] = $product_data[0];
+                        } else {
+                            $products_in_receipt[] = $product_data;
+                        }
+                    }
+                }
+            }
+
+            // Siapkan data produk dalam receipt untuk Select2
+            $select2_products_in_receipt = [];
+            foreach ($products_in_receipt as $product) {
+                $select2_products_in_receipt[] = [
                     'id' => $product['product_id'],
                     'text' => $product['product_code'] . ' - ' . $product['product_name'],
                     'product_id' => $product['product_id'],
@@ -729,35 +769,31 @@ class Penerimaan extends MY_Controller
                     'unit_code' => $product['unit_code'] ?? ''
                 ];
             }
+            $this->data['products_in_receipt_json'] = json_encode($select2_products_in_receipt);
 
-            // Konversi ke JSON untuk JavaScript
-            $this->data['products_json'] = json_encode($optimized_products);
-
-            // Tambahkan unit_code, product_code, product_name ke detail items
-            $product_lookup = [];
-            foreach ($products as $product) {
-                $product_lookup[$product['product_id']] = $product;
-            }
-
-            foreach ($this->data['penerimaan']['detail'] as &$item) {
-                // Normalize detail item keys
-                $normalized_detail = [];
-                foreach ($item as $key => $value) {
-                    $normalized_key = strtolower($key);
-                    $normalized_detail[$normalized_key] = $value;
+            // 2. Ambil SEMUA produk untuk keperluan perubahan (dengan limit pagination-like)
+            // Kita batasi agar tidak semuanya, misal 500 item pertama saja
+            $all_products_response = $this->Api_model->get_barang(data_login_user());
+            $all_products = $this->handle_response($all_products_response);
+            
+            // Siapkan semua produk untuk Select2
+            $select2_all_products = [];
+            if (!empty($all_products)) {
+                foreach ($all_products as $product) {
+                    $select2_all_products[] = [
+                        'id' => $product['product_id'],
+                        'text' => $product['product_code'] . ' - ' . $product['product_name'],
+                        'product_id' => $product['product_id'],
+                        'product_code' => $product['product_code'],
+                        'product_name' => $product['product_name'],
+                        'unit_code' => $product['unit_code'] ?? ''
+                    ];
                 }
-
-                $product_id = $normalized_detail['product_id'] ?? null;
-
-                if ($product_id && isset($product_lookup[$product_id])) {
-                    $product = $product_lookup[$product_id];
-                    $normalized_detail['unit_code'] = $product['unit_code'] ?? '';
-                    $normalized_detail['product_code'] = $product['product_code'] ?? '';
-                    $normalized_detail['product_name'] = $product['product_name'] ?? '';
-                }
-
-                $item = $normalized_detail;
             }
+            $this->data['all_products_json'] = json_encode($select2_all_products);
+
+            // Update detail dengan info produk (sudah dinormalize)
+            $this->data['penerimaan']['detail'] = $normalized_detail;
 
             $this->render_view('pages/penerimaan/edit');
         } else {
@@ -825,23 +861,27 @@ class Penerimaan extends MY_Controller
 
             save_log("Update Penerimaan - ID: $id, Data: " . json_encode($post_data));
 
-            // Send to API - perlu endpoint update_penerimaan
-            // $response = $this->Api_model->update_penerimaan($post_data);
+            // Send to API
+            $response = $this->Api_model->update_penerimaan($post_data);
 
-            // if ($response['success']) {
-            //     $this->handle_response($response, 'Penerimaan barang berhasil diperbarui');
-            //     // Redirect berdasarkan tipe penerimaan
-            //     if ($from_status == '1') {
-            //         redirect('penerimaan/dari_pengguna');
-            //     } elseif ($from_status == '2') {
-            //         redirect('penerimaan/dari_supplier');
-            //     } else {
-            //         redirect('penerimaan/antar_gudang');
-            //     }
-            // } else {
-            //     $this->handle_response($response);
-            //     redirect('penerimaan/edit/' . $id);
-            // }
+            if (isset($response['success']) && $response['success']) {
+                $this->session->set_flashdata('message', '<div class="alert alert-success">Penerimaan barang berhasil diperbarui!</div>');
+                
+                // Redirect berdasarkan tipe penerimaan
+                if ($from_status == '1') {
+                    redirect('penerimaan/dari_pengguna');
+                } elseif ($from_status == '2') {
+                    redirect('penerimaan/dari_supplier');
+                } else {
+                    redirect('penerimaan/antar_gudang');
+                }
+            } else {
+                $error_msg = isset($response['message']) ? $response['message'] : 'Gagal memperbarui penerimaan';
+                $this->session->set_flashdata('message', '<div class="alert alert-danger">' . $error_msg . '</div>');
+                redirect('penerimaan/edit/' . $id);
+            }
+        } else {
+            show_404();
         }
     }
 
