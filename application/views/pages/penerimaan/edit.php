@@ -343,30 +343,40 @@
             $(this).val(value);
         });
 
-        // Handle confirmation modal
+        // Handle confirmation modal button click - menggunakan jQuery seperti main.js
         $('#confirmButton').on('click', function () {
             $('#confirmationModal').modal('hide');
+            
             if (confirmationCallback) {
                 confirmationCallback();
                 confirmationCallback = null;
             }
         });
+        
+        // Handle modal hidden event to clean up
+        $('#confirmationModal').on('hidden.bs.modal', function () {
+            confirmationCallback = null;
+        });
     });
 
-    // Show confirmation modal
+    // Show confirmation modal - menggunakan jQuery seperti main.js
     function showConfirmation(message, callback, isConfirm = true) {
+        // Set title based on type
         if (isConfirm && callback) {
-            $('#confirmationMessage').text(message || 'Apakah Anda yakin ingin melanjutkan?');
-            $('#confirmButton').removeClass('hidden');
+            $('#confirmationModalLabel').text('Konfirmasi');
+            $('#confirmButton').text('Ya').removeClass('d-none btn-danger btn-success btn-primary btn-warning').addClass('btn-danger');
             confirmationCallback = callback;
-            $('#confirmationModal').modal('show');
         } else {
-            // Alert-only modal
-            $('#confirmationMessage').text(message);
-            $('#confirmButton').addClass('hidden');
+            $('#confirmationModalLabel').text('Peringatan');
+            $('#confirmButton').addClass('d-none');
             confirmationCallback = null;
-            $('#confirmationModal').modal('show');
         }
+        
+        // Set message
+        $('#confirmationMessage').text(message || 'Apakah Anda yakin ingin melanjutkan?');
+        
+        // Show modal menggunakan jQuery (sama seperti main.js)
+        $('#confirmationModal').modal('show');
     }
 
     // Initialize product select with data - menampilkan unit_code di dropdown dengan format baru
