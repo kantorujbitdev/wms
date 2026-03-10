@@ -20,6 +20,9 @@
         $back_url = 'penerimaan/antar_gudang';
         $tipe_penerimaan_text = 'Antar Gudang';
     }
+
+    // Format tanggal untuk display (dd/mm/yyyy)
+    $display_date = date('d/m/Y', strtotime($penerimaan['header']['stockin_date']));
     ?>
 
     <!-- Back Button & Title -->
@@ -57,22 +60,13 @@
                             value="<?= $penerimaan['header']['stockin_code'] ?>" readonly>
                     </div>
 
-                    <!-- Tanggal Penerimaan -->
-                    <!-- <div class="col-md-6 mb-3">
-                        <label class="form-label form-label-required">Tanggal Penerimaan</label>
-                        <input type="date" class="form-control cell-input" id="stockin_date" name="stockin_date"
-                            value="<?= date('Y-m-d', strtotime($penerimaan['header']['stockin_date'])) ?>" required>
-                    </div> -->
-
+                    <!-- Tanggal Penerimaan - Display Format -->
                     <div class="col-md-6 mb-3">
-                        <div class="form-group">
-                            <label for="start_date" class="form-label form-label-required">Tanggal Penerimaan</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control flatpickr" id="stockin_date" name="stockin_date"
-                                    value="<?= $penerimaan['header']['stockin_date'] ? date('d/m/Y', strtotime($penerimaan['header']['stockin_date'])) : '' ?>"
-                                    autocomplete="off" required>
-                            </div>
-                        </div>
+                        <label class="form-label form-label-required">Tanggal Penerimaan</label>
+                        <input type="text" class="form-control cell-input" id="stockin_date_display"
+                            value="<?= $display_date ?>" placeholder="dd/mm/yyyy">
+                        <input type="hidden" name="stockin_date" id="stockin_date"
+                            value="<?= date('Y-m-d', strtotime($penerimaan['header']['stockin_date'])) ?>">
                     </div>
                 </div>
 
@@ -183,30 +177,29 @@
                 </button>
             </div>
             <div class="edit-card-body p-0">
-                <div class="table-responsive">
-                    <table class="excel-table" id="itemsTable">
+                <div class="table-responsive" style="min-height: 200px;">
+                    <table class="excel-table" id="itemsTable" style="table-layout: fixed;">
                         <thead>
                             <tr>
-                                <th style="width:50px">No</th>
-                                <th>Produk</th>
-                                <th style="width:100px">Qty</th>
-                                <th style="width:80px">Satuan</th>
+                                <th style="width:50px;">No</th>
+                                <th style="width:500px;">Barang</th>
+                                <th style="width:80px;">Qty</th>
+                                <th style="width:80px;">Satuan</th>
                                 <th>Keterangan</th>
-                                <th style="width:100px">Aksi</th>
+                                <th style="width:90px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="itemsBody">
                             <?php if (!empty($penerimaan['detail'])): ?>
                                 <?php foreach ($penerimaan['detail'] as $index => $detail): ?>
-                                    <tr class="item-row" data-index="<?= $index ?>">
+                                    <tr class="item-row" data-index="<?= $index ?>"
+                                        data-unit="<?= htmlspecialchars($detail['unit_code'] ?? '') ?>">
                                         <td style="text-align:center; font-weight: 600;"><?= $index + 1 ?></td>
                                         <td>
                                             <!-- Display Mode -->
                                             <div class="product-cell product-display" id="display-<?= $index ?>">
                                                 <span
                                                     class="product-cell-text"><?= htmlspecialchars(($detail['product_code'] ?? '') . ' - ' . ($detail['product_name'] ?? '')) ?></span>
-                                                <span
-                                                    class="product-cell-unit"><?= htmlspecialchars($detail['unit_code'] ?? '-') ?></span>
                                                 <input type="hidden" name="stock_id[]" value="<?= $detail['product_id'] ?>"
                                                     id="stock_id_<?= $index ?>">
                                             </div>
@@ -232,8 +225,9 @@
                                             <input type="number" class="form-control cell-input" name="qty[]" min="1" step="1"
                                                 value="<?= (int) ($detail['qty'] ?? 0) ?>" required style="text-align: right;">
                                         </td>
-                                        <td style="text-align:center; font-weight: 600;">
-                                            <?= htmlspecialchars($detail['unit_code'] ?? '-') ?></td>
+                                        <td style="text-align:center; font-weight: 600;" class="unit-display">
+                                            <?= htmlspecialchars($detail['unit_code'] ?? '-') ?>
+                                        </td>
                                         <td>
                                             <input type="text" class="form-control cell-input" name="detail_note[]"
                                                 value="<?= htmlspecialchars($detail['detail_note'] ?? '') ?>"
@@ -264,7 +258,7 @@
                 <button type="button" class="btn btn-back" onclick="confirmBack()">
                     <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar
                 </button>
-                <button type="submit" class="btn btn-save">
+                <button type="button" class="btn btn-save" onclick="confirmSave()">
                     <i class="fas fa-save me-1"></i> Simpan Perubahan
                 </button>
             </div>
@@ -279,31 +273,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<!-- Tambahkan CSS dan JS Flatpickr di head -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
-
 <script>
     // Data produk dari controller - sudah termasuk unit_code
     var productsInReceipt = <?= $products_in_receipt_json ?? '[]' ?>;
     var allProducts = <?= $all_products_json ?? '[]' ?>;
     var currentRowCount = <?= count($penerimaan['detail']) ?>;
     var hasChanges = false;
+    var confirmationCallback = null;
 
     $(document).ready(function () {
-
-        // Inisialisasi Flatpickr
-        flatpickr(".flatpickr", {
-            dateFormat: "d/m/Y",
-            locale: {
-                firstDayOfWeek: 1 // Senin sebagai hari pertama
-            },
-            position: "below", // Paksa posisi di bawah
-            positionElement: null,
-        });
-
         // Hide loading after page load
         setTimeout(function () {
             $('#loading-overlay').fadeOut();
@@ -331,82 +309,170 @@
                 updateRowNumbers();
                 hasChanges = true;
             } else {
-                alert('Minimal harus ada 1 barang');
+                showConfirmation('Minimal harus ada 1 barang', null, false);
             }
         });
 
-        // Form validation
-        $('#penerimaanForm').submit(function (e) {
-            let valid = true;
-            let messages = [];
-
-            <?php if ($user_role == 'superadmin'): ?>
-                if (!$('#to_warehouse_id').val()) { messages.push('Pilih gudang tujuan'); valid = false; }
-            <?php endif; ?>
-
-            <?php if ($from_status == '1'): ?>
-                if (!$('#customer_id').val()) { messages.push('Pilih pengguna'); valid = false; }
-            <?php elseif ($from_status == '2'): ?>
-                if (!$('#supplier_id').val()) { messages.push('Pilih supplier'); valid = false; }
-            <?php elseif ($from_status == '3'): ?>
-                if (!$('#from_warehouse_id').val()) { messages.push('Pilih gudang asal'); valid = false; }
-            <?php endif; ?>
-
-            if (!$('#stockin_invoice').val()) { messages.push('Isi nomor referensi'); valid = false; }
-
-            let hasStock = false;
-            $('input[name="stock_id[]"]').each(function () { if ($(this).val()) hasStock = true; });
-            if (!hasStock) { messages.push('Tambah minimal 1 barang'); valid = false; }
-
-            let hasQtyError = false;
-            $('input[name="qty[]"]').each(function () {
-                const qty = parseInt($(this).val()) || 0;
-                if (qty <= 0) hasQtyError = true;
-            });
-            if (hasQtyError) { messages.push('Quantity harus lebih dari 0'); valid = false; }
-
-            if (!valid) {
-                e.preventDefault();
-                alert('PERBAIKI DATA:\n\n• ' + messages.join('\n• '));
-                return false;
+        // Format tanggal - input blur
+        $('#stockin_date_display').on('blur', function () {
+            const value = $(this).val();
+            const parts = value.split('/');
+            if (parts.length === 3) {
+                // Konversi dd/mm/yyyy ke yyyy-mm-dd
+                const formatted = parts[2] + '-' + parts[1] + '-' + parts[0];
+                $('#stockin_date').val(formatted);
+                $(this).val(value);
+            } else {
+                // Format tidak valid, kembalikan ke nilai sebelumnya
+                const currentVal = $('#stockin_date').val();
+                if (currentVal) {
+                    const dateParts = currentVal.split('-');
+                    $(this).val(dateParts[2] + '/' + dateParts[1] + '/' + dateParts[0]);
+                }
             }
+        });
 
-            hasChanges = false;
+        // Format tanggal - saat load sudah benar
+        $('#stockin_date_display').on('keyup', function (e) {
+            var value = $(this).val().replace(/\D/g, '');
+            if (value.length >= 2 && value.length <= 4) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            } else if (value.length > 4) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4) + '/' + value.substring(4, 8);
+            }
+            $(this).val(value);
+        });
+
+        // Handle confirmation modal
+        $('#confirmButton').on('click', function () {
+            $('#confirmationModal').modal('hide');
+            if (confirmationCallback) {
+                confirmationCallback();
+                confirmationCallback = null;
+            }
         });
     });
 
-    // Initialize product select with data -显示单位信息
+    // Show confirmation modal
+    function showConfirmation(message, callback, isConfirm = true) {
+        if (isConfirm && callback) {
+            $('#confirmationMessage').text(message || 'Apakah Anda yakin ingin melanjutkan?');
+            $('#confirmButton').removeClass('hidden');
+            confirmationCallback = callback;
+            $('#confirmationModal').modal('show');
+        } else {
+            // Alert-only modal
+            $('#confirmationMessage').text(message);
+            $('#confirmButton').addClass('hidden');
+            confirmationCallback = null;
+            $('#confirmationModal').modal('show');
+        }
+    }
+
+    // Initialize product select with data - menampilkan unit_code di dropdown dengan format baru
     function initProductSelect(selectElement) {
-        // Format produk dengan menampilkan kode, nama, dan satuan
+        // Format produk dengan menampilkan kode, nama, dan satuan di baris baru
         const formattedData = allProducts.map(function (p) {
             return {
                 id: p.id,
-                text: p.product_code + ' - ' + p.product_name + ' (' + (p.unit_code || '-') + ')',
+                text: p.product_code + ' - ' + p.product_name,
                 product_id: p.product_id,
                 product_code: p.product_code,
                 product_name: p.product_name,
-                unit_code: p.unit_code
+                unit_code: p.unit_code || '-'
             };
         });
+
+        // Custom template untuk menampilkan hasil dropdown
+        function formatProduct(product) {
+            if (!product.id) return product.text;
+            
+            const unitCode = product.unit_code || '-';
+            return $(
+                '<div>' +
+                    '<div>' + product.product_code + ' - ' + product.product_name + '</div>' +
+                    '<div style="color: #6c757d; font-size: 15px; margin-top: 6px;">' +
+                        '<i class="fas fa-box me-1"></i>Satuan: ' + unitCode +
+                    '</div>' +
+                '</div>'
+            );
+        }
 
         selectElement.select2({
             theme: 'bootstrap-5',
             width: '100%',
             placeholder: 'Cari produk...',
             allowClear: true,
-            data: formattedData
+            data: formattedData,
+            templateResult: formatProduct,
+            templateSelection: formatProduct
         });
     }
 
     // Confirm back navigation
     function confirmBack() {
         if (hasChanges) {
-            if (confirm('Perubahan belum disimpan. Apakah Anda yakin ingin kembali?')) {
-                window.location.href = '<?= site_url($back_url) ?>';
-            }
+            showConfirmation(
+                'Perubahan belum disimpan. Apakah Anda yakin ingin kembali?',
+                function () {
+                    window.location.href = '<?= site_url($back_url) ?>';
+                }
+            );
         } else {
             window.location.href = '<?= site_url($back_url) ?>';
         }
+    }
+
+    // Form validation
+    function validateForm() {
+        let valid = true;
+        let messages = [];
+
+        <?php if ($user_role == 'superadmin'): ?>
+            if (!$('#to_warehouse_id').val()) { messages.push('Pilih gudang tujuan'); valid = false; }
+        <?php endif; ?>
+
+        <?php if ($from_status == '1'): ?>
+            if (!$('#customer_id').val()) { messages.push('Pilih pengguna'); valid = false; }
+        <?php elseif ($from_status == '2'): ?>
+            if (!$('#supplier_id').val()) { messages.push('Pilih supplier'); valid = false; }
+        <?php elseif ($from_status == '3'): ?>
+            if (!$('#from_warehouse_id').val()) { messages.push('Pilih gudang asal'); valid = false; }
+        <?php endif; ?>
+
+        if (!$('#stockin_invoice').val()) { messages.push('Isi nomor referensi'); valid = false; }
+
+        let hasStock = false;
+        $('input[name="stock_id[]"]').each(function () { if ($(this).val()) hasStock = true; });
+        if (!hasStock) { messages.push('Tambah minimal 1 barang'); valid = false; }
+
+        let hasQtyError = false;
+        $('input[name="qty[]"]').each(function () {
+            const qty = parseInt($(this).val()) || 0;
+            if (qty <= 0) hasQtyError = true;
+        });
+        if (hasQtyError) { messages.push('Quantity harus lebih dari 0'); valid = false; }
+
+        return { valid: valid, messages: messages };
+    }
+
+    // Confirm save
+    function confirmSave() {
+        const validation = validateForm();
+
+        if (!validation.valid) {
+            showConfirmation('PERBAIKI DATA:\n\n• ' + validation.messages.join('\n• '), null, false);
+            return;
+        }
+
+        // Jika valid, munculkan konfirmasi simpan
+        showConfirmation(
+            'Apakah Anda yakin ingin menyimpan perubahan?',
+            function () {
+                hasChanges = false;
+                $('#penerimaanForm')[0].submit();
+            }
+        );
     }
 
     // Enable edit mode for product
@@ -433,31 +499,28 @@
         const selectedText = selectedOption.text();
 
         if (!selectedId) {
-            alert('Pilih produk terlebih dahulu');
+            showConfirmation('Pilih produk terlebih dahulu', null, false);
             return;
         }
 
         // Find product info from allProducts
         const productInfo = allProducts.find(p => p.product_id == selectedId);
-        const unitCode = productInfo ? productInfo.unit_code : '';
+        const unitCode = productInfo ? (productInfo.unit_code || '-') : '-';
 
         // Update hidden input
         $('#stock_id_' + index).val(selectedId);
 
-        // Update display - Pisahkan kode produk dan nama dari text
-        const fullText = selectedText.replace(/\s*\([^)]*\)\s*$/, ''); // Hapus bagian (satuan)
-        const unitMatch = selectedText.match(/\(([^)]+)\)\s*$/);
-        const displayUnit = unitMatch ? unitMatch[1] : unitCode;
+        // Extract product name - hapus bagian [Satuan: xxx]
+        const productNameText = selectedText.replace(/\s*\[Satuan:[^\]]*\]\s*$/, '').trim();
 
         $('#display-' + index).html(
-            '<span class="product-cell-text">' + fullText + '</span>' +
-            '<span class="product-cell-unit">' + displayUnit + '</span>' +
+            '<span class="product-cell-text">' + productNameText + '</span>' +
             '<input type="hidden" name="stock_id[]" value="' + selectedId + '" id="stock_id_' + index + '">'
         );
 
-        // Update unit cell
+        // Update unit cell di baris yang sama
         const row = $('#display-' + index).closest('tr');
-        row.find('td:nth-child(4)').text(displayUnit);
+        row.find('.unit-display').text(unitCode);
 
         // Switch back to display mode
         $('#edit-' + index).addClass('hidden');
@@ -480,43 +543,43 @@
         currentRowCount++;
 
         const newRow = `
-    <tr class="item-row" data-index="${newIndex}">
-        <td style="text-align:center; font-weight: 600;" class="row-number">${$('.item-row').length + 1}</td>
-        <td>
-            <div class="product-cell product-display" id="display-${newIndex}">
-                <span class="product-cell-text text-muted">-</span>
-                <input type="hidden" name="stock_id[]" value="" id="stock_id_${newIndex}">
-            </div>
-            <div class="product-cell product-edit hidden" id="edit-${newIndex}">
-                <select class="form-control cell-input select2-product" id="product_select_${newIndex}" style="height:32px;">
-                    <option value="">Pilih Produk</option>
-                </select>
-                <div class="mt-2">
-                    <button type="button" class="btn btn-action btn-action-save" onclick="saveProduct(${newIndex})" title="Simpan">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button type="button" class="btn btn-action btn-action-cancel" onclick="cancelEdit(${newIndex})" title="Batal">
-                        <i class="fas fa-times"></i>
-                    </button>
+        <tr class="item-row" data-index="${newIndex}" data-unit="-">
+            <td style="text-align:center; font-weight: 600;" class="row-number">${$('.item-row').length + 1}</td>
+            <td>
+                <div class="product-cell product-display" id="display-${newIndex}">
+                    <span class="product-cell-text text-muted">-</span>
+                    <input type="hidden" name="stock_id[]" value="" id="stock_id_${newIndex}">
                 </div>
-            </div>
-        </td>
-        <td>
-            <input type="number" class="form-control cell-input" name="qty[]" min="1" step="1" value="1" required style="text-align: right;">
-        </td>
-        <td style="text-align:center; font-weight: 600;" class="unit-cell">-</td>
-        <td>
-            <input type="text" class="form-control cell-input" name="detail_note[]" placeholder="Keterangan">
-        </td>
-        <td style="text-align:center">
-            <button type="button" class="btn btn-action btn-action-edit" onclick="enableEdit(${newIndex})" title="Pilih Produk">
-                <i class="fas fa-edit"></i>
-            </button>
-            <button type="button" class="btn btn-action btn-action-delete btn-delete-item" title="Hapus">
-                <i class="fas fa-trash"></i>
-            </button>
-        </td>
-    </tr>`;
+                <div class="product-cell product-edit hidden" id="edit-${newIndex}">
+                    <select class="form-control cell-input select2-product" id="product_select_${newIndex}" style="height:32px;">
+                        <option value="">Pilih Produk</option>
+                    </select>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-action btn-action-save" onclick="saveProduct(${newIndex})" title="Simpan">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button type="button" class="btn btn-action btn-action-cancel" onclick="cancelEdit(${newIndex})" title="Batal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <input type="number" class="form-control cell-input" name="qty[]" min="1" step="1" value="1" required style="text-align: right;">
+            </td>
+            <td style="text-align:center; font-weight: 600;" class="unit-display">-</td>
+            <td>
+                <input type="text" class="form-control cell-input" name="detail_note[]" placeholder="Keterangan">
+            </td>
+            <td style="text-align:center">
+                <button type="button" class="btn btn-action btn-action-edit" onclick="enableEdit(${newIndex})" title="Pilih Produk">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-action btn-action-delete btn-delete-item" title="Hapus">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
 
         $('#itemsBody').append(newRow);
 
@@ -530,7 +593,7 @@
                 updateRowNumbers();
                 hasChanges = true;
             } else {
-                alert('Minimal harus ada 1 barang');
+                showConfirmation('Minimal harus ada 1 barang', null, false);
             }
         });
 

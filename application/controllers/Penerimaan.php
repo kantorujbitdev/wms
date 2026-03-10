@@ -717,13 +717,13 @@ class Penerimaan extends MY_Controller
             // OPTIMASI: Ambil HANYA produk yang ada di detail receipt
             // + Semua produk untuk keperluan perubahan
             // ============================================================
-            
+
             // Ambil product_id dari detail items
             $product_ids_in_detail = [];
             foreach ($detail as $item) {
-                $product_id = isset($item['product_id']) ? $item['product_id'] : 
-                              (isset($item['Product_ID']) ? $item['Product_ID'] : 
-                              (isset($item['stock_id']) ? $item['stock_id'] : null));
+                $product_id = isset($item['product_id']) ? $item['product_id'] :
+                    (isset($item['Product_ID']) ? $item['Product_ID'] :
+                        (isset($item['stock_id']) ? $item['stock_id'] : null));
                 if ($product_id) {
                     $product_ids_in_detail[] = $product_id;
                 }
@@ -775,7 +775,7 @@ class Penerimaan extends MY_Controller
             // Kita batasi agar tidak semuanya, misal 500 item pertama saja
             $all_products_response = $this->Api_model->get_barang(data_login_user());
             $all_products = $this->handle_response($all_products_response);
-            
+
             // Siapkan semua produk untuk Select2
             $select2_all_products = [];
             if (!empty($all_products)) {
@@ -865,8 +865,9 @@ class Penerimaan extends MY_Controller
             $response = $this->Api_model->update_penerimaan($post_data);
 
             if (isset($response['success']) && $response['success']) {
-                $this->session->set_flashdata('message', '<div class="alert alert-success">Penerimaan barang berhasil diperbarui!</div>');
-                
+                $message = 'Penerimaan barang berhasil diperbarui!';
+                $this->handle_response($response, $message);
+
                 // Redirect berdasarkan tipe penerimaan
                 if ($from_status == '1') {
                     redirect('penerimaan/dari_pengguna');
@@ -877,7 +878,7 @@ class Penerimaan extends MY_Controller
                 }
             } else {
                 $error_msg = isset($response['message']) ? $response['message'] : 'Gagal memperbarui penerimaan';
-                $this->session->set_flashdata('message', '<div class="alert alert-danger">' . $error_msg . '</div>');
+                $this->handle_response($response, $error_msg);
                 redirect('penerimaan/edit/' . $id);
             }
         } else {

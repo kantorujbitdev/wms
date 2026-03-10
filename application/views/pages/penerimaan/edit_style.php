@@ -59,11 +59,11 @@
         margin: 0;
         font-weight: 600;
         color: #333;
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .edit-card-header .header-subtitle {
-        font-size: 13px;
+        font-size: 17px;
         color: #6c757d;
     }
 
@@ -73,10 +73,10 @@
 
     /* Section Title */
     .section-title {
-        font-size: 14px;
+        font-size: 17px;
         font-weight: 600;
         color: #333;
-        margin-bottom: 15px;
+        margin-bottom: 17px;
         padding-bottom: 8px;
         border-bottom: 1px solid #e3e6f0;
     }
@@ -87,7 +87,7 @@
         align-items: center;
         padding: 4px 10px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 17px;
         font-weight: 500;
         background: #e9ecef;
         color: #333;
@@ -97,7 +97,7 @@
     .excel-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 15px;
+        margin-bottom: 17px;
     }
 
     .excel-table th {
@@ -106,7 +106,7 @@
         padding: 10px 8px;
         text-align: center;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 17px;
         border: none;
     }
 
@@ -148,7 +148,7 @@
         padding: 4px 10px;
         border: 1px solid #ced4da;
         background: #fff;
-        font-size: 13px;
+        font-size: 17px;
         border-radius: 4px;
     }
 
@@ -177,13 +177,13 @@
     }
 
     .product-cell-text {
-        font-size: 13px;
+        font-size: 17px;
         font-weight: 500;
         color: #333;
     }
 
     .product-cell-unit {
-        font-size: 11px;
+        font-size: 17px;
         color: #6c757d;
         background: #e9ecef;
         padding: 2px 6px;
@@ -194,7 +194,7 @@
     /* Action Buttons in table */
     .btn-action {
         padding: 4px 8px;
-        font-size: 12px;
+        font-size: 17px;
         margin: 1px;
         border-radius: 4px;
         border: none;
@@ -243,7 +243,7 @@
         padding: 8px 16px;
         border-radius: 4px;
         border: none;
-        font-size: 13px;
+        font-size: 17px;
     }
 
     .btn-back:hover {
@@ -258,7 +258,7 @@
         padding: 10px 24px;
         border-radius: 4px;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 17px;
     }
 
     .btn-save:hover {
@@ -273,7 +273,7 @@
 
     /* Form Labels */
     .form-label {
-        font-size: 13px;
+        font-size: 17px;
         font-weight: 600;
         color: #333;
         margin-bottom: 5px;
