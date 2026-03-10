@@ -100,7 +100,7 @@ class Pengiriman extends MY_Controller
             $this->data['products'] = [];
         } else {
             // Get stock from current warehouse
-            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $stock_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
             $this->handle_response($stock_response);
 
             if ($stock_response['success']) {
@@ -209,7 +209,7 @@ class Pengiriman extends MY_Controller
             $this->data['products'] = [];
         } else {
             // Get stock from current warehouse
-            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $stock_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
             $this->data['stocks'] = $stock_response['success'] ? $stock_response['data'] : [];
             $this->data['products'] = $this->data['stocks'];
         }
@@ -255,7 +255,7 @@ class Pengiriman extends MY_Controller
             $this->data['products'] = [];
         } else {
             // Get stock from current warehouse
-            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $stock_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
             $this->handle_response($stock_response);
 
             if ($stock_response['success']) {
@@ -285,7 +285,7 @@ class Pengiriman extends MY_Controller
         $warehouse_id = $this->input->post('warehouse_id');
 
         if ($warehouse_id) {
-            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
+            $stock_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
             $this->handle_response($stock_response);
             if ($stock_response['success']) {
                 echo json_encode([
@@ -477,7 +477,7 @@ class Pengiriman extends MY_Controller
 
             // Get products from stock based on warehouse
             $warehouse_id = $normalized_header['warehouse_id'];
-            $stock_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
+            $stock_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $warehouse_id]));
             $stocks = $this->handle_response($stock_response);
             // $stock_response['success'] ? $stock_response['data'] : [];
 

@@ -158,7 +158,7 @@ class Api_model extends CI_Model
     {
         return api_request('GET', 'stok', $data);
     }
-    public function get_stock_by_warehous($data)
+    public function get_stock_by_warehouse($data)
     {
         return api_request('GET', 'stok', $data);
     }

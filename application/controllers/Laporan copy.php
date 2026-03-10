@@ -116,7 +116,7 @@ class Laporan extends MY_Controller
         } else {
             // $warehouse_response = $this->Api_model->get_gudang($data);
             // $this->data['warehouses'] = $this->handle_response($warehouse_response);
-            $products_response = $this->Api_model->get_stock_by_warehous(data_login_user(['warehouse_id' => $warehouse_id]));
+            $products_response = $this->Api_model->get_stock_by_warehouse(data_login_user(['warehouse_id' => $warehouse_id]));
         }
 
         // Get all products for filter

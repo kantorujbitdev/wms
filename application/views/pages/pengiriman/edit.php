@@ -1,503 +1,675 @@
-<div class="container-fluid">
-    <?php
-    $back_url = 'pengiriman/penggunaan';
-    if ($to_status == '3')
-        $back_url = 'pengiriman/antar_gudang';
-    ?>
-    <a href="<?= site_url($back_url) ?>" class="btn btn-secondary btn-sm mb-4">
-        <i class="fas fa-arrow-left fa-sm text-white-50"></i> <?= $wording['back']; ?>
-    </a>
+<?php $this->load->view('pages/pengiriman/edit_style'); ?>
 
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <!-- <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1> -->
-    </div>
-    <!-- Form -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Form Edit <?= $title ?></h6>
-        </div>
-        <div class="card-body">
-            <form id="pengirimanForm"
-                action="<?= site_url('pengiriman/update/' . $pengiriman['header']['stockout_id']) ?>" method="POST">
-                <input type="hidden" name="to_status" value="<?= $to_status ?>">
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockout_date">Tanggal Pengiriman *</label>
-                            <input type="date" class="form-control" id="stockout_date" name="stockout_date"
-                                value="<?= date('Y-m-d', strtotime($pengiriman['header']['stockout_date'])) ?>"
-                                max="<?= date('Y-m-d') ?>" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockout_code">Kode Pengiriman *</label>
-                            <input type="text" class="form-control bg-light" id="stockout_code" name="stockout_code"
-                                value="<?= $pengiriman['header']['stockout_code'] ?>" readonly
-                                style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="from_warehouse_id">Dari Gudang *</label>
-                            <?php if ($user_role == 'superadmin'): ?>
-                                <select class="form-control select2" id="from_warehouse_id" name="from_warehouse_id"
-                                    required>
-                                    <option value="">Pilih Gudang Asal</option>
-                                    <?php foreach ($warehouses as $warehouse): ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($pengiriman['header']['warehouse_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            <?php else: ?>
-                                <!-- Non-superadmin hanya bisa melihat gudang mereka sendiri -->
-                                <input type="text" class="form-control bg-light"
-                                    value="<?= $pengiriman['header']['warehouse_name'] ?>" readonly
-                                    style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                                <input type="hidden" id="from_warehouse_id" name="from_warehouse_id"
-                                    value="<?= $pengiriman['header']['warehouse_id'] ?>">
-                                <small class="form-text text-muted">Gudang asal tidak dapat diubah</small>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="stockout_note">Keterangan</label>
-                            <textarea class="form-control" id="stockout_note" name="stockout_note"
-                                placeholder="Masukkan keterangan tambahan"
-                                rows="2"><?= $pengiriman['header']['stockout_note'] ?></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Form untuk Pengiriman ke Pengguna (to_status = 1) -->
-                <?php if ($to_status == '1'): ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="customer_id">Ke Pengguna *</label>
-                                <select class="form-control select2" id="customer_id" name="customer_id" required>
-                                    <option value="">Pilih Pengguna</option>
-                                    <?php foreach ($customers as $customer): ?>
-                                        <option value="<?= $customer['id'] ?>"
-                                            <?= ($pengiriman['header']['to_id'] == $customer['id']) ? 'selected' : '' ?>>
-                                            <?= $customer['name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="to_status">Tipe Pengiriman</label>
-                                <?php
-                                $tipe_text = 'Ke Pengguna';
-                                if ($to_status == '3')
-                                    $tipe_text = 'Antar Gudang';
-                                ?>
-                                <input type="text" class="form-control bg-light" value="<?= $tipe_text ?>" readonly
-                                    style="background-color: #f8f9fa; color: #6c757d; cursor: not-allowed;">
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Form untuk Pengiriman Antar Gudang (to_status = 3) -->
-                <?php elseif ($to_status == '3'): ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="to_warehouse_id">Ke Gudang *</label>
-                                <select class="form-control select2" id="to_warehouse_id" name="to_warehouse_id" required>
-                                    <option value="">Pilih Gudang Tujuan</option>
-                                    <?php foreach ($warehouses as $warehouse):
-                                        // Jangan tampilkan gudang yang sama dengan asal
-                                        $disabled = '';
-                                        if ($warehouse['warehouse_id'] == $pengiriman['header']['warehouse_id']) {
-                                            $disabled = 'disabled';
-                                        }
-                                        ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>"
-                                            <?= ($pengiriman['header']['to_id'] == $warehouse['warehouse_id']) ? 'selected' : '' ?>
-                                            <?= $disabled ?>>
-                                            <?= $warehouse['warehouse_name'] ?>
-                                            <?= ($disabled) ? ' (Gudang Asal)' : '' ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <div class="row">
-
-                </div>
-
-                <hr class="my-4">
-
-                <!-- Items Section -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <h5 class="font-weight-bold">Detail Barang</h5>
-                        <button type="button" id="addItem" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Barang
-                        </button>
-                    </div>
-                </div>
-
-                <div id="itemsContainer">
-                    <?php foreach ($pengiriman['detail'] as $index => $detail): ?>
-                        <div class="item-row row mb-3">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Produk *</label>
-                                    <select class="form-control select2 product-select" name="product_id[]"
-                                        data-index="<?= $index ?>" required>
-                                        <option value="">Pilih Produk</option>
-                                        <?php foreach ($products as $product): ?>
-                                            <option value="<?= $product['product_id'] ?>"
-                                                data-stock-id="<?= $product['stock_id'] ?>"
-                                                data-available-qty="<?= $product['current_stock'] ?>"
-                                                <?= ($detail['product_id'] == $product['product_id']) ? 'selected' : '' ?>>
-                                                <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                                (Stok: <?= number_format($product['current_stock'], 2) ?>
-                                                <?= $product['type_name'] ?>)
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <input type="hidden" name="stock_id[]" value="<?= $detail['stock_id'] ?>">
-                                    <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
-                                        Stok tersedia: <?= number_format($detail['available_qty'] ?? 0, 2) ?>
-                                        <?= $detail['unit_code'] ?>
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Qty *</label>
-                                    <input type="number" class="form-control qty-input" name="qty[]"
-                                        data-index="<?= $index ?>" min="0" max="<?= $detail['available_qty'] ?? 0 ?>"
-                                        value="<?= $detail['qty'] ?>" required>
-                                    <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>"
-                                        style="display: none;">
-                                        Melebihi stok tersedia
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Keterangan Barang</label>
-                                    <input type="text" class="form-control" name="detail_note[]"
-                                        value="<?= $detail['detail_note'] ?>"
-                                        placeholder="Keterangan tambahan untuk barang ini">
-                                </div>
-                            </div>
-                            <div class="col-md-2 mt-4">
-                                <div class="form-group">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="button" class="btn btn-danger btn-block remove-item">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <hr class="my-4">
-
-                <div class="row">
-                    <div class="col-12 text-right">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Update Pengiriman
-                        </button>
-                        <a href="<?= site_url($back_url) ?>" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Batal
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+    <div class="loader">
+        <div class="spinner"></div>
+        <p>Memuat data...</p>
     </div>
 </div>
 
+<div class="container-fluid py-3">
+    <?php
+    $back_url = 'pengiriman/penggunaan';
+    $tipe_pengiriman_text = 'Ke Pengguna';
+
+    if ($to_status == '3') {
+        $back_url = 'pengiriman/antar_gudang';
+        $tipe_pengiriman_text = 'Antar Gudang';
+    }
+
+    // Format tanggal untuk display (dd/mm/yyyy)
+    $display_date = date('d/m/Y', strtotime($pengiriman['header']['stockout_date']));
+    ?>
+
+    <!-- Back Button & Title -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <button type="button" class="btn btn-back" onclick="confirmBack()">
+                <i class="fas fa-arrow-left me-1"></i> Kembali
+            </button>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="info-badge">
+                <i class="fas fa-<?= ($to_status == '1') ? 'user' : 'warehouse' ?> me-1"></i>
+                <?= $tipe_pengiriman_text ?>
+            </span>
+        </div>
+    </div>
+
+    <form id="pengirimanForm" action="<?= site_url('pengiriman/update/' . $pengiriman['header']['stockout_id']) ?>"
+        method="POST">
+        <input type="hidden" name="to_status" value="<?= $to_status ?>">
+
+        <!-- Header Card -->
+        <div class="edit-card">
+            <div class="edit-card-header">
+                <h5><i class="fas fa-file-alt me-2"></i>Informasi Pengiriman</h5>
+                <span class="header-subtitle"><?= $pengiriman['header']['stockout_code'] ?></span>
+            </div>
+            <div class="edit-card-body">
+                <div class="row">
+                    <!-- Kode Pengiriman (Readonly) -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kode Pengiriman</label>
+                        <input type="text" class="form-control cell-input-readonly"
+                            value="<?= $pengiriman['header']['stockout_code'] ?>" readonly>
+                    </div>
+
+                    <!-- Tanggal Pengiriman - Display Format -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label form-label-required">Tanggal Pengiriman</label>
+                        <input type="text" class="form-control cell-input" id="stockout_date_display"
+                            value="<?= $display_date ?>" placeholder="dd/mm/yyyy">
+                        <input type="hidden" name="stockout_date" id="stockout_date"
+                            value="<?= date('Y-m-d', strtotime($pengiriman['header']['stockout_date'])) ?>">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Gudang Asal -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label form-label-required">Dari Gudang</label>
+                        <?php if ($user_role == 'superadmin'): ?>
+                            <select class="form-control cell-input select2" id="from_warehouse_id" name="from_warehouse_id"
+                                required>
+                                <option value="">Pilih Gudang</option>
+                                <?php foreach ($warehouses as $wh): ?>
+                                    <option value="<?= $wh['warehouse_id'] ?>"
+                                        <?= ($pengiriman['header']['warehouse_id'] == $wh['warehouse_id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($wh['warehouse_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <input type="text" class="form-control cell-input-readonly"
+                                value="<?= htmlspecialchars($pengiriman['header']['warehouse_name']) ?>" readonly>
+                            <input type="hidden" name="from_warehouse_id"
+                                value="<?= $pengiriman['header']['warehouse_id'] ?>">
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Keterangan -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Keterangan</label>
+                        <input type="text" class="form-control cell-input" name="stockout_note"
+                            value="<?= htmlspecialchars($pengiriman['header']['stockout_note'] ?? '') ?>"
+                            placeholder="Catatan tambahan">
+                    </div>
+                </div>
+
+                <?php if ($to_status == '1'): // Ke Pengguna ?>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">Ke Pengguna</label>
+                            <select class="form-control cell-input select2" id="customer_id" name="customer_id" required>
+                                <option value="">Pilih Pengguna</option>
+                                <?php foreach ($customers as $c): ?>
+                                    <option value="<?= $c['id'] ?>" <?= ($pengiriman['header']['to_id'] == $c['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($c['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tipe Pengiriman</label>
+                            <input type="text" class="form-control cell-input-readonly" value="Ke Pengguna" readonly>
+                        </div>
+                    </div>
+                <?php elseif ($to_status == '3'): // Antar Gudang ?>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label form-label-required">Ke Gudang</label>
+                            <select class="form-control cell-input select2" id="to_warehouse_id" name="to_warehouse_id"
+                                required>
+                                <option value="">Pilih Gudang</option>
+                                <?php foreach ($warehouses as $wh): ?>
+                                    <?php if ($wh['warehouse_id'] != $pengiriman['header']['warehouse_id']): ?>
+                                        <option value="<?= $wh['warehouse_id'] ?>"
+                                            <?= ($pengiriman['header']['to_id'] == $wh['warehouse_id']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($wh['warehouse_name']) ?>
+                                        </option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tipe Pengiriman</label>
+                            <input type="text" class="form-control cell-input-readonly" value="Antar Gudang" readonly>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Items Card - Excel Like Table -->
+        <div class="edit-card">
+            <div class="edit-card-header">
+                <h5><i class="fas fa-boxes me-2"></i>Detail Barang</h5>
+                <button type="button" class="btn btn-success btn-sm" onclick="addNewRow()"
+                    style="background: #28a745; border: none; font-weight: 600;">
+                    <i class="fas fa-plus me-1"></i> Tambah Baris
+                </button>
+            </div>
+            <div class="edit-card-body p-0">
+                <div class="table-responsive" style="min-height: 200px;">
+                    <table class="excel-table" id="itemsTable" style="table-layout: fixed;">
+                        <thead>
+                            <tr>
+                                <th style="width:50px;">No</th>
+                                <th style="width:400px;">Barang</th>
+                                <th style="width:90px;">Qty</th>
+                                <th style="width:90px;">Stok<br>Tersedia</th>
+                                <th style="width:80px;">Satuan</th>
+                                <th>Keterangan</th>
+                                <th style="width:90px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody">
+                            <?php if (!empty($pengiriman['detail'])): ?>
+                                <?php foreach ($pengiriman['detail'] as $index => $detail): ?>
+                                    <tr class="item-row" data-index="<?= $index ?>"
+                                        data-unit="<?= htmlspecialchars($detail['unit_code'] ?? '') ?>">
+                                        <td style="text-align:center; font-weight: 600;"><?= $index + 1 ?></td>
+                                        <td>
+                                            <!-- Display Mode -->
+                                            <div class="product-cell product-display" id="display-<?= $index ?>">
+                                                <span
+                                                    class="product-cell-text"><?= htmlspecialchars(($detail['product_code'] ?? '') . ' - ' . ($detail['product_name'] ?? '')) ?></span>
+                                                <input type="hidden" name="stock_id[]" value="<?= $detail['stock_id'] ?>"
+                                                    id="stock_id_<?= $index ?>">
+                                            </div>
+                                            <!-- Edit Mode -->
+                                            <div class="product-cell product-edit hidden" id="edit-<?= $index ?>">
+                                                <select class="form-control cell-input select2-product"
+                                                    id="product_select_<?= $index ?>" style="height:32px;">
+                                                    <option value="">Pilih Produk</option>
+                                                </select>
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-action btn-action-save"
+                                                        onclick="saveProduct(<?= $index ?>)" title="Simpan">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-action btn-action-cancel"
+                                                        onclick="cancelEdit(<?= $index ?>)" title="Batal">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control cell-input" name="qty[]" min="0" step="1"
+                                                value="<?= (int) ($detail['qty'] ?? 0) ?>" required style="text-align: right;"
+                                                data-index="<?= $index ?>">
+                                            <small class="stock-info text-danger" id="qtyError<?= $index ?>" style="display: none;">
+                                                Melebihi stok
+                                            </small>
+                                        </td>
+                                        <td style="text-align:center; font-weight: 600;" class="stock-display">
+                                            <?= number_format($detail['available_qty'] ?? 0, 0) ?>
+                                        </td>
+                                        <td style="text-align:center; font-weight: 600;" class="unit-display">
+                                            <?= htmlspecialchars($detail['unit_code'] ?? '-') ?>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control cell-input" name="detail_note[]"
+                                                value="<?= htmlspecialchars($detail['detail_note'] ?? '') ?>"
+                                                placeholder="Keterangan">
+                                        </td>
+                                        <td style="text-align:center">
+                                            <button type="button" class="btn btn-action btn-action-edit"
+                                                onclick="enableEdit(<?= $index ?>)" title="Ganti Produk">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-action btn-action-delete btn-delete-item"
+                                                title="Hapus Baris" <?= (count($pengiriman['detail']) <= 1) ? 'disabled' : '' ?>>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="edit-card">
+            <div class="edit-card-body d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-back" onclick="confirmBack()">
+                    <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar
+                </button>
+                <button type="button" class="btn btn-save" onclick="confirmSave()">
+                    <i class="fas fa-save me-1"></i> Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+    rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
+    // Data produk dari controller
+    var allProducts = <?= $products_json ?? '[]' ?>;
+    var currentRowCount = <?= count($pengiriman['detail']) ?>;
+    var hasChanges = false;
+    var confirmationCallback = null;
+    
+    // Simpan data produk yang sudah di-load per warehouse untuk menghindari load ulang
+    var warehouseProductsCache = {};
+
     $(document).ready(function () {
+        // Hide loading after page load
+        setTimeout(function () {
+            $('#loading-overlay').fadeOut();
+        }, 500);
+
         // Initialize Select2
-        $('.select2').select2();
-
-        // Load products when warehouse changes (for superadmin in edit mode)
-        <?php if ($user_role == 'superadmin'): ?>
-            $('#from_warehouse_id').on('change', function () {
-                const warehouseId = $(this).val();
-                if (warehouseId) {
-                    if (confirm('Mengubah gudang akan mereset daftar barang. Lanjutkan?')) {
-                        loadProductsByWarehouse(warehouseId);
-                    } else {
-                        // Reset to original value
-                        $(this).val('<?= $pengiriman['header']['warehouse_id'] ?>').trigger('change');
-                    }
-                }
+        $('.select2').each(function () {
+            $(this).select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: $(this).data('placeholder') || 'Pilih opsi',
+                allowClear: true
             });
-        <?php endif; ?>
+        });
 
-        // Prevent future date selection
-        $('#stockout_date').on('change', function () {
-            const selectedDate = new Date(this.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+        // Initialize product selects in table
+        $('.select2-product').each(function () {
+            initProductSelect($(this));
+        });
 
-            if (selectedDate > today) {
-                alert('Tidak bisa memilih tanggal yang akan datang');
-                this.value = '<?= date('Y-m-d', strtotime($pengiriman['header']['stockout_date'])) ?>';
+        // Delete row handler
+        $('.btn-delete-item').click(function () {
+            if ($('.item-row').length > 1) {
+                $(this).closest('.item-row').remove();
+                updateRowNumbers();
+                hasChanges = true;
+            } else {
+                showConfirmation('Minimal harus ada 1 barang', null, false);
             }
         });
 
-        // Prevent typing future dates
-        $('#stockout_date').on('keydown', function (e) {
-            e.preventDefault();
+        // Format tanggal - input blur
+        $('#stockout_date_display').on('blur', function () {
+            const value = $(this).val();
+            const parts = value.split('/');
+            if (parts.length === 3) {
+                // Konversi dd/mm/yyyy ke yyyy-mm-dd
+                const formatted = parts[2] + '-' + parts[1] + '-' + parts[0];
+                $('#stockout_date').val(formatted);
+                $(this).val(value);
+            } else {
+                // Format tidak valid, kembalikan ke nilai sebelumnya
+                const currentVal = $('#stockout_date').val();
+                if (currentVal) {
+                    const dateParts = currentVal.split('-');
+                    $(this).val(dateParts[2] + '/' + dateParts[1] + '/' + dateParts[0]);
+                }
+            }
         });
 
-        // Handle product selection
-        $(document).on('change', '.product-select', function () {
-            const index = $(this).data('index');
-            const selectedOption = $(this).find('option:selected');
-            const stockId = selectedOption.data('stock-id');
-            const availableQty = selectedOption.data('available-qty') || 0;
-
-            // Update hidden stock_id input
-            $(this).closest('.item-row').find('input[name="stock_id[]"]').val(stockId);
-
-            // Update stock info
-            $('#stockInfo' + index).text('Stok tersedia: ' + parseFloat(availableQty).toFixed(2));
-
-            // Update max qty
-            const qtyInput = $(this).closest('.item-row').find('.qty-input');
-            qtyInput.attr('max', availableQty);
-
-            // Clear error if any
-            $('#qtyError' + index).hide();
+        // Format tanggal - saat typing
+        $('#stockout_date_display').on('keyup', function (e) {
+            var value = $(this).val().replace(/\D/g, '');
+            if (value.length >= 2 && value.length <= 4) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            } else if (value.length > 4) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4) + '/' + value.substring(4, 8);
+            }
+            $(this).val(value);
         });
 
-        // Handle qty input validation
-        $(document).on('input', '.qty-input', function () {
+    // Qty validation on input
+        $(document).on('input', 'input[name="qty[]"]', function () {
             const index = $(this).data('index');
             const qty = parseFloat($(this).val()) || 0;
-            const maxQty = parseFloat($(this).attr('max')) || 0;
-
-            if (qty > maxQty) {
+            const row = $(this).closest('.item-row');
+            const stockId = row.find('input[name="stock_id[]"]').val();
+            
+            // Find available qty for this stock - use displayed available stock from table
+            // The available stock in the table already includes the edited qty
+            const stockDisplay = row.find('.stock-display').text();
+            const availableQty = parseFloat(stockDisplay.replace(/,/g, '')) || 0;
+            
+            // Show/hide error - qty should not exceed displayed available stock
+            if (qty > availableQty && availableQty > 0) {
                 $('#qtyError' + index).show();
             } else {
                 $('#qtyError' + index).hide();
             }
         });
 
-        // Add item row
-        let itemCounter = <?= count($pengiriman['detail']) ?>;
-        $('#addItem').click(function () {
-            const newRow = `
-            <div class="item-row row mb-3">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>Produk *</label>
-                        <select class="form-control select2 product-select" name="product_id[]" data-index="${itemCounter}" required>
-                            <option value="">Pilih Produk</option>
-                            <?php foreach ($products as $product): ?>
-                                <option value="<?= $product['product_id'] ?>" 
-                                    data-stock-id="<?= $product['stock_id'] ?>"
-                                    data-available-qty="<?= $product['current_stock'] ?>">
-                                    <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                    (Stok: <?= number_format($product['current_stock'], 2) ?> <?= $product['type_name'] ?>)
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <input type="hidden" name="stock_id[]" value="">
-                        <small class="form-text text-info stock-info" id="stockInfo${itemCounter}"></small>
+        // Handle confirmation modal button click
+        $('#confirmButton').on('click', function () {
+            $('#confirmationModal').modal('hide');
+            
+            if (confirmationCallback) {
+                confirmationCallback();
+                confirmationCallback = null;
+            }
+        });
+        
+        // Handle modal hidden event to clean up
+        $('#confirmationModal').on('hidden.bs.modal', function () {
+            confirmationCallback = null;
+        });
+    });
+
+    // Show confirmation modal
+    function showConfirmation(message, callback, isConfirm = true) {
+        // Set title based on type
+        if (isConfirm && callback) {
+            $('#confirmationModalLabel').text('Konfirmasi');
+            $('#confirmButton').text('Ya').removeClass('d-none btn-danger btn-success btn-primary btn-warning').addClass('btn-danger');
+            confirmationCallback = callback;
+        } else {
+            $('#confirmationModalLabel').text('Peringatan');
+            $('#confirmButton').addClass('d-none');
+            confirmationCallback = null;
+        }
+        
+        // Set message
+        $('#confirmationMessage').text(message || 'Apakah Anda yakin ingin melanjutkan?');
+        
+        // Show modal
+        $('#confirmationModal').modal('show');
+    }
+
+    // Initialize product select with data
+    function initProductSelect(selectElement) {
+        // Format produk dengan menampilkan kode, nama, dan stok
+        const formattedData = allProducts.map(function (p) {
+            const stockDisplay = p.current_stock > 0 ? p.current_stock : '0';
+            return {
+                id: p.stock_id,
+                text: p.product_code + ' - ' + p.product_name,
+                stock_id: p.stock_id,
+                product_code: p.product_code,
+                product_name: p.product_name,
+                unit_code: p.unit_code || '-',
+                current_stock: p.current_stock || 0
+            };
+        });
+
+        // Custom template untuk menampilkan hasil dropdown
+        function formatProduct(product) {
+            if (!product.id) return product.text;
+            
+            const unitCode = product.unit_code || '-';
+            const stockQty = product.current_stock > 0 ? product.current_stock : '0';
+            const textColor = product.current_stock <= 0 ? 'color: #dc3545;' : '';
+            
+            return $(`
+                <div style="${textColor}">
+                    <div>${product.product_code} - ${product.product_name}</div>
+                    <div style="color: #6c757d; font-size: 15px; margin-top: 6px;">
+                        <i class="fas fa-box me-1"></i>Satuan: ${unitCode} | 
+                        <i class="fas fa-cubes me-1"></i>Stok: ${stockQty}
+                        ${product.current_stock <= 0 ? ' - <b>Stok Habis</b>' : ''}
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label>Qty *</label>
-                        <input type="number" class="form-control qty-input" name="qty[]" 
-                            data-index="${itemCounter}"  min="0" max="0" required>
-                        <small class="form-text text-danger qty-error" id="qtyError${itemCounter}" style="display: none;">
-                            Melebihi stok tersedia
-                        </small>
-                    </div>
+            `);
+        }
+
+        selectElement.select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Cari produk...',
+            allowClear: true,
+            data: formattedData,
+            templateResult: formatProduct,
+            templateSelection: formatProduct
+        });
+    }
+
+    // Confirm back navigation
+    function confirmBack() {
+        if (hasChanges) {
+            showConfirmation(
+                'Perubahan belum disimpan. Apakah Anda yakin ingin kembali?',
+                function () {
+                    window.location.href = '<?= site_url($back_url) ?>';
+                }
+            );
+        } else {
+            window.location.href = '<?= site_url($back_url) ?>';
+        }
+    }
+
+    // Form validation
+    function validateForm() {
+        let valid = true;
+        let messages = [];
+
+        <?php if ($user_role == 'superadmin'): ?>
+            if (!$('#from_warehouse_id').val()) { messages.push('Pilih gudang asal'); valid = false; }
+        <?php endif; ?>
+
+        <?php if ($to_status == '1'): ?>
+            if (!$('#customer_id').val()) { messages.push('Pilih pengguna'); valid = false; }
+        <?php elseif ($to_status == '3'): ?>
+            if (!$('#to_warehouse_id').val()) { messages.push('Pilih gudang tujuan'); valid = false; }
+            // Validasi gudang asal dan tujuan tidak boleh sama
+            const fromWh = '<?= $pengiriman['header']['warehouse_id'] ?>';
+            const toWh = $('#to_warehouse_id').val();
+            if (fromWh && toWh && fromWh === toWh) {
+                messages.push('Gudang asal dan tujuan tidak boleh sama');
+                valid = false;
+            }
+        <?php endif; ?>
+
+        let hasStock = false;
+        $('input[name="stock_id[]"]').each(function () { if ($(this).val()) hasStock = true; });
+        if (!hasStock) { messages.push('Tambah minimal 1 barang'); valid = false; }
+
+        let hasQtyError = false;
+        let exceedsStock = false;
+        
+        $('input[name="qty[]"]').each(function (index) {
+            const qty = parseFloat($(this).val()) || 0;
+            const row = $(this).closest('.item-row');
+            const stockId = row.find('input[name="stock_id[]"]').val();
+            
+            if (qty <= 0) {
+                hasQtyError = true;
+            }
+            
+            // Check if qty exceeds available stock - use displayed value from table
+            // The displayed available stock already includes the edited qty
+            const stockDisplay = row.find('.stock-display').text();
+            const availableQty = parseFloat(stockDisplay.replace(/,/g, '')) || 0;
+            
+            if (qty > availableQty && availableQty > 0) {
+                exceedsStock = true;
+                $('#qtyError' + index).show();
+            } else {
+                $('#qtyError' + index).hide();
+            }
+        });
+        
+        if (hasQtyError) { messages.push('Quantity harus lebih dari 0'); valid = false; }
+        if (exceedsStock) { messages.push('Quantity tidak boleh melebihi stok tersedia'); valid = false; }
+
+        return { valid: valid, messages: messages };
+    }
+
+    // Confirm save
+    function confirmSave() {
+        const validation = validateForm();
+
+        if (!validation.valid) {
+            showConfirmation('PERBAIKI DATA:\n\n• ' + validation.messages.join('\n• '), null, false);
+            return;
+        }
+
+        // Jika valid, munculkan konfirmasi simpan
+        showConfirmation(
+            'Apakah Anda yakin ingin menyimpan perubahan?',
+            function () {
+                hasChanges = false;
+                $('#pengirimanForm')[0].submit();
+            }
+        );
+    }
+
+    // Enable edit mode for product
+    function enableEdit(index) {
+        $('#display-' + index).addClass('hidden');
+        $('#edit-' + index).removeClass('hidden');
+
+        const select = $('#product_select_' + index);
+        const currentStockId = $('#stock_id_' + index).val();
+
+        // Set current value
+        if (currentStockId) {
+            select.val(currentStockId).trigger('change');
+        }
+
+        hasChanges = true;
+    }
+
+    // Save product selection
+    function saveProduct(index) {
+        const select = $('#product_select_' + index);
+        const selectedId = select.val();
+        const selectedOption = select.find('option:selected');
+        const selectedText = selectedOption.text();
+
+        if (!selectedId) {
+            showConfirmation('Pilih produk terlebih dahulu', null, false);
+            return;
+        }
+
+        // Find product info from allProducts
+        const productInfo = allProducts.find(p => p.stock_id == selectedId);
+        const unitCode = productInfo ? (productInfo.unit_code || '-') : '-';
+        const currentStock = productInfo ? (productInfo.current_stock || 0) : 0;
+
+        // Extract product name - clean up the text
+        const productNameText = selectedText.replace(/\s*\[Satuan:[^\]]*\]\s*$/, '').replace(/\s*\|.*$/, '').replace(/\(Stok:.*?\)/, '').trim();
+
+        // Update the display div - remove old hidden input and add new one
+        $('#display-' + index).html(
+            '<span class="product-cell-text">' + productNameText + '</span>' +
+            '<input type="hidden" name="stock_id[]" value="' + selectedId + '" id="stock_id_' + index + '">'
+        );
+
+        // Update unit cell dan stock cell di baris yang sama
+        const row = $('#display-' + index).closest('tr');
+        row.find('.unit-display').text(unitCode);
+        row.find('.stock-display').text(currentStock > 0 ? currentStock : '0');
+
+        // Switch back to display mode
+        $('#edit-' + index).addClass('hidden');
+        $('#display-' + index).removeClass('hidden');
+        
+        // Mark as changed
+        hasChanges = true;
+    }
+
+    // Cancel edit
+    function cancelEdit(index) {
+        $('#edit-' + index).addClass('hidden');
+        $('#display-' + index).removeClass('hidden');
+
+        // Reset select to original value
+        const originalValue = $('#stock_id_' + index).val();
+        $('#product_select_' + index).val(originalValue).trigger('change');
+    }
+
+    // Add new row
+    function addNewRow() {
+        const newIndex = currentRowCount;
+        currentRowCount++;
+
+        const newRow = `
+        <tr class="item-row" data-index="${newIndex}" data-unit="-">
+            <td style="text-align:center; font-weight: 600;" class="row-number">${$('.item-row').length + 1}</td>
+            <td>
+                <div class="product-cell product-display" id="display-${newIndex}">
+                    <span class="product-cell-text text-muted">-</span>
+                    <input type="hidden" name="stock_id[]" value="" id="stock_id_${newIndex}">
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>Keterangan Barang</label>
-                        <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan tambahan untuk barang ini">
-                    </div>
-                </div>
-                <div class="col-md-2 mt-4">
-                    <div class="form-group">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-danger btn-block remove-item">
-                            <i class="fas fa-trash"></i>
+                <div class="product-cell product-edit hidden" id="edit-${newIndex}">
+                    <select class="form-control cell-input select2-product" id="product_select_${newIndex}" style="height:32px;">
+                        <option value="">Pilih Produk</option>
+                    </select>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-action btn-action-save" onclick="saveProduct(${newIndex})" title="Simpan">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button type="button" class="btn btn-action btn-action-cancel" onclick="cancelEdit(${newIndex})" title="Batal">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
-            </div>
-        `;
-            $('#itemsContainer').append(newRow);
+            </td>
+            <td>
+                <input type="number" class="form-control cell-input" name="qty[]" min="0" step="1" value="1" required style="text-align: right;" data-index="${newIndex}">
+                <small class="stock-info text-danger" id="qtyError${newIndex}" style="display: none;">
+                    Melebihi stok
+                </small>
+            </td>
+            <td style="text-align:center; font-weight: 600;" class="stock-display">-</td>
+            <td style="text-align:center; font-weight: 600;" class="unit-display">-</td>
+            <td>
+                <input type="text" class="form-control cell-input" name="detail_note[]" placeholder="Keterangan">
+            </td>
+            <td style="text-align:center">
+                <button type="button" class="btn btn-action btn-action-edit" onclick="enableEdit(${newIndex})" title="Pilih Produk">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-action btn-action-delete btn-delete-item" title="Hapus">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
 
-            // Reinitialize Select2 for new row
-            $('#itemsContainer .item-row:last-child .select2').select2();
-            itemCounter++;
+        $('#itemsBody').append(newRow);
 
-            // Enable remove buttons if more than one row
-            if ($('.item-row').length > 1) {
-                $('.remove-item').prop('disabled', false);
+        // Initialize Select2 for new row
+        initProductSelect($('#product_select_' + newIndex));
+
+        // Add change event to update stock display when product is selected
+        $('#product_select_' + newIndex).on('change', function() {
+            const selectedId = $(this).val();
+            const row = $(this).closest('tr');
+            if (selectedId) {
+                const productInfo = allProducts.find(p => p.stock_id == selectedId);
+                const currentStock = productInfo ? (productInfo.current_stock || 0) : 0;
+                row.find('.stock-display').text(currentStock > 0 ? currentStock : '0');
+            } else {
+                row.find('.stock-display').text('-');
             }
         });
 
-        // Remove item row
-        $(document).on('click', '.remove-item', function () {
+        // Rebind delete button
+        $('.btn-delete-item').unbind('click').click(function () {
             if ($('.item-row').length > 1) {
                 $(this).closest('.item-row').remove();
-            }
-            if ($('.item-row').length === 1) {
-                $('.remove-item').prop('disabled', true);
-            }
-        });
-
-        // Form validation
-        $('#pengirimanForm').submit(function (e) {
-            let valid = true;
-
-            // Validasi untuk pengiriman antar gudang
-            <?php if ($to_status == '3'): ?>
-                const fromWarehouseId = $('#from_warehouse_id').val();
-                const toWarehouseId = $('#to_warehouse_id').val();
-                if (fromWarehouseId && toWarehouseId && fromWarehouseId === toWarehouseId) {
-                    alert('Tidak bisa mengirim ke gudang yang sama');
-                    valid = false;
-                }
-            <?php endif; ?>
-
-            // Check if at least one item has product selected
-            let hasItems = false;
-            $('select[name="product_id[]"]').each(function () {
-                if ($(this).val()) hasItems = true;
-            });
-
-            if (!hasItems) {
-                alert('Minimal satu barang harus ditambahkan');
-                valid = false;
-            }
-
-            // Check quantity values and stock availability
-            $('.qty-input').each(function (index) {
-                const qty = parseFloat($(this).val()) || 0;
-                const maxQty = parseFloat($(this).attr('max')) || 0;
-
-                if (qty <= 0 || isNaN(qty)) {
-                    alert('Quantity harus lebih dari 0');
-                    valid = false;
-                    return false;
-                }
-
-                if (qty > maxQty) {
-                    alert('Quantity melebihi stok tersedia');
-                    valid = false;
-                    return false;
-                }
-            });
-
-            if (!valid) {
-                e.preventDefault();
+                updateRowNumbers();
+                hasChanges = true;
+            } else {
+                showConfirmation('Minimal harus ada 1 barang', null, false);
             }
         });
 
-        // Function to load products by warehouse
-        function loadProductsByWarehouse(warehouseId) {
-            $.ajax({
-                url: '<?= site_url("pengiriman/load_products_by_warehouse") ?>',
-                type: 'POST',
-                data: {
-                    warehouse_id: warehouseId,
-                    <?= $this->security->get_csrf_token_name() ?>: '<?= $this->security->get_csrf_hash() ?>'
-                },
-                dataType: 'json',
-                beforeSend: function () {
-                    // Show loading
-                    $('#itemsContainer').html('<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></div>');
-                },
-                success: function (response) {
-                    if (response.success) {
-                        // Update products data
-                        const products = response.data;
+        hasChanges = true;
+    }
 
-                        // Clear existing items and add one empty row
-                        $('#itemsContainer').html(`
-                            <div class="item-row row mb-3">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Produk *</label>
-                                        <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
-                                            <option value="">Pilih Produk</option>
-                                            ${products.map(product => `
-                                                <option value="${product.product_id}" 
-                                                    data-stock-id="${product.stock_id}"
-                                                    data-available-qty="${product.current_stock}">
-                                                    ${product.product_code} - ${product.product_name}
-                                                    (Stok: ${parseFloat(product.current_stock).toFixed(2)} ${product.type_name})
-                                                </option>
-                                            `).join('')}
-                                        </select>
-                                        <input type="hidden" name="stock_id[]" value="">
-                                        <small class="form-text text-info stock-info" id="stockInfo0"></small>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>Qty *</label>
-                                        <input type="number" class="form-control qty-input" name="qty[]" 
-                                            data-index="0" min="0" max="0" required>
-                                        <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
-                                            Melebihi stok tersedia
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Keterangan Barang</label>
-                                        <input type="text" class="form-control" name="detail_note[]"
-                                            placeholder="Keterangan tambahan untuk barang ini">
-                                    </div>
-                                </div>
-                                <div class="col-md-2 mt-4">
-                                    <div class="form-group">
-                                    <label class="form-label">&nbsp;</label>
-                                        <button type="button" class="btn btn-danger btn-block remove-item" disabled>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-
-                        // Reinitialize Select2
-                        $('.select2').select2();
-                        itemCounter = 1;
-                    } else {
-                        alert(response.message || 'Gagal memuat data produk');
-                    }
-                },
-                error: function () {
-                    alert('Terjadi kesalahan saat memuat data produk');
-                }
-            });
-        }
-    });
+    // Update row numbers
+    function updateRowNumbers() {
+        $('.item-row').each(function (index) {
+            $(this).find('.row-number').text(index + 1);
+        });
+    }
 </script>
+
