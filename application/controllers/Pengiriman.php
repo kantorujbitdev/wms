@@ -31,12 +31,32 @@ class Pengiriman extends MY_Controller
             $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
         }
 
-        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        // Jika ada parameter GET, simpan ke session
+        if (!empty($start_date) && !empty($end_date)) {
+            $this->session->set_userdata('filter_start_date_pengguna', $start_date);
+            $this->session->set_userdata('filter_end_date_pengguna', $end_date);
+        }
+
+        // Jika tidak ada parameter, cek session terlebih dahulu
+        if (empty($start_date)) {
+            $start_date = $this->session->userdata('filter_start_date_pengguna');
+        }
+        if (empty($end_date)) {
+            $end_date = $this->session->userdata('filter_end_date_pengguna');
+        }
+
+        // Jika tidak ada di session, set default ke tanggal 1 bulan ini sampai hari ini
         if (empty($start_date)) {
             $start_date = date('Y-m-01');
         }
         if (empty($end_date)) {
             $end_date = date('Y-m-d');
+        }
+
+        // Simpan ke session jika belum ada (untuk mempertahankan filter saat pertama kali load)
+        if (!$this->session->userdata('filter_start_date_pengguna')) {
+            $this->session->set_userdata('filter_start_date_pengguna', $start_date);
+            $this->session->set_userdata('filter_end_date_pengguna', $end_date);
         }
 
         // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
@@ -146,12 +166,32 @@ class Pengiriman extends MY_Controller
             $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
         }
 
-        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        // Jika ada parameter GET, simpan ke session
+        if (!empty($start_date) && !empty($end_date)) {
+            $this->session->set_userdata('filter_start_date_antar_gudang', $start_date);
+            $this->session->set_userdata('filter_end_date_antar_gudang', $end_date);
+        }
+
+        // Jika tidak ada parameter, cek session terlebih dahulu
+        if (empty($start_date)) {
+            $start_date = $this->session->userdata('filter_start_date_antar_gudang');
+        }
+        if (empty($end_date)) {
+            $end_date = $this->session->userdata('filter_end_date_antar_gudang');
+        }
+
+        // Jika tidak ada di session, set default ke tanggal 1 bulan ini sampai hari ini
         if (empty($start_date)) {
             $start_date = date('Y-m-01');
         }
         if (empty($end_date)) {
             $end_date = date('Y-m-d');
+        }
+
+        // Simpan ke session jika belum ada (untuk mempertahankan filter saat pertama kali load)
+        if (!$this->session->userdata('filter_start_date_antar_gudang')) {
+            $this->session->set_userdata('filter_start_date_antar_gudang', $start_date);
+            $this->session->set_userdata('filter_end_date_antar_gudang', $end_date);
         }
 
         // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
@@ -174,6 +214,28 @@ class Pengiriman extends MY_Controller
         $this->data['pengiriman_list'] = $this->handle_response($response);
 
         $this->render_view('pages/pengiriman/antar_gudang');
+    }
+
+    // ==================== RESET FILTER PENGIRIMAN ====================
+    public function reset_filter($type = '')
+    {
+        // Reset filter berdasarkan tipe
+        if ($type === 'pengguna') {
+            $this->session->unset_userdata('filter_start_date_pengguna');
+            $this->session->unset_userdata('filter_end_date_pengguna');
+            redirect('pengiriman/penggunaan');
+        } elseif ($type === 'antar_gudang') {
+            $this->session->unset_userdata('filter_start_date_antar_gudang');
+            $this->session->unset_userdata('filter_end_date_antar_gudang');
+            redirect('pengiriman/antar_gudang');
+        } else {
+            // Reset semua
+            $this->session->unset_userdata('filter_start_date_pengguna');
+            $this->session->unset_userdata('filter_end_date_pengguna');
+            $this->session->unset_userdata('filter_start_date_antar_gudang');
+            $this->session->unset_userdata('filter_end_date_antar_gudang');
+            redirect('pengiriman/penggunaan');
+        }
     }
 
     public function add_antar_gudang1()
