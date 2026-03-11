@@ -351,22 +351,118 @@ class Pengiriman extends MY_Controller
             $notes = $this->input->post('detail_note');
 
             $items_data = [];
+            $stock_errors = [];
+
+            // Validasi stock sebelum submit
             if (!empty($stock_ids)) {
+                // Get current stock for validation
+                $stock_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $from_warehouse_id]));
+                $stocks = [];
+                if (isset($stock_response['success']) && $stock_response['success']) {
+                    $stocks = $stock_response['data'];
+                }
+
+                // Create stock lookup
+                $stock_lookup = [];
+                foreach ($stocks as $stock) {
+                    if (isset($stock['stock_id'])) {
+                        $stock_lookup[$stock['stock_id']] = $stock;
+                    }
+                }
+
                 foreach ($stock_ids as $index => $stock_id) {
                     if (!empty($stock_id) && !empty($qtys[$index])) {
+                        $qty = (float) $qtys[$index];
+
+                        // Validasi: quantity harus > 0
+                        if ($qty <= 0) {
+                            $stock_errors[] = "Quantity harus lebih dari 0";
+                            continue;
+                        }
+
+                        // Validasi: cek ketersediaan stock
+                        if (isset($stock_lookup[$stock_id])) {
+                            $available_stock = (float) ($stock_lookup[$stock_id]['current_stock'] ?? 0);
+                            $product_name = $stock_lookup[$stock_id]['product_name'] ?? 'Produk ID ' . $stock_id;
+                            $product_code = $stock_lookup[$stock_id]['product_code'] ?? '';
+
+                            if ($qty > $available_stock) {
+                                $stock_errors[] = "Stok tidak cukup untuk {$product_code} - {$product_name}. Stok tersedia: " . number_format($available_stock, 0) . ", Diminta: " . number_format($qty, 0);
+                            }
+                        } else {
+                            $stock_errors[] = "Produk dengan ID {$stock_id} tidak ditemukan di gudang";
+                        }
+
                         $items_data[] = [
                             'stock_id' => $stock_id,
-                            'qty' => (float) $qtys[$index],
+                            'qty' => $qty,
                             'detail_note' => $notes[$index] ?? ''
                         ];
 
                         $post_data['items'][] = [
                             'stock_id' => $stock_id,
-                            'qty' => (float) $qtys[$index],
+                            'qty' => $qty,
                             'detail_note' => $notes[$index] ?? ''
                         ];
                     }
                 }
+            }
+
+            // Jika ada error stock, tampilkan pesan error
+            if (!empty($stock_errors)) {
+                $this->session->set_flashdata('error', "VALIDASI STOK GAGAL:\n\n• " . implode("\n• ", $stock_errors));
+
+                // Simpan data form ke session untuk ditampilkan kembali
+                $form_data = [
+                    'stockout_date' => $this->input->post('stockout_date'),
+                    'stockout_code' => $this->input->post('stockout_code'),
+                    'stockout_note' => $this->input->post('stockout_note'),
+                    'to_status' => $to_status,
+                    'to_id' => $this->input->post($to_id_field),
+                    'items' => $items_data
+                ];
+
+                // Simpan from_warehouse_id untuk superadmin
+                if ($user_role == 'superadmin' && $this->input->post('from_warehouse_id')) {
+                    $form_data['from_warehouse_id'] = $this->input->post('from_warehouse_id');
+                }
+
+                $this->session->set_flashdata('form_data_' . $to_status . '_out', $form_data);
+
+                // Redirect back based on to_status
+                if ($to_status == '1') {
+                    redirect('pengiriman/add_pengguna');
+                } else {
+                    redirect('pengiriman/add_antar_gudang');
+                }
+                return;
+            }
+
+            // Validasi: minimal 1 item
+            if (empty($post_data['items'])) {
+                $this->session->set_flashdata('error', 'Minimal harus ada 1 barang');
+
+                $form_data = [
+                    'stockout_date' => $this->input->post('stockout_date'),
+                    'stockout_code' => $this->input->post('stockout_code'),
+                    'stockout_note' => $this->input->post('stockout_note'),
+                    'to_status' => $to_status,
+                    'to_id' => $this->input->post($to_id_field),
+                    'items' => []
+                ];
+
+                if ($user_role == 'superadmin' && $this->input->post('from_warehouse_id')) {
+                    $form_data['from_warehouse_id'] = $this->input->post('from_warehouse_id');
+                }
+
+                $this->session->set_flashdata('form_data_' . $to_status . '_out', $form_data);
+
+                if ($to_status == '1') {
+                    redirect('pengiriman/add_pengguna');
+                } else {
+                    redirect('pengiriman/add_antar_gudang');
+                }
+                return;
             }
 
             // Send to API
@@ -496,10 +592,11 @@ class Pengiriman extends MY_Controller
                         isset($stock['stock_id']) && isset($item['stock_id']) &&
                         $stock['stock_id'] == $item['stock_id']
                     ) {
-                        // Current stock available (current stock + edited qty)
+                        // FIXED: Show actual available stock (current_stock)
+                        // The available stock is what's in the warehouse right now
+                        // not including the qty being edited
                         $current_stock = floatval($stock['current_stock']);
-                        $edited_qty = floatval($item['qty']);
-                        $available_qty = $current_stock + $edited_qty; // Add back the qty being edited
+                        $available_qty = $current_stock; // Use actual current stock
 
                         $item['available_qty'] = $available_qty;
                         $item['product_code'] = $stock['product_code'] ?? '';
@@ -512,7 +609,7 @@ class Pengiriman extends MY_Controller
 
                 // If not found in stocks
                 if (!isset($item['available_qty'])) {
-                    $item['available_qty'] = $item['qty']; // At least the qty being edited
+                    $item['available_qty'] = 0; // No stock available
                     $item['unit_code'] = '';
                     $item['unit_name'] = '';
                 }
@@ -553,6 +650,15 @@ class Pengiriman extends MY_Controller
                 $from_warehouse_id = $this->input->post('from_warehouse_id');
             }
 
+            // Get current pengiriman data for validation
+            $current_response = $this->Api_model->pengiriman_by_id(array_merge($data_login, ['stockout_id' => $id]));
+            $current_items = [];
+            if (isset($current_response['detail']) && is_array($current_response['detail'])) {
+                foreach ($current_response['detail'] as $item) {
+                    $current_items[$item['stock_id'] ?? $item['STOCK_ID'] ?? 0] = floatval($item['qty'] ?? $item['QTY'] ?? 0);
+                }
+            }
+
             $post_data = data_login_user([
                 'stockout_id' => $id,
                 'stockout_date' => $this->input->post('stockout_date'),
@@ -571,21 +677,104 @@ class Pengiriman extends MY_Controller
                 $post_data['to_id'] = $this->input->post('to_warehouse_id');
             }
 
-            // Prepare items data
+            // Prepare items data and validate stock
             $stock_ids = $this->input->post('stock_id');
             $qtys = $this->input->post('qty');
             $notes = $this->input->post('detail_note');
 
+            $stock_errors = [];
+            $items_data = [];
+
+            // Get current stock for validation
+            $stock_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $from_warehouse_id]));
+            $stocks = [];
+            if (isset($stock_response['success']) && $stock_response['success']) {
+                $stocks = $stock_response['data'];
+            }
+
+            // Create stock lookup
+            $stock_lookup = [];
+            foreach ($stocks as $stock) {
+                if (isset($stock['stock_id'])) {
+                    $stock_lookup[$stock['stock_id']] = $stock;
+                }
+            }
+
+            // Calculate total qty per stock_id first (to handle duplicates)
+            $total_qty_by_stock = [];
             if (!empty($stock_ids)) {
                 foreach ($stock_ids as $index => $stock_id) {
                     if (!empty($stock_id) && !empty($qtys[$index])) {
+                        $qty = (float) $qtys[$index];
+                        if (!isset($total_qty_by_stock[$stock_id])) {
+                            $total_qty_by_stock[$stock_id] = 0;
+                        }
+                        $total_qty_by_stock[$stock_id] += $qty;
+                    }
+                }
+            }
+
+            if (!empty($stock_ids)) {
+                foreach ($stock_ids as $index => $stock_id) {
+                    if (!empty($stock_id) && !empty($qtys[$index])) {
+                        $qty = (float) $qtys[$index];
+
+                        // Validasi: quantity harus > 0
+                        if ($qty <= 0) {
+                            $stock_errors[] = "Quantity harus lebih dari 0";
+                            continue;
+                        }
+
+                        // Calculate available stock
+                        $original_qty = isset($current_items[$stock_id]) ? $current_items[$stock_id] : 0;
+                        $current_stock = isset($stock_lookup[$stock_id]) ? floatval($stock_lookup[$stock_id]['current_stock']) : 0;
+                        $available_qty = $current_stock + $original_qty;
+
+                        // Get total new qty for this stock (handles duplicates)
+                        $total_new_qty = isset($total_qty_by_stock[$stock_id]) ? $total_qty_by_stock[$stock_id] : 0;
+
+                        // Validasi: cek ketersediaan stock berdasarkan TOTAL qty
+                        if (isset($stock_lookup[$stock_id])) {
+                            $product_name = $stock_lookup[$stock_id]['product_name'] ?? 'Produk ID ' . $stock_id;
+                            $product_code = $stock_lookup[$stock_id]['product_code'] ?? '';
+
+                            if ($total_new_qty > $available_qty) {
+                                $stock_errors[] = "Total quantity {$total_new_qty} untuk {$product_code} - {$product_name} melebihi stok tersedia: " . number_format($available_qty, 0);
+                            }
+                        } else {
+                            // Check if this is a new product being added
+                            if (!isset($current_items[$stock_id])) {
+                                $stock_errors[] = "Produk dengan ID {$stock_id} tidak ditemukan di gudang";
+                            }
+                        }
+
+                        $items_data[] = [
+                            'stock_id' => $stock_id,
+                            'qty' => $qty,
+                            'detail_note' => $notes[$index] ?? ''
+                        ];
+
                         $post_data['items'][] = [
                             'stock_id' => $stock_id,
-                            'qty' => (float) $qtys[$index],
+                            'qty' => $qty,
                             'detail_note' => $notes[$index] ?? ''
                         ];
                     }
                 }
+            }
+
+            // Jika ada error stock, tampilkan pesan error
+            if (!empty($stock_errors)) {
+                $this->session->set_flashdata('error', "VALIDASI STOK GAGAL:\n\n• " . implode("\n• ", $stock_errors));
+                redirect('pengiriman/edit/' . $id);
+                return;
+            }
+
+            // Validasi: minimal 1 item
+            if (empty($post_data['items'])) {
+                $this->session->set_flashdata('error', 'Minimal harus ada 1 barang');
+                redirect('pengiriman/edit/' . $id);
+                return;
             }
 
             // Send to API

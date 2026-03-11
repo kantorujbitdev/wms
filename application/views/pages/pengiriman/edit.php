@@ -444,7 +444,7 @@
         }
     }
 
-    // Form validation
+    // Form validation - NO duplicate check (duplicates allowed)
     function validateForm() {
         let valid = true;
         let messages = [];
@@ -470,8 +470,19 @@
         $('input[name="stock_id[]"]').each(function () { if ($(this).val()) hasStock = true; });
         if (!hasStock) { messages.push('Tambah minimal 1 barang'); valid = false; }
 
-        let hasQtyError = false;
+        // Calculate total qty per product and validate against available stock
+        var stockQtys = {};
+        $('input[name="stock_id[]"]').each(function (index) {
+            var sid = $(this).val();
+            var qty = parseFloat($('input[name="qty[]"]').eq(index).val()) || 0;
+            if (sid && qty > 0) {
+                if (!stockQtys[sid]) stockQtys[sid] = 0;
+                stockQtys[sid] += qty;
+            }
+        });
+
         let exceedsStock = false;
+        let zeroQty = false;
         
         $('input[name="qty[]"]').each(function (index) {
             const qty = parseFloat($(this).val()) || 0;
@@ -479,24 +490,37 @@
             const stockId = row.find('input[name="stock_id[]"]').val();
             
             if (qty <= 0) {
-                hasQtyError = true;
+                zeroQty = true;
             }
             
-            // Check if qty exceeds available stock - use displayed value from table
-            // The displayed available stock already includes the edited qty
-            const stockDisplay = row.find('.stock-display').text();
-            const availableQty = parseFloat(stockDisplay.replace(/,/g, '')) || 0;
-            
-            if (qty > availableQty && availableQty > 0) {
-                exceedsStock = true;
-                $('#qtyError' + index).show();
-            } else {
-                $('#qtyError' + index).hide();
+            // Check if total qty for this product exceeds available stock
+            if (stockId && stockQtys[stockId]) {
+                let stockDisplay = row.find('.stock-display').text().trim();
+                
+                // Handle new rows where stock display might be "-" or empty
+                let availableQty = 0;
+                if (stockDisplay !== '-' && stockDisplay !== '' && stockDisplay !== '0') {
+                    availableQty = parseFloat(stockDisplay.replace(/,/g, '')) || 0;
+                } else {
+                    // Try to get stock from allProducts for new rows
+                    const productInfo = allProducts.find(p => p.stock_id == stockId);
+                    if (productInfo) {
+                        availableQty = parseFloat(productInfo.current_stock) || 0;
+                    }
+                }
+                
+                if (stockQtys[stockId] > availableQty && availableQty > 0) {
+                    exceedsStock = true;
+                    $('#qtyError' + index).show();
+                    $('#qtyError' + index).text('Total melebihi stok tersedia (' + availableQty + ')');
+                } else {
+                    $('#qtyError' + index).hide();
+                }
             }
         });
         
-        if (hasQtyError) { messages.push('Quantity harus lebih dari 0'); valid = false; }
-        if (exceedsStock) { messages.push('Quantity tidak boleh melebihi stok tersedia'); valid = false; }
+        if (zeroQty) { messages.push('Quantity harus lebih dari 0'); valid = false; }
+        if (exceedsStock) { messages.push('Total quantity melebihi stok tersedia'); valid = false; }
 
         return { valid: valid, messages: messages };
     }
