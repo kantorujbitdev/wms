@@ -32,12 +32,32 @@ class Penerimaan extends MY_Controller
             $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
         }
 
-        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        // Simpan ke session jika ada parameter dari URL
+        if (!empty($start_date) && !empty($end_date)) {
+            $this->session->set_userdata('filter_start_date_penerimaan_pengguna', $start_date);
+            $this->session->set_userdata('filter_end_date_penerimaan_pengguna', $end_date);
+        }
+
+        // Jika tidak ada parameter, coba ambil dari session
+        if (empty($start_date)) {
+            $start_date = $this->session->userdata('filter_start_date_penerimaan_pengguna');
+        }
+        if (empty($end_date)) {
+            $end_date = $this->session->userdata('filter_end_date_penerimaan_pengguna');
+        }
+
+        // Jika tidak ada di session juga, set default ke tanggal 1 bulan ini sampai hari ini
         if (empty($start_date)) {
             $start_date = date('Y-m-01');
         }
         if (empty($end_date)) {
             $end_date = date('Y-m-d');
+        }
+
+        // Simpan ke session jika belum ada (untuk mempertahankan filter saat pertama kali load)
+        if (!$this->session->userdata('filter_start_date_penerimaan_pengguna')) {
+            $this->session->set_userdata('filter_start_date_penerimaan_pengguna', $start_date);
+            $this->session->set_userdata('filter_end_date_penerimaan_pengguna', $end_date);
         }
 
         // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
@@ -131,12 +151,32 @@ class Penerimaan extends MY_Controller
             $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
         }
 
-        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        // Simpan ke session jika ada parameter dari URL
+        if (!empty($start_date) && !empty($end_date)) {
+            $this->session->set_userdata('filter_start_date_penerimaan_supplier', $start_date);
+            $this->session->set_userdata('filter_end_date_penerimaan_supplier', $end_date);
+        }
+
+        // Jika tidak ada parameter, coba ambil dari session
+        if (empty($start_date)) {
+            $start_date = $this->session->userdata('filter_start_date_penerimaan_supplier');
+        }
+        if (empty($end_date)) {
+            $end_date = $this->session->userdata('filter_end_date_penerimaan_supplier');
+        }
+
+        // Jika tidak ada di session juga, set default ke tanggal 1 bulan ini sampai hari ini
         if (empty($start_date)) {
             $start_date = date('Y-m-01');
         }
         if (empty($end_date)) {
             $end_date = date('Y-m-d');
+        }
+
+        // Simpan ke session jika belum ada (untuk mempertahankan filter saat pertama kali load)
+        if (!$this->session->userdata('filter_start_date_penerimaan_supplier')) {
+            $this->session->set_userdata('filter_start_date_penerimaan_supplier', $start_date);
+            $this->session->set_userdata('filter_end_date_penerimaan_supplier', $end_date);
         }
 
         // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
@@ -228,12 +268,32 @@ class Penerimaan extends MY_Controller
             $end_date = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
         }
 
-        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        // Simpan ke session jika ada parameter dari URL
+        if (!empty($start_date) && !empty($end_date)) {
+            $this->session->set_userdata('filter_start_date_penerimaan_antar_gudang', $start_date);
+            $this->session->set_userdata('filter_end_date_penerimaan_antar_gudang', $end_date);
+        }
+
+        // Jika tidak ada parameter, coba ambil dari session
+        if (empty($start_date)) {
+            $start_date = $this->session->userdata('filter_start_date_penerimaan_antar_gudang');
+        }
+        if (empty($end_date)) {
+            $end_date = $this->session->userdata('filter_end_date_penerimaan_antar_gudang');
+        }
+
+        // Jika tidak ada di session juga, set default ke tanggal 1 bulan ini sampai hari ini
         if (empty($start_date)) {
             $start_date = date('Y-m-01');
         }
         if (empty($end_date)) {
             $end_date = date('Y-m-d');
+        }
+
+        // Simpan ke session jika belum ada (untuk mempertahankan filter saat pertama kali load)
+        if (!$this->session->userdata('filter_start_date_penerimaan_antar_gudang')) {
+            $this->session->set_userdata('filter_start_date_penerimaan_antar_gudang', $start_date);
+            $this->session->set_userdata('filter_end_date_penerimaan_antar_gudang', $end_date);
         }
 
         // Set data untuk dikirim ke view (untuk mempertahankan nilai filter di form)
@@ -1055,5 +1115,33 @@ class Penerimaan extends MY_Controller
 
         $this->handle_response($response, 'Penerimaan berhasil dihapus!');
         redirect('penerimaan/dari_supplier');
+    }
+
+    // ==================== RESET FILTER PENERIMAAN ====================
+    public function reset_filter($type = '')
+    {
+        // Reset filter berdasarkan tipe
+        if ($type === 'pengguna') {
+            $this->session->unset_userdata('filter_start_date_penerimaan_pengguna');
+            $this->session->unset_userdata('filter_end_date_penerimaan_pengguna');
+            redirect('penerimaan/dari_pengguna');
+        } elseif ($type === 'supplier') {
+            $this->session->unset_userdata('filter_start_date_penerimaan_supplier');
+            $this->session->unset_userdata('filter_end_date_penerimaan_supplier');
+            redirect('penerimaan/dari_supplier');
+        } elseif ($type === 'antar_gudang') {
+            $this->session->unset_userdata('filter_start_date_penerimaan_antar_gudang');
+            $this->session->unset_userdata('filter_end_date_penerimaan_antar_gudang');
+            redirect('penerimaan/antar_gudang');
+        } else {
+            // Reset semua
+            $this->session->unset_userdata('filter_start_date_penerimaan_pengguna');
+            $this->session->unset_userdata('filter_end_date_penerimaan_pengguna');
+            $this->session->unset_userdata('filter_start_date_penerimaan_supplier');
+            $this->session->unset_userdata('filter_end_date_penerimaan_supplier');
+            $this->session->unset_userdata('filter_start_date_penerimaan_antar_gudang');
+            $this->session->unset_userdata('filter_end_date_penerimaan_antar_gudang');
+            redirect('penerimaan/dari_pengguna');
+        }
     }
 }
