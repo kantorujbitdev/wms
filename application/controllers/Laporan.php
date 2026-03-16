@@ -223,7 +223,7 @@ class Laporan extends MY_Controller
             $this->data['products'] = $this->handle_response($products_response);
         } else {
             // Untuk admin, ambil produk berdasarkan warehouse mereka
-            $products_response = $this->Api_model->get_stock_by_warehous(data_login_user(['warehouse_id' => $warehouse_id]));
+            $products_response = $this->Api_model->get_stock_by_warehouse(data_login_user(['warehouse_id' => $warehouse_id]));
             $this->data['products'] = $this->handle_response($products_response);
             $this->data['warehouses'] = []; // Kosongkan untuk admin
         }

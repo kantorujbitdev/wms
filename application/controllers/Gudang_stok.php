@@ -47,7 +47,7 @@ class Gudang_stok extends MY_Controller
         } else {
             // Jika gudang spesifik dipilih
             $data = data_login_user(['warehouse_id' => $warehouse_id]);
-            $response = $this->Api_model->get_stock_by_warehous($data);
+            $response = $this->Api_model->get_stock_by_warehouse($data);
         }
         $this->handle_response($response);
         echo json_encode($response);

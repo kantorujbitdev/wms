@@ -1,4 +1,100 @@
-<!-- C:\xampp\htdocs\wms\application\views\pages\pengiriman\form.php -->
+                                                                                                                                                                                                                                                                                                                                                 <!-- C:\xampp\htdocs\wms\application\views\pages\pengiriman\form.php -->
+<?php $this->load->view('pages/pengiriman/edit_style'); ?>
+
+<!-- Select2 CSS & JS with Custom Styles for better UX -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+/* Enhanced Select2 Dropdown for Form */
+.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    padding: 6px 12px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 26px !important;
+    color: #212529;
+    padding-right: 20px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 34px !important;
+    right: 8px;
+}
+
+.select2-dropdown {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    z-index: 1061 !important;
+    max-height: 300px !important;
+    overflow: hidden !important;
+}
+
+.select2-dropdown--below {
+    margin-top: -1px;
+}
+
+.select2-results {
+    max-height: 280px !important;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #4361ee !important;
+    color: white !important;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    padding: 8px 12px !important;
+    height: 38px !important;
+    font-size: 14px !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #4361ee;
+    color: white;
+}
+
+/* Smooth scroll */
+.select2-results__options {
+    scrollbar-width: thin;
+    scrollbar-color: #adb5bd transparent;
+}
+
+.select2-results__options::-webkit-scrollbar {
+    width: 8px;
+}
+
+.select2-results__options::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.select2-results__options::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 4px;
+}
+
+.select2-results__options::-webkit-scrollbar-thumb:hover {
+    background-color: #6c757d;
+}
+</style>
+
 <div class="container-fluid">
     <?php
     $back_url = 'pengiriman/penggunaan';
@@ -211,143 +307,157 @@
 
                 <hr class="my-4">
 
-                <!-- Bagian 5: Detail Barang -->
+                <!-- Bagian 5: Detail Barang - Tabel Format -->
                 <div class="row mb-3">
                     <div class="col-12">
                         <h5 class="font-weight-bold mb-3">Detail Barang</h5>
-                        <button type="button" id="addItem" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Barang
-                        </button>
                     </div>
                 </div>
 
-                <div id="itemsContainer">
-                    <?php if (isset($old_form_data['items']) && !empty($old_form_data['items'])): ?>
-                        <!-- Tampilkan item dari session jika ada -->
-                        <?php foreach ($old_form_data['items'] as $index => $item): ?>
-                            <div class="item-row row mb-3">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Produk *</label>
-                                        <select class="form-control select2 product-select" name="product_id[]"
-                                            data-index="<?= $index ?>" required>
-                                            <option value="">Pilih Produk</option>
-                                            <?php foreach ($products as $product):
-                                                $current_stock = $product['current_stock'];
-                                                $stock_display = $current_stock < 0 ? '0' : $current_stock;
-                                                ?>
-                                                <option value="<?= $product['product_id'] ?>"
-                                                    data-stock-id="<?= $product['stock_id'] ?>"
-                                                    data-available-qty="<?= $current_stock < 0 ? 0 : $current_stock ?>"
-                                                    <?= (isset($item['stock_id']) && ($item['stock_id'] == $product['stock_id'])) ? 'selected' : '' ?>             <?= ($current_stock <= 0) ? 'disabled style="color: #dc3545;"' : '' ?>>
-                                                    <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                                    (Stok: <?= $stock_display ?>             <?= $product['unit_code'] ?>)
-                                                    <?= ($current_stock <= 0) ? ' - Stok Habis/Tidak Tersedia' : '' ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <input type="hidden" name="stock_id[]"
-                                            value="<?= isset($item['stock_id']) ? $item['stock_id'] : '' ?>">
-                                        <small class="form-text text-info stock-info" id="stockInfo<?= $index ?>">
-                                            <?php if (isset($item['stock_id'])): ?>
-                                                <?php foreach ($products as $product): ?>
-                                                    <?php if ($item['stock_id'] == $product['stock_id']):
-                                                        $current_stock = $product['current_stock'];
-                                                        $available_stock = $current_stock < 0 ? 0 : $current_stock;
-                                                        ?>
-                                                        Stok tersedia: <?= number_format($available_stock, 2) ?>
-                                                        <?= $product['unit_code'] ?>
-                                                        <?php break; ?>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Qty *</label>
-                                        <input type="number" class="form-control qty-input" name="qty[]"
-                                            data-index="<?= $index ?>" value="<?= isset($item['qty']) ? $item['qty'] : '' ?>"
-                                            required>
-                                        <small class="form-text text-danger qty-error" id="qtyError<?= $index ?>"
-                                            style="display: none;">
-                                            Melebihi stok tersedia
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Keterangan Barang</label>
-                                        <input type="text" class="form-control" name="detail_note[]"
-                                            value="<?= isset($item['detail_note']) ? $item['detail_note'] : '' ?>"
-                                            placeholder="Keterangan tambahan untuk barang ini">
-                                    </div>
-                                </div>
-                                <div class="col-md-2 mt-4">
-                                    <div class="form-group">
-                                        <label class="form-label">&nbsp;</label>
-                                        <button type="button" class="btn btn-danger btn-block remove-item">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <!-- Default: satu row kosong -->
-                        <div class="item-row row mb-3">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="form-label">Produk *</label>
-                                    <select class="form-control select2 product-select" name="product_id[]" data-index="0"
-                                        required>
-                                        <option value="">Pilih Produk</option>
-                                        <?php foreach ($products as $product):
-                                            $current_stock = $product['current_stock'];
-                                            $stock_display = $current_stock < 0 ? '0' : $current_stock;
-                                            ?>
-                                            <option value="<?= $product['product_id'] ?>"
-                                                data-stock-id="<?= $product['stock_id'] ?>"
-                                                data-available-qty="<?= $current_stock < 0 ? 0 : $current_stock ?>"
-                                                <?= ($current_stock <= 0) ? 'disabled style="color: #dc3545;"' : '' ?>>
-                                                <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
-                                                (Stok: <?= $stock_display ?>         <?= $product['unit_code'] ?>)
-                                                <?= ($current_stock <= 0) ? ' - Stok Habis/Tidak Tersedia' : '' ?>
-                                            </option>
+                <div class="edit-card">
+                    <div class="edit-card-header">
+                        <h5><i class="fas fa-boxes me-2"></i>Daftar Barang</h5>
+                        <button type="button" id="addItem" class="btn btn-success btn-sm"
+                            style="background: #28a745; border: none; font-weight: 600;">
+                            <i class="fas fa-plus me-1"></i> Tambah Baris
+                        </button>
+                    </div>
+                    <div class="edit-card-body p-0">
+                        <div class="table-responsive" style="min-height: 200px;">
+                            <table class="excel-table" id="itemsTable" style="table-layout: fixed;">
+                                <thead>
+                                    <tr>
+                                        <th style="width:50px;">No</th>
+                                        <th style="width:350px;">Barang</th>
+                                        <th style="width:90px;">Qty</th>
+                                        <th style="width:100px;">Stok<br>Tersedia</th>
+                                        <th style="width:80px;">Satuan</th>
+                                        <th>Keterangan</th>
+                                        <th style="width:80px;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsContainer">
+                                    <?php if (isset($old_form_data['items']) && !empty($old_form_data['items'])): ?>
+                                        <!-- Tampilkan item dari session jika ada -->
+                                        <?php foreach ($old_form_data['items'] as $index => $item): ?>
+                                            <tr class="item-row" data-index="<?= $index ?>">
+                                                <td style="text-align:center; font-weight: 600;" class="row-number"><?= $index + 1 ?></td>
+                                                <td>
+                                                    <select class="form-control cell-input product-select" name="product_id[]"
+                                                        data-index="<?= $index ?>" required>
+                                                        <option value="">Pilih Produk</option>
+                                                        <?php foreach ($products as $product):
+                                                            $current_stock = $product['current_stock'];
+                                                            $stock_display = $current_stock < 0 ? '0' : $current_stock;
+                                                            $available_stock = $current_stock < 0 ? 0 : $current_stock;
+                                                            ?>
+                                                            <option value="<?= $product['product_id'] ?>"
+                                                                data-stock-id="<?= $product['stock_id'] ?>"
+                                                                data-available-qty="<?= $available_stock ?>"
+                                                                data-unit-code="<?= $product['unit_code'] ?>"
+                                                                <?= (isset($item['stock_id']) && ($item['stock_id'] == $product['stock_id'])) ? 'selected' : '' ?>
+                                                                <?= ($current_stock <= 0) ? 'disabled style="color: #dc3545;"' : '' ?>>
+                                                                <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
+                                                                (Stok: <?= $stock_display ?> <?= $product['unit_code'] ?>)
+                                                                <?= ($current_stock <= 0) ? ' - Stok Habis' : '' ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <input type="hidden" name="stock_id[]"
+                                                        value="<?= isset($item['stock_id']) ? $item['stock_id'] : '' ?>">
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    // Get available qty for this item
+                                                    $item_available_qty = 0;
+                                                    $item_unit_code = '';
+                                                    if (isset($item['stock_id'])) {
+                                                        foreach ($products as $product) {
+                                                            if ($item['stock_id'] == $product['stock_id']) {
+                                                                $item_available_qty = $product['current_stock'] < 0 ? 0 : $product['current_stock'];
+                                                                $item_unit_code = $product['unit_code'];
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    ?>
+                                                    <input type="number" class="form-control cell-input qty-input" name="qty[]"
+                                                        data-index="<?= $index ?>" value="<?= isset($item['qty']) ? $item['qty'] : '' ?>"
+                                                        min="1" max="<?= $item_available_qty ?>" required style="text-align: right;">
+                                                    <small class="stock-info text-danger qty-error" id="qtyError<?= $index ?>"
+                                                        style="display: none;">
+                                                        Melebihi stok
+                                                    </small>
+                                                </td>
+                                                <td style="text-align:center; font-weight: 600;" class="stock-display">
+                                                    <?= number_format($item_available_qty, 0) ?>
+                                                </td>
+                                                <td style="text-align:center; font-weight: 600;" class="unit-display">
+                                                    <?= htmlspecialchars($item_unit_code ?: '-') ?>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control cell-input" name="detail_note[]"
+                                                        value="<?= isset($item['detail_note']) ? $item['detail_note'] : '' ?>"
+                                                        placeholder="Keterangan">
+                                                </td>
+                                                <td style="text-align:center">
+                                                    <button type="button" class="btn btn-action btn-action-delete remove-item"
+                                                        title="Hapus Baris" <?= (count($old_form_data['items']) <= 1) ? 'disabled' : '' ?>>
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
                                         <?php endforeach; ?>
-                                    </select>
-                                    <input type="hidden" name="stock_id[]" value="">
-                                    <small class="form-text text-info stock-info" id="stockInfo0"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="form-label">Qty *</label>
-                                    <input type="number" class="form-control qty-input" name="qty[]" data-index="0"
-                                        step="1" min="1" max="0" required>
-                                    <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
-                                        Melebihi stok tersedia
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="form-label">Keterangan Barang</label>
-                                    <input type="text" class="form-control" name="detail_note[]"
-                                        placeholder="Keterangan tambahan untuk barang ini">
-                                </div>
-                            </div>
-                            <div class="col-md-2 mt-4">
-                                <div class="form-group">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="button" class="btn btn-danger btn-block remove-item" disabled>
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
+                                    <?php else: ?>
+                                        <!-- Default: satu row kosong -->
+                                        <tr class="item-row" data-index="0">
+                                            <td style="text-align:center; font-weight: 600;" class="row-number">1</td>
+                                            <td>
+                                                <select class="form-control cell-input product-select" name="product_id[]" data-index="0"
+                                                    required>
+                                                    <option value="">Pilih Produk</option>
+                                                    <?php foreach ($products as $product):
+                                                        $current_stock = $product['current_stock'];
+                                                        $stock_display = $current_stock < 0 ? '0' : $current_stock;
+                                                        ?>
+                                                        <option value="<?= $product['product_id'] ?>"
+                                                            data-stock-id="<?= $product['stock_id'] ?>"
+                                                            data-available-qty="<?= $current_stock < 0 ? 0 : $current_stock ?>"
+                                                            data-unit-code="<?= $product['unit_code'] ?>"
+                                                            <?= ($current_stock <= 0) ? 'disabled style="color: #dc3545;"' : '' ?>>
+                                                            <?= $product['product_code'] ?> - <?= $product['product_name'] ?>
+                                                            (Stok: <?= $stock_display ?> <?= $product['unit_code'] ?>)
+                                                            <?= ($current_stock <= 0) ? ' - Stok Habis' : '' ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <input type="hidden" name="stock_id[]" value="">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control cell-input qty-input" name="qty[]" data-index="0"
+                                                    step="1" min="1" max="0" required style="text-align: right;">
+                                                <small class="stock-info text-danger qty-error" id="qtyError0" style="display: none;">
+                                                    Melebihi stok
+                                                </small>
+                                            </td>
+                                            <td style="text-align:center; font-weight: 600;" class="stock-display">-</td>
+                                            <td style="text-align:center; font-weight: 600;" class="unit-display">-</td>
+                                            <td>
+                                                <input type="text" class="form-control cell-input" name="detail_note[]"
+                                                    placeholder="Keterangan">
+                                            </td>
+                                            <td style="text-align:center">
+                                                <button type="button" class="btn btn-action btn-action-delete remove-item"
+                                                    title="Hapus Baris" disabled>
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
                         </div>
-                    <?php endif; ?>
+                    </div>
                 </div>
 
                 <hr class="my-4">

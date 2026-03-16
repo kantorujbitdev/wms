@@ -18,7 +18,7 @@ class Dashboard extends MY_Controller
         if ($warehouse_id_session == 0 || $warehouse_id_session === null) {
             $stok_response = $this->Api_model->get_stock_all($data_login);
         } else {
-            $stok_response = $this->Api_model->get_stock_by_warehous(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
+            $stok_response = $this->Api_model->get_stock_by_warehouse(array_merge($data_login, ['warehouse_id' => $warehouse_id_session]));
         }
 
         // Get stock data from API

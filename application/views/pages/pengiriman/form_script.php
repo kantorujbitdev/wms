@@ -123,26 +123,102 @@
             e.preventDefault();
         });
 
-        // Handle product selection
+        // Initialize product select with custom formatting
+        function initProductSelect(selectElement) {
+            // Custom template untuk menampilkan hasil dropdown
+            function formatProduct(product) {
+                if (!product.id) return product.text;
+
+                const option = $(product.element);
+                const productCode = option.data('product-code') || '';
+                const unitCode = option.data('unit-code') || '-';
+                const currentStock = parseInt(option.data('available-qty')) || 0;
+                const stockQty = currentStock > 0 ? currentStock : '0';
+                const textColor = currentStock <= 0 ? 'color: #dc3545 !important; font-weight: 500;' : 'font-weight: 500;';
+                const stockTextColor = currentStock <= 0 ? 'color: #dc3545 !important;' : '';
+
+                return $(`
+                    <div style="${textColor}">
+                        <div style="font-size: 14px; margin-bottom: 4px;">
+                            <strong>${productCode}</strong> - ${product.text}
+                        </div>
+                        <div style="font-size: 12px; ${stockTextColor}">
+                            <i class="fas fa-box me-1"></i><span style="font-weight: 500;">Satuan:</span> ${unitCode} | 
+                            <i class="fas fa-cubes me-1"></i><span style="font-weight: 500;">Stok:</span> <strong>${stockQty}</strong>
+                            ${currentStock <= 0 ? ' <i class="fas fa-exclamation-triangle text-danger"></i> <span style="font-weight: 600;">Stok Habis</span>' : ''}
+                        </div>
+                    </div>
+                `);
+            }
+
+            // Template untuk selected option (display mode)
+            function formatSelection(product) {
+                if (!product.id) {
+                    return product.text;
+                }
+
+                const option = $(product.element);
+                const productCode = option.data('product-code') || '';
+                const displayText = `${productCode} - ${product.text}`;
+
+                return $(`<div style="font-weight: 500; font-size: 14px;">${displayText}</div>`);
+            }
+
+            selectElement.select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Cari produk... (Kode / Nama)',
+                allowClear: true,
+                closeOnSelect: true,
+                templateResult: formatProduct,
+                templateSelection: formatSelection,
+                dropdownParent: $('.card-body'),
+                dropdownCssClass: 'product-dropdown',
+                matcher: function(params, data) {
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+
+                    if (typeof data.text === 'undefined') {
+                        return null;
+                    }
+
+                    var term = params.term.toUpperCase(),
+                        text = data.text.toUpperCase();
+
+                    // Search in product code, name, or option attributes
+                    if (text.indexOf(term) > -1) {
+                        return data;
+                    }
+
+                    return null;
+                }
+            });
+        }
+
+        // Initialize Select2 with custom formatting for existing selects
+        $('.product-select').each(function () {
+            initProductSelect($(this));
+        });
+
+        // Handle product selection - Update stock and unit in table
         $(document).on('change', '.product-select', function () {
             const index = $(this).data('index');
             const selectedOption = $(this).find('option:selected');
             const stockId = selectedOption.data('stock-id');
             const availableQty = selectedOption.data('available-qty') || 0;
+            const unitCode = selectedOption.data('unit-code') || '-';
 
             // Update hidden stock_id input
-            $(this).closest('.item-row').find('input[name="stock_id[]"]').val(stockId);
+            $(this).closest('tr').find('input[name="stock_id[]"]').val(stockId);
 
-            // Extract unit from option text
-            const optionText = selectedOption.text();
-            const unitMatch = optionText.match(/\(Stok: [\d.,]+ (.+?)\)/);
-            const unit = unitMatch ? unitMatch[1] : '';
-
-            // Update stock info
-            $('#stockInfo' + index).text('Stok tersedia: ' + availableQty + ' ' + unit);
+            // Update stock display and unit in the same row
+            const row = $(this).closest('tr');
+            row.find('.stock-display').text(availableQty > 0 ? availableQty : '0');
+            row.find('.unit-display').text(unitCode);
 
             // Update max qty
-            const qtyInput = $(this).closest('.item-row').find('.qty-input');
+            const qtyInput = row.find('.qty-input');
             qtyInput.attr('max', availableQty);
 
             // Clear error if any
@@ -150,12 +226,12 @@
             qtyInput.removeClass('is-invalid');
         });
 
-        // Handle qty input validation
+        // Handle qty input validation - Table format
         $(document).on('input', '.qty-input', function () {
             const index = $(this).data('index');
             const rawVal = $(this).val();
             const qty = parseInt(rawVal);
-            const maxQty = parseInt($(this).attr('max'));
+            const maxQty = parseInt($(this).attr('max')) || 0;
 
             const $error = $('#qtyError' + index);
             const $input = $(this);
@@ -207,7 +283,7 @@
             }
         });
 
-        // Add item row
+        // Add item row - Table format
         $('#addItem').click(function () {
             // Generate options HTML from global productsData
             let optionsHtml = '<option value="">Pilih Produk</option>';
@@ -223,78 +299,78 @@
                         <option value="${product.product_id}" 
                             data-stock-id="${product.stock_id}"
                             data-available-qty="${availableStock}"
+                            data-unit-code="${unitCode}"
                             ${isDisabled ? 'disabled style="color: #dc3545;"' : ''}>
                             ${product.product_code} - ${product.product_name}
                             (Stok: ${stockDisplay} ${unitCode})
-                            ${isDisabled ? ' - Stok Habis/Tidak Tersedia' : ''}
+                            ${isDisabled ? ' - Stok Habis' : ''}
                         </option>
                     `;
                 });
             }
 
             const newRow = `
-            <div class="item-row row mb-3">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="form-label">Produk *</label>
-                        <select class="form-control select2 product-select" name="product_id[]" data-index="${itemCounter}" required>
-                            ${optionsHtml}
-                        </select>
-                        <input type="hidden" name="stock_id[]" value="">
-                        <small class="form-text text-info stock-info" id="stockInfo${itemCounter}"></small>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label class="form-label">Qty *</label>
-                        <input type="number" class="form-control qty-input" name="qty[]" 
-                            data-index="${itemCounter}" step="1" min="1" max="0" required>
-                        <small class="form-text text-danger qty-error" id="qtyError${itemCounter}" style="display: none;">
-                            Melebihi stok tersedia
-                        </small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="form-label">Keterangan Barang</label>
-                        <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan tambahan untuk barang ini">
-                    </div>
-                </div>
-                <div class="col-md-2 mt-4">
-                    <div class="form-group">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-danger btn-block remove-item">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <tr class="item-row" data-index="${itemCounter}">
+                <td style="text-align:center; font-weight: 600;" class="row-number">${$('.item-row').length + 1}</td>
+                <td>
+                    <select class="form-control cell-input product-select" name="product_id[]" data-index="${itemCounter}" required>
+                        ${optionsHtml}
+                    </select>
+                    <input type="hidden" name="stock_id[]" value="">
+                </td>
+                <td>
+                    <input type="number" class="form-control cell-input qty-input" name="qty[]" 
+                        data-index="${itemCounter}" step="1" min="1" max="0" required style="text-align: right;">
+                    <small class="stock-info text-danger qty-error" id="qtyError${itemCounter}" style="display: none;">
+                        Melebihi stok
+                    </small>
+                </td>
+                <td style="text-align:center; font-weight: 600;" class="stock-display">-</td>
+                <td style="text-align:center; font-weight: 600;" class="unit-display">-</td>
+                <td>
+                    <input type="text" class="form-control cell-input" name="detail_note[]" placeholder="Keterangan">
+                </td>
+                <td style="text-align:center">
+                    <button type="button" class="btn btn-action btn-action-delete remove-item" title="Hapus Baris">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
         `;
+
             $('#itemsContainer').append(newRow);
 
-            // Reinitialize Select2 for new row
-            $('#itemsContainer .item-row:last-child .select2').select2({
-                width: '100%',
-                dropdownParent: $('.card-body')
-            });
+            // Reinitialize Select2 for new row with custom formatting
+            initProductSelect($('#itemsContainer .product-select:last'));
 
             // Enable remove buttons if more than one row
             if ($('.item-row').length > 1) {
                 $('.remove-item').prop('disabled', false);
             }
 
+            // Update row numbers
+            updateRowNumbers();
+
             itemCounter++;
         });
 
-        // Remove item row
+        // Remove item row - Table format
         $(document).on('click', '.remove-item', function () {
             if ($('.item-row').length > 1) {
                 $(this).closest('.item-row').remove();
+                updateRowNumbers();
             }
             if ($('.item-row').length === 1) {
                 $('.remove-item').prop('disabled', true);
             }
         });
+
+        // Update row numbers
+        function updateRowNumbers() {
+            $('.item-row').each(function (index) {
+                $(this).find('.row-number').text(index + 1);
+            });
+        }
 
         // Form validation
         $('#pengirimanForm').submit(function (e) {
@@ -413,7 +489,7 @@
                 dataType: 'json',
                 beforeSend: function () {
                     // Show loading
-                    $('#itemsContainer').html('<div class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Memuat data stok...</div>');
+                    $('#itemsContainer').html('<tr><td colspan="7" class="text-center p-3"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Memuat data stok...</td></tr>');
                 },
                 success: function (response) {
                     if (response.success && response.data) {
@@ -433,60 +509,47 @@
                                 <option value="${product.product_id}" 
                                     data-stock-id="${product.stock_id}"
                                     data-available-qty="${availableStock}"
+                                    data-unit-code="${unitCode}"
                                     ${isDisabled ? 'disabled style="color: #dc3545;"' : ''}>
                                     ${product.product_code} - ${product.product_name}
                                     (Stok: ${stockDisplay} ${unitCode})
-                                    ${isDisabled ? ' - Stok Habis/Tidak Tersedia' : ''}
+                                    ${isDisabled ? ' - Stok Habis' : ''}
                                 </option>
                             `;
                         });
 
-                        // Replace items container with new row
+                        // Replace items container with new row - Table format
                         $('#itemsContainer').html(`
-                            <div class="item-row row mb-3">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Produk *</label>
-                                        <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
-                                            ${optionsHtml}
-                                        </select>
-                                        <input type="hidden" name="stock_id[]" value="">
-                                        <small class="form-text text-info stock-info" id="stockInfo0"></small>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Qty *</label>
-                                        <input type="number" class="form-control qty-input" name="qty[]" 
-                                            data-index="0" step="1" min="1" max="0" required>
-                                        <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
-                                            Melebihi stok tersedia
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Keterangan Barang</label>
-                                        <input type="text" class="form-control" name="detail_note[]"
-                                            placeholder="Keterangan tambahan untuk barang ini">
-                                    </div>
-                                </div>
-                                <div class="col-md-2 mt-4">
-                                    <div class="form-group">
-                                        <label class="form-label">&nbsp;</label>
-                                        <button type="button" class="btn btn-danger btn-block remove-item" disabled>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <tr class="item-row" data-index="0">
+                                <td style="text-align:center; font-weight: 600;" class="row-number">1</td>
+                                <td>
+                                    <select class="form-control cell-input product-select" name="product_id[]" data-index="0" required>
+                                        ${optionsHtml}
+                                    </select>
+                                    <input type="hidden" name="stock_id[]" value="">
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control cell-input qty-input" name="qty[]" 
+                                        data-index="0" step="1" min="1" max="0" required style="text-align: right;">
+                                    <small class="stock-info text-danger qty-error" id="qtyError0" style="display: none;">
+                                        Melebihi stok
+                                    </small>
+                                </td>
+                                <td style="text-align:center; font-weight: 600;" class="stock-display">-</td>
+                                <td style="text-align:center; font-weight: 600;" class="unit-display">-</td>
+                                <td>
+                                    <input type="text" class="form-control cell-input" name="detail_note[]" placeholder="Keterangan">
+                                </td>
+                                <td style="text-align:center">
+                                    <button type="button" class="btn btn-action btn-action-delete remove-item" title="Hapus Baris" disabled>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
                         `);
 
-                        // Reinitialize Select2
-                        $('#itemsContainer .select2').select2({
-                            width: '100%',
-                            dropdownParent: $('.card-body')
-                        });
+                        // Reinitialize Select2 with custom formatting
+                        initProductSelect($('#itemsContainer .product-select'));
 
                         // Reset item counter
                         itemCounter = 1;
@@ -503,45 +566,34 @@
                         alert(response.message || 'Gagal memuat data produk');
                         // Reset to empty products data
                         window.productsData = [];
-                        // Reset items container
+                        // Reset items container - Table format
                         $('#itemsContainer').html(`
-                            <div class="item-row row mb-3">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Produk *</label>
-                                        <select class="form-control select2 product-select" name="product_id[]" data-index="0" required>
-                                            <option value="">Pilih Produk</option>
-                                        </select>
-                                        <input type="hidden" name="stock_id[]" value="">
-                                        <small class="form-text text-info stock-info" id="stockInfo0"></small>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Qty *</label>
-                                        <input type="number" class="form-control qty-input" name="qty[]" 
-                                            data-index="0" step="1" min="1" max="0" required>
-                                        <small class="form-text text-danger qty-error" id="qtyError0" style="display: none;">
-                                            Melebihi stok tersedia
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Keterangan Barang</label>
-                                        <input type="text" class="form-control" name="detail_note[]"
-                                            placeholder="Keterangan tambahan untuk barang ini">
-                                    </div>
-                                </div>
-                                <div class="col-md-2 mt-4">
-                                    <div class="form-group">
-                                        <label class="form-label">&nbsp;</label>
-                                        <button type="button" class="btn btn-danger btn-block remove-item" disabled>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <tr class="item-row" data-index="0">
+                                <td style="text-align:center; font-weight: 600;" class="row-number">1</td>
+                                <td>
+                                    <select class="form-control cell-input product-select" name="product_id[]" data-index="0" required>
+                                        <option value="">Pilih Produk</option>
+                                    </select>
+                                    <input type="hidden" name="stock_id[]" value="">
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control cell-input qty-input" name="qty[]" 
+                                        data-index="0" step="1" min="1" max="0" required style="text-align: right;">
+                                    <small class="stock-info text-danger qty-error" id="qtyError0" style="display: none;">
+                                        Melebihi stok
+                                    </small>
+                                </td>
+                                <td style="text-align:center; font-weight: 600;" class="stock-display">-</td>
+                                <td style="text-align:center; font-weight: 600;" class="unit-display">-</td>
+                                <td>
+                                    <input type="text" class="form-control cell-input" name="detail_note[]" placeholder="Keterangan">
+                                </td>
+                                <td style="text-align:center">
+                                    <button type="button" class="btn btn-action btn-action-delete remove-item" title="Hapus Baris" disabled>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
                         `);
                     }
                 },
@@ -561,15 +613,14 @@
                 const selectedOption = $(this).find('option:selected');
                 if (selectedOption.length > 0 && selectedOption.val()) {
                     const availableQty = selectedOption.data('available-qty') || 0;
+                    const unitCode = selectedOption.data('unit-code') || '-';
 
-                    // Extract unit from option text
-                    const optionText = selectedOption.text();
-                    const unitMatch = optionText.match(/\(Stok: [\d.,]+ (.+?)\)/);
-                    const unit = unitMatch ? unitMatch[1] : '';
+                    // Update stock display and unit in the same row (table format)
+                    const row = $(this).closest('tr');
+                    row.find('.stock-display').text(availableQty > 0 ? availableQty : '0');
+                    row.find('.unit-display').text(unitCode);
 
-                    $('#stockInfo' + index).text('Stok tersedia: ' + availableQty + ' ' + unit);
-
-                    const qtyInput = $(this).closest('.item-row').find('.qty-input');
+                    const qtyInput = $(this).closest('tr').find('.qty-input');
                     qtyInput.attr('max', availableQty);
                 }
             });
