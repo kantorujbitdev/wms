@@ -69,9 +69,9 @@
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman Antar Gudang
-                    <?php if (!empty($penerimaan_list)): ?>
+                    <?php if (!empty($pengiriman_list)): ?>
                         <span class="badge badge-primary ml-2">
-                            <?= count($penerimaan_list) ?> Data
+                            <?= count($pengiriman_list) ?> Data
                         </span>
                     <?php endif; ?>
                 </h6>
