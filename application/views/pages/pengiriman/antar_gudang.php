@@ -51,7 +51,8 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-search"></i> Tampilkan
                                     </button>
-                                    <a href="<?= site_url('pengiriman/reset_filter/antar_gudang') ?>" class="btn btn-secondary">
+                                    <a href="<?= site_url('pengiriman/reset_filter/antar_gudang') ?>"
+                                        class="btn btn-secondary">
                                         <i class="fas fa-sync"></i> Reset
                                     </a>
                                 </div>
@@ -127,11 +128,13 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
 
-                                        <?php if (has_permission('pengiriman', 'edit')): ?>
-                                            <a href="<?= site_url('pengiriman/edit/' . $pengiriman['stockout_id']) ?>"
-                                                class="btn btn-warning btn-sm" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
+                                        <?php if ($pengiriman['on_transfer_status'] == 1): ?>
+                                            <?php if (has_permission('pengiriman', 'edit')): ?>
+                                                <a href="<?= site_url('pengiriman/edit/' . $pengiriman['stockout_id']) ?>"
+                                                    class="btn btn-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
                                         <?php endif; ?>
 
                                         <?php if (has_permission('pengiriman', 'delete')): ?>
