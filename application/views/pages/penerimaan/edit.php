@@ -56,8 +56,8 @@
                     <!-- Kode Penerimaan (Readonly) -->
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Kode Penerimaan</label>
-                        <input type="text" class="form-control cell-input-readonly"
-                            value="<?= $penerimaan['header']['stockin_code'] ?>" readonly>
+                        <input type="text" class="form-control cell-input-readonly" id="stockin_code"
+                            name="stockin_code" value="<?= $penerimaan['header']['stockin_code'] ?>" readonly>
                     </div>
 
                     <!-- Tanggal Penerimaan - Display Format -->
@@ -346,13 +346,13 @@
         // Handle confirmation modal button click - menggunakan jQuery seperti main.js
         $('#confirmButton').on('click', function () {
             $('#confirmationModal').modal('hide');
-            
+
             if (confirmationCallback) {
                 confirmationCallback();
                 confirmationCallback = null;
             }
         });
-        
+
         // Handle modal hidden event to clean up
         $('#confirmationModal').on('hidden.bs.modal', function () {
             confirmationCallback = null;
@@ -371,10 +371,10 @@
             $('#confirmButton').addClass('d-none');
             confirmationCallback = null;
         }
-        
+
         // Set message
         $('#confirmationMessage').text(message || 'Apakah Anda yakin ingin melanjutkan?');
-        
+
         // Show modal menggunakan jQuery (sama seperti main.js)
         $('#confirmationModal').modal('show');
     }
@@ -396,14 +396,14 @@
         // Custom template untuk menampilkan hasil dropdown
         function formatProduct(product) {
             if (!product.id) return product.text;
-            
+
             const unitCode = product.unit_code || '-';
             return $(
                 '<div>' +
-                    '<div>' + product.product_code + ' - ' + product.product_name + '</div>' +
-                    '<div style="color: #6c757d; font-size: 15px; margin-top: 6px;">' +
-                        '<i class="fas fa-box me-1"></i>Satuan: ' + unitCode +
-                    '</div>' +
+                '<div>' + product.product_code + ' - ' + product.product_name + '</div>' +
+                '<div style="color: #6c757d; font-size: 15px; margin-top: 6px;">' +
+                '<i class="fas fa-box me-1"></i>Satuan: ' + unitCode +
+                '</div>' +
                 '</div>'
             );
         }
