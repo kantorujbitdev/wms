@@ -882,6 +882,7 @@ class Penerimaan extends MY_Controller
 
             $post_data = [
                 'stockin_id' => $id,
+                'stockin_code' => $this->input->post('stockin_code'),
                 'stockin_date' => $this->input->post('stockin_date'),
                 'stockin_invoice' => $this->input->post('stockin_invoice') ?: '-',
                 'stockin_note' => $this->input->post('stockin_note'),
