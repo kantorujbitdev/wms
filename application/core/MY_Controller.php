@@ -167,7 +167,21 @@ class MY_Controller extends CI_Controller
             return false;
         }
     }
+    protected function format_error_message($message)
+    {
+        $message = preg_replace('/^.*?line \d+:\s*/s', '', $message);
+        $message = stripslashes($message);
 
+        return '
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5>
+            <i class="fa fa-exclamation-triangle"></i>
+            Proses Gagal
+        </h5>
+        <hr>
+        ' . $message . '
+    </div>';
+    }
     /**
      * Check if user can access menu (for sidebar)
      */

@@ -938,8 +938,14 @@ class Penerimaan extends MY_Controller
                     redirect('penerimaan/antar_gudang');
                 }
             } else {
-                $error_msg = isset($response['message']) ? $response['message'] : 'Gagal memperbarui penerimaan';
-                $this->handle_response($response, $error_msg);
+                // $error_msg = isset($response['message']) ? $response['message'] : 'Gagal memperbarui penerimaan';
+                $error_msg = isset($response['message'])
+                    ? $this->format_error_message($response['message'])
+                    : 'Gagal memperbarui penerimaan';
+
+                $response['message'] = $error_msg;
+
+                $this->handle_response($response);
                 redirect('penerimaan/edit/' . $id);
             }
         } else {
