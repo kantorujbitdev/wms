@@ -50,7 +50,7 @@ $info = $this->session->flashdata('info');
             toastr.info(<?= json_encode($info); ?>, <?= json_encode($wording['info']); ?>);
         <?php elseif ($error): ?>
             // Tampilkan modal untuk error
-            $('#errorMessage').text(<?= json_encode($error); ?>);
+            $('#errorMessage').html(<?= json_encode($error); ?>);
             $('#errorModal').modal('show');
         <?php endif; ?>
     });
