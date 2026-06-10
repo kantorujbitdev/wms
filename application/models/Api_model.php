@@ -36,6 +36,10 @@ class Api_model extends CI_Model
     {
         return api_request('GET', 'edit penerimaan', $data);
     }
+    public function delete_penerimaan($data)
+    {
+        return api_request('DELETE', 'penerimaan', $data);
+    }
 
     public function get_list_pengiriman($data)
     {

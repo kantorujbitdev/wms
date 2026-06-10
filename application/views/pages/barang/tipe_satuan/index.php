@@ -11,11 +11,12 @@
                 <h6 class="m-0 font-weight-bold text-primary">
                     <?= $wording['satuan_list']; ?>
                 </h6>
-
+                <?php if (has_permission('tipe_satuan', 'edit')): ?>
                 <a href="<?= site_url('barang/add_tipe_satuan') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">
                     <i class="fas fa-plus fa-sm text-white-50"></i>
                     <?= $wording['satuan_add']; ?>
                 </a>
+                <?php endif; ?>
             </div>
         </div>
         <div class="card-body">

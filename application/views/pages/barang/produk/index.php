@@ -8,10 +8,13 @@
                     <?= $wording['barang_list']; ?>
                 </h6>
 
-                <a href="<?= site_url('barang/add_produk') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">
-                    <i class="fas fa-plus fa-sm text-white-50"></i>
-                    <?= $wording['barang_add']; ?>
-                </a>
+                <?php if (has_permission('barang', 'edit')): ?>
+                    <a href="<?= site_url('barang/add_produk') ?>" class="btn btn-primary btn-sm mt-2 mt-md-0">
+                        <i class="fas fa-plus fa-sm text-white-50"></i>
+                        <?= $wording['barang_add']; ?>
+                    </a>
+                <?php endif; ?>
+
             </div>
         </div>
         <div class="card-body">

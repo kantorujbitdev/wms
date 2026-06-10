@@ -133,6 +133,7 @@ $wording = [
 
     // Pengaturan
     'pengaturan' => 'Pengaturan',
+    'logo_list' => 'Daftar Logo',
     'pengaturan_list' => 'Daftar Pengaturan',
     'pengaturan_api' => 'Pengaturan API',
     'pengaturan_base_url' => 'Base URL',

@@ -51,16 +51,22 @@ $config = get_app_config();
                 <div class="header-surat">
                     <div class="kop-surat">
                         <div class="logo-perusahaan">
-                            <?php if (!empty($config['app_logo_blue'])): ?>
-                                <img src="<?= base_url($config['app_logo_blue']) ?>" alt="Logo Perusahaan">
+                            <?php if (!empty($logo['logo'])): ?>
+                                <img src="<?= base_url($logo['logo']) ?>" alt="Logo Perusahaan">
                             <?php endif; ?>
+                            <?php if ($header['is_cetak'] <= 0): ?>
+                                <button type="button" class="btn-print" onclick="showLogoModal()">
+                                    <i class="fas fa-edit"></i>
+                                    Edit Logo
+                                </button>
+                            <?php endif; ?>
+
                         </div>
 
                         <div class="info-perusahaan">
-                            <h1><?= strtoupper($config['app_pt_name'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?></h1>
+                            <h1> <?= strtoupper($logo['nama_pt'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?> </h1>
                             <p><?= $jenis_surat ?></p>
                         </div>
-
                         <div class="stamp-original">
                             <strong>ORIGINAL</strong>
                         </div>
@@ -85,10 +91,6 @@ $config = get_app_config();
                             <span class="info-label">Tujuan:</span>
                             <span class="info-value"><?= $penerimaan['header']['warehouse_name'] ?></span>
                         </div>
-                        <!-- <div class="info-row">
-                            <span class="info-label">No. Referensi:</span>
-                            <span class="info-value"><?= $penerimaan['header']['stockin_invoice'] ?? '-' ?></span>
-                        </div> -->
                         <div class="info-row">
                             <span class="info-label">Dibuat Oleh:</span>
                             <span class="info-value"><?= $penerimaan['header']['user_name'] ?? 'System' ?></span>
@@ -113,10 +115,6 @@ $config = get_app_config();
                             <span class="info-label">Keterangan:</span>
                             <span class="info-value"><?= $penerimaan['header']['stockin_note'] ?: '-' ?></span>
                         </div>
-                        <!-- <div class="info-row">
-                            <span class="info-label">Alamat:</span>
-                            <span class="info-value"><?= $penerimaan['header']['from_address'] ?? '-' ?></span>
-                        </div> -->
                     </div>
                 </div>
             <?php endif; ?>
@@ -247,14 +245,13 @@ $config = get_app_config();
     <?php endforeach; ?>
 
     <!-- Tombol Aksi (Screen Only) -->
-    <div class="action-buttons no-print">
-        <!-- <button onclick="printDocument()" class="btn-print">
-            <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA
-        </button> -->
-        <button onclick="window.print()" class="btn-print">
-            <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA
-        </button>
-    </div>
+    <?php if ($header['is_cetak'] < 3): ?>
+        <div class="action-buttons no-print">
+            <button onclick="window.print()" class="btn-print">
+                <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA
+            </button>
+        </div>
+    <?php endif; ?>
 
     <script>
         // Fungsi print dengan pengaturan optimal
@@ -357,6 +354,86 @@ $config = get_app_config();
                 }
             });
         });
+    </script>
+
+    <div id="modalPilihLogo">
+
+        <div class="modal-content-custom">
+
+            <div style="display:flex;justify-content:space-between">
+
+                <h3>Pilih Logo Perusahaan</h3>
+
+                <button onclick="hideLogoModal()">
+                    ✕
+                </button>
+
+            </div>
+
+            <hr>
+
+            <div class="row">
+
+                <?php foreach ($logo_list as $item): ?>
+
+                    <div style="
+                    display:inline-block;
+                    width:220px;
+                    margin:10px;
+                    text-align:center;
+                    border:1px solid #ddd;
+                    padding:10px;">
+
+                        <img src="<?= base_url($item['logo']) ?>" style="max-width:150px;max-height:100px;">
+
+                        <br><br>
+
+                        <strong>
+                            <?= $item['nama_pt'] ?>
+                        </strong>
+
+                        <br><br>
+
+                        <a href="<?= site_url(
+                            'penerimaan/update_logo/' .
+                            $penerimaan['header']['stockin_id'] . '/' .
+                            $item['id_logo']
+                        ) ?>" class="btn-print">
+
+                            Pilih
+
+                        </a>
+
+                    </div>
+
+                <?php endforeach; ?>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function showLogoModal() {
+            document.getElementById('modalPilihLogo').style.display = 'block';
+        }
+
+        function hideLogoModal() {
+            document.getElementById('modalPilihLogo').style.display = 'none';
+        }
+
+        window.onclick = function (event) {
+
+            const modal = document.getElementById('modalPilihLogo');
+
+            if (event.target === modal) {
+                hideLogoModal();
+            }
+
+        }
+
     </script>
 </body>
 

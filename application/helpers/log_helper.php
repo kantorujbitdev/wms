@@ -74,13 +74,31 @@ if (!function_exists('log_http_response')) {
 
         // all debug
         $pesan = "[RESPONSE]: " . $response;
-
         if ($http_code >= 200 && $http_code < 300) {
             save_log("✅ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'success');
+            save_log("✅ {$pesan}", 'success');
         } elseif ($http_code >= 300 && $http_code < 500) {
-            save_log("⚠️ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'warning');
+            save_log("⚠️ {$url} [{$method}:{$http_code}] {$payload}", 'warning');
+            save_log("⚠️ {$pesan}", 'warning');
         } else {
-            save_log("❌ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'error');
+            save_log("❌ {$url} [{$method}:{$http_code}] {$payload}", 'error');
+            save_log("❌ {$pesan}", 'error');
         }
+
+        $pesan = "[RESPONSE]: {$response}";
+
+        if ($http_code >= 200 && $http_code < 300) {
+            $icon = '✅';
+            $level = 'success';
+        } elseif ($http_code >= 300 && $http_code < 500) {
+            $icon = '⚠️';
+            $level = 'warning';
+        } else {
+            $icon = '❌';
+            $level = 'error';
+        }
+
+        save_log("{$icon} {$url} [{$method}:{$http_code}] {$payload}", $level);
+        save_log("{$icon} {$pesan}", $level);
     }
 }

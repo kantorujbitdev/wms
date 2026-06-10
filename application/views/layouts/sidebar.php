@@ -315,6 +315,13 @@
                                 <i class="<?= get_menu_icon('api_pengaturan'); ?> me-2"></i>API</a>
                         </li>
                     <?php endif; ?>
+
+                    <?php if (can_access_menu('logo_pengaturan')): ?>
+                        <li><a href="<?= site_url('logo'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'logo') ? 'active' : ''; ?>">
+                                <i class="<?= get_menu_icon('logo_pengaturan'); ?> me-2"></i>Logo</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </li>
         <?php endif; ?>

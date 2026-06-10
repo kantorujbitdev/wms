@@ -841,7 +841,7 @@ class Pengiriman extends MY_Controller
 
             // Send to API
             $response = $this->Api_model->update_pengiriman($post_data);
-            $this->handle_response($response);
+            // $this->handle_response($response);
 
             if ($response['success']) {
                 $this->handle_response($response, 'Pengiriman barang berhasil diperbarui!');

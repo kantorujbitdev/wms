@@ -1,3 +1,4 @@
+<!-- C:\xampp\htdocs\wms\application\views\pages\penerimaan\cetak_style.php -->
 <style>
     /* Reset dan base style */
     * {
@@ -479,6 +480,26 @@
             right: auto;
             margin-top: 10px;
             text-align: right;
+        }
+
+        #modalPilihLogo {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .5);
+        }
+
+        #modalPilihLogo .modal-content-custom {
+            background: #fff;
+            width: 90%;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 6px;
         }
     }
 </style>

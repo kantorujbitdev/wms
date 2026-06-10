@@ -6,6 +6,7 @@ class Penerimaan extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('Logo_model');
         $this->check_permission('penerimaan', 'view');
     }
 
@@ -1034,6 +1035,12 @@ class Penerimaan extends MY_Controller
                 $this->data['tipe_penerimaan'] = 'Gudang';
             }
 
+            $this->data['logo_list'] = $this->Logo_model->get_active();
+            $logo_id = !empty($header['logo_id'])
+                ? $header['logo_id']
+                : 1;
+            $this->data['logo'] = $this->Logo_model->get_by_id($logo_id);
+
             // Load view cetak surat penerimaan
             $this->load->view('pages/penerimaan/cetak_surat_terima', $this->data);
 
@@ -1043,6 +1050,43 @@ class Penerimaan extends MY_Controller
         }
     }
 
+    public function update_logo($stockin_id, $logo_id)
+    {
+        $header = $this->Penerimaan_model
+            ->get_header($stockin_id);
+
+        if (!$header) {
+            show_404();
+        }
+
+        // tidak boleh ubah jika sudah pernah dicetak
+        if ($header['is_cetak'] > 0) {
+
+            $this->session->set_flashdata(
+                'error',
+                'Logo tidak dapat diubah karena surat sudah dicetak.'
+            );
+
+            redirect('penerimaan/cetak/' . $stockin_id);
+        }
+
+        $this->Penerimaan_model->update_header(
+            $stockin_id,
+            [
+                'logo_id' => $logo_id
+            ]
+        );
+        save_log(
+            "Mengubah logo surat {$stockin_id} menjadi logo ID {$logo_id}",
+            'success'
+        );
+        $this->session->set_flashdata(
+            'success',
+            'Logo berhasil diperbarui'
+        );
+
+        redirect('penerimaan/cetak/' . $stockin_id);
+    }
     public function cetak_langsung($id)
     {
         // Ambil data penerimaan
@@ -1110,13 +1154,13 @@ class Penerimaan extends MY_Controller
     // ==================== DELETE PENERIMAAN ====================
     public function delete($id)
     {
-        $this->check_permission('penerimaan', 'delete');
         $data_login = data_login_user(['stockin_id' => $id]);
         $response = $this->Api_model->delete_penerimaan($data_login);
 
         $this->handle_response($response, 'Penerimaan berhasil dihapus!');
-        redirect('penerimaan/dari_supplier');
+        $this->redirect_back();
     }
+
 
     // ==================== RESET FILTER PENERIMAAN ====================
     public function reset_filter($type = '')
