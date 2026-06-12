@@ -1,3 +1,4 @@
+<!-- C:\xampp\htdocs\wms\application\views\pages\penerimaan\cetak_style.php -->
 <style>
     /* Reset dan base style */
     * {
@@ -60,16 +61,24 @@
     .logo-perusahaan {
         width: 100px;
         height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: relative;
         flex-shrink: 0;
     }
 
     .logo-perusahaan img {
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
         object-fit: contain;
+    }
+
+    .logo-perusahaan button {
+        position: absolute;
+        bottom: -12px;
+        right: 0;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        padding: 0;
     }
 
     .info-perusahaan {
@@ -479,6 +488,193 @@
             right: auto;
             margin-top: 10px;
             text-align: right;
+        }
+
+        #modalPilihLogo {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .5);
+        }
+
+        #modalPilihLogo .modal-content-custom {
+            background: #fff;
+            width: 90%;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .modal-header-custom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header-custom h3 {
+            margin: 0;
+        }
+
+        .btn-close-modal {
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .logo-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+            display: flex;
+            flex-direction: column;
+
+            transition: all 0.2s ease;
+        }
+
+        .logo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .logo-preview {
+            height: 120px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 15px;
+        }
+
+        .logo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-info {
+            font-weight: 600;
+            min-height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 15px;
+        }
+
+        .btn-pilih-logo {
+            margin-top: auto;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            padding: 10px 15px;
+
+            border-radius: 8px;
+
+            background: #0d6efd;
+            color: #fff;
+
+            text-decoration: none;
+            font-weight: 500;
+
+            transition: 0.2s;
+        }
+
+        .btn-pilih-logo:hover {
+            background: #0b5ed7;
+            color: #fff;
+        }
+
+
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirmation-modal-content {
+            width: 90%;
+            max-width: 400px;
+
+            background: white;
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirmation-modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .confirmation-modal-header h3 {
+            margin: 0;
+        }
+
+        .confirmation-modal-body {
+            padding: 20px;
+        }
+
+        .confirmation-modal-body p {
+            margin: 0;
+        }
+
+        .confirmation-modal-footer {
+            padding: 15px 20px;
+
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+
+            border-top: 1px solid #eee;
+        }
+
+        .btn-cancel,
+        .btn-confirm {
+            border: none;
+            border-radius: 6px;
+
+            padding: 10px 18px;
+
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-confirm {
+            background: #0d6efd;
+            color: white;
         }
     }
 </style>

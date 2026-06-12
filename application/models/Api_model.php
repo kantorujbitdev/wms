@@ -32,6 +32,15 @@ class Api_model extends CI_Model
         return api_request('POST', 'edit penerimaan', $data);
     }
 
+    public function print_penerimaan($data)
+    {
+        return api_request('POST', 'penerimaan cetak', $data);
+    }
+    public function print_pengiriman($data)
+    {
+        return api_request('POST', 'pengiriman cetak', $data);
+    }
+
     public function penerimaan_by_id($data)
     {
         return api_request('GET', 'edit penerimaan', $data);

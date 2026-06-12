@@ -59,7 +59,8 @@ INSERT INTO `api` (`id_api`, `nama_api`, `endpoint`, `status_aktif`, `created_at
 (16, 'Edit Pengiriman', '/inventory/api/stockout_edit', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25'),
 (17, 'Card Stock', '/inventory/api/stockmovement', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25'),
 (18, 'List Kode Pengiriman', '/inventory/api/stockin_transfer', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25'),
-(19, 'Pengiriman Details', '/inventory/api/stockin_transfer_getdetail', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25');
+(19, 'Pengiriman Details', '/inventory/api/stockin_transfer_getdetail', 1, '2025-11-06 14:17:28', '2025-12-05 10:07:25'),
+(20, 'Penerimaan Cetak', '/api/stockin_print', 1, '2025-11-06 14:17:28', '2026-02-11 10:37:06');
 
 -- --------------------------------------------------------
 

@@ -3,6 +3,7 @@
 <html lang="id">
 <?php
 $config = get_app_config();
+$isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
 ?>
 
 <head>
@@ -10,12 +11,24 @@ $config = get_app_config();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $jenis_surat ?></title>
     <link rel="icon" href="<?php echo base_url($config['app_logo']); ?>" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <style></style>
     <?php include 'cetak_style.php'; ?>
     </style>
 </head>
+<!-- <a href="<?= site_url('pengiriman/cetak/' . $pengiriman['header']['stockout_id']) ?>" target="_blank"
+    class="btn btn-primary">
+    <i class="fas fa-eye"></i> Preview Cetak
+</a> -->
 
 <body>
+    <?php include 'list_logo.php'; ?>
+    <form id="formPrint" action="<?= site_url('penerimaan/print_penerimaan') ?>" method="post" style="display:none">
+        <input type="hidden" name="stockin_id" value="<?= $penerimaan['header']['stockin_id'] ?>">
+        <input type="hidden" id="logo_id" name="logo_id" value="<?= $logo['id_logo'] ?>">
+    </form>
+
     <?php
     // Hitung total halaman dengan optimasi tinggi
     $max_items_per_page = 20; // Maksimal 20 item per halaman untuk A4
@@ -52,19 +65,21 @@ $config = get_app_config();
                     <div class="kop-surat">
                         <div class="logo-perusahaan">
                             <?php if (!empty($logo['logo'])): ?>
-                                <img src="<?= base_url($logo['logo']) ?>" alt="Logo Perusahaan">
+                                <img id="preview-logo" src="<?= base_url($logo['logo']) ?>" alt="Logo Perusahaan">
                             <?php endif; ?>
-                            <?php if ($header['is_cetak'] <= 0): ?>
-                                <button type="button" class="btn-print" onclick="showLogoModal()">
+                            <?php if ($isCetak < 1): ?>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="showLogoModal()"
+                                    title="Edit Logo">
                                     <i class="fas fa-edit"></i>
-                                    Edit Logo
                                 </button>
                             <?php endif; ?>
 
                         </div>
 
                         <div class="info-perusahaan">
-                            <h1> <?= strtoupper($logo['nama_pt'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?> </h1>
+                            <h1 id="preview-nama-pt">
+                                <?= strtoupper($logo['nama_pt'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?>
+                            </h1>
                             <p><?= $jenis_surat ?></p>
                         </div>
                         <div class="stamp-original">
@@ -245,79 +260,130 @@ $config = get_app_config();
     <?php endforeach; ?>
 
     <!-- Tombol Aksi (Screen Only) -->
-    <?php if ($header['is_cetak'] < 3): ?>
+    <?php if ($isCetak < 3): ?>
         <div class="action-buttons no-print">
-            <button onclick="window.print()" class="btn-print">
-                <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA
+            <button type="button" onclick="konfirmasiCetak()" class="btn-print">
+                <span style="font-size:20px;">🖨️</span>
+                CETAK SURAT TERIMA
             </button>
         </div>
     <?php endif; ?>
+    <!-- Dynamic Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">
+                        Konfirmasi
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p id="confirmationMessage">
+                        Apakah Anda yakin ingin melanjutkan?
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button type="button" class="btn btn-danger" id="confirmButton">
+
+                        Ya
+
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- <?php if ($isCetak < 3): ?> -->
+        <!-- <div class="action-buttons no-print"> -->
+        <!-- <button onclick="window.print()" class="btn-print"> -->
+        <!-- <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA -->
+        <!-- </button> -->
+        <!-- </div> -->
+        <!-- <?php endif; ?> -->
 
     <script>
         // Fungsi print dengan pengaturan optimal
         function printDocument() {
-            // Tambahkan styling sebelum print
+
             const printStyle = document.createElement('style');
+
+            printStyle.id = 'dynamic-print-style';
+
             printStyle.textContent = `
-                 @media print {
-                    /* Reset semua margin browser */
-                    @page {
-                        margin: 0mm !important;
-                        size: Letter portrait !important;
-                        padding: 0 !important;
-                    }
-                    
-                    /* Reset body untuk full page */
-                    body {
-                        width: 216mm !important;
-                        min-height: 279mm !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        background: white !important;
-                    }
-                    
-                    /* Atur page layout */
-                    .page {
-                        width: 216mm !important;
-                        min-height: 279mm !important;
-                        margin: 0 !important;
-                        padding: 15mm 20mm !important;
-                        page-break-after: always;
-                        page-break-inside: avoid;
-                        box-shadow: none !important;
-                        border: none !important;
-                    }
-                    
-                    /* Pastikan elemen penting tidak terpotong */
-                    .signature-section {
-                        page-break-inside: avoid !important;
-                        page-break-before: avoid !important;
-                    }
-                    
-                    .detail-table {
-                        page-break-inside: avoid !important;
-                    }
-                    
-                    .detail-table tr {
-                        page-break-inside: avoid !important;
-                    }
-                    
-                    /* Sembunyikan tombol print */
-                    .action-buttons {
-                        display: none !important;
-                    }
-                }
-            `;
+        @media print {
+
+            @page {
+                margin: 0mm !important;
+                size: Letter portrait !important;
+                padding: 0 !important;
+            }
+
+            body {
+                width: 216mm !important;
+                min-height: 279mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            .page {
+                width: 216mm !important;
+                min-height: 279mm !important;
+                margin: 0 !important;
+                padding: 15mm 20mm !important;
+                page-break-after: always;
+                page-break-inside: avoid;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .signature-section {
+                page-break-inside: avoid !important;
+                page-break-before: avoid !important;
+            }
+
+            .detail-table,
+            .detail-table tr {
+                page-break-inside: avoid !important;
+            }
+
+            .action-buttons,
+            #confirmationModal,
+            #modalPilihLogo {
+                display: none !important;
+            }
+        }
+    `;
+
             document.head.appendChild(printStyle);
 
             window.print();
 
-            // Hapus style setelah print
-            setTimeout(() => {
-                document.head.removeChild(printStyle);
-            }, 1000);
-        }
+            window.onafterprint = function () {
 
+                const style =
+                    document.getElementById('dynamic-print-style');
+
+                if (style) {
+                    style.remove();
+                }
+
+            };
+        }
         // Auto print jika diakses dari cetak langsung
         <?php if (isset($auto_print) && $auto_print): ?>
             window.onload = function () {
@@ -356,64 +422,6 @@ $config = get_app_config();
         });
     </script>
 
-    <div id="modalPilihLogo">
-
-        <div class="modal-content-custom">
-
-            <div style="display:flex;justify-content:space-between">
-
-                <h3>Pilih Logo Perusahaan</h3>
-
-                <button onclick="hideLogoModal()">
-                    ✕
-                </button>
-
-            </div>
-
-            <hr>
-
-            <div class="row">
-
-                <?php foreach ($logo_list as $item): ?>
-
-                    <div style="
-                    display:inline-block;
-                    width:220px;
-                    margin:10px;
-                    text-align:center;
-                    border:1px solid #ddd;
-                    padding:10px;">
-
-                        <img src="<?= base_url($item['logo']) ?>" style="max-width:150px;max-height:100px;">
-
-                        <br><br>
-
-                        <strong>
-                            <?= $item['nama_pt'] ?>
-                        </strong>
-
-                        <br><br>
-
-                        <a href="<?= site_url(
-                            'penerimaan/update_logo/' .
-                            $penerimaan['header']['stockin_id'] . '/' .
-                            $item['id_logo']
-                        ) ?>" class="btn-print">
-
-                            Pilih
-
-                        </a>
-
-                    </div>
-
-                <?php endforeach; ?>
-
-            </div>
-
-        </div>
-
-    </div>
-
     <script>
 
         function showLogoModal() {
@@ -424,7 +432,7 @@ $config = get_app_config();
             document.getElementById('modalPilihLogo').style.display = 'none';
         }
 
-        window.onclick = function (event) {
+        window.addEventListener('click', function (event) {
 
             const modal = document.getElementById('modalPilihLogo');
 
@@ -432,9 +440,150 @@ $config = get_app_config();
                 hideLogoModal();
             }
 
+        });
+
+        function pilihLogo(urlLogo, namaPT, logoId) {
+
+            const logo =
+                document.getElementById('preview-logo');
+
+            if (logo) {
+                logo.src = urlLogo;
+            }
+
+            const nama =
+                document.getElementById('preview-nama-pt');
+
+            if (nama) {
+                nama.innerText = namaPT;
+            }
+
+            document.getElementById('logo_id').value =
+                logoId;
+
+            hideLogoModal();
         }
 
+        function showConfirmationModal(options) {
+
+            $('#confirmationModalLabel').text(
+                options.title || 'Konfirmasi'
+            );
+
+            $('#confirmationMessage').text(
+                options.message || ''
+            );
+
+            const confirmButton = $('#confirmButton');
+
+            confirmButton
+                .text(options.confirmText || 'Ya')
+                .removeClass(
+                    'btn-primary btn-danger btn-success btn-warning'
+                )
+                .addClass(options.confirmClass || 'btn-danger');
+
+            confirmButton.off('click');
+
+            confirmButton.on('click', function () {
+
+                // pindahkan fokus keluar modal
+                document.body.focus();
+
+                const modal =
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById('confirmationModal')
+                    );
+
+                modal.hide();
+
+                if (typeof options.onConfirm === 'function') {
+
+                    setTimeout(function () {
+                        options.onConfirm();
+                    }, 200);
+
+                }
+
+            });
+
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    document.getElementById('confirmationModal')
+                )
+                .show();
+        }
+
+        function konfirmasiCetak() {
+
+            const btnPrint =
+                $('.action-buttons .btn-print');
+
+            showConfirmationModal({
+
+                title: 'Konfirmasi Cetak',
+
+                message:
+                    'Apakah Anda yakin ingin mencetak surat ini?',
+
+                confirmText: 'Ya, Cetak',
+
+                confirmClass: 'btn-primary',
+
+                onConfirm: function () {
+
+                    btnPrint.prop('disabled', true);
+
+                    $.ajax({
+
+                        url: $('#formPrint').attr('action'),
+
+                        type: 'POST',
+
+                        data: $('#formPrint').serialize(),
+
+                        dataType: 'json',
+
+                        success: function (result) {
+
+                            btnPrint.prop('disabled', false);
+
+                            if (result.success) {
+
+                                printDocument();
+
+                            } else {
+
+                                alert(
+                                    result.message ||
+                                    'Gagal memproses cetak.'
+                                );
+
+                            }
+
+                        },
+
+                        error: function () {
+
+                            btnPrint.prop('disabled', false);
+
+                            alert(
+                                'Terjadi kesalahan saat memproses cetak.'
+                            );
+
+                        }
+
+                    });
+
+                }
+
+            });
+
+        }
     </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

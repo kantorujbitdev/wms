@@ -6,6 +6,7 @@ class Pengiriman extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('Logo_model');
     }
 
     // ==================== PENGIRIMAN KE PENGGUNA (to_status = 1) ====================
@@ -964,6 +965,13 @@ class Pengiriman extends MY_Controller
                 $this->data['tipe_pengiriman'] = 'Gudang';
             }
 
+            $this->data['logo_list'] = $this->Logo_model->get_active();
+            $logo_id = !empty($header['logo_id'])
+                ? $header['logo_id']
+                : 1;
+
+            $this->data['logo'] = $this->Logo_model->get_by_id($logo_id);
+
             // Load view cetak surat jalan
             $this->load->view('pages/pengiriman/cetak_surat_jalan', $this->data);
 
@@ -972,7 +980,24 @@ class Pengiriman extends MY_Controller
             redirect('pengiriman');
         }
     }
+    public function print_pengiriman()
+    {
+        $data_login = data_login_user();
 
+        $post_data = [
+            'logo_id' => $this->input->post('logo_id'),
+            'stockout_id' => $this->input->post('stockout_id'),
+            'login_id' => $data_login['login_id'],
+            'login_name' => $data_login['login_name'],
+        ];
+
+        $response = $this->Api_model->print_pengiriman($post_data);
+
+        echo json_encode([
+            'success' => isset($response['success']) && $response['success'],
+            'message' => $response['message'] ?? ''
+        ]);
+    }
     // ==================== CETAK LANSGUNG (AUTO PRINT) ====================
     public function cetak_langsung($id)
     {

@@ -1050,43 +1050,25 @@ class Penerimaan extends MY_Controller
         }
     }
 
-    public function update_logo($stockin_id, $logo_id)
+    public function print_penerimaan()
     {
-        $header = $this->Penerimaan_model
-            ->get_header($stockin_id);
+        $data_login = data_login_user();
 
-        if (!$header) {
-            show_404();
-        }
+        $post_data = [
+            'logo_id' => $this->input->post('logo_id'),
+            'stockin_id' => $this->input->post('stockin_id'),
+            'login_id' => $data_login['login_id'],
+            'login_name' => $data_login['login_name'],
+        ];
 
-        // tidak boleh ubah jika sudah pernah dicetak
-        if ($header['is_cetak'] > 0) {
+        $response = $this->Api_model->print_penerimaan($post_data);
 
-            $this->session->set_flashdata(
-                'error',
-                'Logo tidak dapat diubah karena surat sudah dicetak.'
-            );
-
-            redirect('penerimaan/cetak/' . $stockin_id);
-        }
-
-        $this->Penerimaan_model->update_header(
-            $stockin_id,
-            [
-                'logo_id' => $logo_id
-            ]
-        );
-        save_log(
-            "Mengubah logo surat {$stockin_id} menjadi logo ID {$logo_id}",
-            'success'
-        );
-        $this->session->set_flashdata(
-            'success',
-            'Logo berhasil diperbarui'
-        );
-
-        redirect('penerimaan/cetak/' . $stockin_id);
+        echo json_encode([
+            'success' => isset($response['success']) && $response['success'],
+            'message' => $response['message'] ?? ''
+        ]);
     }
+
     public function cetak_langsung($id)
     {
         // Ambil data penerimaan

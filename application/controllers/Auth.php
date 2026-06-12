@@ -86,7 +86,7 @@ class Auth extends CI_Controller
                     'is_active' => $response['data']['IsActive'],
                     'warehouse_id' => $response['data']['WarehouseId'],
                     'warehouse_name' => $response['data']['WarehouseName'],
-                    'api_token' => $response['data']['token'],
+                    // 'api_token' => $response['data']['token'],
                     'permissions' => $permissions, // Tambahkan permissions ke session
                     'logged_in' => TRUE
                 ];

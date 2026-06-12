@@ -3,34 +3,19 @@
 <html lang="id">
 <?php
 $config = get_app_config();
-$isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
 ?>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <?= $jenis_surat ?>
-    </title>
+    <title><?= $jenis_surat ?></title>
     <link rel="icon" href="<?php echo base_url($config['app_logo']); ?>" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <style></style>
     <?php include 'cetak_style.php'; ?>
     </style>
 </head>
-<!-- <a href="<?= site_url('pengiriman/cetak/' . $pengiriman['header']['stockout_id']) ?>" target="_blank"
-    class="btn btn-primary">
-    <i class="fas fa-eye"></i> Preview Cetak
-</a> -->
 
 <body>
-    <?php include 'list_logo.php'; ?>
-    <form id="formPrint" action="<?= site_url('pengiriman/print_pengiriman') ?>" method="post" style="display:none">
-        <input type="hidden" name="stockout_id" value="<?= $pengiriman['header']['stockout_id'] ?>">
-        <input type="hidden" id="logo_id" name="logo_id" value="<?= $logo['id_logo'] ?>">
-    </form>
-
     <?php
     // Hitung total halaman dengan optimasi tinggi
     $max_items_per_page = 20; // Maksimal 20 item per halaman untuk A4
@@ -66,26 +51,16 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                 <div class="header-surat">
                     <div class="kop-surat">
                         <div class="logo-perusahaan">
-                            <?php if (!empty($logo['logo'])): ?>
-                                <img id="preview-logo" src="<?= base_url($logo['logo']) ?>" alt="Logo Perusahaan">
+                            <?php if (!empty($config['app_logo_blue'])): ?>
+                                <img src="<?= base_url($config['app_logo_blue']) ?>" alt="Logo Perusahaan">
                             <?php endif; ?>
-                            <?php if ($isCetak < 1): ?>
-                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="showLogoModal()"
-                                    title="Edit Logo">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            <?php endif; ?>
-
                         </div>
 
                         <div class="info-perusahaan">
-                            <h1 id="preview-nama-pt">
-                                <?= strtoupper($logo['nama_pt'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?>
-                            </h1>
-                            <p>
-                                <?= $jenis_surat ?>
-                            </p>
+                            <h1><?= strtoupper($config['app_pt_name'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?></h1>
+                            <p><?= $jenis_surat ?></p>
                         </div>
+
                         <div class="stamp-original">
                             <strong>ORIGINAL</strong>
                         </div>
@@ -159,15 +134,9 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
 
                             <?php foreach ($page_items as $index => $item): ?>
                                 <tr>
-                                    <td class="text-center">
-                                        <?= $start_number + $index ?>
-                                    </td>
-                                    <td>
-                                        <?= $item['product_code'] ?>
-                                    </td>
-                                    <td>
-                                        <?= $item['product_name'] ?>
-                                    </td>
+                                    <td class="text-center"><?= $start_number + $index ?></td>
+                                    <td class="text-center"><?= $item['product_code'] ?></td>
+                                    <td><?= $item['product_name'] ?></td>
                                     <td class="text-center">
                                         <?php
                                         $qty = $item['qty'];
@@ -175,12 +144,8 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                                         $total_qty_page += $qty;
                                         ?>
                                     </td>
-                                    <td class="text-center">
-                                        <?= $item['unit_code'] ?>
-                                    </td>
-                                    <td>
-                                        <?= $item['detail_note'] ?>
-                                    </td>
+                                    <td class="text-center"><?= $item['unit_code'] ?></td>
+                                    <td><?= $item['detail_note'] ?> </td>
                                 </tr>
                             <?php endforeach; ?>
 
@@ -213,20 +178,14 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                                 ?>
                                 <tr class="total-row">
                                     <td colspan="3" class="text-center">TOTAL</td>
-                                    <td class="text-center">
-                                        <?= viewNumber($total_qty_all) ?>
-                                    </td>
+                                    <td class="text-center"><?= viewNumber($total_qty_all) ?></td>
                                     <td colspan="2">&nbsp;</td>
                                 </tr>
                             <?php else: ?>
                                 <!-- Baris Sub Total untuk halaman non-terakhir -->
                                 <tr class="subtotal-row">
-                                    <td colspan="3" class="text-center">SUB TOTAL HALAMAN
-                                        <?= $current_page ?>
-                                    </td>
-                                    <td class="text-right">
-                                        <?= viewNumber($total_qty_page) ?>
-                                    </td>
+                                    <td colspan="3" class="text-center">SUB TOTAL HALAMAN <?= $current_page ?></td>
+                                    <td class="text-right"><?= viewNumber($total_qty_page) ?></td>
                                     <td colspan="2">&nbsp;</td>
                                 </tr>
                             <?php endif; ?>
@@ -268,148 +227,93 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                         </div>
                     </div>
                 <?php endif; ?>
+
                 <!-- Footer -->
                 <div class="footer">
-                    <p>Tanggal cetak:
-                        <?= date('d/m/Y') ?>
-                    </p>
+                    <p>Tanggal cetak: <?= date('d/m/Y') ?></p>
                 </div>
             </div>
 
             <!-- Nomor Halaman -->
             <div class="page-number">
-                Halaman
-                <?= $current_page ?> dari
-                <?= $total_pages ?>
+                Halaman <?= $current_page ?> dari <?= $total_pages ?>
             </div>
         </div>
     <?php endforeach; ?>
 
     <!-- Tombol Aksi (Screen Only) -->
-    <?php if ($isCetak < 3): ?>
-        <div class="action-buttons no-print">
-            <button type="button" onclick="konfirmasiCetak()" class="btn-print">
-                <span style="font-size:20px;">🖨️</span> CETAK SURAT JALAN
-
-            </button>
-        </div>
-    <?php endif; ?>
-    <!-- Dynamic Confirmation Modal -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">
-                        Konfirmasi
-                    </h5>
-
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    <p id="confirmationMessage">
-                        Apakah Anda yakin ingin melanjutkan?
-                    </p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-
-                        Batal
-
-                    </button>
-
-                    <button type="button" class="btn btn-danger" id="confirmButton">
-
-                        Ya
-
-                    </button>
-                </div>
-
-            </div>
-        </div>
+    <div class="action-buttons no-print">
+        <button onclick="window.print()" class="btn-print">
+            <span style="font-size:20px;">🖨️</span> CETAK SURAT JALAN
+        </button>
     </div>
-    <!-- <?php if ($isCetak < 3): ?> -->
-        <!-- <div class="action-buttons no-print"> -->
-        <!-- <button onclick="window.print()" class="btn-print"> -->
-        <!-- <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA -->
-        <!-- </button> -->
-        <!-- </div> -->
-        <!-- <?php endif; ?> -->
 
     <script>
         // Fungsi print dengan pengaturan optimal
         function printDocument() {
-
+            // Tambahkan styling sebelum print
             const printStyle = document.createElement('style');
-
-            printStyle.id = 'dynamic-print-style';
-
             printStyle.textContent = `
-        @media print {
-
-            @page {
-                margin: 0mm !important;
-                size: Letter portrait !important;
-                padding: 0 !important;
-            }
-
-            body {
-                width: 216mm !important;
-                min-height: 279mm !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-            }
-
-            .page {
-                width: 216mm !important;
-                min-height: 279mm !important;
-                margin: 0 !important;
-                padding: 15mm 20mm !important;
-                page-break-after: always;
-                page-break-inside: avoid;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            .signature-section {
-                page-break-inside: avoid !important;
-                page-break-before: avoid !important;
-            }
-
-            .detail-table,
-            .detail-table tr {
-                page-break-inside: avoid !important;
-            }
-
-            .action-buttons,
-            #confirmationModal,
-            #modalPilihLogo {
-                display: none !important;
-            }
-        }
-    `;
+            @media print {
+                    /* Reset semua margin browser */
+                    @page {
+                        margin: 0mm !important;
+                        size: Letter portrait !important;
+                        padding: 0 !important;
+                    }
+                    
+                    /* Reset body untuk full page */
+                    body {
+                        width: 216mm !important;
+                        min-height: 279mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        background: white !important;
+                    }
+                    
+                    /* Atur page layout */
+                    .page {
+                        width: 216mm !important;
+                        min-height: 279mm !important;
+                        margin: 0 !important;
+                        padding: 15mm 20mm !important;
+                        page-break-after: always;
+                        page-break-inside: avoid;
+                        box-shadow: none !important;
+                        border: none !important;
+                    }
+                    
+                    /* Pastikan elemen penting tidak terpotong */
+                    .signature-section {
+                        page-break-inside: avoid !important;
+                        page-break-before: avoid !important;
+                    }
+                    
+                    .detail-table {
+                        page-break-inside: avoid !important;
+                    }
+                    
+                    .detail-table tr {
+                        page-break-inside: avoid !important;
+                    }
+                    
+                    /* Sembunyikan tombol print */
+                    .action-buttons {
+                        display: none !important;
+                    }
+                }
+            `;
 
             document.head.appendChild(printStyle);
 
             window.print();
 
-            window.onafterprint = function () {
-
-                const style =
-                    document.getElementById('dynamic-print-style');
-
-                if (style) {
-                    style.remove();
-                }
-
-            };
+            // Hapus style setelah print
+            setTimeout(() => {
+                document.head.removeChild(printStyle);
+            }, 1000);
         }
+
         // Auto print jika diakses dari cetak langsung
         <?php if (isset($auto_print) && $auto_print): ?>
             window.onload = function () {
@@ -447,169 +351,6 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
             });
         });
     </script>
-
-    <script>
-
-        function showLogoModal() {
-            document.getElementById('modalPilihLogo').style.display = 'block';
-        }
-
-        function hideLogoModal() {
-            document.getElementById('modalPilihLogo').style.display = 'none';
-        }
-
-        window.addEventListener('click', function (event) {
-
-            const modal = document.getElementById('modalPilihLogo');
-
-            if (event.target === modal) {
-                hideLogoModal();
-            }
-
-        });
-
-        function pilihLogo(urlLogo, namaPT, logoId) {
-
-            const logo =
-                document.getElementById('preview-logo');
-
-            if (logo) {
-                logo.src = urlLogo;
-            }
-
-            const nama =
-                document.getElementById('preview-nama-pt');
-
-            if (nama) {
-                nama.innerText = namaPT;
-            }
-
-            document.getElementById('logo_id').value =
-                logoId;
-
-            hideLogoModal();
-        }
-
-        function showConfirmationModal(options) {
-
-            $('#confirmationModalLabel').text(
-                options.title || 'Konfirmasi'
-            );
-
-            $('#confirmationMessage').text(
-                options.message || ''
-            );
-
-            const confirmButton = $('#confirmButton');
-
-            confirmButton
-                .text(options.confirmText || 'Ya')
-                .removeClass(
-                    'btn-primary btn-danger btn-success btn-warning'
-                )
-                .addClass(options.confirmClass || 'btn-danger');
-
-            confirmButton.off('click');
-
-            confirmButton.on('click', function () {
-
-                // pindahkan fokus keluar modal
-                document.body.focus();
-
-                const modal =
-                    bootstrap.Modal.getOrCreateInstance(
-                        document.getElementById('confirmationModal')
-                    );
-
-                modal.hide();
-
-                if (typeof options.onConfirm === 'function') {
-
-                    setTimeout(function () {
-                        options.onConfirm();
-                    }, 200);
-
-                }
-
-            });
-
-            bootstrap.Modal
-                .getOrCreateInstance(
-                    document.getElementById('confirmationModal')
-                )
-                .show();
-        }
-
-        function konfirmasiCetak() {
-
-            const btnPrint =
-                $('.action-buttons .btn-print');
-
-            showConfirmationModal({
-
-                title: 'Konfirmasi Cetak',
-
-                message:
-                    'Apakah Anda yakin ingin mencetak surat ini?',
-
-                confirmText: 'Ya, Cetak',
-
-                confirmClass: 'btn-primary',
-
-                onConfirm: function () {
-
-                    btnPrint.prop('disabled', true);
-
-                    $.ajax({
-
-                        url: $('#formPrint').attr('action'),
-
-                        type: 'POST',
-
-                        data: $('#formPrint').serialize(),
-
-                        dataType: 'json',
-
-                        success: function (result) {
-
-                            btnPrint.prop('disabled', false);
-
-                            if (result.success) {
-
-                                printDocument();
-
-                            } else {
-
-                                alert(
-                                    result.message ||
-                                    'Gagal memproses cetak.'
-                                );
-
-                            }
-
-                        },
-
-                        error: function () {
-
-                            btnPrint.prop('disabled', false);
-
-                            alert(
-                                'Terjadi kesalahan saat memproses cetak.'
-                            );
-
-                        }
-
-                    });
-
-                }
-
-            });
-
-        }
-    </script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>
