@@ -275,15 +275,14 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
     <?php endforeach; ?>
 
     <!-- Tombol Aksi (Screen Only) -->
-    <!-- <?php if ($isCetak < 3): ?> -->
-        <!-- <?php endif; ?> -->
+    <?php if ($isCetak < 3): ?>
+        <div class="action-buttons no-print">
+            <button type="button" onclick="konfirmasiCetak()" class="btn-print">
+                <span style="font-size:20px;">🖨️</span> CETAK SURAT JALAN
 
-    <div class="action-buttons no-print">
-        <button type="button" onclick="konfirmasiCetak()" class="btn-print">
-            <span style="font-size:20px;">🖨️</span> CETAK SURAT JALAN
-
-        </button>
-    </div>
+            </button>
+        </div>
+    <?php endif; ?>
 
     <!-- Dynamic Confirmation Modal -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
