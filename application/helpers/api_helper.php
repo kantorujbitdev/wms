@@ -92,10 +92,7 @@ if (!function_exists('api_request')) {
             save_log($msg, 'error');
             return response_error($msg, 0);
         }
-
         $result = json_decode($response, true);
-
-
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $msg = 'JSON Decode Error: ' . json_last_error_msg();

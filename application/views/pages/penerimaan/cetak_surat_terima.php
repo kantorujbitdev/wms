@@ -14,16 +14,12 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <style></style>
-    <?php include 'cetak_style.php'; ?>
+    <?php $this->load->view('style/cetak_style'); ?>
     </style>
 </head>
-<!-- <a href="<?= site_url('pengiriman/cetak/' . $pengiriman['header']['stockout_id']) ?>" target="_blank"
-    class="btn btn-primary">
-    <i class="fas fa-eye"></i> Preview Cetak
-</a> -->
 
 <body>
-    <?php include 'list_logo.php'; ?>
+    <?php $this->load->view('style/list_logo'); ?>
     <form id="formPrint" action="<?= site_url('penerimaan/print_penerimaan') ?>" method="post" style="display:none">
         <input type="hidden" name="stockin_id" value="<?= $penerimaan['header']['stockin_id'] ?>">
         <input type="hidden" id="logo_id" name="logo_id" value="<?= $logo['id_logo'] ?>">
@@ -220,7 +216,7 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
                 <!-- Tanda Tangan (hanya di halaman terakhir) -->
                 <?php if ($is_last_page): ?>
                     <div class="signature-section">
-                        <div class="signature-grid">
+                        <div class="signature-grid-penerimaan">
                             <div class="signature-box">
                                 <div class="signature-title">Diterima oleh</div>
                                 <div class="signature-line"></div>

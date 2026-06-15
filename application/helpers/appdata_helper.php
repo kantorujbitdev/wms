@@ -129,7 +129,7 @@ if (!function_exists('load_appdata_to_session')) {
         }
 
         $CI->session->set_userdata('api_list', $apis);
-        if (isset($_SERVER['CI_ENV']) && $_SERVER['CI_ENV'] == 'development') {
+        if (ENVIRONMENT == 'development') {
             save_log('Load data pengaturan: ' . json_encode($config));
             save_log('Load data enpoint API: ' . json_encode($apis));
         }

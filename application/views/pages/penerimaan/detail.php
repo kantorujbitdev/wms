@@ -21,10 +21,6 @@ elseif ($active_submenu == 'penerimaan_antar_gudang')
                         class="btn btn-primary">
                         <i class="fas fa-eye"></i> Preview Cetak
                     </a>
-                    <!-- <a href="<?= site_url('penerimaan/cetak_langsung/' . $penerimaan['header']['stockin_id']) ?>"
-                        target="_blank" class="btn btn-success">
-                        <i class="fas fa-print"></i> Cetak Langsung
-                    </a> -->
                 </div>
             </div>
         </div>

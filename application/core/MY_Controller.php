@@ -159,9 +159,8 @@ class MY_Controller extends CI_Controller
             if ($success_message !== null) {
                 $this->session->set_flashdata('success', $success_message);
             }
-            return $response['data'];
+            return $response['data'] ?? $response;
         } else {
-            // Set error message
             $error_message = isset($response['message']) ? $response['message'] : 'Terjadi kesalahan';
             $this->session->set_flashdata('error', $error_message);
             return false;

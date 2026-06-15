@@ -181,12 +181,12 @@
                     <table class="excel-table" id="itemsTable" style="table-layout: fixed;">
                         <thead>
                             <tr>
-                                <th style="width:50px;">No</th>
-                                <th style="width:500px;">Barang</th>
-                                <th style="width:80px;">Qty</th>
-                                <th style="width:80px;">Satuan</th>
-                                <th>Keterangan</th>
-                                <th style="width:90px;">Aksi</th>
+                                <th style="width:5%;">No</th>
+                                <th style="width:30%;">Barang</th>
+                                <th style="width:8%;">Qty</th>
+                                <th style="width:10%;">Satuan</th>
+                                <th style="width:27%;">Keterangan</th>
+                                <th style="width:10%;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="itemsBody">
@@ -595,7 +595,7 @@
 
         // Initialize Select2 for new row
         initProductSelect($('#product_select_' + newIndex));
-
+        enableEdit(newIndex);
         // Rebind delete button
         $('.btn-delete-item').unbind('click').click(function () {
             if ($('.item-row').length > 1) {

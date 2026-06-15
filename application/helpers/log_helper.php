@@ -59,33 +59,21 @@ if (!function_exists('log_http_response')) {
      */
     function log_http_response($url, $method, $payload, $response, $http_code, $prefix = null)
     {
-        $prefixText = $prefix ? "{$prefix} " : "";
+        $prefixText = !empty($prefix) ? "[{$prefix}] " : '';
         $shortResponse = substr($response, 0, 500); // batasi isi log agar tidak terlalu panjang
 
-        // if ($method == 'GET') {
-        //     if (isset($_SERVER['CI_ENV']) && $_SERVER['CI_ENV'] == 'development') {
-        //         $pesan = "[RESPONSE]: " . $shortResponse;
-        //     } else {
-        //         $pesan = "[RESPONSE]: BERHASIL DIDAPATKAN";
-        //     }
-        // } else {
-        //     $pesan = "[RESPONSE]: " . $shortResponse;
-        // }
-
-        // all debug
-        $pesan = "[RESPONSE]: " . $response;
-        if ($http_code >= 200 && $http_code < 300) {
-            save_log("✅ {$url} [{$method}:{$http_code}] {$payload} {$pesan}", 'success');
-            save_log("✅ {$pesan}", 'success');
-        } elseif ($http_code >= 300 && $http_code < 500) {
-            save_log("⚠️ {$url} [{$method}:{$http_code}] {$payload}", 'warning');
-            save_log("⚠️ {$pesan}", 'warning');
+        if (ENVIRONMENT == 'development') {
+            $pesan = "[RESPONSE]: " . $response;
         } else {
-            save_log("❌ {$url} [{$method}:{$http_code}] {$payload}", 'error');
-            save_log("❌ {$pesan}", 'error');
+            if ($method == 'GET') {
+                $pesan = "[RESPONSE]: " . $shortResponse;
+            } else {
+                $pesan = "[RESPONSE]: " . $response;
+            }
         }
 
-        $pesan = "[RESPONSE]: {$response}";
+        $icon = '❌';
+        $level = 'error';
 
         if ($http_code >= 200 && $http_code < 300) {
             $icon = '✅';
@@ -93,12 +81,16 @@ if (!function_exists('log_http_response')) {
         } elseif ($http_code >= 300 && $http_code < 500) {
             $icon = '⚠️';
             $level = 'warning';
-        } else {
-            $icon = '❌';
-            $level = 'error';
         }
 
-        save_log("{$icon} {$url} [{$method}:{$http_code}] {$payload}", $level);
-        save_log("{$icon} {$pesan}", $level);
+        save_log(
+            "{$icon} {$prefixText}[{$method}:{$http_code}] {$url} | {$payload}",
+            $level
+        );
+
+        save_log(
+            "{$icon} {$pesan}",
+            $level
+        );
     }
 }

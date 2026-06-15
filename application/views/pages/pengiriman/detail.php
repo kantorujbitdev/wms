@@ -20,10 +20,6 @@ if ($pengiriman['header']['to_status'] == '3')
                         target="_blank" class="btn btn-primary">
                         <i class="fas fa-eye"></i> Preview Cetak
                     </a>
-                    <!-- <a href="<?= site_url('pengiriman/cetak_langsung/' . $pengiriman['header']['stockout_id']) ?>"
-                        target="_blank" class="btn btn-success">
-                        <i class="fas fa-print"></i> Cetak Langsung
-                    </a> -->
                 </div>
             </div>
         </div>

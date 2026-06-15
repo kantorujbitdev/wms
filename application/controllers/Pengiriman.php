@@ -995,7 +995,11 @@ class Pengiriman extends MY_Controller
 
         echo json_encode([
             'success' => isset($response['success']) && $response['success'],
-            'message' => $response['message'] ?? ''
+            'message' => $response['message'] ?? '',
+            'redirect' => site_url(
+                'pengiriman/cetak/' .
+                $this->input->post('stockout_id')
+            )
         ]);
     }
     // ==================== CETAK LANSGUNG (AUTO PRINT) ====================

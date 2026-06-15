@@ -16,16 +16,13 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <style></style>
-    <?php include 'cetak_style.php'; ?>
+    <?php $this->load->view('style/cetak_style'); ?>
+
     </style>
 </head>
-<!-- <a href="<?= site_url('pengiriman/cetak/' . $pengiriman['header']['stockout_id']) ?>" target="_blank"
-    class="btn btn-primary">
-    <i class="fas fa-eye"></i> Preview Cetak
-</a> -->
 
 <body>
-    <?php include 'list_logo.php'; ?>
+    <?php $this->load->view('style/list_logo'); ?>
     <form id="formPrint" action="<?= site_url('pengiriman/print_pengiriman') ?>" method="post" style="display:none">
         <input type="hidden" name="stockout_id" value="<?= $pengiriman['header']['stockout_id'] ?>">
         <input type="hidden" id="logo_id" name="logo_id" value="<?= $logo['id_logo'] ?>">
@@ -79,12 +76,8 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                         </div>
 
                         <div class="info-perusahaan">
-                            <h1 id="preview-nama-pt">
-                                <?= strtoupper($logo['nama_pt'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?>
-                            </h1>
-                            <p>
-                                <?= $jenis_surat ?>
-                            </p>
+                            <h1 id="preview-nama-pt"> <?= strtoupper($logo['nama_pt'] ?? 'PT. USAHA JAYAMAS BHAKTI') ?> </h1>
+                            <p> <?= $jenis_surat ?></p>
                         </div>
                         <div class="stamp-original">
                             <strong>ORIGINAL</strong>
@@ -98,7 +91,9 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                         <h4>INFORMASI PENGIRIM</h4>
                         <div class="info-row">
                             <div class="info-label">No. Surat:</div>
-                            <div class="info-value"><?= $pengiriman['header']['stockout_code'] ?></div>
+                            <div class="info-value">
+                                <?= $pengiriman['header']['stockout_code'] ?>
+                            </div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Tanggal:</div>
@@ -108,7 +103,9 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                         </div>
                         <div class="info-row">
                             <div class="info-label">Dari:</div>
-                            <div class="info-value"><?= $pengiriman['header']['warehouse_name'] ?></div>
+                            <div class="info-value">
+                                <?= $pengiriman['header']['warehouse_name'] ?>
+                            </div>
                         </div>
                     </div>
 
@@ -116,20 +113,27 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                         <h4>INFORMASI TUJUAN</h4>
                         <div class="info-row">
                             <div class="info-label">Kepada Yth:</div>
-                            <div class="info-value"><?= $pengiriman['header']['to_name'] ?></div>
+                            <div class="info-value">
+                                <?= $pengiriman['header']['to_name'] ?>
+                            </div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Jenis:</div>
-                            <div class="info-value"><?= $tipe_pengiriman ?></div>
+                            <div class="info-value">
+                                <?= $tipe_pengiriman ?>
+                            </div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Keterangan:</div>
-                            <div class="info-value"><?= $pengiriman['header']['stockout_note'] ?: 'Tidak ada keterangan' ?>
+                            <div class="info-value">
+                                <?= $pengiriman['header']['stockout_note'] ?: 'Tidak ada keterangan' ?>
                             </div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Dibuat Oleh:</div>
-                            <div class="info-value"><?= $pengiriman['header']['user_name'] ?></div>
+                            <div class="info-value">
+                                <?= $pengiriman['header']['user_name'] ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -159,15 +163,9 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
 
                             <?php foreach ($page_items as $index => $item): ?>
                                 <tr>
-                                    <td class="text-center">
-                                        <?= $start_number + $index ?>
-                                    </td>
-                                    <td>
-                                        <?= $item['product_code'] ?>
-                                    </td>
-                                    <td>
-                                        <?= $item['product_name'] ?>
-                                    </td>
+                                    <td class="text-center"> <?= $start_number + $index ?> </td>
+                                    <td> <?= $item['product_code'] ?> </td>
+                                    <td> <?= $item['product_name'] ?> </td>
                                     <td class="text-center">
                                         <?php
                                         $qty = $item['qty'];
@@ -175,12 +173,8 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                                         $total_qty_page += $qty;
                                         ?>
                                     </td>
-                                    <td class="text-center">
-                                        <?= $item['unit_code'] ?>
-                                    </td>
-                                    <td>
-                                        <?= $item['detail_note'] ?>
-                                    </td>
+                                    <td class="text-center"> <?= $item['unit_code'] ?> </td>
+                                    <td> <?= $item['detail_note'] ?> </td>
                                 </tr>
                             <?php endforeach; ?>
 
@@ -237,33 +231,28 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                 <!-- Tanda Tangan (hanya di halaman terakhir) -->
                 <?php if ($is_last_page): ?>
                     <div class="signature-section">
-                        <div class="signature-grid">
+                        <div class="signature-grid-pengiriman">
                             <div class="signature-box">
                                 <div class="signature-title">Dibuat oleh</div>
                                 <div class="signature-line"></div>
                                 <div class="signature-name">&nbsp;</div>
-                                <!-- <div class="signature-note">Nama & Tanda Tangan</div> -->
                             </div>
                             <div class="signature-box">
                                 <div class="signature-title">Pengirim</div>
                                 <div class="signature-line"></div>
                                 <div class="signature-name">&nbsp;</div>
-                                <!-- <div class="signature-note">Nama & Tanda Tangan</div> -->
                             </div>
 
                             <div class="signature-box">
                                 <div class="signature-title">Dikeluarkan oleh</div>
                                 <div class="signature-line"></div>
                                 <div class="signature-name">&nbsp;</div>
-                                <!-- <div class="signature-name"><?= $pengiriman['header']['user_name'] ?? 'System' ?></div>
-                                <div class="signature-note">Staff Gudang</div> -->
                             </div>
 
                             <div class="signature-box">
                                 <div class="signature-title">Penerima</div>
                                 <div class="signature-line"></div>
                                 <div class="signature-name">&nbsp;</div>
-                                <!-- <div class="signature-note">Kepala Gudang</div> -->
                             </div>
                         </div>
                     </div>
@@ -286,14 +275,16 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
     <?php endforeach; ?>
 
     <!-- Tombol Aksi (Screen Only) -->
-    <?php if ($isCetak < 3): ?>
-        <div class="action-buttons no-print">
-            <button type="button" onclick="konfirmasiCetak()" class="btn-print">
-                <span style="font-size:20px;">🖨️</span> CETAK SURAT JALAN
+    <!-- <?php if ($isCetak < 3): ?> -->
+        <!-- <?php endif; ?> -->
 
-            </button>
-        </div>
-    <?php endif; ?>
+    <div class="action-buttons no-print">
+        <button type="button" onclick="konfirmasiCetak()" class="btn-print">
+            <span style="font-size:20px;">🖨️</span> CETAK SURAT JALAN
+
+        </button>
+    </div>
+
     <!-- Dynamic Confirmation Modal -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -302,56 +293,30 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">
-                        Konfirmasi
-                    </h5>
-
+                    <h5 class="modal-title" id="confirmationModalLabel"> Konfirmasi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
 
                 <div class="modal-body">
-                    <p id="confirmationMessage">
-                        Apakah Anda yakin ingin melanjutkan?
-                    </p>
+                    <p id="confirmationMessage"> Apakah Anda yakin ingin melanjutkan? </p>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-
-                        Batal
-
-                    </button>
-
-                    <button type="button" class="btn btn-danger" id="confirmButton">
-
-                        Ya
-
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Batal</button>
+                    <button type="button" class="btn btn-danger" id="confirmButton">Ya </button>
                 </div>
-
             </div>
         </div>
     </div>
-    <!-- <?php if ($isCetak < 3): ?> -->
-        <!-- <div class="action-buttons no-print"> -->
-        <!-- <button onclick="window.print()" class="btn-print"> -->
-        <!-- <span style="font-size:20px;">🖨️</span> CETAK SURAT TERIMA -->
-        <!-- </button> -->
-        <!-- </div> -->
-        <!-- <?php endif; ?> -->
 
     <script>
         // Fungsi print dengan pengaturan optimal
         function printDocument() {
-
             const printStyle = document.createElement('style');
-
             printStyle.id = 'dynamic-print-style';
-
             printStyle.textContent = `
         @media print {
-
             @page {
                 margin: 0mm !important;
                 size: Letter portrait !important;
@@ -394,22 +359,26 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
             }
         }
     `;
-
             document.head.appendChild(printStyle);
-
             window.print();
-
             window.onafterprint = function () {
-
-                const style =
-                    document.getElementById('dynamic-print-style');
-
+                const style = document.getElementById('dynamic-print-style');
                 if (style) {
                     style.remove();
                 }
-
             };
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (sessionStorage.getItem('autoPrint') === '1') {
+                sessionStorage.removeItem('autoPrint');
+                setTimeout(function () {
+                    printDocument();
+                }, 500);
+            }
+        });
+
+
         // Auto print jika diakses dari cetak langsung
         <?php if (isset($auto_print) && $auto_print): ?>
             window.onload = function () {
@@ -417,7 +386,6 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                     printDocument();
                 }, 500);
             };
-
             window.onafterprint = function () {
                 setTimeout(function () {
                     window.close();
@@ -425,31 +393,9 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
             };
         <?php endif; ?>
 
-        // Atur tinggi baris tabel secara dinamis
-        document.addEventListener('DOMContentLoaded', function () {
-            // Atur ulang nomor halaman
-            const pages = document.querySelectorAll('.page');
-            const totalPages = pages.length;
-
-            pages.forEach((page, index) => {
-                const pageNumElement = page.querySelector('.page-number');
-                if (pageNumElement) {
-                    const currentPage = index + 1;
-                    pageNumElement.textContent = `Halaman ${currentPage} dari ${totalPages}`;
-                }
-
-                // Atur tinggi maksimal untuk tabel
-                const tableContainer = page.querySelector('.table-container');
-                if (tableContainer && !page.querySelector('.signature-section')) {
-                    // Untuk halaman non-terakhir, beri tinggi maksimal
-                    tableContainer.style.maxHeight = 'calc(297mm - 60mm)';
-                }
-            });
-        });
-    </script>
+        </script>
 
     <script>
-
         function showLogoModal() {
             document.getElementById('modalPilihLogo').style.display = 'block';
         }
@@ -459,9 +405,7 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
         }
 
         window.addEventListener('click', function (event) {
-
             const modal = document.getElementById('modalPilihLogo');
-
             if (event.target === modal) {
                 hideLogoModal();
             }
@@ -469,141 +413,83 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
         });
 
         function pilihLogo(urlLogo, namaPT, logoId) {
-
-            const logo =
-                document.getElementById('preview-logo');
-
+            const logo = document.getElementById('preview-logo');
             if (logo) {
                 logo.src = urlLogo;
             }
-
-            const nama =
-                document.getElementById('preview-nama-pt');
-
+            const nama = document.getElementById('preview-nama-pt');
             if (nama) {
                 nama.innerText = namaPT;
             }
-
-            document.getElementById('logo_id').value =
-                logoId;
-
+            document.getElementById('logo_id').value = logoId;
             hideLogoModal();
         }
 
         function showConfirmationModal(options) {
-
-            $('#confirmationModalLabel').text(
-                options.title || 'Konfirmasi'
-            );
-
-            $('#confirmationMessage').text(
-                options.message || ''
-            );
+            $('#confirmationModalLabel').text(options.title || 'Konfirmasi');
+            $('#confirmationMessage').html(options.message || '');
 
             const confirmButton = $('#confirmButton');
-
-            confirmButton
-                .text(options.confirmText || 'Ya')
-                .removeClass(
-                    'btn-primary btn-danger btn-success btn-warning'
-                )
+            confirmButton.text(options.confirmText || 'Ya')
+                .removeClass('btn-primary btn-danger btn-success btn-warning')
                 .addClass(options.confirmClass || 'btn-danger');
 
             confirmButton.off('click');
-
             confirmButton.on('click', function () {
-
                 // pindahkan fokus keluar modal
                 document.body.focus();
 
-                const modal =
-                    bootstrap.Modal.getOrCreateInstance(
-                        document.getElementById('confirmationModal')
-                    );
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmationModal'));
 
                 modal.hide();
-
                 if (typeof options.onConfirm === 'function') {
-
                     setTimeout(function () {
                         options.onConfirm();
                     }, 200);
-
                 }
-
             });
 
-            bootstrap.Modal
-                .getOrCreateInstance(
-                    document.getElementById('confirmationModal')
-                )
-                .show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmationModal')).show();
         }
 
         function konfirmasiCetak() {
-
-            const btnPrint =
-                $('.action-buttons .btn-print');
+            const btnPrint = $('.action-buttons .btn-print');
 
             showConfirmationModal({
-
                 title: 'Konfirmasi Cetak',
-
-                message:
-                    'Apakah Anda yakin ingin mencetak surat ini?',
-
+                message: `Apakah Anda yakin ingin mencetak surat ini?<br><br>
+                <h5><b>Jika surat sudah dicetak, status surat akan diperbarui.<br>
+                Logo dan nama PT tidak dapat diubah lagi.<b></h5>`,
                 confirmText: 'Ya, Cetak',
-
                 confirmClass: 'btn-primary',
-
                 onConfirm: function () {
-
                     btnPrint.prop('disabled', true);
-
                     $.ajax({
-
                         url: $('#formPrint').attr('action'),
-
                         type: 'POST',
-
                         data: $('#formPrint').serialize(),
-
                         dataType: 'json',
 
                         success: function (result) {
-
                             btnPrint.prop('disabled', false);
-
                             if (result.success) {
+                                // tandai bahwa setelah reload harus auto print
+                                sessionStorage.setItem('autoPrint', '1');
 
-                                printDocument();
-
+                                // reload halaman agar data terbaru diambil lagi
+                                location.reload();
                             } else {
-
-                                alert(
-                                    result.message ||
-                                    'Gagal memproses cetak.'
-                                );
-
+                                alert(result.message || 'Gagal memproses cetak.');
                             }
-
                         },
-
                         error: function () {
-
                             btnPrint.prop('disabled', false);
-
-                            alert(
-                                'Terjadi kesalahan saat memproses cetak.'
-                            );
-
+                            alert('Terjadi kesalahan saat memproses cetak.');
                         }
-
                     });
-
                 }
-
             });
+
 
         }
     </script>

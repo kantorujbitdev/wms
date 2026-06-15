@@ -1,3 +1,4 @@
+<!-- C:\xampp\htdocs\wms\application\views\pages\penerimaan\cetak_style.php -->
 <style>
     /* Reset dan base style */
     * {
@@ -56,7 +57,6 @@
         justify-content: space-between;
         margin-bottom: 5px;
     }
-
 
     .logo-perusahaan {
         width: 100px;
@@ -297,7 +297,15 @@
         padding-top: 10px;
     }
 
-    .signature-grid {
+    .signature-grid-penerimaan {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .signature-grid-pengiriman {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 15px;
@@ -488,6 +496,26 @@
             right: auto;
             margin-top: 10px;
             text-align: right;
+        }
+
+        #modalPilihLogo {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .5);
+        }
+
+        #modalPilihLogo .modal-content-custom {
+            background: #fff;
+            width: 90%;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 6px;
         }
 
         .modal-header-custom {
