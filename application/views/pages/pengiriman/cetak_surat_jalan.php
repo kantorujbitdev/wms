@@ -316,49 +316,53 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
             const printStyle = document.createElement('style');
             printStyle.id = 'dynamic-print-style';
             printStyle.textContent = `
-        @media print {
-            @page {
-                margin: 0mm !important;
-                size: Letter portrait !important;
-                padding: 0 !important;
-            }
+            @media print {
+                @page {
+                    size: Letter portrait;
+                    margin: 5mm;
+                }
 
-            body {
-                width: 216mm !important;
-                min-height: 279mm !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-            }
+                body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: white !important;
+                }
 
-            .page {
-                width: 216mm !important;
-                min-height: 279mm !important;
-                margin: 0 !important;
-                padding: 15mm 20mm !important;
-                page-break-after: always;
-                page-break-inside: avoid;
-                box-shadow: none !important;
-                border: none !important;
-            }
+                .page {
+                    width: 216mm !important;
+                    min-height: auto !important;
 
-            .signature-section {
-                page-break-inside: avoid !important;
-                page-break-before: avoid !important;
-            }
+                    margin: 0 !important;
+                    padding: 5mm !important;
 
-            .detail-table,
-            .detail-table tr {
-                page-break-inside: avoid !important;
-            }
+                    page-break-after: always;
 
-            .action-buttons,
-            #confirmationModal,
-            #modalPilihLogo {
-                display: none !important;
+                    box-shadow: none !important;
+                    border: none !important;
+
+                    display: block !important;
+                }
+
+                .detail-table {
+                    page-break-inside: auto !important;
+                }
+
+                .detail-table tr {
+                    page-break-inside: avoid !important;
+                    page-break-after: auto !important;
+                }
+
+                .signature-section {
+                    page-break-inside: avoid !important;
+                }
+
+                .action-buttons,
+                #confirmationModal,
+                #modalPilihLogo {
+                    display: none !important;
+                }
             }
-        }
-    `;
+            `;
             document.head.appendChild(printStyle);
             window.print();
             window.onafterprint = function () {
@@ -378,7 +382,6 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
             }
         });
 
-
         // Auto print jika diakses dari cetak langsung
         <?php if (isset($auto_print) && $auto_print): ?>
             window.onload = function () {
@@ -393,7 +396,7 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
             };
         <?php endif; ?>
 
-        </script>
+    </script>
 
     <script>
         function showLogoModal() {
