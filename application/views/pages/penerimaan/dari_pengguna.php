@@ -51,7 +51,8 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-search"></i> Tampilkan
                                     </button>
-                                    <a href="<?= site_url('penerimaan/reset_filter/pengguna') ?>" class="btn btn-secondary">
+                                    <a href="<?= site_url('penerimaan/reset_filter/pengguna') ?>"
+                                        class="btn btn-secondary">
                                         <i class="fas fa-sync"></i> Reset
                                     </a>
                                 </div>
@@ -70,7 +71,7 @@
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Daftar Penerimaan dari Pengguna
                     <?php if (!empty($penerimaan_list)): ?>
-                        <span class="badge badge-primary ml-2">
+                        <span class="badge text-primary ml-2">
                             <?= count($penerimaan_list) ?> Data
                         </span>
                     <?php endif; ?>
@@ -128,18 +129,23 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (has_permission('penerimaan', 'edit')): ?>
-                                                <a href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
-                                                    class="btn btn-warning btn-sm" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
+                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
+                                                    <a href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
+                                                        class="btn btn-warning btn-sm" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                <?php endif; ?>
                                             <?php endif; ?>
+
                                             <?php if (has_permission('penerimaan', 'delete')): ?>
-                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
-                                                    data-id="<?= $penerimaan['stockin_id']; ?>"
-                                                    data-name="<?= $penerimaan['stockin_code']; ?>"
-                                                    data-url="<?= site_url('penerimaan/delete'); ?>">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
+                                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
+                                                        data-id="<?= $penerimaan['stockin_id']; ?>"
+                                                        data-name="<?= $penerimaan['stockin_code']; ?>"
+                                                        data-url="<?= site_url('penerimaan/delete'); ?>">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </td>
                                     </tr>

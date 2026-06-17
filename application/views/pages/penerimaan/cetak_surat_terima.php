@@ -4,6 +4,7 @@
 <?php
 $config = get_app_config();
 $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
+$from_status = (int) ($penerimaan['header']['from_status'] ?? 0);
 ?>
 
 <head>
@@ -64,10 +65,12 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
                                 <img id="preview-logo" src="<?= base_url($logo['logo']) ?>" alt="Logo Perusahaan">
                             <?php endif; ?>
                             <?php if ($isCetak < 1): ?>
-                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="showLogoModal()"
-                                    title="Edit Logo">
-                                    <i class="fas fa-edit"></i>
-                                </button>
+                                <?php if ($from_status < 3): ?>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="showLogoModal()"
+                                        title="Edit Logo">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                <?php endif; ?>
                             <?php endif; ?>
 
                         </div>

@@ -51,7 +51,8 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-search"></i> Tampilkan
                                     </button>
-                                    <a href="<?= site_url('penerimaan/reset_filter/antar_gudang') ?>" class="btn btn-secondary">
+                                    <a href="<?= site_url('penerimaan/reset_filter/antar_gudang') ?>"
+                                        class="btn btn-secondary">
                                         <i class="fas fa-sync"></i> Reset
                                     </a>
                                 </div>
@@ -71,7 +72,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">
                     Daftar Penerimaan Antar Gudang
                     <?php if (!empty($penerimaan_list)): ?>
-                        <span class="badge badge-primary ml-2">
+                        <span class="badge text-primary ml-2">
                             <?= count($penerimaan_list) ?> Data
                         </span>
                     <?php endif; ?>
