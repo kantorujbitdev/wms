@@ -314,72 +314,75 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
     <script>
         // Fungsi print dengan pengaturan optimal
         function printDocument() {
-
             const printStyle = document.createElement('style');
-
             printStyle.id = 'dynamic-print-style';
-
             printStyle.textContent = `
-        @media print {
+            @media print {
+                @page {
+                    size: Letter portrait;
+                    margin: 5mm;
+                }
 
-            @page {
-                margin: 0mm !important;
-                size: Letter portrait !important;
-                padding: 0 !important;
+                body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: white !important;
+                }
+
+                .page {
+                    width: 216mm !important;
+                    min-height: auto !important;
+
+                    margin: 0 !important;
+                    padding: 5mm !important;
+
+                    page-break-after: always;
+
+                    box-shadow: none !important;
+                    border: none !important;
+
+                    display: block !important;
+                }
+
+                .detail-table {
+                    page-break-inside: auto !important;
+                }
+
+                .detail-table tr {
+                    page-break-inside: avoid !important;
+                    page-break-after: auto !important;
+                }
+
+                .signature-section {
+                    page-break-inside: avoid !important;
+                }
+
+                .action-buttons,
+                #confirmationModal,
+                #modalPilihLogo {
+                    display: none !important;
+                }
             }
-
-            body {
-                width: 216mm !important;
-                min-height: 279mm !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white !important;
-            }
-
-            .page {
-                width: 216mm !important;
-                min-height: 279mm !important;
-                margin: 0 !important;
-                padding: 15mm 20mm !important;
-                page-break-after: always;
-                page-break-inside: avoid;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            .signature-section {
-                page-break-inside: avoid !important;
-                page-break-before: avoid !important;
-            }
-
-            .detail-table,
-            .detail-table tr {
-                page-break-inside: avoid !important;
-            }
-
-            .action-buttons,
-            #confirmationModal,
-            #modalPilihLogo {
-                display: none !important;
-            }
-        }
-    `;
-
+            `;
             document.head.appendChild(printStyle);
-
             window.print();
-
             window.onafterprint = function () {
-
-                const style =
-                    document.getElementById('dynamic-print-style');
-
+                const style = document.getElementById('dynamic-print-style');
                 if (style) {
                     style.remove();
                 }
-
             };
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (sessionStorage.getItem('autoPrint') === '1') {
+                sessionStorage.removeItem('autoPrint');
+                setTimeout(function () {
+                    printDocument();
+                }, 500);
+            }
+        });
+
         // Auto print jika diakses dari cetak langsung
         <?php if (isset($auto_print) && $auto_print): ?>
             window.onload = function () {
@@ -387,7 +390,6 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
                     printDocument();
                 }, 500);
             };
-
             window.onafterprint = function () {
                 setTimeout(function () {
                     window.close();
@@ -395,31 +397,9 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
             };
         <?php endif; ?>
 
-        // Atur tinggi baris tabel secara dinamis
-        document.addEventListener('DOMContentLoaded', function () {
-            // Atur ulang nomor halaman
-            const pages = document.querySelectorAll('.page');
-            const totalPages = pages.length;
-
-            pages.forEach((page, index) => {
-                const pageNumElement = page.querySelector('.page-number');
-                if (pageNumElement) {
-                    const currentPage = index + 1;
-                    pageNumElement.textContent = `Halaman ${currentPage} dari ${totalPages}`;
-                }
-
-                // Atur tinggi maksimal untuk tabel
-                const tableContainer = page.querySelector('.table-container');
-                if (tableContainer && !page.querySelector('.signature-section')) {
-                    // Untuk halaman non-terakhir, beri tinggi maksimal
-                    tableContainer.style.maxHeight = 'calc(297mm - 60mm)';
-                }
-            });
-        });
     </script>
 
     <script>
-
         function showLogoModal() {
             document.getElementById('modalPilihLogo').style.display = 'block';
         }
@@ -429,9 +409,7 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
         }
 
         window.addEventListener('click', function (event) {
-
             const modal = document.getElementById('modalPilihLogo');
-
             if (event.target === modal) {
                 hideLogoModal();
             }
@@ -439,137 +417,82 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
         });
 
         function pilihLogo(urlLogo, namaPT, logoId) {
-
-            const logo =
-                document.getElementById('preview-logo');
-
+            const logo = document.getElementById('preview-logo');
             if (logo) {
                 logo.src = urlLogo;
             }
-
-            const nama =
-                document.getElementById('preview-nama-pt');
-
+            const nama = document.getElementById('preview-nama-pt');
             if (nama) {
                 nama.innerText = namaPT;
             }
-
-            document.getElementById('logo_id').value =
-                logoId;
-
+            document.getElementById('logo_id').value = logoId;
             hideLogoModal();
         }
 
         function showConfirmationModal(options) {
-
-            $('#confirmationModalLabel').text(
-                options.title || 'Konfirmasi'
-            );
-
-            $('#confirmationMessage').html(
-                options.message || ''
-            );
+            $('#confirmationModalLabel').text(options.title || 'Konfirmasi');
+            $('#confirmationMessage').html(options.message || '');
 
             const confirmButton = $('#confirmButton');
-
-            confirmButton
-                .text(options.confirmText || 'Ya')
-                .removeClass(
-                    'btn-primary btn-danger btn-success btn-warning'
-                )
+            confirmButton.text(options.confirmText || 'Ya')
+                .removeClass('btn-primary btn-danger btn-success btn-warning')
                 .addClass(options.confirmClass || 'btn-danger');
 
             confirmButton.off('click');
-
             confirmButton.on('click', function () {
-
                 // pindahkan fokus keluar modal
                 document.body.focus();
 
-                const modal =
-                    bootstrap.Modal.getOrCreateInstance(
-                        document.getElementById('confirmationModal')
-                    );
+                const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmationModal'));
 
                 modal.hide();
-
                 if (typeof options.onConfirm === 'function') {
-
                     setTimeout(function () {
                         options.onConfirm();
                     }, 200);
-
                 }
-
             });
 
-            bootstrap.Modal
-                .getOrCreateInstance(
-                    document.getElementById('confirmationModal')
-                )
-                .show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmationModal')).show();
         }
 
         function konfirmasiCetak() {
-
-            const btnPrint =
-                $('.action-buttons .btn-print');
+            const btnPrint = $('.action-buttons .btn-print');
 
             showConfirmationModal({
-
                 title: 'Konfirmasi Cetak',
                 message: `Apakah Anda yakin ingin mencetak surat ini?<br><br>
                 <h5><b>Catatan:</h5><h6>- Jika surat sudah dicetak, Logo dan Nama PT tidak dapat diubah lagi.<br>- Maximum Cetak: 2 kali.<b></h6>`,
                 confirmText: 'Ya, Cetak',
                 confirmClass: 'btn-primary',
                 onConfirm: function () {
-
                     btnPrint.prop('disabled', true);
-
                     $.ajax({
-
                         url: $('#formPrint').attr('action'),
-
                         type: 'POST',
-
                         data: $('#formPrint').serialize(),
-
                         dataType: 'json',
 
                         success: function (result) {
-
                             btnPrint.prop('disabled', false);
-
                             if (result.success) {
+                                // tandai bahwa setelah reload harus auto print
+                                sessionStorage.setItem('autoPrint', '1');
 
-                                printDocument();
-
+                                // reload halaman agar data terbaru diambil lagi
+                                location.reload();
                             } else {
-
-                                alert(
-                                    result.message ||
-                                    'Gagal memproses cetak.'
-                                );
-
+                                alert(result.message || 'Gagal memproses cetak.');
                             }
-
                         },
-
                         error: function () {
-
                             btnPrint.prop('disabled', false);
-
-                            alert(
-                                'Terjadi kesalahan saat memproses cetak.'
-                            );
-
+                            alert('Terjadi kesalahan saat memproses cetak.');
                         }
-
                     });
-
                 }
-
             });
+
 
         }
     </script>
