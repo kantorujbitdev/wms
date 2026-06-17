@@ -256,7 +256,7 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
     <?php endforeach; ?>
 
     <!-- Tombol Aksi (Screen Only) -->
-    <?php if ($isCetak < 3): ?>
+    <?php if ($isCetak < 2): ?>
         <div class="action-buttons no-print">
             <button type="button" onclick="konfirmasiCetak()" class="btn-print">
                 <span style="font-size:20px;">🖨️</span>
