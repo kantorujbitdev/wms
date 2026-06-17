@@ -518,10 +518,9 @@ $isCetak = (int) ($penerimaan['header']['is_cetak'] ?? 0);
             showConfirmationModal({
 
                 title: 'Konfirmasi Cetak',
-
-                message:
-                    'Apakah Anda yakin ingin mencetak surat ini?',
-
+                message: `Apakah Anda yakin ingin mencetak surat ini?<br><br>
+                <h5><b>Jika surat sudah dicetak, status surat akan diperbarui.<br>
+                Logo dan nama PT tidak dapat diubah lagi.<b></h5>`,
                 confirmText: 'Ya, Cetak',
 
                 confirmClass: 'btn-primary',
