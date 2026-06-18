@@ -327,13 +327,13 @@
                             <table class="excel-table" id="itemsTable" style="table-layout: fixed;">
                                 <thead>
                                     <tr>
-                                        <th style="width:50px;">No</th>
-                                        <th style="width:350px;">Barang</th>
-                                        <th style="width:90px;">Qty</th>
-                                        <th style="width:100px;">Stok<br>Tersedia</th>
-                                        <th style="width:80px;">Satuan</th>
-                                        <th>Keterangan</th>
-                                        <th style="width:80px;">Aksi</th>
+                                        <th style="width:5%;">No</th>
+                                        <th style="width:35%;">Barang</th>
+                                        <th style="width:10%;">Qty</th>
+                                        <th style="width:12%;">Stok Tersedia</th>
+                                        <th style="width:10%;">Satuan</th>
+                                        <th style="width:18%;">Keterangan</th>
+                                        <th style="width:10%;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="itemsContainer">

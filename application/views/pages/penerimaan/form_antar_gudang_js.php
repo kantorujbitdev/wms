@@ -176,6 +176,7 @@
                 $itemRow.find('.product-id').val(item.product_id || '');
                 $itemRow.find('.stock-id').val(item.stock_id || '');
                 $itemRow.find('.detail-id').val(item.detail_id || '');
+                $itemRow.find('.detail-note').val(item.detail_note || '');
                 $itemRow.find('.qty-sent').val(qtySent);
 
                 // Set qty received input
@@ -204,7 +205,7 @@
                 $itemRow.find('.product-id').attr('name', 'product_id[' + itemIndex + ']');
                 $itemRow.find('.stock-id').attr('name', 'stock_id[' + itemIndex + ']');
                 $itemRow.find('.detail-id').attr('name', 'detail_id[' + itemIndex + ']');
-                $itemRow.find('input[name="detail_note[]"]').attr('name', 'detail_note[' + itemIndex + ']');
+                $itemRow.find('.detail-note').attr('name', 'detail_note[' + itemIndex + ']');
 
                 // Tambahkan event listener untuk input qty
                 $qtyInput.on('input', function () {

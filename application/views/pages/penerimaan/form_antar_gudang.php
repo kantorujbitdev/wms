@@ -219,7 +219,8 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label class="form-label">Keterangan</label>
-                <input type="text" class="form-control" name="detail_note[]" placeholder="Keterangan penerimaan">
+                <input type="text" class="form-control detail-note" name="detail_note[]"
+                    placeholder="Keterangan penerimaan" readonly>
             </div>
         </div>
         <div class="col-md-1">
