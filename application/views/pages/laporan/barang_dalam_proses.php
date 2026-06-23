@@ -15,7 +15,7 @@
                         <select name="status" id="status" class="form-control">
                             <option value="">Semua Status</option>
                             <option value="0" <?= isset($filter_status) && $filter_status === '0' ? 'selected' : '' ?>>
-                                Selesai
+                                Terkirim
                             </option>
                             <option value="1" <?= isset($filter_status) && $filter_status === '1' ? 'selected' : '' ?>>
                                 Dalam
@@ -38,18 +38,31 @@
                         </select>
                     </div>
 
-                    <!-- Filter Start Date -->
+
+                    <!-- Tanggal Mulai -->
                     <div class="col-md-3 mb-3">
-                        <label for="start_date" class="form-label">Tanggal Mulai</label>
-                        <input type="date" name="start_date" id="start_date" class="form-control"
-                            value="<?= isset($filter_start_date) ? $filter_start_date : '' ?>">
+                        <div class="form-group">
+                            <label for="start_date" class="form-label">Tanggal Mulai</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
+                                    placeholder="dd/mm/yyyy"
+                                    value="<?= isset($filter_date_start) ? date('d/m/Y', strtotime($filter_date_start)) : date('d/m/Y') ?>"
+                                    autocomplete="off">
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Filter End Date -->
+                    <!-- Tanggal Akhir -->
                     <div class="col-md-3 mb-3">
-                        <label for="end_date" class="form-label">Tanggal Akhir</label>
-                        <input type="date" name="end_date" id="end_date" class="form-control"
-                            value="<?= isset($filter_end_date) ? $filter_end_date : '' ?>">
+                        <div class="form-group">
+                            <label for="end_date" class="form-label">Tanggal Akhir</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
+                                    placeholder="dd/mm/yyyy"
+                                    value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : date('d/m/Y') ?>"
+                                    autocomplete="off">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -117,7 +130,7 @@
 
                                     <td class="text-center">
                                         <?php if ($pengiriman['on_transfer_status'] == 0): ?>
-                                            <span class="badge bg-success">Selesai</span>
+                                            <span class="badge bg-success">Terkirim</span>
                                         <?php elseif ($pengiriman['on_transfer_status'] == 1): ?>
                                             <span class="badge bg-warning">Dalam Proses</span>
                                         <?php else: ?>
@@ -139,6 +152,15 @@
         </div>
     </div>
 </div>
+
+
+<!-- Tambahkan CSS dan JS Flatpickr di head -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
+
 <!-- JavaScript untuk validasi form dan export -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -161,6 +183,45 @@
             }
         });
 
+
+        // Inisialisasi Flatpickr untuk tanggal
+        flatpickr(".flatpickr", {
+            dateFormat: "d/m/Y",
+            locale: {
+                firstDayOfWeek: 1, // Senin sebagai hari pertama
+                weekdays: {
+                    shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+                },
+                months: {
+                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+                }
+            },
+            onChange: function (selectedDates, dateStr, instance) {
+                // Validasi tanggal
+                const startDate = document.getElementById('start_date').value;
+                const endDate = document.getElementById('end_date').value;
+
+                if (startDate && endDate) {
+                    const startParts = startDate.split('/');
+                    const endParts = endDate.split('/');
+
+                    const start = new Date(startParts[2], startParts[1] - 1, startParts[0]);
+                    const end = new Date(endParts[2], endParts[1] - 1, endParts[0]);
+
+                    if (start > end) {
+                        if (instance.element.id === 'start_date') {
+                            alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
+                            instance.clear();
+                        } else {
+                            alert('Tanggal akhir tidak boleh lebih kecil dari tanggal awal');
+                            instance.clear();
+                        }
+                    }
+                }
+            }
+        });
         // Export to Excel
         const exportBtn = document.getElementById('exportBtn');
         if (exportBtn) {

@@ -250,7 +250,7 @@
                             <a href="<?= site_url('laporan/barang_proses'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'laporan_barang_proses') ? 'active' : ''; ?>">
                                 <i class="<?= get_menu_icon('barang_proses'); ?> me-2"></i>
-                                <span>Barang Proses</span>
+                                <span>Antar Gudang</span>
                             </a>
                         </li>
                     <?php endif; ?>
