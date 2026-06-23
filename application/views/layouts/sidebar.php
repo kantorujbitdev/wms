@@ -254,6 +254,15 @@
                             </a>
                         </li>
                     <?php endif; ?>
+                    <?php if (can_access_menu('laporan_history_proyek')): ?>
+                        <li>
+                            <a href="<?= site_url('laporan/history_proyek'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_history_proyek') ? 'active' : ''; ?>">
+                                <i class="<?= get_menu_icon('history_proyek'); ?> me-2"></i>
+                                <span>History Proyek</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
                     <!-- <?php if (can_access_menu('laporan')): ?>
                         <li>
                             <a href="<?= site_url('laporan/keluar'); ?>"

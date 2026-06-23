@@ -145,7 +145,8 @@ if (!function_exists('get_menu_icon')) {
             'web_pengaturan' => 'fas fa-globe',
             'barang_proses' => 'fas fa-spinner',
             'api_pengaturan' => 'fas fa-plug',
-            'logo_pengaturan' => 'fas fa-image'
+            'logo_pengaturan' => 'fas fa-image',
+            'history_proyek' => 'fas fa-history'
         );
 
         return isset($icons[$menu_key]) ? $icons[$menu_key] : 'fas fa-circle';

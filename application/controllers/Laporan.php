@@ -254,6 +254,76 @@ class Laporan extends MY_Controller
         $this->render_view('pages/laporan/barang_dalam_proses');
     }
 
+    public function history_proyek()
+    {
+        $this->check_permission('laporan', 'view');
+        // Set title
+        $this->data['title'] = 'History Proyek';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_history_proyek';
+
+        // Ambil warehouse_id dari session
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // Ambil parameter filter dari input GET
+        $status = $this->input->get('status');
+        $warehouse_id = $this->input->get('warehouse_id');
+        $filter_date_start = $this->input->get('start_date');
+        $filter_date_end = $this->input->get('end_date');
+
+        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        if (!empty($filter_date_start) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_start)) {
+            $date_parts = explode('/', $filter_date_start);
+            $filter_date_start = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        if (!empty($filter_date_end) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_end)) {
+            $date_parts = explode('/', $filter_date_end);
+            $filter_date_end = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+        }
+
+        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
+        if (empty($filter_date_start)) {
+            $filter_date_start = date('Y-m-01');
+        }
+        if (empty($filter_date_end)) {
+            $filter_date_end = date('Y-m-d');
+        }
+
+        // Prepare data request
+        $data_request_penerimaan = data_login_user([
+            'status' => null,
+            'warehouse_id' => $warehouse_id_session ? $warehouse_id_session : null
+        ]);
+
+        // Apply filters jika ada
+        if ($status !== null && $status !== '') {
+            $data_request_penerimaan['on_transfer_status'] = $status;
+        }
+
+        if ($warehouse_id !== null && $warehouse_id !== '' && $warehouse_id !== 'all') {
+            $data_request_penerimaan['warehouse_id'] = $warehouse_id;
+        }
+
+        $data_request_penerimaan['date_start'] = $filter_date_start;
+        $data_request_penerimaan['date_end'] = $filter_date_end;
+        // Get warehouse list untuk dropdown filter
+        $warehouse_response = $this->Api_model->get_all_gudang(data_login_user());
+        $this->data['warehouse_list'] = $this->handle_response($warehouse_response);
+
+        // Get pengiriman data dengan filter
+        $response = $this->Api_model->history_proyek($data_request_penerimaan);
+        $this->data['pengiriman_list'] = $this->handle_response($response);
+
+        // Kirim filter value ke view untuk form
+        $this->data['filter_status'] = $status;
+        $this->data['filter_warehouse_id'] = $warehouse_id;
+        $this->data['filter_date_start'] = $filter_date_start;
+        $this->data['filter_date_end'] = $filter_date_end;
+
+        // Render view
+        $this->render_view('pages/laporan/history_proyek');
+    }
     // ==================== DETAIL PENGIRIMAN ====================
     public function detail($id)
     {

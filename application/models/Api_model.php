@@ -82,7 +82,10 @@ class Api_model extends CI_Model
         return api_request('GET', 'edit pengiriman', $data);
 
     }
-
+    public function history_proyek($data)
+    {
+        return api_request('GET', 'history proyek', $data);
+    }
     public function delete_pengiriman($data)
     {
         return api_request('DELETE', 'pengiriman', $data);
