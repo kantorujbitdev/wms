@@ -76,7 +76,87 @@
         </div>
     </div>
     <?php if ($is_filtered): ?>
+        <?php
 
+        $total_transaksi = count($pengiriman_list);
+
+        $total_masuk = 0;
+        $total_keluar = 0;
+        $produk_unik = [];
+
+        foreach ($pengiriman_list as $row) {
+
+            $produk_unik[$row['product_code']] = true;
+
+            if ($row['transaction_type'] == 'Masuk') {
+                $total_masuk += (float) $row['qty'];
+            } else {
+                $total_keluar += (float) $row['qty'];
+            }
+        }
+
+        $total_produk = count($produk_unik);
+
+        ?>
+        <div class="row mb-3">
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-left-primary shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Transaksi
+                        </div>
+
+                        <div class="h4 mb-0 font-weight-bold text-gray-800">
+                            <?= number_format($total_transaksi) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-left-success shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Barang Masuk
+                        </div>
+
+                        <div class="h4 mb-0 font-weight-bold text-success">
+                            <?= number_format($total_masuk) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-left-danger shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Total Barang Keluar
+                        </div>
+
+                        <div class="h4 mb-0 font-weight-bold text-danger">
+                            <?= number_format($total_keluar) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class=" col-xl-3 col-md-6 mb-3">
+                <div class="card border-left-warning shadow h-100">
+                    <div class=" card-body text-center">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Total Produk
+                        </div>
+
+                        <div class="h4 mb-0 font-weight-bold text-warning">
+                            <?= number_format($total_produk) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
         <!-- Stock Card Table -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -203,44 +283,56 @@
 
             warehouseContainer.style.display = 'block';
             warehouseContainer.innerHTML = `
-<div class="card border-left-primary shadow-sm mb-3">
+<div class="card shadow-sm border-left-primary mb-3">
     <div class="card-body py-3">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center">
+            <div>
+                <h5 class="mb-1 text-primary font-weight-bold">
+                    <i class="fas fa-warehouse mr-2"></i>
+                    ${warehouse.warehouse_name}
+                </h5>
+                <div class="small text-muted">
+                    <span class="mr-3">
+                        <i class="fas fa-barcode"></i>
+                        ${warehouse.warehouse_code}
+                    </span>
+                    <span class="mr-3">
+                        <i class="fas fa-layer-group"></i>
+                        ${warehouse.warehouse_type_name}
+                    </span>
+                    <span class="mr-3">
+                        <i class="fas fa-user"></i>
+                        ${warehouse.contact_person || '-'}
+                    </span>
+                    <span>
+                        <i class="fas fa-phone"></i>
+                        ${warehouse.phone || '-'}
+                    </span>
+                </div>
+                <div class="small mt-2">
+                    <i class="fas fa-map-marker-alt text-danger mr-1"></i>
+                    ${warehouse.warehouse_address || '-'}
+                </div>
+            </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0 text-primary">
-                <i class="fas fa-warehouse mr-2"></i>
-                ${warehouse.warehouse_name}
-            </h5>
-
-            <span class="badge ${warehouse.warehouse_status == '0'
+            <div class="mt-3 mt-lg-0">
+                <span class="badge ${warehouse.warehouse_status == '0'
                     ? 'badge-success'
-                    : 'badge-danger'} px-3 py-2">
-                ${warehouse.warehouse_status_name}
-            </span>
+                    : 'badge-danger'
+                } px-4 py-2">
+                    ${warehouse.warehouse_status == '0'
+                    ? '<i class="fas fa-check-circle"></i> Aktif'
+                    : '<i class="fas fa-times-circle"></i> Tidak Aktif'
+                }
+                </span>
+            </div>
         </div>
-
-        <div class="text-muted small mb-2">
-            ${warehouse.warehouse_code}
-            &nbsp;•&nbsp;
-            ${warehouse.warehouse_type_name}
-            &nbsp;•&nbsp;
-            ${warehouse.contact_person || '-'}
-            &nbsp;•&nbsp;
-            ${warehouse.phone || '-'}
-        </div>
-
-        <div>
-            <i class="fas fa-map-marker-alt text-danger mr-1"></i>
-            ${warehouse.warehouse_address || '-'}
-        </div>
-
     </div>
 </div>
 `;
         }
 
         renderWarehouseDetail(warehouseSelect.value);
-
         warehouseSelect.addEventListener('change', function () {
             renderWarehouseDetail(this.value);
         });
@@ -263,7 +355,6 @@
                 }
             }
         });
-
 
         // Inisialisasi Flatpickr untuk tanggal
         flatpickr(".flatpickr", {
