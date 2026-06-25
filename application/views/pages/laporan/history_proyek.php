@@ -146,7 +146,7 @@
                 <div class="card border-left-warning shadow h-100">
                     <div class=" card-body text-center">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Total Produk
+                            Jumlah Barang
                         </div>
 
                         <div class="h4 mb-0 font-weight-bold text-warning">
