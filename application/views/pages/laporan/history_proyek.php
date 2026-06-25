@@ -131,7 +131,14 @@
         <!-- Tabel Histori Proyek -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Daftar Histori Proyek</h6>
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Daftar Histori Proyek</h6>
+
+                    <!-- Tombol Export PDF -->
+                    <button type="button" id="exportPdfBtn" class="btn btn-danger btn-sm mt-2 mt-md-0">
+                        <i class="fas fa-file-pdf mr-1"></i> Export PDF
+                    </button>
+                </div>
             </div>
 
             <div class="card-body">
@@ -277,7 +284,6 @@
             <div class="card shadow-sm border-left-primary mb-3">
                 <div class="card-body py-3 px-4">
                     <div class="row align-items-center">
-
                         <div class="col-lg-10">
                             <h4 class="text-primary font-weight-bold mb-2">
                                 <i class="fas fa-warehouse mr-2"></i>
@@ -306,13 +312,11 @@
                                 ${warehouse.warehouse_address || '-'}
                             </div>
                         </div>
-
                         <div class="col-lg-2 text-lg-right mt-3 mt-lg-0">
                             <span class="badge ${badgeClass} px-4 py-2" style="font-size:14px;">
                                 ${badgeText}
                             </span>
                         </div>
-
                     </div>
                 </div>
             </div>`;
@@ -326,8 +330,10 @@
             const end = parseDate(endDateInput.value);
 
             if (start && end && start > end) {
-                $('#errorMessage').text('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
-                $('#errorModal').modal('show');
+                toastr.error(
+                    'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+                    'Tanggal Tidak Valid'
+                );
                 return;
             }
 
@@ -368,9 +374,9 @@
 
         warehouseSelect.addEventListener('change', function () {
             renderWarehouseDetail(this.value);
+
             if (this.value === 'all') {
-                window.location.href =
-                    '<?= site_url('laporan/history_proyek') ?>';
+                toastr.info('Silakan pilih gudang untuk menampilkan histori proyek', 'Informasi');
                 return;
             }
 
@@ -386,19 +392,23 @@
 
             if (start && end && start > end) {
                 e.preventDefault();
-                $('#errorMessage').text('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
-                $('#errorModal').modal('show');
+                toastr.error(
+                    'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+                    'Tanggal Tidak Valid'
+                );
             }
         });
 
         // -------------------------
-        // Export button (opsional)
+        // Export PDF
         // -------------------------
-        const exportBtn = document.getElementById('exportBtn');
-        if (exportBtn) {
-            exportBtn.addEventListener('click', function () {
-                const filters = new URLSearchParams(window.location.search);
-                window.location.href = '<?= site_url("laporan/export_barang_proses") ?>?' + filters.toString();
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        if (exportPdfBtn) {
+            exportPdfBtn.addEventListener('click', function () {
+                // Ambil query string filter yang sedang aktif
+                const params = new URLSearchParams(window.location.search);
+                const exportUrl = '<?= site_url("laporan/export_history_proyek_pdf") ?>?' + params.toString();
+                window.open(exportUrl, '_blank');
             });
         }
 

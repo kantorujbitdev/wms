@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use mPdf\Mpdf;
 
 class Laporan extends MY_Controller
 {
@@ -329,6 +330,134 @@ class Laporan extends MY_Controller
         $this->render_view('pages/laporan/history_proyek');
     }
 
+    public function export_history_proyek_pdf()
+    {
+        $this->check_permission('laporan', 'view');
+
+        // -------------------------
+        // Ambil & sanitasi parameter
+        // -------------------------
+        $warehouse_id = $this->input->get('warehouse_id');
+        $filter_date_start = $this->input->get('start_date');
+        $filter_date_end = $this->input->get('end_date');
+
+        // Konversi format dd/mm/yyyy → Y-m-d
+        if (!empty($filter_date_start) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_start)) {
+            $parts = explode('/', $filter_date_start);
+            $filter_date_start = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+        }
+        if (!empty($filter_date_end) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_end)) {
+            $parts = explode('/', $filter_date_end);
+            $filter_date_end = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+        }
+
+        // Default tanggal jika kosong
+        if (empty($filter_date_start)) {
+            $filter_date_start = date('Y-m-01');
+        }
+        if (empty($filter_date_end)) {
+            $filter_date_end = date('Y-m-d');
+        }
+
+        // Validasi: harus ada warehouse_id
+        if (empty($warehouse_id) || $warehouse_id === 'all') {
+            show_error('Silakan pilih gudang terlebih dahulu.', 400);
+            return;
+        }
+
+        // -------------------------
+        // Ambil data gudang
+        // -------------------------
+        $warehouse_response = $this->Api_model->get_all_gudang(data_login_user());
+        $warehouse_list = $this->handle_response($warehouse_response);
+        $warehouse_info = null;
+
+        foreach ($warehouse_list as $wh) {
+            if ($wh['warehouse_id'] == $warehouse_id) {
+                $warehouse_info = $wh;
+                break;
+            }
+        }
+
+        // -------------------------
+        // Ambil data transaksi
+        // -------------------------
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        $data_request = data_login_user([
+            'status' => null,
+            'warehouse_id' => $warehouse_id_session ?: null,
+        ]);
+
+        $data_request['warehouse_id'] = $warehouse_id;
+        $data_request['date_start'] = $filter_date_start;
+        $data_request['date_end'] = $filter_date_end;
+
+        $response = $this->Api_model->history_proyek($data_request);
+        $pengiriman_list = $this->handle_response($response);
+
+        // -------------------------
+        // Hitung summary
+        // -------------------------
+        $total_transaksi = count($pengiriman_list);
+        $total_masuk = 0;
+        $total_keluar = 0;
+        $produk_unik = [];
+
+        foreach ($pengiriman_list as $row) {
+            $produk_unik[$row['product_code']] = true;
+            if ($row['transaction_type'] === 'Masuk') {
+                $total_masuk += (float) $row['qty'];
+            } else {
+                $total_keluar += (float) $row['qty'];
+            }
+        }
+
+        $total_produk = count($produk_unik);
+
+        // -------------------------
+        // Render HTML untuk PDF
+        // -------------------------
+        $html = $this->load->view(
+            'pages/laporan/export_history_proyek_pdf',
+            [
+                'warehouse_info' => $warehouse_info,
+                'pengiriman_list' => $pengiriman_list,
+                'filter_date_start' => $filter_date_start,
+                'filter_date_end' => $filter_date_end,
+                'total_transaksi' => $total_transaksi,
+                'total_masuk' => $total_masuk,
+                'total_keluar' => $total_keluar,
+                'total_produk' => $total_produk,
+            ],
+            true  // return sebagai string
+        );
+
+        // -------------------------
+        // Generate PDF dengan mPDF
+        // -------------------------
+        require_once FCPATH . 'vendor/autoload.php';
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-L',   // Landscape agar tabel muat
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 10,
+            'margin_right' => 10,
+        ]);
+
+        $mpdf->SetTitle('History Proyek - ' . ($warehouse_info['warehouse_name'] ?? ''));
+        $mpdf->WriteHTML($html);
+
+        // Nama file: history_proyek_NAMAGUDANG_TANGGAL.pdf
+        $warehouse_name_slug = preg_replace('/[^A-Za-z0-9_]/', '_', $warehouse_info['warehouse_name'] ?? 'gudang');
+        $filename = 'history_proyek_' . $warehouse_name_slug . '_' . date('Ymd') . '.pdf';
+
+        // Output ke browser (Download)
+        $mpdf->Output($filename, \Mpdf\Output\Destination::DOWNLOAD);
+        exit;
+    }
     // ==================== DETAIL PENGIRIMAN ====================
     public function detail($id)
     {
