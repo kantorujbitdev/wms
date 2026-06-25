@@ -9,20 +9,6 @@
             <!-- Filter Form -->
             <form method="get" action="<?= site_url('laporan/history_proyek') ?>" id="filterForm" class="mb-4">
                 <div class="row">
-                    <!-- Filter Status -->
-                    <div class="col-md-3 mb-3">
-                        <label for="status" class="form-label">Status Pengiriman</label>
-                        <select name="status" id="status" class="form-control">
-                            <option value="">Semua Status</option>
-                            <option value="0" <?= isset($filter_status) && $filter_status === '0' ? 'selected' : '' ?>>
-                                Terkirim
-                            </option>
-                            <option value="1" <?= isset($filter_status) && $filter_status === '1' ? 'selected' : '' ?>>
-                                Dalam
-                                Proses</option>
-                        </select>
-                    </div>
-
                     <!-- Filter Warehouse -->
                     <div class="col-md-3 mb-3">
                         <label for="warehouse_id" class="form-label">Gudang Asal</label>
@@ -89,68 +75,90 @@
             </form>
         </div>
     </div>
+    <?php if ($is_filtered): ?>
 
-    <!-- Stock Card Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Daftar Histori Proyek</h6>
+        <!-- Stock Card Table -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Daftar Histori Proyek</h6>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Results -->
+                <?php if (empty($pengiriman_list)): ?>
+                    <div class="alert alert-info">
+                        Tidak ada data Histori Proyek.
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="thead-light text-center">
+                                <tr>
+                                    <th width="50">No</th>
+                                    <th width="100">Tanggal</th>
+                                    <th width="180">Nomor Surat</th>
+                                    <th width="100">Kode</th>
+                                    <th>Nama Barang</th>
+                                    <th width="80">Satuan</th>
+                                    <th width="120">Qty Masuk</th>
+                                    <th width="120">Qty Keluar</th>
+                                    <th width="100">Jenis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $no = 1; ?>
+                                <?php foreach ($pengiriman_list as $row): ?>
+                                    <tr>
+                                        <td class="text-center"> <?= $no++ ?> </td>
+                                        <td> <?= date('d-m-Y', strtotime($row['transaction_date'])) ?> </td>
+                                        <td> <?= $row['transaction_code'] ?> </td>
+                                        <td> <strong> <?= $row['product_code'] ?></strong> </td>
+                                        <td> <?= $row['product_name'] ?> </td>
+                                        <td class="text-center"> <?= $row['unit'] ?> </td>
+                                        <td class="text-center">
+                                            <?php if ($row['transaction_type'] == 'Masuk'): ?>
+                                                <span class="font-weight-bold text-success">
+                                                    + <?= number_format($row['qty']) ?>
+                                                </span>
+                                            <?php else: ?>
+                                                -
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <?php if ($row['transaction_type'] == 'Keluar'): ?>
+                                                <span class="font-weight-bold text-danger">
+                                                    -
+                                                    <?= number_format($row['qty']) ?>
+                                                </span>
+                                            <?php else: ?>
+                                                -
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <?php if ($row['transaction_type'] == 'Masuk'): ?>
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-arrow-down"></i>
+                                                    Masuk
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                    Keluar
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
-
-        <div class="card-body">
-
-            <!-- Results -->
-            <?php if (empty($pengiriman_list)): ?>
-                <div class="alert alert-info">
-                    Tidak ada data Histori Proyek.
-                </div>
-            <?php else: ?>
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead class="text-center align-middle">
-                            <tr>
-                                <th>No</th>
-                                <th>Kode Pengiriman</th>
-                                <th>Tanggal</th>
-                                <th>Dari Gudang</th>
-                                <th>Ke Gudang</th>
-                                <th>Keterangan</th>
-                                <th>Dibuat Oleh</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php $no = 1; ?>
-                            <?php foreach ($pengiriman_list as $pengiriman): ?>
-                                <tr>
-                                    <td class="text-center"><?= $no++; ?></td>
-                                    <td><?= $pengiriman['stockout_code'] ?></td>
-                                    <td><?= date('d-m-Y', strtotime($pengiriman['stockout_date'])) ?></td>
-                                    <td><?= $pengiriman['warehouse_name'] ?></td>
-                                    <td><?= !empty($pengiriman['to_name']) ? $pengiriman['to_name'] : ($pengiriman['to_id'] ?? '-') ?>
-                                    </td>
-                                    <td><?= !empty($pengiriman['stockout_note']) ? $pengiriman['stockout_note'] : '-' ?>
-                                    </td>
-                                    <td><?= $pengiriman['user_name'] ?></td>
-
-                                    <td class="text-center">
-                                        <?php if ($pengiriman['on_transfer_status'] == 0): ?>
-                                            <span class="badge bg-success">Terkirim</span>
-                                        <?php elseif ($pengiriman['on_transfer_status'] == 1): ?>
-                                            <span class="badge bg-warning">Dalam Proses</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger">-</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
+    <?php endif; ?>
 </div>
 
 
@@ -321,5 +329,14 @@
                 }
             });
         }
+        filterForm.addEventListener('submit', function (e) {
+            if (warehouseSelect.value === '' || warehouseSelect.value === 'all') {
+                e.preventDefault();
+                alert('Silakan pilih gudang terlebih dahulu.');
+                warehouseSelect.focus();
+                return false;
+            }
+        });
     });
+
 </script>

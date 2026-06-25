@@ -266,7 +266,6 @@ class Laporan extends MY_Controller
         $warehouse_id_session = $this->session->userdata('warehouse_id');
 
         // Ambil parameter filter dari input GET
-        $status = $this->input->get('status');
         $warehouse_id = $this->input->get('warehouse_id');
         $filter_date_start = $this->input->get('start_date');
         $filter_date_end = $this->input->get('end_date');
@@ -297,10 +296,6 @@ class Laporan extends MY_Controller
         ]);
 
         // Apply filters jika ada
-        if ($status !== null && $status !== '') {
-            $data_request_penerimaan['on_transfer_status'] = $status;
-        }
-
         if ($warehouse_id !== null && $warehouse_id !== '' && $warehouse_id !== 'all') {
             $data_request_penerimaan['warehouse_id'] = $warehouse_id;
         }
@@ -312,11 +307,20 @@ class Laporan extends MY_Controller
         $this->data['warehouse_list'] = $this->handle_response($warehouse_response);
 
         // Get pengiriman data dengan filter
-        $response = $this->Api_model->history_proyek($data_request_penerimaan);
-        $this->data['pengiriman_list'] = $this->handle_response($response);
+        $this->data['pengiriman_list'] = [];
+
+        $is_filtered = false;
+
+        if (!empty($warehouse_id) && $warehouse_id !== 'all') {
+            $data_request_penerimaan['warehouse_id'] = $warehouse_id;
+            $is_filtered = true;
+            $response = $this->Api_model->history_proyek($data_request_penerimaan);
+            $this->data['pengiriman_list'] = $this->handle_response($response);
+        }
+
+        $this->data['is_filtered'] = $is_filtered;
 
         // Kirim filter value ke view untuk form
-        $this->data['filter_status'] = $status;
         $this->data['filter_warehouse_id'] = $warehouse_id;
         $this->data['filter_date_start'] = $filter_date_start;
         $this->data['filter_date_end'] = $filter_date_end;
@@ -324,6 +328,7 @@ class Laporan extends MY_Controller
         // Render view
         $this->render_view('pages/laporan/history_proyek');
     }
+
     // ==================== DETAIL PENGIRIMAN ====================
     public function detail($id)
     {
