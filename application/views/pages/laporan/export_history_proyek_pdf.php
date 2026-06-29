@@ -155,6 +155,18 @@ $config = get_app_config();
             color: #1d6a39;
         }
 
+        .card-in {
+            background: #00f068;
+            border-color: #27ae60;
+            color: #ffffff;
+        }
+
+        .card-out {
+            background: #f8c470;
+            border-color: #f39c12;
+            color: #ffffff;
+        }
+
         .card-red {
             background: #fadbd8;
             border-color: #e74c3c;
@@ -342,25 +354,17 @@ $config = get_app_config();
     <div class="summary-section">
         <table>
             <tr>
-                <td style="width:25%; padding:3px;">
-                    <div class="summary-card card-blue">
-                        <div class="s-label">Total Transaksi: <?= number_format($total_transaksi) ?></div>
-                    </div>
+                <td style="width:25%; padding:3px;" class="summary-card card-blue">
+                    <div class="s-label">Transaksi: <?= number_format($total_transaksi) ?></div>
                 </td>
-                <td style="width:25%; padding:3px;">
-                    <div class="summary-card card-green">
-                        <div class="s-label">Total Barang Masuk: <?= number_format($total_masuk) ?></div>
-                    </div>
+                <td style="width:25%; padding:3px;" class="summary-card card-orange">
+                    <div class="s-label">Jenis Barang: <?= number_format($total_produk) ?> </div>
                 </td>
-                <td style="width:25%; padding:3px;">
-                    <div class="summary-card card-red">
-                        <div class="s-label">Total Barang Keluar: <?= number_format($total_keluar) ?></div>
-                    </div>
+                <td style="width:25%; padding:3px;" class="summary-card card-green">
+                    <div class="s-label">Masuk: <?= number_format($total_masuk) ?></div>
                 </td>
-                <td style="width:25%; padding:3px;">
-                    <div class="summary-card card-orange">
-                        <div class="s-label">Jumlah Jenis Barang: <?= number_format($total_produk) ?></div>
-                    </div>
+                <td style="width:25%; padding:3px;" class="summary-card card-red">
+                    <div class="s-label">Keluar: <?= number_format($total_keluar) ?></div>
                 </td>
             </tr>
         </table>
@@ -416,13 +420,11 @@ $config = get_app_config();
                                 <span style="color:#aaa;">-</span>
                             <?php endif; ?>
                         </td>
-                        <td class="text-center">
-                            <?php if ($row['transaction_type'] === 'Masuk'): ?>
-                                <span class="badge-masuk">Masuk</span>
-                            <?php else: ?>
-                                <span class="badge-keluar">Keluar</span>
-                            <?php endif; ?>
-                        </td>
+                        <?php if ($row['transaction_type'] === 'Masuk'): ?>
+                            <td style="padding:3px;" class="summary-card card-in">Masuk</td>
+                        <?php else: ?>
+                            <td style="padding:3px;" class="summary-card card-out">Keluar</td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -436,7 +438,7 @@ $config = get_app_config();
         <table>
             <tr>
                 <td>
-                    Dokumen ini digenerate secara otomatis oleh sistem - <?= $config['app_fullname'] ?>.
+                    Cetak otomatis dalam - <?= $config['app_fullname'] ?>.
                 </td>
                 <td style="text-align:right;">
                     Halaman <span style="font-weight:bold;">{PAGENO}</span>

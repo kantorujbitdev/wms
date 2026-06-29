@@ -93,39 +93,36 @@
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card border-left-primary shadow h-100">
                     <div class="card-body text-center">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Transaksi</div>
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Transaksi</div>
                         <div class="h4 mb-0 font-weight-bold text-gray-800"><?= number_format($total_transaksi) ?></div>
                     </div>
                 </div>
             </div>
-
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card border-left-warning shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Jenis Barang</div>
+                        <div class="h4 mb-0 font-weight-bold text-warning"><?= number_format($total_produk) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card border-left-success shadow h-100">
                     <div class="card-body text-center">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Barang Masuk</div>
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Masuk</div>
                         <div class="h4 mb-0 font-weight-bold text-success"><?= number_format($total_masuk) ?></div>
                     </div>
                 </div>
             </div>
-
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card border-left-danger shadow h-100">
                     <div class="card-body text-center">
-                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Total Barang Keluar</div>
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Keluar</div>
                         <div class="h4 mb-0 font-weight-bold text-danger"><?= number_format($total_keluar) ?></div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card border-left-warning shadow h-100">
-                    <div class="card-body text-center">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Jumlah Barang</div>
-                        <div class="h4 mb-0 font-weight-bold text-warning"><?= number_format($total_produk) ?></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
         <!-- Tabel Histori Proyek -->
