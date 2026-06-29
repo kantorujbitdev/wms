@@ -438,7 +438,8 @@ $config = get_app_config();
         <table>
             <tr>
                 <td>
-                    Cetak otomatis dalam - <?= $config['app_fullname'] ?>.
+                    <?php $name = $this->session->userdata('name'); ?>
+                    Dicetak Oleh: <?= $name ?>
                 </td>
                 <td style="text-align:right;">
                     Halaman <span style="font-weight:bold;">{PAGENO}</span>
