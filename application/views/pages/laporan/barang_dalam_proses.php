@@ -59,7 +59,7 @@
                             <div class="input-group">
                                 <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
                                     placeholder="dd/mm/yyyy"
-                                    value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : date('d/m/Y') ?>"
+                                    value="<?= isset($filter_date_end) ? date('d/m/Y', strtotime($filter_date_end)) : date('d/m/Y') ?>"
                                     autocomplete="off">
                             </div>
                         </div>

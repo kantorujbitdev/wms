@@ -330,6 +330,193 @@ class Laporan extends MY_Controller
         $this->render_view('pages/laporan/history_proyek');
     }
 
+    public function history_barang()
+    {
+        $this->check_permission('laporan', 'view');
+
+        $this->data['title'] = 'History Barang';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_history_barang';
+
+        // Ambil warehouse_id dari session (untuk scoping data login user)
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // Ambil parameter filter dari GET
+        $product_id = $this->input->get('product_id');
+        $filter_date_start = $this->input->get('start_date');
+        $filter_date_end = $this->input->get('end_date');
+
+        // Konversi format dd/mm/yyyy → Y-m-d jika ada
+        if (!empty($filter_date_start) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_start)) {
+            $parts = explode('/', $filter_date_start);
+            $filter_date_start = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+        }
+        if (!empty($filter_date_end) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_end)) {
+            $parts = explode('/', $filter_date_end);
+            $filter_date_end = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+        }
+
+        // Default tanggal: awal bulan ini s/d hari ini
+        if (empty($filter_date_start)) {
+            $filter_date_start = date('Y-m-01');
+        }
+        if (empty($filter_date_end)) {
+            $filter_date_end = date('Y-m-d');
+        }
+
+        // Prepare base request
+        $data_request = data_login_user([
+            // 'status' => null,
+            // 'warehouse_id' => $warehouse_id_session ?: null,
+        ]);
+
+        $data_request['date_start'] = $filter_date_start;
+        $data_request['date_end'] = $filter_date_end;
+
+        // Get product list untuk dropdown filter
+        $products = $this->Api_model->get_barang(data_login_user());
+        $this->data['products_list'] = $this->handle_response($products);
+
+        // Get history data dengan filter (hanya jika product_id valid dipilih)
+        $this->data['history_barang_list'] = [];
+        $is_filtered = false;
+
+        if (!empty($product_id) && $product_id !== 'all') {
+            // Validasi: pastikan product_id ada di daftar produk yang sah
+            $valid_product = false;
+            foreach ($this->data['products_list'] as $p) {
+                if ($p['product_id'] == $product_id) {
+                    $valid_product = true;
+                    break;
+                }
+            }
+
+            if ($valid_product) {
+                $data_request['product_id'] = $product_id;
+                $is_filtered = true;
+
+                $response = $this->Api_model->history_barang($data_request);
+                $this->data['history_barang_list'] = $this->handle_response($response);
+            }
+        }
+
+        $this->data['is_filtered'] = $is_filtered;
+
+        // Kirim filter value ke view
+        $this->data['filter_product_id'] = $product_id;
+        $this->data['filter_date_start'] = $filter_date_start;
+        $this->data['filter_date_end'] = $filter_date_end;
+
+        $this->render_view('pages/laporan/history_barang');
+    }
+
+    public function export_history_barang_pdf()
+    {
+        $this->check_permission('laporan', 'view');
+
+        // -------------------------
+        // Ambil & sanitasi parameter
+        // -------------------------
+        $product_id = $this->input->get('product_id');
+        $filter_date_start = $this->input->get('start_date');
+        $filter_date_end = $this->input->get('end_date');
+
+        if (!empty($filter_date_start) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_start)) {
+            $parts = explode('/', $filter_date_start);
+            $filter_date_start = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+        }
+        if (!empty($filter_date_end) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_end)) {
+            $parts = explode('/', $filter_date_end);
+            $filter_date_end = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+        }
+
+        if (empty($filter_date_start)) {
+            $filter_date_start = date('Y-m-01');
+        }
+        if (empty($filter_date_end)) {
+            $filter_date_end = date('Y-m-d');
+        }
+
+        // Validasi: harus ada product_id
+        if (empty($product_id) || $product_id === 'all') {
+            show_error('Silakan pilih barang terlebih dahulu.', 400);
+            return;
+        }
+
+        // -------------------------
+        // Ambil data produk terpilih
+        // -------------------------
+        $products = $this->Api_model->get_barang(data_login_user());
+        $products_list = $this->handle_response($products);
+        $product_info = null;
+
+        foreach ($products_list as $p) {
+            if ($p['product_id'] == $product_id) {
+                $product_info = $p;
+                break;
+            }
+        }
+
+        if (!$product_info) {
+            show_error('Produk tidak ditemukan.', 404);
+            return;
+        }
+
+        // -------------------------
+        // Ambil data transaksi
+        // -------------------------
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        $data_request = data_login_user([
+            // 'status' => null,
+            // 'warehouse_id' => $warehouse_id_session ?: null,
+        ]);
+
+        $data_request['product_id'] = $product_id;
+        $data_request['date_start'] = $filter_date_start;
+        $data_request['date_end'] = $filter_date_end;
+
+        $response = $this->Api_model->history_barang($data_request);
+        $history_barang_list = $this->handle_response($response);
+
+        // -------------------------
+        // Render HTML untuk PDF
+        // -------------------------
+        $html = $this->load->view(
+            'pages/laporan/export_history_barang_pdf',
+            [
+                'product_info' => $product_info,
+                'history_barang_list' => $history_barang_list,
+                'filter_date_start' => $filter_date_start,
+                'filter_date_end' => $filter_date_end,
+            ],
+            true
+        );
+
+        // -------------------------
+        // Generate PDF dengan mPDF
+        // -------------------------
+        require_once FCPATH . 'vendor/autoload.php';
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 10,
+            'margin_right' => 10,
+        ]);
+
+        $mpdf->SetTitle('History Barang - ' . $product_info['product_name']);
+        $mpdf->WriteHTML($html);
+
+        $product_name_slug = preg_replace('/[^A-Za-z0-9_]/', '_', $product_info['product_name']);
+        $filename = 'history_barang_' . $product_name_slug . '_' . date('Ymd') . '.pdf';
+
+        $mpdf->Output($filename, \Mpdf\Output\Destination::DOWNLOAD);
+        exit;
+    }
+
     public function export_history_proyek_pdf()
     {
         $this->check_permission('laporan', 'view');
