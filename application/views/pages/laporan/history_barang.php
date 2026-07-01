@@ -140,8 +140,8 @@
                                     <th width="40">No</th>
                                     <th width="80">Tanggal</th>
                                     <th width="180">Nomor Surat</th>
-                                    <th width="120">Gudang Asal</th>
-                                    <th width="120">Gudang Tujuan</th>
+                                    <th width="120">Asal</th>
+                                    <th width="120">Tujuan</th>
                                     <th width="90">Kode Barang</th>
                                     <th>Nama Barang</th>
                                     <th width="60">Satuan</th>
