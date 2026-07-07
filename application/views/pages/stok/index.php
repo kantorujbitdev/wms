@@ -217,6 +217,10 @@
                 ],
                 order: [[1, 'asc']],
                 pageLength: 5,
+                lengthMenu: [
+                    [5, 10, 25, 50, 100],
+                    [5, 10, 25, 50, 100],
+                ],
                 responsive: true,
                 drawCallback: function () {
                     let api = this.api();
