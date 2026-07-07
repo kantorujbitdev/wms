@@ -21,74 +21,91 @@ class Laporan extends MY_Controller
     public function stok()
     {
         $this->check_permission('laporan', 'view');
-        // Set title
+
         $this->data['title'] = 'Laporan Stok';
         $this->data['active_menu'] = 'laporan';
         $this->data['active_submenu'] = 'laporan_stok';
 
         $user_role = $this->session->userdata('role');
         $warehouse_id = $this->session->userdata('warehouse_id');
-        $data = data_login_user();
+        $base_data = data_login_user();
 
-        // Get filter parameters
-        $filter_warehouse = $this->input->get('warehouse_id');
-        $filter_product = $this->input->get('product_id');
-        $filter_category = $this->input->get('category_id');
-        $filter_status = $this->input->get('status'); // stok_normal, stok_menipis, stok_kosong
-
-        // Get warehouses for filter (superadmin can see all)
-        if ($user_role == 'superadmin') {
-            $warehouse_response = $this->Api_model->get_all_gudang($data);
+        // -------------------------
+        // Get warehouses untuk dropdown
+        // Superadmin: semua gudang | User gudang: gudang sendiri saja
+        // -------------------------
+        if ($user_role === 'superadmin') {
+            $warehouse_response = $this->Api_model->get_all_gudang($base_data);
         } else {
-            $warehouse_response = $this->Api_model->get_gudang($data);
+            $warehouse_response = $this->Api_model->get_gudang($base_data);
         }
         $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
-        // Get all products for filter
-        $products_response = $this->Api_model->get_barang($data);
+        // -------------------------
+        // Get products untuk dropdown
+        // -------------------------
+        $products_response = $this->Api_model->get_barang($base_data);
         $this->data['products'] = $this->handle_response($products_response);
 
-        // Get product categories for filter
-        $categories_response = $this->Api_model->get_product_type($data);
-        $this->data['categories'] = $this->handle_response($categories_response);
-        // Prepare filter data for API
-        $filter_data = $data;
-
-        // Apply warehouse filter
-        if ($filter_warehouse) {
-            $filter_data['warehouse_id'] = $filter_warehouse;
-        } elseif ($warehouse_id && $user_role != 'superadmin') {
-            // Non-superadmin default to their warehouse
-            $filter_data['warehouse_id'] = $warehouse_id;
-        }
-
-        // Apply product filter
-        if ($filter_product) {
-            $filter_data['product_id'] = $filter_product;
-        }
-
-        // Apply category filter
-        if ($filter_category) {
-            $filter_data['category_id'] = $filter_category;
-        }
-
-        // Get stock data from API
-        $stok_response = $this->Api_model->get_stock_all($filter_data);
-        $stocks = $this->handle_response($stok_response);
-
-        $this->data['stoks'] = $stocks;
-
-        // Pass filter values back to view
-        $this->data['filter_warehouse_id'] = $filter_warehouse;
-        $this->data['filter_product_id'] = $filter_product;
-        $this->data['filter_category_id'] = $filter_category;
-        $this->data['filter_status'] = $filter_status;
+        // -------------------------
+        // Kirim info user ke view
+        // -------------------------
         $this->data['user_role'] = $user_role;
         $this->data['user_warehouse_id'] = $warehouse_id;
         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
 
-        // Render view
+        // -------------------------
+        // Tidak ada pre-load data — semua data dimuat via AJAX dari view
+        // -------------------------
         $this->render_view('pages/laporan/stok');
+    }
+
+    // ============================================================
+// AJAX endpoint untuk filter stok
+// POST: warehouse_id, product_id
+// ============================================================
+    public function get_stok_ajax()
+    {
+        $this->check_permission('laporan', 'view');
+
+        $user_role = $this->session->userdata('role');
+        $warehouse_id = $this->session->userdata('warehouse_id');
+
+        $post_warehouse = $this->input->post('warehouse_id');
+        $post_product = $this->input->post('product_id');
+
+        // Normalisasi string kosong → null
+        if ($post_warehouse === '' || $post_warehouse === 'all')
+            $post_warehouse = null;
+        if ($post_product === '' || $post_product === 'all')
+            $post_product = null;
+
+        // Kedua filter kosong → kembalikan kosong
+        if (empty($post_warehouse) && empty($post_product) && $user_role === 'superadmin') {
+            $this->output->set_content_type('application/json');
+            echo json_encode(['success' => true, 'data' => [], 'empty' => true]);
+            return;
+        }
+
+        // Bangun params
+        $params = ['status' => null];
+
+        if (!empty($post_warehouse)) {
+            $params['warehouse_id'] = $post_warehouse;
+        } elseif (!empty($warehouse_id) && $user_role !== 'superadmin') {
+            // Non-superadmin selalu scope ke gudang sendiri
+            $params['warehouse_id'] = $warehouse_id;
+        }
+
+        if (!empty($post_product)) {
+            $params['product_id'] = $post_product;
+        }
+
+        $filter_data = data_login_user($params);
+        $response = $this->Api_model->get_stock_all($filter_data);
+
+        $this->output->set_content_type('application/json');
+        echo json_encode($response);
     }
     public function stok_card()
     {
@@ -934,9 +951,10 @@ class Laporan extends MY_Controller
             $sheet->mergeCells('A1:I1');
             $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
             $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $config = get_app_config();
+            $sheet->setCellValue('A2', $config['app_fullname'] . ' - ' . $config['app_name']);
 
             // Company/System Info
-            $sheet->setCellValue('A2', 'Sistem Warehouse Management');
             $sheet->mergeCells('A2:I2');
             $sheet->getStyle('A2')->getFont()->setSize(11);
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
