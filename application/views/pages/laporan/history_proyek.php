@@ -16,9 +16,9 @@
 
                     <!-- Filter Gudang -->
                     <div class="col-md-3 mb-3">
-                        <label for="warehouse_id" class="form-label">Gudang Asal</label>
+                        <label for="warehouse_id" class="form-label">Nama Proyek</label>
                         <select name="warehouse_id" id="warehouse_id" class="form-control">
-                            <option value="all">Pilih Gudang</option>
+                            <option value="all">Pilih Proyek</option>
                             <?php foreach ($warehouse_list as $warehouse): ?>
                                 <option value="<?= $warehouse['warehouse_id'] ?>" <?= isset($filter_warehouse_id) && $filter_warehouse_id == $warehouse['warehouse_id'] ? 'selected' : '' ?>>
                                     <?= $warehouse['warehouse_name'] ?>
@@ -59,7 +59,7 @@
                 <div id="warehouseDetailContainer">
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
-                        Silakan pilih gudang terlebih dahulu untuk melihat Histori Proyek.
+                        Silakan pilih proyek terlebih dahulu untuk melihat Histori Proyek.
                     </div>
                 </div>
 
@@ -263,7 +263,7 @@
                 warehouseContainer.innerHTML = `
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    Silakan pilih gudang terlebih dahulu untuk melihat Histori Proyek.
+                    Silakan pilih Proyek terlebih dahulu untuk melihat Histori Proyek.
                 </div>`;
                 return;
             }
@@ -357,7 +357,7 @@
             },
             onChange: function () {
                 if (warehouseSelect.value === 'all') {
-                    toastr.warning('Silakan pilih gudang terlebih dahulu', 'Peringatan');
+                    toastr.warning('Silakan pilih Proyek terlebih dahulu', 'Peringatan');
                     return;
                 }
                 submitFilter();
@@ -373,7 +373,7 @@
             renderWarehouseDetail(this.value);
 
             if (this.value === 'all') {
-                toastr.info('Silakan pilih gudang untuk menampilkan histori proyek', 'Informasi');
+                toastr.info('Silakan pilih Proyek untuk menampilkan histori proyek', 'Informasi');
                 return;
             }
 
