@@ -51,9 +51,9 @@
 
                 <?php if (empty($this->session->userdata('warehouse_id'))): ?>
                     <div class="col-md-4 mb-3">
-                        <label for="warehouse_filter" class="form-label">Pilih Gudang</label>
+                        <label for="warehouse_filter" class="form-label">Pilih Proyek</label>
                         <select id="warehouse_filter" class="form-select" name="warehouse_filter">
-                            <option value="">Semua Gudang</option>
+                            <option value="">Semua Proyek</option>
                             <?php foreach ($warehouses as $w): ?>
                                 <option value="<?= $w['warehouse_id'] ?>">
                                     <?= htmlspecialchars($w['warehouse_name'] . ' || ' . $w['warehouse_code']) ?>
@@ -64,7 +64,7 @@
                 <?php else: ?>
                     <input type="hidden" id="warehouse_filter" value="<?= $this->session->userdata('warehouse_id') ?>">
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">Gudang</label>
+                        <label class="form-label">Proyek</label>
                         <input type="text" class="form-control"
                             value="<?= htmlspecialchars($this->session->userdata('warehouse_name') ?? '') ?>" disabled>
                     </div>
@@ -94,7 +94,7 @@
             <div id="emptyFilterState" style="<?= $is_filtered ? 'display:none;' : '' ?>">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Silakan pilih gudang atau barang terlebih dahulu untuk menampilkan data stok.
+                    Silakan pilih proyek atau barang terlebih dahulu untuk menampilkan data stok.
                 </div>
             </div>
 
@@ -112,7 +112,7 @@
                         <thead class="thead-light text-center align-middle">
                             <tr>
                                 <th width="40">No</th>
-                                <th>Nama Gudang</th>
+                                <th>Nama Proyek</th>
                                 <th>ID BOS</th>
                                 <th>Kode Barang</th>
                                 <th>Nama Barang</th>
@@ -250,7 +250,7 @@
         };
 
         if ($('#warehouse_filter').is('select')) {
-            $('#warehouse_filter').select2({ ...select2Config, placeholder: 'Semua Gudang' });
+            $('#warehouse_filter').select2({ ...select2Config, placeholder: 'Semua Proyek' });
         }
 
         $('#product_filter').select2({ ...select2Config, placeholder: 'Semua Produk' });
