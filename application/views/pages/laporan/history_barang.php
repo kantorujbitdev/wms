@@ -6,22 +6,6 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
     rel="stylesheet" />
-
-<!--
-    PENTING soal masalah search box Select2 yang tidak tampil:
-    Penyebab paling umum adalah CSS dari template admin (SB Admin / AdminLTE)
-    yang menerapkan style global seperti:
-
-        .form-control { ... }
-        input[type="search"] { ... }
-
-    sehingga elemen <input class="select2-search__field"> ikut ter-pengaruh
-    (display:none / height:0 / visibility:hidden), padahal elemen itu
-    SEBENARNYA ADA di DOM. Fix di bawah ini menambahkan CSS override
-    spesifik untuk memastikan search box selalu tampil terlepas dari
-    style global template Anda. Jika masih belum tampil setelah ini,
-    cek di DevTools apakah ada CSS lain dengan !important yang menimpa.
--->
 <style>
     .select2-container--bootstrap-5 .select2-search--dropdown {
         display: block !important;
@@ -206,13 +190,6 @@
     </div>
 </div>
 
-<!--
-    PENTING soal urutan load script:
-    jQuery HARUS sudah ter-load oleh layout utama SEBELUM file ini di-render,
-    karena Select2 bergantung pada jQuery ($). Jika layout utama Anda load
-    jQuery di footer/bawah, pastikan urutannya: jQuery -> Bootstrap JS -> Select2 JS.
-    File ini TIDAK me-load jQuery sendiri — asumsinya sudah tersedia global dari layout.
--->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
