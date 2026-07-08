@@ -1,3 +1,42 @@
+<!-- C:\xampp\htdocs\wms\application\views\pages\laporan\kartu_stok.php -->
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+    rel="stylesheet" />
+
+<style>
+    /* Fix search box Select2 tertimpa CSS template admin */
+    .select2-container--bootstrap-5 .select2-search--dropdown {
+        display: block !important;
+        padding: 6px;
+    }
+
+    .select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        padding: 6px 10px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-dropdown {
+        z-index: 9999;
+    }
+
+    .select2-container--bootstrap-5.select2-container--disabled .select2-selection {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+    }
+</style>
+
 <div class="container-fluid">
 
     <!-- Filter Card -->
@@ -5,116 +44,99 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Filter Kartu Stok</h6>
         </div>
-
-        <!-- Ganti bagian card body form dengan ini -->
         <div class="card-body">
-            <form method="get" action="<?= site_url('laporan/stok_card'); ?>" class="form-horizontal" id="filterForm">
-                <div class="row align-items-end">
-                    <?php if ($user_role == 'superadmin'): ?>
-                        <!-- Warehouse Filter -->
-                        <div class="col-md-3 mb-3">
-                            <div class="form-group">
-                                <label class="form-label">Nama Gudang <span class="text-danger">*</span></label>
-                                <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang" required>
-                                    <option value="">-- Pilih Gudang --</option>
-                                    <?php foreach ($warehouses as $w): ?>
-                                        <option value="<?= $w['warehouse_id'] ?>" <?= ($w['warehouse_id'] == $filter_warehouse_id) ? 'selected' : ''; ?>>
-                                            <?= $w['warehouse_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <!-- <small class="text-muted">Pilih gudang terlebih dahulu untuk melihat produk</small> -->
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <input type="hidden" name="warehouse_id" id="warehouse_id" value="<?= $user_warehouse_id ?>">
-                    <?php endif; ?>
+            <form method="get" action="<?= site_url('laporan/stok_card') ?>" id="filterForm">
+                <div class="row align-items-start">
 
-                    <!-- Product Filter -->
+                    <!-- Kolom 1: Gudang -->
                     <div class="col-md-3 mb-3">
-                        <div class="form-group">
-                            <label class="form-label">Nama Produk</label>
-                            <select name="stock_id" id="stock_id" class="form-control select2-produk"
-                                <?= ($user_role == 'superadmin' && !$filter_warehouse_id) ? 'disabled' : '' ?>>
-                                <option value="">-- Pilih Produk --</option>
-                                <?php if ($user_role == 'superadmin'): ?>
-                                    <?php if ($filter_warehouse_id): ?>
-                                        <?php
-                                        // Filter produk berdasarkan warehouse yang dipilih
-                                        $filtered_products = array_filter($products, function ($product) use ($filter_warehouse_id) {
-                                            return $product['warehouse_id'] == $filter_warehouse_id;
-                                        });
-                                        ?>
-                                        <?php foreach ($filtered_products as $product): ?>
-                                            <option value="<?= $product['stock_id'] ?>"
-                                                data-warehouse="<?= $product['warehouse_id'] ?>"
-                                                <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
-                                                <!-- <?= $product['product_name'] . ' || ' . $product['product_code'] . ' (' . $product['bos_code'] . ')' ?> -->
-                                                <?= $product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan:' . $product['unit_code'] . ')' ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <?php foreach ($products as $product): ?>
-                                        <option value="<?= $product['stock_id'] ?>"
-                                            data-warehouse="<?= $product['warehouse_id'] ?>"
-                                            <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
-                                            <!-- <?= $product['product_name'] . ' || ' . $product['product_code'] . ' (' . $product['bos_code'] . ')' ?> -->
-                                            <?= $product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan:' . $product['unit_code'] . ')' ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+                        <label for="warehouse_id" class="form-label">Gudang Asal <span class="text-danger">*</span>
+                        </label>
+                        <?php if ($user_role == 'superadmin'): ?>
+                            <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang">
+                                <option value="">-- Pilih Gudang --</option>
+                                <?php foreach ($warehouses as $w): ?>
+                                    <option value="<?= $w['warehouse_id'] ?>" <?= ($w['warehouse_id'] == $filter_warehouse_id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($w['warehouse_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
-                        </div>
+                        <?php else: ?>
+                            <!-- BUG FIX: tambahkan name="warehouse_id" agar terkirim saat form submit -->
+                            <input type="hidden" name="warehouse_id" id="warehouse_id" value="<?= $user_warehouse_id ?>">
+                            <input type="text" class="form-control bg-light"
+                                value="<?= htmlspecialchars($user_warehouse_name ?? '') ?>" disabled>
+                        <?php endif; ?>
                     </div>
 
+                    <!-- Kolom 2: Produk -->
                     <div class="col-md-3 mb-3">
-                        <div class="form-group">
-                            <label for="date_start">Tanggal Mulai</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control flatpickr" id="date_start" name="date_start"
-                                    placeholder="dd/mm/yyyy"
-                                    value="<?= isset($filter_date_start) ? date('d/m/Y', strtotime($filter_date_start)) : date('d/m/Y') ?>"
-                                    autocomplete="off">
-                            </div>
-                        </div>
+                        <label class="form-label">Nama Produk</label>
+                        <?php
+                        // Render opsi produk dari server — konsisten dengan filter aktif
+                        $render_products = $products;
+                        if ($user_role == 'superadmin' && $filter_warehouse_id) {
+                            $render_products = array_filter($products, function ($p) use ($filter_warehouse_id) {
+                                return $p['warehouse_id'] == $filter_warehouse_id;
+                            });
+                        } elseif ($user_role == 'superadmin' && !$filter_warehouse_id) {
+                            $render_products = [];
+                        }
+                        ?>
+                        <select name="stock_id" id="stock_id" class="form-control select2-produk"
+                            <?= ($user_role == 'superadmin' && !$filter_warehouse_id) ? 'disabled' : '' ?>>
+                            <option value="">-- Semua Produk --</option>
+                            <?php foreach ($render_products as $product): ?>
+                                <option value="<?= $product['stock_id'] ?>" data-warehouse="<?= $product['warehouse_id'] ?>"
+                                    <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan: ' . $product['unit_code'] . ')') ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+
                     </div>
 
-                    <!-- Tanggal Akhir -->
-                    <div class="col-md-3 mb-3">
-                        <div class="form-group">
-                            <label for="date_end">Tanggal Akhir</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control flatpickr" id="date_end" name="date_end"
-                                    placeholder="dd/mm/yyyy"
-                                    value="<?= isset($filter_date_end) ? date('d/m/Y', strtotime($filter_date_end)) : date('d/m/Y') ?>"
-                                    autocomplete="off">
-                            </div>
-                        </div>
+                    <!-- Kolom 3: Tanggal Mulai -->
+                    <div class="col-md-2 mb-3">
+                        <label for="date_start" class="form-label">Tanggal Mulai</label>
+                        <input type="text" class="form-control flatpickr" id="date_start" name="date_start"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_date_start) ? date('d/m/Y', strtotime($filter_date_start)) : date('d/m/Y') ?>"
+                            autocomplete="off">
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-12 text-right mt-2">
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i class="fas fa-search"></i> Filter
-                        </button>
-                        <a href="<?= site_url('laporan/stok_card'); ?>" class="btn btn-secondary">
-                            <i class="fas fa-redo"></i> Reset
+                    <!-- Kolom 4: Tanggal Akhir -->
+                    <div class="col-md-2 mb-3">
+                        <label for="date_end" class="form-label">Tanggal Akhir</label>
+                        <input type="text" class="form-control flatpickr" id="date_end" name="date_end"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_date_end) ? date('d/m/Y', strtotime($filter_date_end)) : date('d/m/Y') ?>"
+                            autocomplete="off">
+                    </div>
+
+                    <!-- Kolom 5: Reset -->
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <a href="<?= site_url('laporan/stok_card') ?>" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-redo"></i> Reset Filter
                         </a>
+                        <span class="filter-hint">&nbsp;</span>
                     </div>
+
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Stock Card Table -->
+    <!-- Tabel Kartu Stok -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Data Kartu Stok</h6>
                 <small class="text-muted">
-                    Periode: <?= date('d/m/Y', strtotime($filter_date_start)) ?> -
+                    Periode:
+                    <?= date('d/m/Y', strtotime($filter_date_start)) ?>
+                    &ndash;
                     <?= date('d/m/Y', strtotime($filter_date_end)) ?>
                 </small>
                 <?php if (!empty($stock_cards)): ?>
@@ -122,272 +144,326 @@
                         'warehouse_id' => $filter_warehouse_id,
                         'stock_id' => $filter_stock_id,
                         'date_start' => $filter_date_start,
-                        'date_end' => $filter_date_end
-                    ])); ?>" class="btn btn-success btn-sm">
+                        'date_end' => $filter_date_end,
+                    ])) ?>" class="btn btn-success btn-sm mt-2 mt-md-0">
                         <i class="fas fa-file-excel"></i> Export Excel
                     </a>
                 <?php endif; ?>
             </div>
         </div>
-
         <div class="card-body">
-
             <?php if (empty($stock_cards)): ?>
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    Tidak ada data Pengiriman ke Pengguna.
-                    <?= date('d/m/Y', strtotime($filter_date_start)) ?> -
-                    <?= date('d/m/Y', strtotime($filter_date_end)) ?>.
+                    <?php if ($user_role == 'superadmin' && !$filter_warehouse_id): ?>
+                        Silakan pilih gudang untuk menampilkan data Kartu Stok.
+                    <?php else: ?>
+                        Tidak ada data Kartu Stok untuk periode
+                        <?= date('d/m/Y', strtotime($filter_date_start)) ?>
+                        &ndash;
+                        <?= date('d/m/Y', strtotime($filter_date_end)) ?>.
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
-
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-
-                        <thead class="text-center align-middle">
+                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="thead-light text-center align-middle">
                             <tr>
-                                <th>No</th>
+                                <th width="40">No</th>
                                 <th>Tanggal</th>
                                 <th>No. Referensi</th>
                                 <th>Kode Barang</th>
                                 <th>Nama Barang</th>
-                                <th>Stok<br>Awal</th>
-                                <th>Qty</th>
-                                <th>Stok<br>Akhir</th>
+                                <th width="80">Stok Awal</th>
+                                <th width="80">Qty</th>
+                                <th width="80">Stok Akhir</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             <?php $no = 1; ?>
                             <?php foreach ($stock_cards as $card): ?>
                                 <tr>
-                                    <td class="text-center"><?= $no++; ?></td>
-                                    <td><?= $card['movement_date']; ?></td>
-                                    <td><?= $card['movement_refno']; ?></td>
-                                    <td><?= $card['product_code']; ?></td>
-                                    <td><?= $card['product_name']; ?></td>
+                                    <td class="text-center"><?= $no++ ?></td>
+                                    <td><?= htmlspecialchars($card['movement_date']) ?></td>
+                                    <td><?= htmlspecialchars($card['movement_refno']) ?></td>
+                                    <td><?= htmlspecialchars($card['product_code']) ?></td>
+                                    <td><?= htmlspecialchars($card['product_name']) ?></td>
                                     <td class="text-center">
-                                        <strong>
-                                            <?= $card['begin_stock']; ?>
-                                        </strong>
+                                        <strong><?= $card['begin_stock'] ?></strong>
                                     </td>
-
                                     <td class="text-center">
                                         <?php if ($card['movement_type'] == '1'): ?>
-                                            <strong><span class="text-success">
-                                                    +<?= $card['qty']; ?>
-                                                </span></strong>
+                                            <strong class="text-success">+<?= $card['qty'] ?></strong>
                                         <?php else: ?>
-                                            <strong><span class="text-danger">
-                                                    -<?= $card['qty']; ?>
-                                                </span></strong>
+                                            <strong class="text-danger">-<?= $card['qty'] ?></strong>
                                         <?php endif; ?>
                                     </td>
-
                                     <td class="text-center">
-                                        <strong><?= $card['last_stock']; ?></strong>
+                                        <strong><?= $card['last_stock'] ?></strong>
                                     </td>
-
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
-
                         <tfoot>
                             <tr>
                                 <td colspan="5" class="text-right">
                                     <strong>Total Transaksi:</strong>
                                 </td>
                                 <td colspan="3" class="text-center">
-                                    <strong><?= count($stock_cards); ?></strong>
+                                    <strong><?= count($stock_cards) ?></strong>
                                 </td>
                             </tr>
                         </tfoot>
-
                     </table>
                 </div>
-
             <?php endif; ?>
-
         </div>
+    </div>
+
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(255,255,255,0.8); z-index:9999;">
+    <div class="d-flex flex-column justify-content-center align-items-center h-100">
+        <div class="spinner-border text-primary" style="width:3rem; height:3rem;" role="status"></div>
+        <h5 class="mt-3 mb-0">Memuat data...</h5>
     </div>
 </div>
 
-<!-- Tambahkan CSS dan JS Flatpickr di head -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+<!-- Flatpickr & Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const userRole = '<?= $user_role ?>';
-        const isSuperAdmin = userRole === 'superadmin';
+    $(document).ready(function () {
 
-        // Data produk dari server (disimpan dalam JavaScript)
-        const allProducts = <?= json_encode($products) ?>;
+        // =========================================================
+        // Konstanta dari PHP
+        // =========================================================
+        const isSuperAdmin = '<?= $user_role ?>' === 'superadmin';
+        const allProducts = <?= json_encode(array_values($products)) ?>;
 
-        // Inisialisasi Select2 untuk Gudang
-        if ($('.select2-gudang').length) {
-            $('.select2-gudang').select2({
-                placeholder: '-- Pilih Gudang --',
-                width: '100%'
-            });
+        // =========================================================
+        // Helper: parse tanggal d/m/Y → Date (safe cross-browser)
+        // =========================================================
+        function parseDate(str) {
+            if (!str) return null;
+            const p = str.split('/');
+            if (p.length !== 3) return null;
+            return new Date(p[2], p[1] - 1, p[0]);
         }
 
-        // Inisialisasi Select2 untuk Produk
-        function initProductSelect2(disabled = false) {
-            if ($('.select2-produk').length) {
-                $('.select2-produk').select2({
-                    placeholder: '-- Pilih Produk --',
-                    width: '100%',
-                    minimumInputLength: 0,
-                    disabled: disabled,
-                    language: {
-                        noResults: function () {
-                            return "Produk tidak ditemukan";
-                        },
-                        searching: function () {
-                            return "Mencari...";
-                        }
-                    }
-                });
-            }
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'block';
         }
 
-        // Fungsi untuk memfilter produk berdasarkan warehouse
-        function filterProductsByWarehouse(warehouseId) {
-            const productSelect = $('#stock_id');
-            const currentValue = productSelect.val();
+        // =========================================================
+        // submitFilter: validasi tanggal lalu submit
+        // =========================================================
+        function submitFilter() {
+            const start = parseDate($('#date_start').val());
+            const end = parseDate($('#date_end').val());
 
-            // Hapus semua option kecuali yang pertama
-            productSelect.find('option:not(:first)').remove();
-
-            if (!warehouseId) {
-                // Jika tidak ada warehouse yang dipilih, disable produk select
-                productSelect.prop('disabled', true).trigger('change');
+            if (start && end && start > end) {
+                toastr.error(
+                    'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+                    'Tanggal Tidak Valid'
+                );
                 return;
             }
 
-            // Filter produk berdasarkan warehouse_id
-            const filteredProducts = allProducts.filter(product =>
-                product.warehouse_id == warehouseId
-            );
-
-            // Tambahkan option produk yang sudah difilter
-            filteredProducts.forEach(product => {
-                const option = new Option(
-                    product.product_code + ' || ' + product.product_name + ' (Satuan: ' + (product.unit_code || '') + ')',
-                    product.stock_id,
-                    false,
-                    product.stock_id == currentValue
-                );
-                $(option).attr('data-warehouse', product.warehouse_id);
-                productSelect.append(option);
-            });
-
-            // Enable produk select
-            productSelect.prop('disabled', false).trigger('change');
+            showLoading();
+            document.getElementById('filterForm').submit();
         }
 
-        // Event handler untuk perubahan warehouse
-        $('#warehouse_id').on('change', function () {
-            const warehouseId = $(this).val();
+        // =========================================================
+        // Select2 config terpusat
+        // =========================================================
+        const select2Config = {
+            theme: 'bootstrap-5',
+            width: '100%',
+            allowClear: true,
+            minimumResultsForSearch: 0,
+            dropdownParent: $('body')
+        };
 
-            // Reset produk yang dipilih
-            $('#stock_id').val('').trigger('change');
+        // Init Select2 gudang (superadmin)
+        if ($('#warehouse_id').is('select')) {
+            $('#warehouse_id').select2({
+                ...select2Config,
+                placeholder: '-- Pilih Gudang --'
+            });
+        }
 
-            // Filter produk berdasarkan warehouse yang dipilih
-            filterProductsByWarehouse(warehouseId);
+        // Init Select2 produk
+        $('#stock_id').select2({
+            ...select2Config,
+            placeholder: '-- Semua Produk --'
         });
 
-        // Validasi form sebelum submit
-        $('#filterForm').on('submit', function (e) {
-            if (isSuperAdmin) {
-                const warehouseId = $('#warehouse_id').val();
+        // =========================================================
+        // filterProductsByWarehouse
+        //
+        // BUG FIX 1: check Select2 init pakai .hasClass saja
+        //   ($.fn.dataTable adalah DataTables, bukan Select2)
+        //
+        // BUG FIX 2: saat init dengan data dari server, jangan
+        //   re-render opsi karena sudah di-render PHP. Fungsi ini
+        //   hanya dipanggil saat PERUBAHAN gudang dari user,
+        //   bukan saat halaman pertama load.
+        // =========================================================
+        function filterProductsByWarehouse(warehouseId, submitAfter) {
+            const $produk = $('#stock_id');
+
+            // Destroy Select2 sebelum manipulasi DOM
+            if ($produk.hasClass('select2-hidden-accessible')) {
+                $produk.select2('destroy');
+            }
+
+            // Bersihkan opsi lama (kecuali placeholder)
+            $produk.find('option:not(:first)').remove();
+
+            if (!warehouseId) {
+                // BUG FIX: gudang dikosongkan → disable produk, tetap submit
+                // agar controller bisa reset (tampilkan pesan pilih gudang)
+                $produk.prop('disabled', true);
+            } else {
+                const filtered = allProducts.filter(p => p.warehouse_id == warehouseId);
+                filtered.forEach(function (p) {
+                    const label = p.product_code + ' - ' + p.product_name + ' (Satuan: ' + (p.unit_code || '') + ')';
+                    $produk.append(new Option(label, p.stock_id, false, false));
+                });
+                $produk.prop('disabled', false);
+            }
+
+            // Re-init Select2 setelah manipulasi DOM
+            $produk.select2({
+                ...select2Config,
+                placeholder: '-- Semua Produk --'
+            });
+
+            if (submitAfter) {
+                submitFilter();
+            }
+        }
+
+        // =========================================================
+        // EVENT: Gudang berubah (superadmin)
+        //
+        // BUG FIX: ketika gudang dihapus (clear), value = ""
+        // Sebelumnya hanya toastr + return, tidak submit.
+        // Sekarang: selalu submit agar URL berubah ke ?warehouse_id=
+        // dan controller bisa tampilkan state kosong yang benar.
+        // =========================================================
+        if (isSuperAdmin) {
+            $('#warehouse_id').on('change', function () {
+                const warehouseId = $(this).val() || '';
 
                 if (!warehouseId) {
-                    e.preventDefault();
-                    alert('Silahkan pilih gudang terlebih dahulu');
-                    return false;
+                    // Gudang dihapus → filter produk (kosongkan), lalu submit
+                    filterProductsByWarehouse('', true);
+                } else {
+                    // Gudang dipilih → filter produk, lalu submit
+                    filterProductsByWarehouse(warehouseId, true);
                 }
+            });
+        }
+
+        // =========================================================
+        // EVENT: Produk berubah → auto-submit
+        // =========================================================
+        $('#stock_id').on('change', function () {
+            if (isSuperAdmin && !$('#warehouse_id').val()) {
+                toastr.warning('Pilih gudang terlebih dahulu', 'Peringatan');
+                return;
             }
-
-            // Optional: Validasi tanggal
-            const dateStart = $('input[name="date_start"]').val();
-            const dateEnd = $('input[name="date_end"]').val();
-
-            if (dateStart && dateEnd) {
-                // Konversi dd/mm/yyyy ke Date object untuk perbandingan
-                const startParts = dateStart.split('/');
-                const endParts = dateEnd.split('/');
-
-                const startDate = new Date(startParts[2], startParts[1] - 1, startParts[0]);
-                const endDate = new Date(endParts[2], endParts[1] - 1, endParts[0]);
-
-                if (startDate > endDate) {
-                    e.preventDefault();
-                    alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
-                    return false;
-                }
-            }
+            submitFilter();
         });
 
-        // Inisialisasi Flatpickr untuk tanggal
-        flatpickr(".flatpickr", {
-            dateFormat: "d/m/Y",
+        // =========================================================
+        // Flatpickr
+        // =========================================================
+        const flatpickrConfig = {
+            dateFormat: 'd/m/Y',
             locale: {
-                firstDayOfWeek: 1, // Senin sebagai hari pertama
+                firstDayOfWeek: 1,
                 weekdays: {
                     shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
                     longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
                 },
                 months: {
                     shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
                 }
             },
             onChange: function (selectedDates, dateStr, instance) {
-                // Validasi tanggal
-                const startDate = document.getElementById('date_start').value;
-                const endDate = document.getElementById('date_end').value;
-
-                if (startDate && endDate) {
-                    const startParts = startDate.split('/');
-                    const endParts = endDate.split('/');
-
-                    const start = new Date(startParts[2], startParts[1] - 1, startParts[0]);
-                    const end = new Date(endParts[2], endParts[1] - 1, endParts[0]);
-
-                    if (start > end) {
-                        if (instance.element.id === 'date_start') {
-                            alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
-                            instance.clear();
-                        } else {
-                            alert('Tanggal akhir tidak boleh lebih kecil dari tanggal awal');
-                            instance.clear();
-                        }
-                    }
+                if (isSuperAdmin && !$('#warehouse_id').val()) {
+                    toastr.warning('Pilih gudang terlebih dahulu', 'Peringatan');
+                    instance.clear();
+                    return;
                 }
+
+                const start = parseDate($('#date_start').val());
+                const end = parseDate($('#date_end').val());
+
+                if (start && end && start > end) {
+                    toastr.error(
+                        instance.element.id === 'date_start'
+                            ? 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir'
+                            : 'Tanggal akhir tidak boleh lebih kecil dari tanggal awal',
+                        'Tanggal Tidak Valid'
+                    );
+                    instance.clear();
+                    return;
+                }
+
+                // Auto-submit hanya jika kedua tanggal sudah terisi
+                if ($('#date_start').val() && $('#date_end').val()) {
+                    submitFilter();
+                }
+            }
+        };
+
+        flatpickr('#date_start', flatpickrConfig);
+        flatpickr('#date_end', flatpickrConfig);
+
+        // =========================================================
+        // Safety net: validasi saat form di-submit manual
+        // =========================================================
+        $('#filterForm').on('submit', function (e) {
+            if (isSuperAdmin && !$('#warehouse_id').val()) {
+                e.preventDefault();
+                toastr.warning('Silahkan pilih gudang terlebih dahulu', 'Peringatan');
+                return false;
+            }
+
+            const start = parseDate($('#date_start').val());
+            const end = parseDate($('#date_end').val());
+
+            if (start && end && start > end) {
+                e.preventDefault();
+                toastr.error(
+                    'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+                    'Tanggal Tidak Valid'
+                );
+                return false;
             }
         });
 
-        // Inisialisasi awal
-        if (isSuperAdmin) {
-            const initialWarehouse = $('#warehouse_id').val();
-
-            if (initialWarehouse) {
-                // Jika ada warehouse yang sudah dipilih, filter produk
-                filterProductsByWarehouse(initialWarehouse);
-                initProductSelect2(false);
-            } else {
-                // Jika belum ada warehouse yang dipilih, disable produk select
-                initProductSelect2(true);
-            }
-        } else {
-            // Untuk admin, langsung filter berdasarkan warehouse mereka
-            const adminWarehouse = $('#warehouse_id').val();
-            filterProductsByWarehouse(adminWarehouse);
-            initProductSelect2(false);
+        // =========================================================
+        // Init awal: TIDAK re-render produk dari JS saat halaman load
+        // karena PHP sudah render opsi yang benar berdasarkan filter aktif.
+        // Cukup pastikan state disabled sesuai kondisi.
+        // =========================================================
+        if (isSuperAdmin && !$('#warehouse_id').val()) {
+            $('#stock_id').prop('disabled', true).select2('destroy').select2({
+                ...select2Config,
+                placeholder: '-- Semua Produk --'
+            });
         }
+
     });
 </script>
