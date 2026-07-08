@@ -15,19 +15,6 @@
             <form method="get" action="<?= site_url('laporan/barang_proses') ?>" id="filterForm">
                 <div class="row">
 
-                    <!-- Filter Gudang -->
-                    <!-- <div class="col-md-3 mb-3">
-                        <label for="warehouse_id" class="form-label">Gudang Asal</label>
-                        <select name="warehouse_id" id="warehouse_id" class="form-control">
-                            <option value="all">Semua Gudang</option>
-                            <?php foreach ($warehouse_list as $warehouse): ?>
-                                <option value="<?= $warehouse['warehouse_id'] ?>" <?= isset($filter_warehouse_id) && $filter_warehouse_id == $warehouse['warehouse_id'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($warehouse['warehouse_name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div> -->
-
                     <?php if ($user_role == 'superadmin'): ?>
                         <!-- Warehouse Filter -->
                         <div class="col-md-3 mb-3">
