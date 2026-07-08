@@ -1,46 +1,123 @@
 <script>
     $(document).ready(function () {
-        // Initialize Select2
-        $('.select2').select2({
-            width: '100%'
-        });
 
-        // Variables
+        // =========================================================
+        // STATE
+        // =========================================================
         let currentStockoutId = null;
+        let isSubmitting = false;   // FLAG anti double-submit
 
-        // Fungsi untuk konversi bulan ke Romawi
-        function getRomanMonth(month) {
-            const romanNumerals = {
-                1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI',
-                7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X', 11: 'XI', 12: 'XII'
+        // =========================================================
+        // HELPER: refresh CSRF token dari response header/cookie
+        // CodeIgniter regenerate CSRF tiap request jika
+        // csrf_regenerate = TRUE (default). Kita baca dari meta atau
+        // dari response JSON yang kita sertakan di tiap reply.
+        // =========================================================
+        function getCsrfData() {
+            return {
+                [csrfData.name]: csrfData.hash
             };
-            return romanNumerals[month] || 'I';
         }
 
-        // Fungsi untuk generate stockin code berdasarkan warehouse tujuan
+        function updateCsrfHash(newHash) {
+            if (newHash) csrfData.hash = newHash;
+        }
+
+        // =========================================================
+        // HELPER: Roman month
+        // =========================================================
+        function getRomanMonth(month) {
+            return ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'][month - 1] || 'I';
+        }
+
+        // =========================================================
+        // HELPER: Generate stockin code
+        // =========================================================
         function generateStockinCode(warehouseId) {
             const romanMonth = getRomanMonth(new Date().getMonth() + 1);
             const currentYear = new Date().getFullYear();
             let warehouseCode = 'WH';
 
-            // Cari warehouse code berdasarkan ID
             if (appData.userRole === 'superadmin') {
-                // Untuk superadmin, cari berdasarkan warehouse tujuan
-                for (let i = 0; i < appData.warehouses.length; i++) {
-                    if (appData.warehouses[i].warehouse_id == warehouseId) {
-                        warehouseCode = appData.warehouses[i].warehouse_code;
-                        break;
-                    }
-                }
+                const wh = appData.warehouses.find(w => w.warehouse_id == warehouseId);
+                if (wh) warehouseCode = wh.warehouse_code;
             } else {
-                // Untuk non-superadmin, gunakan warehouse user
                 warehouseCode = appData.userWarehouseCode;
             }
 
             return `TI/${warehouseCode}/${romanMonth}/${currentYear}`;
         }
 
-        // When stockout_id changes
+        // =========================================================
+        // HELPER: Notifikasi — pakai toastr, bukan modal
+        // (modal #errorModal tidak ada di HTML)
+        // =========================================================
+        function notifSuccess(msg) { toastr.success(msg); }
+        function notifError(msg) { toastr.error(msg); }
+        function notifWarning(msg) { toastr.warning(msg); }
+
+        // =========================================================
+        // HELPER: Validasi qty input
+        // Hanya validasi saat blur/submit, BUKAN saat input event
+        // agar user bisa menghapus angka dan mengetik ulang.
+        // =========================================================
+        function validateQtyInput($input) {
+            const maxQty = parseFloat($input.data('max') || 0);
+            const currentVal = $input.val();
+            let currentQty = parseFloat(currentVal);
+
+            // Nilai kosong → set ke maxQty sebagai default
+            if (currentVal === '' || isNaN(currentQty)) {
+                $input.val(maxQty);
+                currentQty = maxQty;
+            }
+
+            if (currentQty < 0) {
+                $input.val(0);
+                currentQty = 0;
+                setInputError($input, 'Qty tidak boleh negatif');
+                return false;
+            }
+
+            if (currentQty > maxQty) {
+                $input.val(maxQty);
+                setInputError($input, `Qty tidak boleh melebihi ${maxQty}`);
+                return false;
+            }
+
+            clearInputError($input);
+            return true;
+        }
+
+        function setInputError($input, msg) {
+            $input.addClass('is-invalid');
+            let $fb = $input.siblings('.invalid-feedback');
+            if ($fb.length === 0) {
+                $fb = $('<div class="invalid-feedback"></div>').insertAfter($input);
+            }
+            $fb.text(msg).show();
+        }
+
+        function clearInputError($input) {
+            $input.removeClass('is-invalid');
+            $input.siblings('.invalid-feedback').hide();
+        }
+
+        // =========================================================
+        // INISIALISASI SELECT2
+        // Class berbeda (select2-pengiriman) agar tidak bentrok dengan
+        // inisialisasi global di main.js yang mungkin sudah jalan.
+        // =========================================================
+        $('.select2-pengiriman').select2({
+            width: '100%',
+            placeholder: '-- Pilih Kode Pengiriman --',
+            allowClear: true,
+            minimumResultsForSearch: 0
+        });
+
+        // =========================================================
+        // EVENT: Pilih kode pengiriman
+        // =========================================================
         $('#stockout_id').on('change', function () {
             const stockoutId = $(this).val();
 
@@ -48,95 +125,60 @@
                 $('#formDataSection').addClass('d-none');
                 $('#itemsContainer').empty();
                 currentStockoutId = null;
-
-                // Reset stockin code ke default
-                const defaultCode = generateStockinCode(appData.userWarehouseId);
-                $('#stockin_code').val(defaultCode);
+                $('#stockin_code').val(generateStockinCode(appData.userWarehouseId));
                 return;
             }
 
-            // If same stockout_id selected, do nothing
-            if (currentStockoutId === stockoutId) {
-                return;
-            }
+            // Jika pilih pengiriman yang sama, tidak perlu reload
+            // TAPI: jika setelah reset lalu pilih lagi, currentStockoutId
+            // sudah di-null saat reset, jadi ini aman
+            if (currentStockoutId === stockoutId) return;
 
-            // Show loading indicator
             $('#loadingIndicator').removeClass('d-none');
             $('#formDataSection').addClass('d-none');
             $('#itemsContainer').empty();
 
-            // Get pengiriman detail
             $.ajax({
                 url: '<?= site_url("penerimaan/get_pengiriman_detail") ?>',
                 type: 'POST',
                 dataType: 'json',
                 data: {
                     stockout_id: stockoutId,
-                    <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
+                    ...getCsrfData()
                 },
-                success: function (response) {
+                success: function (res) {
+                    // Refresh CSRF token dari response (jika disertakan)
+                    updateCsrfHash(res.csrf_hash);
+
                     $('#loadingIndicator').addClass('d-none');
 
-                    if (response.success) {
-                        const header = response.header || {};
-                        const detail = response.detail || [];
+                    if (res.success) {
+                        const header = res.header || {};
+                        const detail = res.detail || [];
+
                         currentStockoutId = stockoutId;
-
-                        // Populate header information
                         populateHeader(header);
-
-                        // Generate dan set stockin code berdasarkan gudang tujuan
                         updateStockinCode(header);
-
-                        // Populate items
                         populateItems(detail);
 
-                        // Show form section
                         $('#formDataSection').removeClass('d-none');
-
-                        // Scroll to form
-                        $('html, body').animate({
-                            scrollTop: $('#formDataSection').offset().top - 100
-                        }, 500);
+                        $('html, body').animate({ scrollTop: $('#formDataSection').offset().top - 100 }, 400);
                     } else {
-                        showToastrError(response.message || 'Gagal memuat data pengiriman');
-                        $('#formDataSection').addClass('d-none');
+                        notifError(res.message || 'Gagal memuat data pengiriman');
                     }
                 },
-                error: function (xhr, status, error) {
+                error: function (xhr) {
                     $('#loadingIndicator').addClass('d-none');
-                    console.error('AJAX Error:', xhr.responseText);
-                    showToastrError('Terjadi kesalahan saat memuat data: ' + error);
+                    notifError('Terjadi kesalahan saat memuat data pengiriman');
+                    console.error('AJAX Error:', xhr.responseText.substring(0, 200));
                 }
             });
         });
 
-        // Fungsi untuk update stockin code berdasarkan header
-        function updateStockinCode(header) {
-            if (!header) return;
-
-            let warehouseId;
-
-            // Tentukan warehouse ID berdasarkan user role
-            if (appData.userRole === 'superadmin') {
-                // Untuk superadmin, gunakan to_id dari header (gudang tujuan)
-                warehouseId = header.to_id || appData.userWarehouseId;
-            } else {
-                // Untuk non-superadmin, gunakan warehouse user
-                warehouseId = appData.userWarehouseId;
-            }
-
-            // Generate stockin code baru
-            const newStockinCode = generateStockinCode(warehouseId);
-
-            // Update input field
-            $('#stockin_code').val(newStockinCode);
-        }
-
-        // Populate header information
+        // =========================================================
+        // Populate header
+        // =========================================================
         function populateHeader(header) {
-            if (!header) return;
-
             $('#header_stockout_date').val(header.stockout_date || '');
             $('#header_warehouse_name').val(header.warehouse_name || '');
             $('#header_warehouse_id').val(header.warehouse_id || '');
@@ -145,273 +187,188 @@
             $('#header_to_id').val(header.to_id || '');
             $('#header_stockout_note').val(header.stockout_note || '');
 
-            // Set default stockin_invoice from stockout_code
             if (header.stockout_code) {
                 $('#stockin_invoice').val(header.stockout_code);
             }
         }
 
+        // =========================================================
+        // Update stockin code
+        // =========================================================
+        function updateStockinCode(header) {
+            const warehouseId = appData.userRole === 'superadmin'
+                ? (header.to_id || appData.userWarehouseId)
+                : appData.userWarehouseId;
+
+            $('#stockin_code').val(generateStockinCode(warehouseId));
+        }
+
+        // =========================================================
         // Populate items
+        // =========================================================
         function populateItems(items) {
-            const container = $('#itemsContainer');
-            container.empty();
+            const $container = $('#itemsContainer');
+            $container.empty();
 
             if (!items || items.length === 0) {
-                container.html('<div class="alert alert-info">Tidak ada barang dalam pengiriman ini</div>');
+                $container.html('<div class="alert alert-info">Tidak ada barang dalam pengiriman ini</div>');
                 return;
             }
 
-            // Counter for naming
-            let itemIndex = 0;
+            const templateHtml = $('#itemTemplate').html();
+            if (!templateHtml) {
+                console.error('Item template tidak ditemukan');
+                return;
+            }
 
-            items.forEach((item) => {
-                const template = $('#itemTemplate').html();
-                const $itemRow = $(template);
+            items.forEach(function (item, index) {
+                const $row = $(templateHtml);
 
-                // Populate item data
-                const productName = (item.product_code || '') + ' - ' + (item.product_name || '');
+                const productLabel = (item.product_code || '') + ' - ' + (item.product_name || '');
                 const qtySent = parseFloat(item.qty_on_transfer || item.qty || 0);
 
-                $itemRow.find('.product-display').val(productName);
-                $itemRow.find('.product-id').val(item.product_id || '');
-                $itemRow.find('.stock-id').val(item.stock_id || '');
-                $itemRow.find('.detail-id').val(item.detail_id || '');
-                $itemRow.find('.detail-note').val(item.detail_note || '');
-                $itemRow.find('.qty-sent').val(qtySent);
+                $row.find('.product-display').val(productLabel);
+                $row.find('.product-id').attr('name', `product_id[${index}]`).val(item.product_id || '');
+                $row.find('.stock-id').attr('name', `stock_id[${index}]`).val(item.stock_id || '');
+                $row.find('.detail-id').attr('name', `detail_id[${index}]`).val(item.detail_id || '');
+                $row.find('.detail-note').attr('name', `detail_note[${index}]`).val(item.detail_note || '');
+                $row.find('.qty-sent').val(qtySent);
 
-                // Set qty received input
-                const $qtyInput = $itemRow.find('.qty-received-input');
-                $qtyInput.attr({
-                    'max': qtySent,
-                    'data-max': qtySent,
-                    'name': 'qty[' + itemIndex + ']'
-                }).val(qtySent);
+                $row.find('.qty-received-input')
+                    .attr('name', `qty[${index}]`)
+                    .attr('max', qtySent)
+                    .data('max', qtySent)
+                    .val(qtySent);
 
-                // Set unit information if available
-                if (item.unit_code) {
-                    // Tampilkan satuan di sebelah qty
-                    // $itemRow.find('.qty-sent').after('<small class="form-text text-muted">Satuan: ' + item.unit_code + '</small>');
-                    // $itemRow.find('.qty-received-input').after('<small class="form-text text-muted">Satuan: ' + item.unit_code + '</small>');
-                }
-
-                // Add current stock info if available
-                if (item.current_stock !== undefined) {
-                    $itemRow.find('.product-display').after(
-                        // '<small class="form-text text-muted">Stok asal: ' + item.current_stock + ' ' + (item.unit_code || '') + '</small>'
-                    );
-                }
-
-                // Set hidden inputs with proper names
-                $itemRow.find('.product-id').attr('name', 'product_id[' + itemIndex + ']');
-                $itemRow.find('.stock-id').attr('name', 'stock_id[' + itemIndex + ']');
-                $itemRow.find('.detail-id').attr('name', 'detail_id[' + itemIndex + ']');
-                $itemRow.find('.detail-note').attr('name', 'detail_note[' + itemIndex + ']');
-
-                // Tambahkan event listener untuk input qty
-                $qtyInput.on('input', function () {
-                    validateQtyInput($(this));
-                });
-
-                container.append($itemRow);
-                itemIndex++;
-            });
-
-            // Initialize validation for qty inputs
-            initializeQtyValidation();
-        }
-
-        // Initialize qty validation
-        function initializeQtyValidation() {
-            $('.qty-received-input').off('input').on('input', function () {
-                validateQtyInput($(this));
+                $container.append($row);
             });
         }
 
-        // Validate qty input
-        function validateQtyInput($input) {
-            const maxQty = parseFloat($input.attr('data-max') || 0);
-            let currentQty = parseFloat($input.val() || 0);
-
-            // Handle empty value
-            if ($input.val() === '') {
-                $input.val(maxQty); // Set default ke max qty jika kosong
-                currentQty = maxQty;
-            }
-
-            if (isNaN(currentQty)) {
-                $input.val(maxQty);
-                showInputError($input, 'Qty harus berupa angka');
-                return false;
-            }
-
-            if (currentQty < 0) {
-                $input.val(0);
-                showInputError($input, 'Qty tidak boleh negatif');
-                return false;
-            }
-
-            if (currentQty > maxQty) {
-                $input.val(maxQty);
-                showInputError($input, 'Qty tidak boleh melebihi ' + maxQty);
-                return false;
-            }
-
-            hideInputError($input);
-            return true;
-        }
-
-        // Show input error
-        function showInputError($input, message) {
-            $input.addClass('is-invalid');
-            let $feedback = $input.next('.invalid-feedback');
-
-            if ($feedback.length === 0) {
-                $feedback = $('<div class="invalid-feedback">' + message + '</div>');
-                $input.after($feedback);
-            } else {
-                $feedback.text(message).show();
-            }
-        }
-
-        // Hide input error
-        function hideInputError($input) {
-            $input.removeClass('is-invalid');
-            const $feedback = $input.next('.invalid-feedback');
-            if ($feedback.length) {
-                $feedback.hide();
-            }
-        }
-
-        // Show toastr success message
-        function showToastrSuccess(message) {
-            toastr.success(message, '<?= $wording['success'] ?>');
-        }
-
-        // Show toastr error message using modal
-        function showToastrError(message) {
-            $('#errorMessage').text(message);
-            $('#errorModal').modal('show');
-        }
-
-        // Show toastr warning message
-        function showToastrWarning(message) {
-            toastr.warning(message, '<?= $wording['warning'] ?>');
-        }
-
-        // Show toastr info message
-        function showToastrInfo(message) {
-            toastr.info(message, '<?= $wording['info'] ?>');
-        }
-
-        // Reset form
-        $('#resetForm').on('click', function () {
-            if (confirm('Apakah Anda yakin ingin mereset form? Semua data yang telah diisi akan hilang.')) {
-                $('#stockout_id').val('').trigger('change');
-                $('#formDataSection').addClass('d-none');
-                $('#itemsContainer').empty();
-                currentStockoutId = null;
-
-                // Reset form inputs
-                $('#stockin_date').val('<?= date('Y-m-d') ?>');
-                $('#stockin_invoice').val('');
-                $('#stockin_note').val('');
-
-                // Reset stockin code ke default
-                const defaultCode = generateStockinCode(appData.userWarehouseId);
-                $('#stockin_code').val(defaultCode);
-
-                if ($('#to_warehouse_id').length) {
-                    $('#to_warehouse_id').val('').trigger('change');
-                }
-            }
+        // =========================================================
+        // EVENT: Validasi qty saat blur (bukan input agar bisa hapus angka)
+        // =========================================================
+        $(document).on('blur', '.qty-received-input', function () {
+            validateQtyInput($(this));
         });
 
-        // Form submission validation
+        // =========================================================
+        // RESET FORM
+        // =========================================================
+        $('#resetForm').on('click', function () {
+            if (!confirm('Apakah Anda yakin ingin mereset form? Semua data yang telah diisi akan hilang.')) return;
+
+            // Reset select2 + trigger change agar #formDataSection tersembunyi
+            $('#stockout_id').val(null).trigger('change');
+            currentStockoutId = null;
+
+            // Reset field penerimaan
+            $('#stockin_date').val('<?= date('Y-m-d') ?>');
+            $('#stockin_invoice').val('');
+            $('#stockin_note').val('');
+            $('#stockin_code').val(generateStockinCode(appData.userWarehouseId));
+
+            // Reset flag submit
+            isSubmitting = false;
+            resetSubmitButton();
+        });
+
+        // =========================================================
+        // HELPER: Reset tombol submit ke kondisi awal
+        // =========================================================
+        function resetSubmitButton() {
+            $('#btnSimpan')
+                .prop('disabled', false)
+                .html('<i class="fas fa-save"></i> Simpan Penerimaan');
+        }
+
+        // =========================================================
+        // SUBMIT FORM — AJAX dengan perlindungan double-submit
+        //
+        // FIX:
+        // 1. Flag isSubmitting: cegah submit kedua dari klik ganda
+        // 2. Tombol TIDAK di-enable kembali saat sukses (redirect akan
+        //    terjadi, enable kembali hanya saat error)
+        // 3. CSRF token di-refresh tiap kali dari response
+        // =========================================================
         $('#penerimaanForm').on('submit', function (e) {
             e.preventDefault();
 
-            // Validasi form
+            // Lapisan 1: cegah double submit
+            if (isSubmitting) {
+                notifWarning('Data sedang diproses, harap tunggu...');
+                return false;
+            }
+
+            // ---- Validasi lokal ----
             let isValid = true;
             let hasItems = false;
             let totalQty = 0;
 
-            // Check all items (tidak ada checkbox, semua item wajib diisi)
             $('.qty-received-input').each(function () {
-                const $qtyInput = $(this);
-                const qty = parseFloat($qtyInput.val() || 0);
-                const maxQty = parseFloat($qtyInput.attr('data-max') || 0);
+                const $input = $(this);
+                const qty = parseFloat($input.val() || 0);
+                const maxQty = parseFloat($input.data('max') || 0);
 
-                // Validasi input qty
-                if (!validateQtyInput($qtyInput)) {
+                if (!validateQtyInput($input)) {
                     isValid = false;
                 }
 
-                // Cek jika qty > 0
                 if (qty > 0) {
                     hasItems = true;
                     totalQty += qty;
                 }
 
-                // Validasi: qty tidak boleh 0 jika ada pengiriman
                 if (maxQty > 0 && qty === 0) {
-                    showInputError($qtyInput, 'Qty tidak boleh 0 untuk barang yang dikirim');
+                    setInputError($input, 'Qty tidak boleh 0 untuk barang yang dikirim');
                     isValid = false;
                 }
             });
 
-            if (!hasItems) {
-                showToastrWarning('Semua qty yang diterima harus lebih dari 0');
+            if (!hasItems || totalQty === 0) {
+                notifWarning('Total qty yang diterima harus lebih dari 0');
                 isValid = false;
             }
 
-            if (totalQty === 0) {
-                showToastrWarning('Total qty yang diterima harus lebih dari 0');
+            if (!$('#stockin_date').val()) {
+                notifWarning('Harap pilih tanggal penerimaan');
                 isValid = false;
             }
 
-            // Validasi tanggal
-            const stockinDate = $('#stockin_date').val();
-            if (!stockinDate) {
-                showToastrWarning('Harap pilih tanggal penerimaan');
+            if (!$('#stockin_code').val()) {
+                notifWarning('Kode penerimaan tidak valid');
                 isValid = false;
             }
 
-            // Validasi stockin code
-            const stockinCode = $('#stockin_code').val();
-            if (!stockinCode) {
-                showToastrWarning('Kode penerimaan tidak valid');
-                isValid = false;
-            }
+            if (!isValid) return false;
 
-            if (!isValid) {
-                return false;
-            }
+            // ---- Set flag & ubah tampilan tombol ----
+            isSubmitting = true;
+            $('#btnSimpan')
+                .prop('disabled', true)
+                .html('<span class="spinner-border spinner-border-sm mr-1" role="status"></span> Menyimpan...');
+            $('#resetForm').prop('disabled', true);
 
-            // Show loading on submit button
-            const $submitBtn = $(this).find('button[type="submit"]');
-            const originalText = $submitBtn.html();
-            $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+            // ---- Kirim via AJAX ----
+            // Sertakan CSRF token saat ini di data
+            const formData = $(this).serialize() + '&' + csrfData.name + '=' + csrfData.hash;
 
-            // Submit form via AJAX
             $.ajax({
                 url: $(this).attr('action'),
                 type: 'POST',
-                data: $(this).serialize(),
+                data: formData,
                 dataType: 'json',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                success: function (response) {
-                    $submitBtn.prop('disabled', false).html(originalText);
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function (res) {
+                    // Refresh CSRF dari response
+                    updateCsrfHash(res.csrf_hash);
 
-                    if (response.success) {
-                        // Tampilkan pesan sukses
-                        showToastrSuccess(response.message || 'Penerimaan berhasil disimpan');
+                    if (res.success) {
+                        notifSuccess(res.message || 'Penerimaan berhasil disimpan');
 
-                        // Delay redirect untuk menampilkan toastr
+                        // Tombol TIDAK di-enable kembali — redirect segera terjadi
+                        // Ini mencegah klik kedua di jeda sebelum redirect
+                        const fromStatus = $('input[name="from_status"]').val();
                         setTimeout(function () {
-                            // Redirect berdasarkan from_status
-                            const fromStatus = $('input[name="from_status"]').val();
                             if (fromStatus === '1') {
                                 window.location.href = '<?= site_url("penerimaan/dari_pengguna") ?>';
                             } else if (fromStatus === '2') {
@@ -419,50 +376,55 @@
                             } else {
                                 window.location.href = '<?= site_url("penerimaan/antar_gudang") ?>';
                             }
-                        }, 1500); // Delay 1.5 detik untuk menampilkan toastr
+                        }, 1200);
                     } else {
-                        showToastrError('Gagal menyimpan penerimaan: ' + (response.message || 'Terjadi kesalahan'));
-                        console.error('Error response:', response);
+                        // Gagal → enable kembali agar user bisa coba lagi
+                        isSubmitting = false;
+                        resetSubmitButton();
+                        $('#resetForm').prop('disabled', false);
+                        notifError(res.message || 'Gagal menyimpan penerimaan');
                     }
                 },
-                error: function (xhr, status, error) {
-                    $submitBtn.prop('disabled', false).html(originalText);
+                error: function (xhr) {
+                    // Error → enable kembali
+                    isSubmitting = false;
+                    resetSubmitButton();
+                    $('#resetForm').prop('disabled', false);
 
-                    console.log('XHR Response:', xhr.responseText.substring(0, 100)); // Debug
-
-                    // Coba parse response meski error
+                    let msg = 'Terjadi kesalahan saat menyimpan data';
                     try {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.message) {
-                            showToastrError('Terjadi kesalahan: ' + response.message);
-                        } else {
-                            showToastrError('Terjadi kesalahan saat menyimpan data (Error: ' + xhr.status + ')');
-                        }
+                        const res = JSON.parse(xhr.responseText);
+                        if (res.message) msg = res.message;
                     } catch (e) {
-                        // Jika bukan JSON, cek apakah itu HTML error page
-                        if (xhr.responseText.includes('<!DOCTYPE') || xhr.responseText.includes('<html')) {
-                            showToastrError('Terjadi kesalahan server. Kemungkinan ada masalah dengan CSRF token atau session.');
-                        } else {
-                            showToastrError('Terjadi kesalahan server. Silakan coba lagi atau hubungi administrator.');
+                        if (xhr.status === 403) {
+                            msg = 'Sesi keamanan kedaluwarsa. Silakan refresh halaman dan coba lagi.';
+                        } else if (xhr.responseText.indexOf('<!DOCTYPE') !== -1) {
+                            msg = 'Terjadi kesalahan server. Silakan coba lagi.';
                         }
                     }
-                    console.error('AJAX Error:', error, xhr.responseText);
+
+                    notifError(msg);
+                    console.error('AJAX Error:', xhr.status, xhr.responseText.substring(0, 300));
                 }
             });
         });
 
-        // Auto-validate all qty inputs when form is loaded
-        $(document).on('change', '.qty-received-input', function () {
-            validateQtyInput($(this));
-        });
-
-        // Set default value for empty qty inputs
-        $(document).on('blur', '.qty-received-input', function () {
-            if ($(this).val() === '') {
-                const maxQty = parseFloat($(this).attr('data-max') || 0);
-                $(this).val(maxQty);
-                validateQtyInput($(this));
+        // =========================================================
+        // Cegah Enter di input teks memicu submit tidak sengaja
+        // =========================================================
+        $('#penerimaanForm').on('keydown', 'input[type="text"], input[type="number"]', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
             }
         });
+
+        // =========================================================
+        // Auto-load jika filter_stockout_id sudah ada dari URL/session
+        // =========================================================
+        const preSelectedId = $('#stockout_id').val();
+        if (preSelectedId) {
+            $('#stockout_id').trigger('change');
+        }
+
     });
 </script>

@@ -528,7 +528,8 @@ class Penerimaan extends MY_Controller
             }
             echo json_encode([
                 'success' => false,
-                'message' => $error_message
+                'message' => $error_message,
+                'csrf_hash' => $this->security->get_csrf_hash()
             ]);
         }
     }
@@ -631,7 +632,8 @@ class Penerimaan extends MY_Controller
                         ->set_output(json_encode([
                             'success' => true,
                             'message' => $response['message'] ?? 'Penerimaan barang berhasil ditambahkan',
-                            'stockin_id' => $response['stockin_id'] ?? null
+                            'stockin_id' => $response['stockin_id'] ?? null,
+                            'csrf_hash' => $this->security->get_csrf_hash(), // <-- TAMBAHKAN INI
                         ]));
                     return;
                 }
@@ -655,7 +657,8 @@ class Penerimaan extends MY_Controller
                         ->set_content_type('application/json')
                         ->set_output(json_encode([
                             'success' => false,
-                            'message' => $response['message'] ?? 'Gagal menyimpan penerimaan'
+                            'message' => $response['message'] ?? 'Gagal menyimpan penerimaan',
+                            'csrf_hash' => $this->security->get_csrf_hash(), // <-- TAMBAHKAN INI
                         ]));
                     return;
                 }
@@ -697,7 +700,8 @@ class Penerimaan extends MY_Controller
                     ->set_content_type('application/json')
                     ->set_output(json_encode([
                         'success' => false,
-                        'message' => 'Invalid request method'
+                        'message' => 'Invalid request method',
+                        'csrf_hash' => $this->security->get_csrf_hash(),
                     ]));
             } else {
                 show_404();
