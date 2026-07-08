@@ -438,7 +438,6 @@ $(document).ready(function () {
     // HELPER: Notifikasi — pakai toastr (konsisten dengan form lain)
     // =========================================================
     function notifSuccess(msg) { toastr.success(msg); }
-    function notifError(msg)   { toastr.error(msg);   }
     function notifWarning(msg) { toastr.warning(msg); }
 
     // =========================================================
@@ -703,7 +702,8 @@ $(document).ready(function () {
                     // Gagal → enable kembali agar user bisa coba lagi
                     isSubmitting = false;
                     resetSubmitButton();
-                    notifError(res.message || 'Gagal menyimpan penerimaan');
+                    $('#errorMessage').html(res.message || 'Gagal menyimpan penerimaan');
+                    $('#errorModal').modal('show');
                 }
             },
             error: function (xhr) {
@@ -722,7 +722,8 @@ $(document).ready(function () {
                     }
                 }
 
-                notifError(msg);
+            $('#errorMessage').html(res.message);
+            $('#errorModal').modal('show');
                 console.error('AJAX Error:', xhr.status, xhr.responseText.substring(0, 300));
             }
         });

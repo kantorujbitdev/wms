@@ -53,7 +53,6 @@
         // (modal #errorModal tidak ada di HTML)
         // =========================================================
         function notifSuccess(msg) { toastr.success(msg); }
-        function notifError(msg) { toastr.error(msg); }
         function notifWarning(msg) { toastr.warning(msg); }
 
         // =========================================================
@@ -164,12 +163,15 @@
                         $('#formDataSection').removeClass('d-none');
                         $('html, body').animate({ scrollTop: $('#formDataSection').offset().top - 100 }, 400);
                     } else {
-                        notifError(res.message || 'Gagal memuat data pengiriman');
+
+                        $('#errorMessage').html(res.message || 'Gagal memuat data pengiriman');
+                        $('#errorModal').modal('show');
                     }
                 },
                 error: function (xhr) {
                     $('#loadingIndicator').addClass('d-none');
-                    notifError('Terjadi kesalahan saat memuat data pengiriman');
+                    $('#errorMessage').html('Terjadi kesalahan saat memuat data pengiriman');
+                    $('#errorModal').modal('show');
                     console.error('AJAX Error:', xhr.responseText.substring(0, 200));
                 }
             });
@@ -382,7 +384,8 @@
                         isSubmitting = false;
                         resetSubmitButton();
                         $('#resetForm').prop('disabled', false);
-                        notifError(res.message || 'Gagal menyimpan penerimaan');
+                        $('#errorMessage').html(res.message || 'Gagal menyimpan penerimaan');
+                        $('#errorModal').modal('show');
                     }
                 },
                 error: function (xhr) {
@@ -403,7 +406,8 @@
                         }
                     }
 
-                    notifError(msg);
+                    $('#errorMessage').html(msg);
+                    $('#errorModal').modal('show');
                     console.error('AJAX Error:', xhr.status, xhr.responseText.substring(0, 300));
                 }
             });
