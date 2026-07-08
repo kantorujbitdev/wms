@@ -1,7 +1,6 @@
 <!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
-    rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/bootstrap5/select2.min.css'); ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/bootstrap5/select2-bootstrap-5-theme.min.css'); ?>" rel="stylesheet" />
 
 <style>
     .select2-container--bootstrap-5 .select2-search--dropdown {
@@ -41,11 +40,11 @@
                         <label for="warehouse_filter" class="form-label">Gudang</label>
                         <select id="warehouse_filter" class="form-control" name="warehouse_filter">
                             <option value="">Semua Gudang</option>
-                                <?php foreach ($warehouses as $w): ?>
+                            <?php foreach ($warehouses as $w): ?>
                                 <option value="<?= $w['warehouse_id'] ?>">
-                                            <?= htmlspecialchars($w['warehouse_name']) ?>
+                                    <?= htmlspecialchars($w['warehouse_name']) ?>
                                 </option>
-                                <?php endforeach; ?>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 <?php else: ?>
@@ -65,7 +64,7 @@
                         <option value="">Semua Produk</option>
                         <?php foreach ($products as $p): ?>
                             <option value="<?= $p['product_id'] ?>">
-                                    <?= htmlspecialchars($p['product_code'] . ' - ' . $p['product_name']) ?>
+                                <?= htmlspecialchars($p['product_code'] . ' - ' . $p['product_name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -145,7 +144,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="<?php echo base_url('assets/select2/select2.min.js'); ?>"></script>
 
 <script>
     $(document).ready(function () {

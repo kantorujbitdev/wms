@@ -2,9 +2,9 @@
 <?php $this->load->view('pages/pengiriman/edit_style'); ?>
 
 <!-- Select2 CSS & JS with Custom Styles for better UX -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="<?php echo base_url('assets/select2/select2.min.css'); ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/bootstrap5/select2-bootstrap-5-theme.min.css'); ?>" rel="stylesheet" />
+<script src="<?php echo base_url('assets/select2/select2.min.js'); ?>"></script>
 
 <style>
 /* Enhanced Select2 Dropdown for Form */
