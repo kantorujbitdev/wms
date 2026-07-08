@@ -41,11 +41,11 @@
                         <label for="warehouse_filter" class="form-label">Gudang</label>
                         <select id="warehouse_filter" class="form-control" name="warehouse_filter">
                             <option value="">Semua Gudang</option>
-                            <?php foreach ($warehouses as $w): ?>
+                                <?php foreach ($warehouses as $w): ?>
                                 <option value="<?= $w['warehouse_id'] ?>">
-                                    <?= htmlspecialchars($w['warehouse_name']) ?>
+                                            <?= htmlspecialchars($w['warehouse_name']) ?>
                                 </option>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
                         </select>
                     </div>
                 <?php else: ?>
@@ -65,7 +65,7 @@
                         <option value="">Semua Produk</option>
                         <?php foreach ($products as $p): ?>
                             <option value="<?= $p['product_id'] ?>">
-                                <?= htmlspecialchars($p['product_code'] . ' - ' . $p['product_name']) ?>
+                                    <?= htmlspecialchars($p['product_code'] . ' - ' . $p['product_name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
