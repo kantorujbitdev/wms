@@ -73,8 +73,8 @@
                 <h6 class="m-0 font-weight-bold text-primary">
                     Daftar Penerimaan dari Supplier
                     <?php if (!empty($penerimaan_list)): ?>
-                        <span class="badge text-primary ml-2">
-                            <?= count($penerimaan_list) ?> Data</span>
+                            <span class="badge text-primary ml-2">
+                                <?= count($penerimaan_list) ?> Data</span>
                     <?php endif; ?>
                 </h6>
                 <small class="text-muted">
@@ -85,86 +85,86 @@
         </div>
         <div class="card-body">
             <?php if (empty($penerimaan_list)): ?>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    Tidak ada data Penerimaan dari Supplier untuk periode
-                    <?= date('d/m/Y', strtotime($filter_start_date)) ?> - <?= date('d/m/Y', strtotime($filter_end_date)) ?>.
-                </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Tidak ada data Penerimaan dari Supplier untuk periode
+                        <?= date('d/m/Y', strtotime($filter_start_date)) ?> - <?= date('d/m/Y', strtotime($filter_end_date)) ?>.
+                    </div>
             <?php else: ?>
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead class="text-center align-middle">
-                            <tr>
-                                <th>No</th>
-                                <th>Kode Penerimaan</th>
-                                <th>Tanggal</th>
-                                <th>Asal</th>
-                                <th>Tujuan</th>
-                                <th>No Invoice</th>
-                                <th>Keterangan</th>
-                                <th>Dibuat</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($penerimaan_list)): ?>
-                                <?php $no = 1;
-                                foreach ($penerimaan_list as $penerimaan): ?>
-                                    <tr>
-                                        <td class="text-center"><?= $no++; ?></td>
-                                        <td><?= $penerimaan['stockin_code'] ?? '-'; ?></td>
-                                        <td><?= date('d/m/Y', strtotime($penerimaan['stockin_date'] ?? date('Y-m-d'))); ?></td>
-                                        <td><?= $penerimaan['from_name'] ?? '-'; ?></td>
-                                        <td><?= $penerimaan['warehouse_name'] ?? '-'; ?></td>
-                                        <td><?= $penerimaan['stockin_invoice'] ?? '-'; ?></td>
-                                        <td><?= $penerimaan['stockin_note'] ?? '-'; ?></td>
-                                        <td><?= $penerimaan['user_name'] ?? '-'; ?></td>
-                                        <td class="text-center">
-                                            <?php if (has_permission('penerimaan')): ?>
-                                                <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
-                                                    class="btn btn-info btn-sm" title="Detail">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                            <?php if (has_permission('penerimaan', 'edit')): ?>
-                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?> <a
-                                                        href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
-                                                        class="btn btn-warning btn-sm" title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-
-                                            <?php if (has_permission('penerimaan', 'delete')): ?>
-                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
-                                                    <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
-                                                        data-id="<?= $penerimaan['stockin_id']; ?>"
-                                                        data-name="<?= $penerimaan['stockin_code']; ?>"
-                                                        data-url="<?= site_url('penerimaan/delete'); ?>">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="text-center align-middle">
                                 <tr>
-                                    <td colspan="9" class="text-center">Tidak ada data penerimaan dari supplier</td>
+                                    <th>No</th>
+                                    <th>Kode Penerimaan</th>
+                                    <th>Tanggal</th>
+                                    <th>Asal</th>
+                                    <th>Tujuan</th>
+                                    <th>No Invoice</th>
+                                    <th>Keterangan</th>
+                                    <th>Dibuat</th>
+                                    <th>Aksi</th>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($penerimaan_list)): ?>
+                                        <?php $no = 1;
+                                        foreach ($penerimaan_list as $penerimaan): ?>
+                                                <tr>
+                                                    <td class="text-center"><?= $no++; ?></td>
+                                                    <td><?= $penerimaan['stockin_code'] ?? '-'; ?></td>
+                                                    <td><?= date('d/m/Y', strtotime($penerimaan['stockin_date'] ?? date('Y-m-d'))); ?></td>
+                                                    <td><?= $penerimaan['from_name'] ?? '-'; ?></td>
+                                                    <td><?= $penerimaan['warehouse_name'] ?? '-'; ?></td>
+                                                    <td><?= $penerimaan['stockin_invoice'] ?? '-'; ?></td>
+                                                    <td><?= $penerimaan['stockin_note'] ?? '-'; ?></td>
+                                                    <td><?= $penerimaan['user_name'] ?? '-'; ?></td>
+                                                    <td class="text-center">
+                                                        <?php if (has_permission('penerimaan')): ?>
+                                                                <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
+                                                                    class="btn btn-info btn-sm" title="Detail">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                        <?php endif; ?>
+                                                        <?php if (has_permission('penerimaan', 'edit')): ?>
+                                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?> <a
+                                                                            href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
+                                                                            class="btn btn-warning btn-sm" title="Edit">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </a>
+                                                                <?php endif; ?>
+                                                        <?php endif; ?>
+
+                                                        <?php if (has_permission('penerimaan', 'delete')): ?>
+                                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
+                                                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
+                                                                            data-id="<?= $penerimaan['stockin_id']; ?>"
+                                                                            data-name="<?= $penerimaan['stockin_code']; ?>"
+                                                                            data-url="<?= site_url('penerimaan/delete'); ?>">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                <?php endif; ?>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                        <?php endforeach; ?>
+                                <?php else: ?>
+                                        <tr>
+                                            <td colspan="9" class="text-center">Tidak ada data penerimaan dari supplier</td>
+                                        </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
             <?php endif; ?>
         </div>
     </div>
 </div>
 <!-- Tambahkan CSS dan JS Flatpickr di head -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
+<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
+<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

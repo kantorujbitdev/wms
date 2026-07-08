@@ -1,8 +1,8 @@
 <!-- C:\xampp\htdocs\wms\application\views\pages\laporan\kartu_stok.php -->
 
 <!-- Flatpickr CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
 
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -232,8 +232,8 @@
 </div>
 
 <!-- Flatpickr & Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
+<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>

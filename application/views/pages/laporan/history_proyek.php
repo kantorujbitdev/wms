@@ -1,6 +1,6 @@
 <!-- Flatpickr CSS (letakkan di <head> dokumen utama jika memungkinkan) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
 
 <div class="container-fluid">
 
@@ -219,8 +219,8 @@
 </div>
 
 <!-- Flatpickr JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
+<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
 
 <script>
     const warehouseData = <?= json_encode($warehouse_list) ?>;

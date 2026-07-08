@@ -11,23 +11,23 @@
             <form method="get" action="<?= site_url('laporan/stok_card'); ?>" class="form-horizontal" id="filterForm">
                 <div class="row align-items-end">
                     <?php if ($user_role == 'superadmin'): ?>
-                        <!-- Warehouse Filter -->
-                        <div class="col-md-3 mb-3">
-                            <div class="form-group">
-                                <label class="form-label">Nama Gudang <span class="text-danger">*</span></label>
-                                <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang" required>
-                                    <option value="">-- Pilih Gudang --</option>
-                                    <?php foreach ($warehouses as $w): ?>
-                                        <option value="<?= $w['warehouse_id'] ?>" <?= ($w['warehouse_id'] == $filter_warehouse_id) ? 'selected' : ''; ?>>
-                                            <?= $w['warehouse_name'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <!-- <small class="text-muted">Pilih gudang terlebih dahulu untuk melihat produk</small> -->
+                            <!-- Warehouse Filter -->
+                            <div class="col-md-3 mb-3">
+                                <div class="form-group">
+                                    <label class="form-label">Nama Gudang <span class="text-danger">*</span></label>
+                                    <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang" required>
+                                        <option value="">-- Pilih Gudang --</option>
+                                        <?php foreach ($warehouses as $w): ?>
+                                                <option value="<?= $w['warehouse_id'] ?>" <?= ($w['warehouse_id'] == $filter_warehouse_id) ? 'selected' : ''; ?>>
+                                                    <?= $w['warehouse_name'] ?>
+                                                </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <!-- <small class="text-muted">Pilih gudang terlebih dahulu untuk melihat produk</small> -->
+                                </div>
                             </div>
-                        </div>
                     <?php else: ?>
-                        <input type="hidden" name="warehouse_id" id="warehouse_id" value="<?= $user_warehouse_id ?>">
+                            <input type="hidden" name="warehouse_id" id="warehouse_id" value="<?= $user_warehouse_id ?>">
                     <?php endif; ?>
 
                     <!-- Product Filter -->
@@ -38,31 +38,31 @@
                                 <?= ($user_role == 'superadmin' && !$filter_warehouse_id) ? 'disabled' : '' ?>>
                                 <option value="">-- Pilih Produk --</option>
                                 <?php if ($user_role == 'superadmin'): ?>
-                                    <?php if ($filter_warehouse_id): ?>
-                                        <?php
-                                        // Filter produk berdasarkan warehouse yang dipilih
-                                        $filtered_products = array_filter($products, function ($product) use ($filter_warehouse_id) {
-                                            return $product['warehouse_id'] == $filter_warehouse_id;
-                                        });
-                                        ?>
-                                        <?php foreach ($filtered_products as $product): ?>
-                                            <option value="<?= $product['stock_id'] ?>"
-                                                data-warehouse="<?= $product['warehouse_id'] ?>"
-                                                <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
-                                                <!-- <?= $product['product_name'] . ' || ' . $product['product_code'] . ' (' . $product['bos_code'] . ')' ?> -->
-                                                <?= $product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan:' . $product['unit_code'] . ')' ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                                        <?php if ($filter_warehouse_id): ?>
+                                                <?php
+                                                // Filter produk berdasarkan warehouse yang dipilih
+                                                $filtered_products = array_filter($products, function ($product) use ($filter_warehouse_id) {
+                                                    return $product['warehouse_id'] == $filter_warehouse_id;
+                                                });
+                                                ?>
+                                                <?php foreach ($filtered_products as $product): ?>
+                                                        <option value="<?= $product['stock_id'] ?>"
+                                                            data-warehouse="<?= $product['warehouse_id'] ?>"
+                                                            <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
+                                                            <!-- <?= $product['product_name'] . ' || ' . $product['product_code'] . ' (' . $product['bos_code'] . ')' ?> -->
+                                                            <?= $product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan:' . $product['unit_code'] . ')' ?>
+                                                        </option>
+                                                <?php endforeach; ?>
+                                        <?php endif; ?>
                                 <?php else: ?>
-                                    <?php foreach ($products as $product): ?>
-                                        <option value="<?= $product['stock_id'] ?>"
-                                            data-warehouse="<?= $product['warehouse_id'] ?>"
-                                            <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
-                                            <!-- <?= $product['product_name'] . ' || ' . $product['product_code'] . ' (' . $product['bos_code'] . ')' ?> -->
-                                            <?= $product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan:' . $product['unit_code'] . ')' ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                        <?php foreach ($products as $product): ?>
+                                                <option value="<?= $product['stock_id'] ?>"
+                                                    data-warehouse="<?= $product['warehouse_id'] ?>"
+                                                    <?= ($product['stock_id'] == $filter_stock_id) ? 'selected' : ''; ?>>
+                                                    <!-- <?= $product['product_name'] . ' || ' . $product['product_code'] . ' (' . $product['bos_code'] . ')' ?> -->
+                                                    <?= $product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan:' . $product['unit_code'] . ')' ?>
+                                                </option>
+                                        <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                         </div>
@@ -118,14 +118,14 @@
                     <?= date('d/m/Y', strtotime($filter_date_end)) ?>
                 </small>
                 <?php if (!empty($stock_cards)): ?>
-                    <a href="<?= site_url('laporan/export_stok_card?' . http_build_query([
-                        'warehouse_id' => $filter_warehouse_id,
-                        'stock_id' => $filter_stock_id,
-                        'date_start' => $filter_date_start,
-                        'date_end' => $filter_date_end
-                    ])); ?>" class="btn btn-success btn-sm">
-                        <i class="fas fa-file-excel"></i> Export Excel
-                    </a>
+                        <a href="<?= site_url('laporan/export_stok_card?' . http_build_query([
+                            'warehouse_id' => $filter_warehouse_id,
+                            'stock_id' => $filter_stock_id,
+                            'date_start' => $filter_date_start,
+                            'date_end' => $filter_date_end
+                        ])); ?>" class="btn btn-success btn-sm">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </a>
                 <?php endif; ?>
             </div>
         </div>
@@ -133,78 +133,78 @@
         <div class="card-body">
 
             <?php if (empty($stock_cards)): ?>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    Tidak ada data Pengiriman ke Pengguna.
-                    <?= date('d/m/Y', strtotime($filter_date_start)) ?> -
-                    <?= date('d/m/Y', strtotime($filter_date_end)) ?>.
-                </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Tidak ada data Pengiriman ke Pengguna.
+                        <?= date('d/m/Y', strtotime($filter_date_start)) ?> -
+                        <?= date('d/m/Y', strtotime($filter_date_end)) ?>.
+                    </div>
             <?php else: ?>
 
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
 
-                        <thead class="text-center align-middle">
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>No. Referensi</th>
-                                <th>Kode Barang</th>
-                                <th>Nama Barang</th>
-                                <th>Stok<br>Awal</th>
-                                <th>Qty</th>
-                                <th>Stok<br>Akhir</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <?php $no = 1; ?>
-                            <?php foreach ($stock_cards as $card): ?>
+                            <thead class="text-center align-middle">
                                 <tr>
-                                    <td class="text-center"><?= $no++; ?></td>
-                                    <td><?= $card['movement_date']; ?></td>
-                                    <td><?= $card['movement_refno']; ?></td>
-                                    <td><?= $card['product_code']; ?></td>
-                                    <td><?= $card['product_name']; ?></td>
-                                    <td class="text-center">
-                                        <strong>
-                                            <?= $card['begin_stock']; ?>
-                                        </strong>
-                                    </td>
-
-                                    <td class="text-center">
-                                        <?php if ($card['movement_type'] == '1'): ?>
-                                            <strong><span class="text-success">
-                                                    +<?= $card['qty']; ?>
-                                                </span></strong>
-                                        <?php else: ?>
-                                            <strong><span class="text-danger">
-                                                    -<?= $card['qty']; ?>
-                                                </span></strong>
-                                        <?php endif; ?>
-                                    </td>
-
-                                    <td class="text-center">
-                                        <strong><?= $card['last_stock']; ?></strong>
-                                    </td>
-
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>No. Referensi</th>
+                                    <th>Kode Barang</th>
+                                    <th>Nama Barang</th>
+                                    <th>Stok<br>Awal</th>
+                                    <th>Qty</th>
+                                    <th>Stok<br>Akhir</th>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                            </thead>
 
-                        <tfoot>
-                            <tr>
-                                <td colspan="5" class="text-right">
-                                    <strong>Total Transaksi:</strong>
-                                </td>
-                                <td colspan="3" class="text-center">
-                                    <strong><?= count($stock_cards); ?></strong>
-                                </td>
-                            </tr>
-                        </tfoot>
+                            <tbody>
+                                <?php $no = 1; ?>
+                                <?php foreach ($stock_cards as $card): ?>
+                                        <tr>
+                                            <td class="text-center"><?= $no++; ?></td>
+                                            <td><?= $card['movement_date']; ?></td>
+                                            <td><?= $card['movement_refno']; ?></td>
+                                            <td><?= $card['product_code']; ?></td>
+                                            <td><?= $card['product_name']; ?></td>
+                                            <td class="text-center">
+                                                <strong>
+                                                    <?= $card['begin_stock']; ?>
+                                                </strong>
+                                            </td>
 
-                    </table>
-                </div>
+                                            <td class="text-center">
+                                                <?php if ($card['movement_type'] == '1'): ?>
+                                                        <strong><span class="text-success">
+                                                                +<?= $card['qty']; ?>
+                                                            </span></strong>
+                                                <?php else: ?>
+                                                        <strong><span class="text-danger">
+                                                                -<?= $card['qty']; ?>
+                                                            </span></strong>
+                                                <?php endif; ?>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <strong><?= $card['last_stock']; ?></strong>
+                                            </td>
+
+                                        </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5" class="text-right">
+                                        <strong>Total Transaksi:</strong>
+                                    </td>
+                                    <td colspan="3" class="text-center">
+                                        <strong><?= count($stock_cards); ?></strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                    </div>
 
             <?php endif; ?>
 
@@ -213,10 +213,10 @@
 </div>
 
 <!-- Tambahkan CSS dan JS Flatpickr di head -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
+<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
+<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
