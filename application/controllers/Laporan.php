@@ -208,6 +208,7 @@ class Laporan extends MY_Controller
         $this->data['active_menu'] = 'laporan';
         $this->data['active_submenu'] = 'laporan_barang_proses';
 
+        $user_role = $this->session->userdata('role');
         // Ambil warehouse_id dari session
         $warehouse_id_session = $this->session->userdata('warehouse_id');
 
@@ -267,6 +268,9 @@ class Laporan extends MY_Controller
         $this->data['filter_warehouse_id'] = $warehouse_id;
         $this->data['filter_date_start'] = $filter_date_start;
         $this->data['filter_date_end'] = $filter_date_end;
+        $this->data['user_role'] = $user_role;
+        $this->data['user_warehouse_id'] = $warehouse_id;
+        $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
 
         // Render view
         $this->render_view('pages/laporan/barang_dalam_proses');
