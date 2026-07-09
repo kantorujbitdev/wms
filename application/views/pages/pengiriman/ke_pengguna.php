@@ -14,55 +14,40 @@
             </div>
         </div>
 
+
         <div class="card-body">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <form method="GET" action="<?= site_url('pengiriman/penggunaan') ?>" class="form-inline">
-                    <div class="row g-3 align-items-end">
+            <form method="get" action="<?= site_url('pengiriman/penggunaan') ?>" id="filterForm">
+                <div class="row align-items-end">
 
-                        <!-- Tanggal Mulai -->
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="start_date">Tanggal Mulai</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
-                                        placeholder="dd/mm/yyyy"
-                                        value="<?= isset($filter_start_date) ? date('d/m/Y', strtotime($filter_start_date)) : '' ?>"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tanggal Akhir -->
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="end_date">Tanggal Akhir</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
-                                        placeholder="dd/mm/yyyy"
-                                        value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : '' ?>"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Button -->
-                        <div class="col-auto">
-                            <div class="form-group">
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i> Tampilkan
-                                    </button>
-                                    <a href="<?= site_url('pengiriman/reset_filter/pengguna') ?>"
-                                        class="btn btn-secondary">
-                                        <i class="fas fa-sync"></i> Reset
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
+                    <!-- Tanggal Mulai -->
+                    <div class="col-md-3 mb-3">
+                        <label for="start_date" class="form-label">Tanggal Mulai</label>
+                        <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_start_date) ? date('d/m/Y', strtotime($filter_start_date)) : date('d/m/Y') ?>"
+                            autocomplete="off">
                     </div>
-                </form>
-            </div>
+
+                    <!-- Tanggal Akhir -->
+                    <div class="col-md-3 mb-3">
+                        <label for="end_date" class="form-label">Tanggal Akhir</label>
+                        <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : date('d/m/Y') ?>"
+                            autocomplete="off">
+                    </div>
+
+                    <!-- Reset Filter -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <a href="<?= site_url('pengiriman/reset_filter/penggunaan') ?>"
+                            class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Reset Filter
+                        </a>
+                    </div>
+
+                </div>
+            </form>
         </div>
     </div>
 
@@ -72,8 +57,8 @@
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman ke
                     Pengguna<?php if (!empty($pengiriman_list)): ?>
-                            <span class="badge text-primary ml-2">
-                                <?= count($pengiriman_list) ?> Data</span>
+                        <span class="badge text-primary ml-2">
+                            <?= count($pengiriman_list) ?> Data</span>
                     <?php endif; ?>
                 </h6>
                 <small class="text-muted">
@@ -84,124 +69,76 @@
         </div>
         <div class="card-body">
             <?php if (empty($pengiriman_list)): ?>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        Tidak ada data Pengiriman ke Pengguna.
-                        <?= date('d/m/Y', strtotime($filter_start_date)) ?> -
-                        <?= date('d/m/Y', strtotime($filter_end_date)) ?>.
-                    </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Tidak ada data Pengiriman ke Pengguna.
+                    <?= date('d/m/Y', strtotime($filter_start_date)) ?> -
+                    <?= date('d/m/Y', strtotime($filter_end_date)) ?>.
+                </div>
             <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kode Pengiriman</th>
+                                <th>Tanggal</th>
+                                <th>Asal</th>
+                                <th>Tujuan</th>
+                                <!-- <th>Referensi</th> -->
+                                <th>Keterangan</th>
+                                <th>Dibuat Oleh</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; ?>
+                            <!-- Dalam loop pengiriman -->
+                            <?php foreach ($pengiriman_list as $pengiriman): ?>
                                 <tr>
-                                    <th>No</th>
-                                    <th>Kode Pengiriman</th>
-                                    <th>Tanggal</th>
-                                    <th>Asal</th>
-                                    <th>Tujuan</th>
-                                    <!-- <th>Referensi</th> -->
-                                    <th>Keterangan</th>
-                                    <th>Dibuat Oleh</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $no = 1; ?>
-                                <!-- Dalam loop pengiriman -->
-                                <?php foreach ($pengiriman_list as $pengiriman): ?>
-                                        <tr>
-                                            <td><?= $no++ ?></td>
-                                            <td><?= $pengiriman['stockout_code'] ?></td>
-                                            <td><?= date('d-m-Y', strtotime($pengiriman['stockout_date'])) ?></td>
-                                            <td><?= $pengiriman['warehouse_name'] ?></td>
-                                            <td><?= $pengiriman['to_name'] ? $pengiriman['to_name'] : ($pengiriman['to_id'] ?? '-') ?>
-                                            </td>
-                                            <!-- <td>-</td> stockout_invoice tidak ada -->
-                                            <td><?= $pengiriman['stockout_note'] ?: '-' ?></td>
-                                            <td><?= $pengiriman['user_name'] ?></td>
-                                            <td>
-                                                <a href="<?= site_url('pengiriman/detail/' . $pengiriman['stockout_id']) ?>"
-                                                    class="btn btn-info btn-sm" title="Detail">
-                                                    <i class="fas fa-eye"></i>
+                                    <td><?= $no++ ?></td>
+                                    <td><?= $pengiriman['stockout_code'] ?></td>
+                                    <td><?= date('d-m-Y', strtotime($pengiriman['stockout_date'])) ?></td>
+                                    <td><?= $pengiriman['warehouse_name'] ?></td>
+                                    <td><?= $pengiriman['to_name'] ? $pengiriman['to_name'] : ($pengiriman['to_id'] ?? '-') ?>
+                                    </td>
+                                    <!-- <td>-</td> stockout_invoice tidak ada -->
+                                    <td><?= $pengiriman['stockout_note'] ?: '-' ?></td>
+                                    <td><?= $pengiriman['user_name'] ?></td>
+                                    <td>
+                                        <a href="<?= site_url('pengiriman/detail/' . $pengiriman['stockout_id']) ?>"
+                                            class="btn btn-info btn-sm" title="Detail">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
+                                        <?php if (has_permission('pengiriman', 'edit')): ?>
+                                            <?php if (isset($pengiriman['is_cetak']) && $pengiriman['is_cetak'] < 2): ?>
+                                                <a href="<?= site_url('pengiriman/edit/' . $pengiriman['stockout_id']) ?>"
+                                                    class="btn btn-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
                                                 </a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
 
-                                                <?php if (has_permission('pengiriman', 'edit')): ?>
-                                                        <?php if (isset($pengiriman['is_cetak']) && $pengiriman['is_cetak'] < 2): ?>
-                                                                <a href="<?= site_url('pengiriman/edit/' . $pengiriman['stockout_id']) ?>"
-                                                                    class="btn btn-warning btn-sm" title="Edit">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                        <?php endif; ?>
-                                                <?php endif; ?>
-
-                                                <?php if (has_permission('pengiriman', 'delete')): ?>
-                                                        <?php if (isset($pengiriman['is_cetak']) && $pengiriman['is_cetak'] < 2): ?>
-                                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
-                                                                    data-id="<?= $pengiriman['stockout_id']; ?>"
-                                                                    data-name="<?= $pengiriman['stockout_code']; ?>"
-                                                                    data-url="<?= site_url('pengiriman/delete'); ?>">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                        <?php endif; ?>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                        <?php if (has_permission('pengiriman', 'delete')): ?>
+                                            <?php if (isset($pengiriman['is_cetak']) && $pengiriman['is_cetak'] < 2): ?>
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
+                                                    data-id="<?= $pengiriman['stockout_id']; ?>"
+                                                    data-name="<?= $pengiriman['stockout_code']; ?>"
+                                                    data-url="<?= site_url('pengiriman/delete'); ?>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif; ?>
         </div>
     </div>
 </div>
 
-<!-- Tambahkan CSS dan JS Flatpickr di head -->
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
-<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
-<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Inisialisasi Flatpickr
-        flatpickr(".flatpickr", {
-            dateFormat: "d/m/Y",
-            locale: {
-                firstDayOfWeek: 1 // Senin sebagai hari pertama
-            },
-            position: "below", // Paksa posisi di bawah
-            positionElement: null,
-            static: true, // Membuat kalender tetap di posisi relatif terhadap input
-            onChange: function (selectedDates, dateStr, instance) {
-                // Validasi tanggal
-                var currentInput = instance.element;
-                var startDate = document.getElementById('start_date');
-                var endDate = document.getElementById('end_date');
-
-                if (currentInput.id === 'start_date' && endDate.value) {
-                    var start = selectedDates[0];
-                    var endParts = endDate.value.split('/');
-                    var end = new Date(endParts[2], endParts[1] - 1, endParts[0]);
-
-                    if (start > end) {
-                        $('#errorMessage').text('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
-                        $('#errorModal').modal('show');
-
-                        return false;
-                    }
-                } else if (currentInput.id === 'end_date' && startDate.value) {
-                    var startParts = startDate.value.split('/');
-                    var start = new Date(startParts[2], startParts[1] - 1, startParts[0]);
-                    var end = selectedDates[0];
-
-                    if (end < start) {
-                        $('#errorMessage').text('Tanggal akhir tidak boleh lebih kecil dari tanggal awal');
-                        $('#errorModal').modal('show');
-                        return false;
-                    }
-                }
-            }
-        });
-    });
-</script>
+<?php $this->load->view('style/script_list'); ?>

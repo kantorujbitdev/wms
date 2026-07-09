@@ -37,10 +37,9 @@
             const end = parseDate(endInput.value);
 
             if (start && end && start > end) {
-                toastr.error(
-                    'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
-                    'Tanggal Tidak Valid'
-                );
+                $('#errorMessage').text('Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+                    'Tanggal Tidak Valid');
+                $('#errorModal').modal('show');
                 return;
             }
 
@@ -67,12 +66,12 @@
                 const end = parseDate(endInput.value);
 
                 if (start && end && start > end) {
-                    toastr.error(
-                        instance.element.id === 'start_date'
-                            ? 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir'
-                            : 'Tanggal akhir tidak boleh lebih kecil dari tanggal awal',
-                        'Tanggal Tidak Valid'
-                    );
+                    $('#errorMessage').text(instance.element.id === 'start_date'
+                        ? 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir'
+                        : 'Tanggal akhir tidak boleh lebih kecil dari tanggal awal',
+                        'Tanggal Tidak Valid');
+                    $('#errorModal').modal('show');
+
                     instance.clear();
                     return;
                 }
@@ -89,10 +88,9 @@
 
             if (start && end && start > end) {
                 e.preventDefault();
-                toastr.error(
-                    'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
-                    'Tanggal Tidak Valid'
-                );
+                $('#errorMessage').text('Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+                    'Tanggal Tidak Valid');
+                $('#errorModal').modal('show');
             }
         });
 
