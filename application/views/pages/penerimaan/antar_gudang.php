@@ -12,56 +12,39 @@
                 </a>
             </div>
         </div>
-
         <div class="card-body">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <form method="GET" action="<?= site_url('penerimaan/antar_gudang') ?>" class="form-inline">
-                    <div class="row g-3 align-items-end">
+            <form method="get" action="<?= site_url('penerimaan/antar_gudang') ?>" id="filterForm">
+                <div class="row align-items-end">
 
-                        <!-- Tanggal Mulai -->
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="start_date">Tanggal Mulai</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
-                                        placeholder="dd/mm/yyyy"
-                                        value="<?= isset($filter_start_date) ? date('d/m/Y', strtotime($filter_start_date)) : '' ?>"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tanggal Akhir -->
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="end_date">Tanggal Akhir</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
-                                        placeholder="dd/mm/yyyy"
-                                        value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : '' ?>"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Button -->
-                        <div class="col-auto">
-                            <div class="form-group">
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i> Tampilkan
-                                    </button>
-                                    <a href="<?= site_url('penerimaan/reset_filter/antar_gudang') ?>"
-                                        class="btn btn-secondary">
-                                        <i class="fas fa-sync"></i> Reset
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
+                    <!-- Tanggal Mulai -->
+                    <div class="col-md-3 mb-3">
+                        <label for="start_date" class="form-label">Tanggal Mulai</label>
+                        <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_start_date) ? date('d/m/Y', strtotime($filter_start_date)) : date('d/m/Y') ?>"
+                            autocomplete="off">
                     </div>
-                </form>
-            </div>
+
+                    <!-- Tanggal Akhir -->
+                    <div class="col-md-3 mb-3">
+                        <label for="end_date" class="form-label">Tanggal Akhir</label>
+                        <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : date('d/m/Y') ?>"
+                            autocomplete="off">
+                    </div>
+
+                    <!-- Reset Filter -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <a href="<?= site_url('penerimaan/reset_filter/antar_gudang') ?>"
+                            class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Reset Filter
+                        </a>
+                    </div>
+
+                </div>
+            </form>
         </div>
     </div>
 
@@ -159,52 +142,4 @@
     </div>
 </div>
 
-<!-- Tambahkan CSS dan JS Flatpickr di head -->
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
-<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
-<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Inisialisasi Flatpickr
-        flatpickr(".flatpickr", {
-            dateFormat: "d/m/Y",
-            locale: {
-                firstDayOfWeek: 1 // Senin sebagai hari pertama
-            },
-            position: "below", // Paksa posisi di bawah
-            positionElement: null,
-            static: true, // Membuat kalender tetap di posisi relatif terhadap input
-            onChange: function (selectedDates, dateStr, instance) {
-                // Validasi tanggal
-                var currentInput = instance.element;
-                var startDate = document.getElementById('start_date');
-                var endDate = document.getElementById('end_date');
-
-                if (currentInput.id === 'start_date' && endDate.value) {
-                    var start = selectedDates[0];
-                    var endParts = endDate.value.split('/');
-                    var end = new Date(endParts[2], endParts[1] - 1, endParts[0]);
-
-                    if (start > end) {
-                        $('#errorMessage').text('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
-                        $('#errorModal').modal('show');
-
-                        return false;
-                    }
-                } else if (currentInput.id === 'end_date' && startDate.value) {
-                    var startParts = startDate.value.split('/');
-                    var start = new Date(startParts[2], startParts[1] - 1, startParts[0]);
-                    var end = selectedDates[0];
-
-                    if (end < start) {
-                        $('#errorMessage').text('Tanggal akhir tidak boleh lebih kecil dari tanggal awal');
-                        $('#errorModal').modal('show');
-                        return false;
-                    }
-                }
-            }
-        });
-    });
-</script>
+<?php $this->load->view('style/script_list'); ?>

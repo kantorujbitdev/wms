@@ -1,4 +1,13 @@
+<!-- C:\xampp\htdocs\wms\application\views\pages\penerimaan\dari_pengguna.php -->
+<!--
+    Pola filter yang sama digunakan di:
+    - penerimaan/dari_supplier  (ganti action & label sesuai)
+    - penerimaan/antar_gudang   (ganti action & label sesuai)
+    Cukup salin dan sesuaikan 3 hal: action form, label judul, URL reset
+-->
+
 <div class="container-fluid">
+
     <!-- Filter Card -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -14,201 +23,145 @@
         </div>
 
         <div class="card-body">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <form method="GET" action="<?= site_url('penerimaan/dari_pengguna') ?>" class="form-inline">
-                    <div class="row g-3 align-items-end">
+            <form method="get" action="<?= site_url('penerimaan/dari_pengguna') ?>" id="filterForm">
+                <div class="row align-items-end">
 
-                        <!-- Tanggal Mulai -->
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="start_date">Tanggal Mulai</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
-                                        placeholder="dd/mm/yyyy"
-                                        value="<?= isset($filter_start_date) ? date('d/m/Y', strtotime($filter_start_date)) : '' ?>"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tanggal Akhir -->
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="end_date">Tanggal Akhir</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
-                                        placeholder="dd/mm/yyyy"
-                                        value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : '' ?>"
-                                        autocomplete="off">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Button -->
-                        <div class="col-auto">
-                            <div class="form-group">
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i> Tampilkan
-                                    </button>
-                                    <a href="<?= site_url('penerimaan/reset_filter/pengguna') ?>"
-                                        class="btn btn-secondary">
-                                        <i class="fas fa-sync"></i> Reset
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
+                    <!-- Tanggal Mulai -->
+                    <div class="col-md-3 mb-3">
+                        <label for="start_date" class="form-label">Tanggal Mulai</label>
+                        <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_start_date) ? date('d/m/Y', strtotime($filter_start_date)) : date('d/m/Y') ?>"
+                            autocomplete="off">
                     </div>
-                </form>
-            </div>
+
+                    <!-- Tanggal Akhir -->
+                    <div class="col-md-3 mb-3">
+                        <label for="end_date" class="form-label">Tanggal Akhir</label>
+                        <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= isset($filter_end_date) ? date('d/m/Y', strtotime($filter_end_date)) : date('d/m/Y') ?>"
+                            autocomplete="off">
+                    </div>
+
+                    <!-- Reset Filter -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <a href="<?= site_url('penerimaan/reset_filter/pengguna') ?>" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Reset Filter
+                        </a>
+                    </div>
+
+                </div>
+            </form>
         </div>
+
+
     </div>
 
-    <!-- DataTales Example -->
+    <!-- Tabel Penerimaan -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Daftar Penerimaan dari Pengguna
+                <h6 class="m-0 font-weight-bold text-primary">
+                    Daftar Penerimaan dari Pengguna
                     <?php if (!empty($penerimaan_list)): ?>
-                            <span class="badge text-primary ml-2">
-                                <?= count($penerimaan_list) ?> Data
-                            </span>
+                        <span class="badge text-primary ml-2">
+                            <?= count($penerimaan_list) ?> Data
+                        </span>
                     <?php endif; ?>
                 </h6>
                 <small class="text-muted">
                     Periode:
-                    <?= date('d/m/Y', strtotime($filter_start_date)) ?> -
+                    <?= date('d/m/Y', strtotime($filter_start_date)) ?>
+                    &ndash;
                     <?= date('d/m/Y', strtotime($filter_end_date)) ?>
                 </small>
-
             </div>
         </div>
         <div class="card-body">
             <?php if (empty($penerimaan_list)): ?>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        Tidak ada data Penerimaan dari Pengguna untuk periode
-                        <?= date('d/m/Y', strtotime($filter_start_date)) ?> -
-                        <?= date('d/m/Y', strtotime($filter_end_date)) ?>.
-                    </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Tidak ada data Penerimaan dari Pengguna untuk periode
+                    <?= date('d/m/Y', strtotime($filter_start_date)) ?>
+                    &ndash;
+                    <?= date('d/m/Y', strtotime($filter_end_date)) ?>.
+                </div>
             <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead class="text-center align-middle">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="thead-light text-center align-middle">
+                            <tr>
+                                <th width="40">No</th>
+                                <th>Kode Penerimaan</th>
+                                <th width="100">Tanggal</th>
+                                <th>Asal</th>
+                                <th>Tujuan</th>
+                                <th>No Referensi</th>
+                                <th>Keterangan</th>
+                                <th>Dibuat</th>
+                                <th width="100">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1;
+                            foreach ($penerimaan_list as $penerimaan): ?>
                                 <tr>
-                                    <th>No</th>
-                                    <th>Kode Penerimaan</th>
-                                    <th>Tanggal</th>
-                                    <th>Asal</th>
-                                    <th>Tujuan</th>
-                                    <th>No Referensi</th>
-                                    <th>Keterangan</th>
-                                    <th>Dibuat</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($penerimaan_list)): ?>
-                                        <?php $no = 1;
-                                        foreach ($penerimaan_list as $penerimaan): ?>
-                                                <tr>
-                                                    <td class="text-center"><?= $no++; ?></td>
-                                                    <td><?= $penerimaan['stockin_code'] ?? '-'; ?></td>
-                                                    <td><?= $penerimaan['stockin_date'] ?? '-'; ?></td>
-                                                    <td><?= $penerimaan['from_name'] ?? '-'; ?></td>
-                                                    <td><?= $penerimaan['warehouse_name'] ?? '-'; ?></td>
-                                                    <td><?= $penerimaan['stockin_invoice'] ?? '-'; ?></td>
-                                                    <td><?= $penerimaan['stockin_note'] ?? '-'; ?></td>
-                                                    <td><?= $penerimaan['user_name'] ?? '-'; ?></td>
-                                                    <td class="text-center">
-                                                        <?php if (has_permission('penerimaan')): ?>
-                                                                <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
-                                                                    class="btn btn-info btn-sm" title="Detail">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </a>
-                                                        <?php endif; ?>
-                                                        <?php if (has_permission('penerimaan', 'edit')): ?>
-                                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
-                                                                        <a href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
-                                                                            class="btn btn-warning btn-sm" title="Edit">
-                                                                            <i class="fas fa-edit"></i>
-                                                                        </a>
-                                                                <?php endif; ?>
-                                                        <?php endif; ?>
+                                    <td class="text-center"><?= $no++ ?></td>
+                                    <td><?= htmlspecialchars($penerimaan['stockin_code'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($penerimaan['stockin_date'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($penerimaan['from_name'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($penerimaan['warehouse_name'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($penerimaan['stockin_invoice'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($penerimaan['stockin_note'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($penerimaan['user_name'] ?? '-') ?></td>
+                                    <td class="text-center">
+                                        <?php if (has_permission('penerimaan')): ?>
+                                            <a href="<?= site_url('penerimaan/detail/' . $penerimaan['stockin_id']) ?>"
+                                                class="btn btn-info btn-sm" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        <?php endif; ?>
 
-                                                        <?php if (has_permission('penerimaan', 'delete')): ?>
-                                                                <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
-                                                                        <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
-                                                                            data-id="<?= $penerimaan['stockin_id']; ?>"
-                                                                            data-name="<?= $penerimaan['stockin_code']; ?>"
-                                                                            data-url="<?= site_url('penerimaan/delete'); ?>">
-                                                                            <i class="fas fa-trash"></i>
-                                                                        </button>
-                                                                <?php endif; ?>
-                                                        <?php endif; ?>
-                                                    </td>
-                                                </tr>
-                                        <?php endforeach; ?>
-                                <?php else: ?>
-                                        <tr>
-                                            <td colspan="9" class="text-center">Tidak ada data penerimaan dari pengguna</td>
-                                        </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                        <?php if (has_permission('penerimaan', 'edit')): ?>
+                                            <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
+                                                <a href="<?= site_url('penerimaan/edit/' . $penerimaan['stockin_id']) ?>"
+                                                    class="btn btn-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+
+                                        <?php if (has_permission('penerimaan', 'delete')): ?>
+                                            <?php if (isset($penerimaan['is_cetak']) && $penerimaan['is_cetak'] < 2): ?>
+                                                <button type="button" class="btn btn-danger btn-sm actionBtnDelete" title="Hapus"
+                                                    data-id="<?= $penerimaan['stockin_id'] ?>"
+                                                    data-name="<?= htmlspecialchars($penerimaan['stockin_code']) ?>"
+                                                    data-url="<?= site_url('penerimaan/delete') ?>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif; ?>
         </div>
     </div>
+
 </div>
 
-<!-- Tambahkan CSS dan JS Flatpickr di head -->
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
-<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
-<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(255,255,255,0.8); z-index:9999;">
+    <div class="d-flex flex-column justify-content-center align-items-center h-100">
+        <div class="spinner-border text-primary" style="width:3rem; height:3rem;" role="status"></div>
+        <h5 class="mt-3 mb-0">Memuat data...</h5>
+    </div>
+</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Inisialisasi Flatpickr
-        flatpickr(".flatpickr", {
-            dateFormat: "d/m/Y",
-            locale: {
-                firstDayOfWeek: 1 // Senin sebagai hari pertama
-            },
-            position: "below", // Paksa posisi di bawah
-            positionElement: null,
-            static: true, // Membuat kalender tetap di posisi relatif terhadap input
-            onChange: function (selectedDates, dateStr, instance) {
-                // Validasi tanggal
-                var currentInput = instance.element;
-                var startDate = document.getElementById('start_date');
-                var endDate = document.getElementById('end_date');
-
-                if (currentInput.id === 'start_date' && endDate.value) {
-                    var start = selectedDates[0];
-                    var endParts = endDate.value.split('/');
-                    var end = new Date(endParts[2], endParts[1] - 1, endParts[0]);
-
-                    if (start > end) {
-                        $('#errorMessage').text('Tanggal awal tidak boleh lebih besar dari tanggal akhir');
-                        $('#errorModal').modal('show');
-
-                        return false;
-                    }
-                } else if (currentInput.id === 'end_date' && startDate.value) {
-                    var startParts = startDate.value.split('/');
-                    var start = new Date(startParts[2], startParts[1] - 1, startParts[0]);
-                    var end = selectedDates[0];
-
-                    if (end < start) {
-                        $('#errorMessage').text('Tanggal akhir tidak boleh lebih kecil dari tanggal awal');
-                        $('#errorModal').modal('show');
-                        return false;
-                    }
-                }
-            }
-        });
-    });
-</script>
+<?php $this->load->view('style/script_list'); ?>
