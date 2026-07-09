@@ -111,13 +111,13 @@
                     <table class="table table-bordered table-hover" id="stokTable" width="100%" cellspacing="0">
                         <thead class="thead-light text-center align-middle">
                             <tr>
-                                <th width="40">No</th>
-                                <th>Nama Proyek</th>
-                                <th>ID BOS</th>
-                                <th>Kode Barang</th>
-                                <th>Nama Barang</th>
-                                <th>Tipe Barang</th>
-                                <th>Stok Terakhir</th>
+                                <th width="35">No</th>
+                                <th width="230">Nama Proyek</th>
+                                <th width="90">ID BOS</th>
+                                <th width="100">Kode Barang</th>
+                                <th width="260">Nama Barang</th>
+                                <th width="110">Tipe Barang</th>
+                                <th width="85">Stok Terakhir</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
@@ -127,7 +127,13 @@
                                     <tr>
                                         <td class="text-center"><?= $no++ ?></td>
                                         <td><?= htmlspecialchars($stok['warehouse_name']) ?></td>
-                                        <td><?= htmlspecialchars($stok['bos_code']) ?></td>
+                                        <td>
+                                            <?= htmlspecialchars(
+                                                ($stok['bos_code'] !== null && $stok['bos_code'] !== '')
+                                                ? $stok['bos_code']
+                                                : '-'
+                                            ) ?>
+                                        </td>
                                         <td><?= htmlspecialchars($stok['product_code']) ?></td>
                                         <td><?= htmlspecialchars($stok['product_name']) ?></td>
                                         <td><?= htmlspecialchars($stok['type_name']) ?></td>
