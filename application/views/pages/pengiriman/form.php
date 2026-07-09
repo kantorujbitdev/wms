@@ -1,4 +1,3 @@
-                                                                                                                                                                                                                                                                                                                                                 <!-- C:\xampp\htdocs\wms\application\views\pages\pengiriman\form.php -->
 <?php $this->load->view('pages/pengiriman/edit_style'); ?>
 
 <!-- Select2 CSS & JS with Custom Styles for better UX -->

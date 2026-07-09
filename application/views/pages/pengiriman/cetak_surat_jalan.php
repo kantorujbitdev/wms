@@ -13,9 +13,8 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
         <?= $jenis_surat ?>
     </title>
     <link rel="icon" href="<?php echo base_url($config['app_logo']); ?>" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style></style>
+    <link href="<?php echo base_url('assets/font-awesome/all.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo base_url('assets/bootstrap/bootstrap.min.css'); ?>" rel="stylesheet">
     <?php $this->load->view('style/cetak_style'); ?>
 
     </style>
@@ -494,8 +493,8 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
 
         }
     </script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo base_url('assets/jquery/jquery-3.7.1.min.js'); ?>"></script>
+    <script src="<?php echo base_url('assets/bootstrap/bootstrap.bundle.min.js'); ?>"></script>
 
 </body>
 
