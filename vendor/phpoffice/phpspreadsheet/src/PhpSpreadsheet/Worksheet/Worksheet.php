@@ -368,7 +368,7 @@ class Worksheet
     public function __destruct()
     {
         Calculation::getInstanceOrNull($this->parent)
-            ?->clearCalculationCacheForWorksheet($this->title);
+                ?->clearCalculationCacheForWorksheet($this->title);
 
         $this->disconnectCells();
         unset($this->rowDimensions, $this->columnDimensions, $this->tableCollection, $this->drawingCollection, $this->chartCollection, $this->autoFilter);
