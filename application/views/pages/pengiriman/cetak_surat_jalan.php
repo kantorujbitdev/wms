@@ -125,7 +125,7 @@ $isCetak = (int) ($pengiriman['header']['is_cetak'] ?? 0);
                         <div class="info-row">
                             <div class="info-label">Keterangan:</div>
                             <div class="info-value">
-                                <?= $pengiriman['header']['stockout_note'] ?: 'Tidak ada keterangan' ?>
+                                <?= $pengiriman['header']['stockout_note'] ?: '-' ?>
                             </div>
                         </div>
                         <div class="info-row">
