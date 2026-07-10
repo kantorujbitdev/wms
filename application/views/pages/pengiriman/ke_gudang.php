@@ -46,7 +46,7 @@
                                         <td><?= $pengiriman['to_name'] ? $pengiriman['to_name'] : ($pengiriman['to_id'] ?? '-') ?>
                                         </td>
                                         <!-- <td>-</td> stockout_invoice tidak ada -->
-                                        <td><?= $pengiriman['stockout_note'] ?: '-' ?></td>
+                                        <td><?= $pengiriman['stockout_note'] ?></td>
                                         <!-- <td><?= $pengiriman['user_name'] ?></td> -->
                                         <td>
                                             <a href="<?= site_url('pengiriman/detail/' . $pengiriman['stockout_id']) ?>"

@@ -114,7 +114,7 @@ $from_status = (int) ($penerimaan['header']['from_status'] ?? 0);
                         <h4>INFORMASI PENGIRIM</h4>
                         <div class="info-row">
                             <span class="info-label">Dari:</span>
-                            <span class="info-value"><?= $penerimaan['header']['from_name'] ?? '-' ?></span>
+                            <span class="info-value"><?= $penerimaan['header']['from_name'] ?></span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Jenis:</span>
@@ -122,11 +122,11 @@ $from_status = (int) ($penerimaan['header']['from_status'] ?? 0);
                         </div>
                         <div class="info-row">
                             <span class="info-label">No. Surat:</span>
-                            <span class="info-value"><?= $penerimaan['header']['stockin_invoice'] ?? '-' ?></span>
+                            <span class="info-value"><?= $penerimaan['header']['stockin_invoice'] ?></span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Keterangan:</span>
-                            <span class="info-value"><?= $penerimaan['header']['stockin_note'] ?: '-' ?></span>
+                            <span class="info-value"><?= $penerimaan['header']['stockin_note'] ?: '' ?></span>
                         </div>
                     </div>
                 </div>

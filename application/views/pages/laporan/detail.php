@@ -64,7 +64,7 @@
                         </tr>
                         <tr>
                             <th>Keterangan</th>
-                            <td><?= $pengiriman['header']['stockout_note'] ?: '-' ?></td>
+                            <td><?= $pengiriman['header']['stockout_note'] ?></td>
                         </tr>
                         <tr>
                             <th>Dibuat Oleh</th>
@@ -103,7 +103,7 @@
                                 <td><?= $detail['product_name'] ?></td>
                                 <td><?= viewNumber($detail['qty']) ?></td>
                                 <td><?= $detail['unit_code'] ?></td>
-                                <td><?= $detail['detail_note'] ?: '-' ?></td>
+                                <td><?= $detail['detail_note'] ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

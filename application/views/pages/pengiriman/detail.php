@@ -41,7 +41,7 @@ if ($pengiriman['header']['to_status'] == '3')
                         </tr>
                         <!-- <tr>
                             <th>Referensi</th>
-                            <td><?= $pengiriman['header']['stockout_invoice'] ?? '-' ?></td>
+                            <td><?= $pengiriman['header']['stockout_invoice'] ?></td>
                         </tr> -->
                     </table>
                 </div>
@@ -69,7 +69,7 @@ if ($pengiriman['header']['to_status'] == '3')
                         </tr>
                         <tr>
                             <th>Keterangan</th>
-                            <td><?= $pengiriman['header']['stockout_note'] ?: '-' ?></td>
+                            <td><?= $pengiriman['header']['stockout_note'] ?></td>
                         </tr>
                         <tr>
                             <th>Dibuat Oleh</th>
@@ -108,7 +108,7 @@ if ($pengiriman['header']['to_status'] == '3')
                                 <td><?= $detail['product_name'] ?></td>
                                 <td><?= viewNumber($detail['qty']) ?></td>
                                 <td><?= $detail['unit_code'] ?></td>
-                                <td><?= $detail['detail_note'] ?: '-' ?></td>
+                                <td><?= $detail['detail_note'] ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
