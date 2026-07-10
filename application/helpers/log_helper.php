@@ -62,15 +62,15 @@ if (!function_exists('log_http_response')) {
         $prefixText = !empty($prefix) ? "[{$prefix}] " : '';
         $shortResponse = substr($response, 0, 500); // batasi isi log agar tidak terlalu panjang
 
-        // if (ENVIRONMENT == 'development') {
-        //     $pesan = "[RESPONSE]: " . $response;
-        // } else {
-        if ($method == 'GET') {
-            $pesan = "[RESPONSE]: " . $shortResponse;
-        } else {
+        if (ENVIRONMENT == 'development') {
             $pesan = "[RESPONSE]: " . $response;
+        } else {
+            if ($method == 'GET') {
+                $pesan = "[RESPONSE]: " . $shortResponse;
+            } else {
+                $pesan = "[RESPONSE]: " . $response;
+            }
         }
-        // }
 
         $icon = '❌';
         $level = 'error';
