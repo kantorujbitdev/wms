@@ -7,27 +7,7 @@
 <!-- Select2 CSS -->
 <link href="<?php echo base_url('assets/select2/select2.min.css') ?>" rel="stylesheet" />
 <link href="<?php echo base_url('assets/select2/select2-bootstrap-5-theme.min.css') ?>" rel="stylesheet" />
-<style>
-    .select2-container--bootstrap-5 .select2-search--dropdown {
-        display: block !important;
-        padding: 6px;
-    }
 
-    .select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
-        display: block !important;
-        width: 100% !important;
-        height: auto !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        padding: 6px 10px !important;
-        border: 1px solid #ced4da !important;
-        border-radius: 4px !important;
-    }
-
-    .select2-container--bootstrap-5 .select2-dropdown {
-        z-index: 9999;
-    }
-</style>
 <div class="container-fluid">
 
     <!-- Filter Card -->
@@ -427,6 +407,10 @@
                 placeholder: '-- Semua Produk --'
             });
         }
-
+        console.log('Select2 :', $('.select2-selection--single').outerHeight());
+        console.log('Input   :', $('.form-control').first().outerHeight());
+        console.log($('.form-control').first().css('height'));
+        console.log($('.form-control').first().css('padding-top'));
+        console.log($('.form-control').first().css('padding-bottom'));
     });
 </script>
