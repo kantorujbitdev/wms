@@ -46,7 +46,7 @@
                             <option value="">Pilih Produk</option>
                             <?php foreach ($products_list as $product):
                                 $display_name = htmlspecialchars(
-                                    $product['product_code'] . ' - ' . $product['product_name'] . ' || ' . $product['unit_code'],
+                                    $product['product_code'] . ' - ' . $product['product_name'] . ' (Satuan: ' . $product['unit_code'] . ')',
                                     ENT_QUOTES,
                                     'UTF-8'
                                 );
