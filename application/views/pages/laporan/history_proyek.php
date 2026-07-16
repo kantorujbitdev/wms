@@ -1,6 +1,12 @@
-<!-- Flatpickr CSS (letakkan di <head> dokumen utama jika memungkinkan) -->
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
+<!-- C:\xampp\htdocs\wms\application\views\pages\laporan\history_proyek.php -->
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css') ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css') ?>">
+
+<!-- Select2 CSS -->
+<link href="<?php echo base_url('assets/select2/select2.min.css') ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2-bootstrap-5-theme.min.css') ?>" rel="stylesheet" />
 
 <div class="container-fluid">
 
@@ -9,22 +15,41 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Filter Daftar</h6>
         </div>
-
         <div class="card-body">
-            <form method="get" action="<?= site_url('laporan/history_proyek') ?>" id="filterForm" class="mb-4">
-                <div class="row">
+            <form method="get" action="<?= site_url('laporan/history_proyek') ?>" id="filterForm">
+                <div class="row align-items-end">
 
-                    <!-- Filter Gudang -->
+                    <!-- Filter Proyek/Gudang -->
+                    <!--
+                        BUG FIX: sebelumnya ada DUA elemen dengan id="warehouse_id"
+                        (satu <select> tanpa kondisi + satu blok dengan kondisi superadmin).
+                        getElementById hanya ambil yang pertama → Select2 dan event
+                        listener terpasang ke elemen yang salah.
+                        Sekarang hanya SATU elemen dengan id yang unik.
+                    -->
                     <div class="col-md-3 mb-3">
-                        <label for="warehouse_id" class="form-label">Nama Proyek</label>
-                        <select name="warehouse_id" id="warehouse_id" class="form-control">
-                            <option value="all">Pilih Proyek</option>
-                            <?php foreach ($warehouse_list as $warehouse): ?>
-                                <option value="<?= $warehouse['warehouse_id'] ?>" <?= isset($filter_warehouse_id) && $filter_warehouse_id == $warehouse['warehouse_id'] ? 'selected' : '' ?>>
-                                    <?= $warehouse['warehouse_name'] ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <label for="warehouse_id" class="form-label">
+                            Nama Proyek
+                            <?php if ($user_role == 'superadmin'): ?>
+                                <span class="text-danger">*</span>
+                            <?php endif; ?>
+                        </label>
+
+                        <?php if ($user_role == 'superadmin'): ?>
+                            <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang">
+                                <option value="">-- Pilih Proyek --</option>
+                                <?php foreach ($warehouse_list as $warehouse): ?>
+                                    <option value="<?= $warehouse['warehouse_id'] ?>" <?= isset($filter_warehouse_id) && $filter_warehouse_id == $warehouse['warehouse_id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($warehouse['warehouse_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <!-- name wajib ada agar terkirim saat submit -->
+                            <input type="hidden" name="warehouse_id" id="warehouse_id" value="<?= $user_warehouse_id ?>">
+                            <input type="text" class="form-control bg-light"
+                                value="<?= htmlspecialchars($user_warehouse_name ?? '') ?>" disabled>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Tanggal Mulai -->
@@ -45,7 +70,7 @@
                             autocomplete="off">
                     </div>
 
-                    <!-- Tombol Reset -->
+                    <!-- Reset -->
                     <div class="col-md-3 mb-3">
                         <label class="form-label d-block">&nbsp;</label>
                         <a href="<?= site_url('laporan/history_proyek') ?>" class="btn btn-outline-secondary">
@@ -55,7 +80,7 @@
 
                 </div>
 
-                <!-- Detail Gudang -->
+                <!-- Detail Proyek/Gudang -->
                 <div id="warehouseDetailContainer">
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
@@ -83,13 +108,11 @@
                 $total_keluar += (float) $row['qty'];
             }
         }
-
         $total_produk = count($produk_unik);
         ?>
 
         <!-- Summary Cards -->
         <div class="row mb-3">
-
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card border-left-primary shadow h-100">
                     <div class="card-body text-center">
@@ -102,8 +125,7 @@
                 <div class="card border-left-warning shadow h-100">
                     <div class="card-body text-center">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Jenis Barang</div>
-                        <div class="h4 mb-0 font-weight-bold text-warning"><?= number_format($total_produk) ?>
-                        </div>
+                        <div class="h4 mb-0 font-weight-bold text-warning"><?= number_format($total_produk) ?></div>
                     </div>
                 </div>
             </div>
@@ -130,20 +152,17 @@
             <div class="card-header py-3">
                 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Daftar Histori Proyek</h6>
-
-                    <!-- Tombol Export PDF -->
                     <button type="button" id="exportPdfBtn" class="btn btn-danger btn-sm mt-2 mt-md-0">
                         <i class="fas fa-file-pdf mr-1"></i> Export PDF
                     </button>
                 </div>
             </div>
-
             <div class="card-body">
                 <?php if (empty($pengiriman_list)): ?>
                     <div class="alert alert-info">Tidak ada data Histori Proyek.</div>
                 <?php else: ?>
                     <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                             <thead class="thead-light text-center">
                                 <tr>
                                     <th width="50">No</th>
@@ -163,10 +182,10 @@
                                     <tr>
                                         <td class="text-center"><?= $no++ ?></td>
                                         <td><?= date('d-m-Y', strtotime($row['transaction_date'])) ?></td>
-                                        <td><?= $row['transaction_code'] ?></td>
-                                        <td><strong><?= $row['product_code'] ?></strong></td>
-                                        <td><?= $row['product_name'] ?></td>
-                                        <td class="text-center"><?= $row['unit'] ?></td>
+                                        <td><?= htmlspecialchars($row['transaction_code']) ?></td>
+                                        <td><strong><?= htmlspecialchars($row['product_code']) ?></strong></td>
+                                        <td><?= htmlspecialchars($row['product_name']) ?></td>
+                                        <td class="text-center"><?= htmlspecialchars($row['unit']) ?></td>
                                         <td class="text-center">
                                             <?php if ($row['transaction_type'] === 'Masuk'): ?>
                                                 <span class="font-weight-bold text-success">
@@ -218,52 +237,52 @@
     </div>
 </div>
 
-<!-- Flatpickr JS -->
-<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
-<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
+<!-- JS — urutan penting: Flatpickr → Select2 → script kita -->
+<!-- FIX: flatpickr__.js dihapus, path Select2 disesuaikan dengan path CSS -->
+<script src="<?= base_url('assets/flatpickr/flatpickr.js') ?>"></script>
+<script src="<?= base_url('assets/flatpickr/flatpickr__.js') ?>"></script>
+<script src="<?= base_url('assets/select2/select2.min.js') ?>"></script>
 
 <script>
+    // Data gudang untuk render detail card
     const warehouseData = <?= json_encode($warehouse_list) ?>;
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    $(document).ready(function () {
 
-        // -------------------------
-        // Elemen utama
-        // -------------------------
+        // =========================================================
+        // Konstanta
+        // =========================================================
+        const isSuperAdmin = '<?= $user_role ?>' === 'superadmin';
         const filterForm = document.getElementById('filterForm');
-        const warehouseSelect = document.getElementById('warehouse_id');
         const warehouseContainer = document.getElementById('warehouseDetailContainer');
         const startDateInput = document.getElementById('start_date');
         const endDateInput = document.getElementById('end_date');
 
-        // -------------------------
-        // Helper: parse tanggal d/m/Y → Date
-        // -------------------------
+        // =========================================================
+        // Helper: parse tanggal d/m/Y → Date (safe cross-browser)
+        // =========================================================
         function parseDate(str) {
             if (!str) return null;
-            const parts = str.split('/');
-            if (parts.length !== 3) return null;
-            return new Date(parts[2], parts[1] - 1, parts[0]);
+            const p = str.split('/');
+            if (p.length !== 3) return null;
+            return new Date(p[2], p[1] - 1, p[0]);
         }
 
-        // -------------------------
-        // Helper: tampilkan loading
-        // -------------------------
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'block';
         }
 
-        // -------------------------
-        // Render detail gudang
-        // -------------------------
+        // =========================================================
+        // Render detail card proyek/gudang
+        // =========================================================
         function renderWarehouseDetail(warehouseId) {
-            if (!warehouseId || warehouseId === 'all') {
+            if (!warehouseId || warehouseId === '') {
                 warehouseContainer.innerHTML = `
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    Silahkan pilih Proyek terlebih dahulu untuk melihat Histori Proyek.
+                    Silahkan pilih proyek terlebih dahulu untuk melihat Histori Proyek.
                 </div>`;
                 return;
             }
@@ -319,9 +338,9 @@
             </div>`;
         }
 
-        // -------------------------
-        // Submit filter (dengan validasi tanggal)
-        // -------------------------
+        // =========================================================
+        // submitFilter: validasi tanggal lalu submit
+        // =========================================================
         function submitFilter() {
             const start = parseDate(startDateInput.value);
             const end = parseDate(endDateInput.value);
@@ -338,9 +357,56 @@
             filterForm.submit();
         }
 
-        // -------------------------
-        // Inisialisasi Flatpickr
-        // -------------------------
+        // =========================================================
+        // Inisialisasi Select2 untuk gudang (superadmin saja)
+        //
+        // FIX: select2Config dipindah ke dalam $(document).ready
+        // agar jQuery ($) sudah pasti tersedia saat dieksekusi.
+        // Gunakan jQuery .on('change') bukan addEventListener native
+        // agar konsisten dengan event lifecycle Select2.
+        // =========================================================
+        if (isSuperAdmin && $('#warehouse_id').is('select')) {
+            $('#warehouse_id').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                allowClear: true,
+                minimumResultsForSearch: 0,
+                placeholder: '-- Pilih Proyek --',
+                dropdownParent: $('body')
+            });
+
+            // Event gudang — jQuery .on() untuk Select2
+            $('#warehouse_id').on('change', function () {
+                const val = $(this).val() || '';
+                renderWarehouseDetail(val);
+
+                if (!val) {
+                    toastr.info('Silahkan pilih proyek untuk menampilkan histori', 'Informasi');
+                    return;
+                }
+
+                submitFilter();
+            });
+
+            // Render detail card untuk nilai yang sudah terpilih dari server
+            const initialVal = $('#warehouse_id').val() || '';
+            renderWarehouseDetail(initialVal);
+
+        } else {
+            // Non-superadmin: render langsung dari value hidden input
+            const hiddenVal = document.getElementById('warehouse_id')
+                ? document.getElementById('warehouse_id').value
+                : '';
+            renderWarehouseDetail(hiddenVal);
+        }
+
+        // =========================================================
+        // Flatpickr
+        //
+        // FIX: tambahkan guard `selectedDates.length === 0` di baris
+        // pertama onChange. Tanpa ini, instance.clear() memicu onChange
+        // lagi → infinite loop → halaman hang.
+        // =========================================================
         flatpickr('.flatpickr', {
             dateFormat: 'd/m/Y',
             locale: {
@@ -355,35 +421,50 @@
                         'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
                 }
             },
-            onChange: function () {
-                if (warehouseSelect.value === 'all') {
-                    toastr.warning('Silahkan pilih Proyek terlebih dahulu', 'Peringatan');
+            onChange: function (selectedDates, dateStr, instance) {
+                // GUARD: instance.clear() memicu onChange lagi dengan selectedDates=[].
+                // Tanpa guard ini → infinite loop → halaman hang.
+                if (selectedDates.length === 0) return;
+
+                // Validasi: superadmin harus pilih gudang dulu
+                const warehouseVal = $('#warehouse_id').val() || document.getElementById('warehouse_id')?.value || '';
+                if (isSuperAdmin && !warehouseVal) {
+                    toastr.warning('Silahkan pilih proyek terlebih dahulu', 'Peringatan');
+                    instance.clear(); // aman karena guard di atas menghentikan re-entry
                     return;
                 }
-                submitFilter();
+
+                const start = parseDate(startDateInput.value);
+                const end = parseDate(endDateInput.value);
+
+                if (start && end && start > end) {
+                    toastr.error(
+                        instance.element.id === 'start_date'
+                            ? 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir'
+                            : 'Tanggal akhir tidak boleh lebih kecil dari tanggal awal',
+                        'Tanggal Tidak Valid'
+                    );
+                    instance.clear(); // aman karena guard di atas menghentikan re-entry
+                    return;
+                }
+
+                if (startDateInput.value && endDateInput.value) {
+                    submitFilter();
+                }
             }
         });
 
-        // -------------------------
-        // Event: pilih gudang
-        // -------------------------
-        renderWarehouseDetail(warehouseSelect.value);
-
-        warehouseSelect.addEventListener('change', function () {
-            renderWarehouseDetail(this.value);
-
-            if (this.value === 'all') {
-                toastr.info('Silahkan pilih Proyek untuk menampilkan histori proyek', 'Informasi');
+        // =========================================================
+        // Safety net: validasi saat form submit manual
+        // =========================================================
+        filterForm.addEventListener('submit', function (e) {
+            const warehouseVal = $('#warehouse_id').val() || document.getElementById('warehouse_id')?.value || '';
+            if (isSuperAdmin && !warehouseVal) {
+                e.preventDefault();
+                toastr.warning('Silahkan pilih proyek terlebih dahulu', 'Peringatan');
                 return;
             }
 
-            submitFilter();
-        });
-
-        // -------------------------
-        // Validasi saat form di-submit manual
-        // -------------------------
-        filterForm.addEventListener('submit', function (e) {
             const start = parseDate(startDateInput.value);
             const end = parseDate(endDateInput.value);
 
@@ -396,16 +477,17 @@
             }
         });
 
-        // -------------------------
+        // =========================================================
         // Export PDF
-        // -------------------------
+        // =========================================================
         const exportPdfBtn = document.getElementById('exportPdfBtn');
         if (exportPdfBtn) {
             exportPdfBtn.addEventListener('click', function () {
-                // Ambil query string filter yang sedang aktif
                 const params = new URLSearchParams(window.location.search);
-                const exportUrl = '<?= site_url("laporan/export_history_proyek_pdf") ?>?' + params.toString();
-                window.open(exportUrl, '_blank');
+                window.open(
+                    '<?= site_url("laporan/export_history_proyek_pdf") ?>?' + params.toString(),
+                    '_blank'
+                );
             });
         }
 

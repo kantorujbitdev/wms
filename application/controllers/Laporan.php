@@ -317,6 +317,9 @@ class Laporan extends MY_Controller
 
     public function history_proyek()
     {
+        $user_role = $this->session->userdata('role');
+        $this->data['user_role'] = $user_role;
+
         $this->check_permission('laporan', 'view');
         // Set title
         $this->data['title'] = 'History Proyek';
