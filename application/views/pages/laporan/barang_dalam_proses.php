@@ -1,48 +1,73 @@
 <!-- C:\xampp\htdocs\wms\application\views\pages\laporan\barang_dalam_proses.php -->
 
 <!-- Flatpickr CSS -->
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css') ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css') ?>">
 
+<!-- Select2 CSS -->
+<link href="<?php echo base_url('assets/select2/select2.min.css') ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2-bootstrap-5-theme.min.css') ?>" rel="stylesheet" />
+
+<style>
+    /* Fix search box Select2 tertimpa CSS template admin */
+    .select2-container--bootstrap-5 .select2-search--dropdown {
+        display: block !important;
+        padding: 6px;
+    }
+
+    .select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        padding: 6px 10px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 4px !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-dropdown {
+        z-index: 9999;
+    }
+</style>
 <div class="container-fluid">
 
     <!-- Filter Card -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Filter Daftar</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Filter Kartu Stok</h6>
         </div>
         <div class="card-body">
             <form method="get" action="<?= site_url('laporan/barang_proses') ?>" id="filterForm">
-                <div class="row">
+                <div class="row align-items-start">
 
-                    <?php if ($user_role == 'superadmin'): ?>
-                        <!-- Warehouse Filter -->
-                        <div class="col-md-3 mb-3">
-                            <div class="form-group">
-                                <label for="warehouse_id" class="form-label">Gudang Asal <span class="text-danger">*</span>
-                                </label>
-                                <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang" required>
-                                    <option value="">-- Semua Gudang --</option>
-                                    <?php foreach ($warehouse_list as $warehouse): ?>
-                                        <option value="<?= $warehouse['warehouse_id'] ?>" <?= isset($filter_warehouse_id) && $filter_warehouse_id == $warehouse['warehouse_id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($warehouse['warehouse_name']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <!-- User gudang: tampilkan nama gudang saja, value tersimpan di hidden -->
-                        <input type="hidden" id="warehouse_id" value="<?= $user_warehouse_id ?>">
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">Gudang</label>
-                            <input type="text" class="form-control"
+                    <!-- Kolom 1: Gudang -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">
+                            Gudang Asal
+                            <?php if ($user_role == 'superadmin'): ?>
+                                <span class="text-danger">*</span>
+                            <?php endif; ?>
+                        </label>
+
+                        <?php if ($user_role == 'superadmin'): ?>
+                            <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang">
+                                <option value="">-- Semua Gudang --</option>
+                                <?php foreach ($warehouse_list as $w): ?>
+                                    <option value="<?= $w['warehouse_id'] ?>" <?= ($w['warehouse_id'] == $filter_warehouse_id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($w['warehouse_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <!-- name="warehouse_id" wajib ada agar terkirim saat submit -->
+                            <input type="hidden" name="warehouse_id" id="warehouse_id" value="<?= $user_warehouse_id ?>">
+                            <input type="text" class="form-control bg-light"
                                 value="<?= htmlspecialchars($user_warehouse_name ?? '') ?>" disabled>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
 
-
-                    <!-- Filter Status -->
+                    <!-- Kolom 2: Status -->
                     <div class="col-md-3 mb-3">
                         <label for="status" class="form-label">Status Pengiriman</label>
                         <select name="status" id="status" class="form-control">
@@ -56,7 +81,7 @@
                         </select>
                     </div>
 
-                    <!-- Tanggal Mulai -->
+                    <!-- Kolom 3: Tanggal Mulai -->
                     <div class="col-md-2 mb-3">
                         <label for="start_date" class="form-label">Tanggal Mulai</label>
                         <input type="text" class="form-control flatpickr" id="start_date" name="start_date"
@@ -65,7 +90,7 @@
                             autocomplete="off">
                     </div>
 
-                    <!-- Tanggal Akhir -->
+                    <!-- Kolom 4: Tanggal Akhir -->
                     <div class="col-md-2 mb-3">
                         <label for="end_date" class="form-label">Tanggal Akhir</label>
                         <input type="text" class="form-control flatpickr" id="end_date" name="end_date"
@@ -74,14 +99,14 @@
                             autocomplete="off">
                     </div>
 
-                    <!-- Tombol Reset saja — Filter dihapus, auto-submit -->
+                    <!-- Kolom 5: Reset -->
                     <div class="col-md-2 mb-3">
                         <label class="form-label d-block">&nbsp;</label>
-                        <a href="<?= site_url('laporan/barang_proses') ?>" class="btn btn-outline-secondary">
+                        <a href="<?= site_url('laporan/barang_proses') ?>" class="btn btn-outline-secondary w-100">
                             <i class="fas fa-redo"></i> Reset Filter
                         </a>
+                        <span class="filter-hint">&nbsp;</span>
                     </div>
-
                 </div>
             </form>
         </div>
@@ -90,16 +115,19 @@
     <!-- Tabel -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Pengiriman Barang dalam Proses</h6>
+            <h6 class="m-0 font-weight-bold text-primary">
+                Daftar Pengiriman Barang dalam Proses
+            </h6>
         </div>
         <div class="card-body">
             <?php if (empty($pengiriman_list)): ?>
                 <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
                     Tidak ada data Pengiriman Barang dalam Proses.
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                         <thead class="thead-light text-center align-middle">
                             <tr>
                                 <th width="40">No</th>
@@ -114,18 +142,30 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $no = 1; ?>
-                            <?php foreach ($pengiriman_list as $row): ?>
+                            <?php $no = 1;
+                            foreach ($pengiriman_list as $row): ?>
                                 <tr>
-                                    <td class="text-center"><?= $no++ ?></td>
-                                    <td><?= htmlspecialchars($row['stockout_code']) ?></td>
-                                    <td><?= date('d-m-Y', strtotime($row['stockout_date'])) ?></td>
-                                    <td><?= htmlspecialchars($row['warehouse_name']) ?></td>
-                                    <td><?= htmlspecialchars(!empty($row['to_name']) ? $row['to_name'] : ($row['to_id'] ?? '-')) ?>
+                                    <td class="text-center">
+                                        <?= $no++ ?>
                                     </td>
-                                    <td><?= htmlspecialchars(!empty($row['stockout_note']) ? $row['stockout_note'] : '-') ?>
+                                    <td>
+                                        <?= htmlspecialchars($row['stockout_code']) ?>
                                     </td>
-                                    <td><?= htmlspecialchars($row['user_name']) ?></td>
+                                    <td>
+                                        <?= date('d-m-Y', strtotime($row['stockout_date'])) ?>
+                                    </td>
+                                    <td>
+                                        <?= htmlspecialchars($row['warehouse_name']) ?>
+                                    </td>
+                                    <td>
+                                        <?= htmlspecialchars(!empty($row['to_name']) ? $row['to_name'] : ($row['to_id'] ?? '-')) ?>
+                                    </td>
+                                    <td>
+                                        <?= htmlspecialchars(!empty($row['stockout_note']) ? $row['stockout_note'] : '-') ?>
+                                    </td>
+                                    <td>
+                                        <?= htmlspecialchars($row['user_name']) ?>
+                                    </td>
                                     <td class="text-center">
                                         <?php if ($row['on_transfer_status'] == 0): ?>
                                             <span class="badge bg-success">Terkirim</span>
@@ -161,29 +201,30 @@
     </div>
 </div>
 
-<!-- Flatpickr JS -->
-<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
-<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
+<!-- Flatpickr JS — asset lokal -->
+<script src="<?= base_url('assets/flatpickr/flatpickr.js') ?>"></script>
+
+<!-- Select2 JS — asset lokal -->
+<script src="<?= base_url('assets/select2/select2.min.js') ?>"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    $(document).ready(function () {
+
+        const isSuperAdmin = '<?= $user_role ?>' === 'superadmin';
 
         const filterForm = document.getElementById('filterForm');
         const startInput = document.getElementById('start_date');
         const endInput = document.getElementById('end_date');
-        const statusSel = document.getElementById('status');
-        const warehouseSel = document.getElementById('warehouse_id');
         const overlay = document.getElementById('loadingOverlay');
 
         // =========================================================
-        // Helper: parse tanggal d/m/Y → Date
-        // (new Date('dd/mm/yyyy') tidak valid di semua browser)
+        // Helper: parse tanggal d/m/Y → Date (safe cross-browser)
         // =========================================================
         function parseDate(str) {
             if (!str) return null;
-            const parts = str.split('/');
-            if (parts.length !== 3) return null;
-            return new Date(parts[2], parts[1] - 1, parts[0]);
+            const p = str.split('/');
+            if (p.length !== 3) return null;
+            return new Date(p[2], p[1] - 1, p[0]);
         }
 
         function showLoading() {
@@ -191,7 +232,7 @@
         }
 
         // =========================================================
-        // Submit filter dengan validasi tanggal
+        // submitFilter: validasi tanggal lalu submit
         // =========================================================
         function submitFilter() {
             const start = parseDate(startInput.value);
@@ -210,8 +251,41 @@
         }
 
         // =========================================================
-        // Inisialisasi Flatpickr
-        // onChange: auto-submit setelah pilih tanggal (seperti history_proyek)
+        // Inisialisasi Select2 untuk gudang (superadmin saja)
+        //
+        // FIX: Select2 CSS sudah di-load tapi JS-nya tidak pernah
+        // diinisialisasi di versi sebelumnya — dropdown tampil sebagai
+        // native select tanpa search box.
+        //
+        // Pakai jQuery .on('change') bukan addEventListener agar
+        // event Select2 (yang dikelola jQuery) tertangkap dengan benar.
+        // =========================================================
+        if (isSuperAdmin && $('#warehouse_id').is('select')) {
+            $('#warehouse_id').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                allowClear: true,
+                minimumResultsForSearch: 0,
+                placeholder: '-- Semua Gudang --',
+                dropdownParent: $('body')
+            });
+
+            // Event gudang: pakai jQuery .on('change') karena Select2
+            $('#warehouse_id').on('change', function () {
+                submitFilter();
+            });
+        }
+
+        // =========================================================
+        // Event: status → auto-submit
+        // Status adalah native <select> biasa, addEventListener cukup
+        // =========================================================
+        document.getElementById('status').addEventListener('change', function () {
+            submitFilter();
+        });
+
+        // =========================================================
+        // Flatpickr — auto-submit setelah kedua tanggal valid terisi
         // =========================================================
         const flatpickrConfig = {
             dateFormat: 'd/m/Y',
@@ -228,21 +302,20 @@
                 }
             },
             onChange: function (selectedDates, dateStr, instance) {
-                // Validasi dulu sebelum submit
                 const start = parseDate(startInput.value);
                 const end = parseDate(endInput.value);
 
                 if (start && end && start > end) {
-                    if (instance.element.id === 'start_date') {
-                        toastr.error('Tanggal mulai tidak boleh lebih besar dari tanggal akhir', 'Tanggal Tidak Valid');
-                    } else {
-                        toastr.error('Tanggal akhir tidak boleh lebih kecil dari tanggal awal', 'Tanggal Tidak Valid');
-                    }
+                    toastr.error(
+                        instance.element.id === 'start_date'
+                            ? 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir'
+                            : 'Tanggal akhir tidak boleh lebih kecil dari tanggal awal',
+                        'Tanggal Tidak Valid'
+                    );
                     instance.clear();
                     return;
                 }
 
-                // Kedua tanggal terisi → auto-submit
                 if (startInput.value && endInput.value) {
                     submitFilter();
                 }
@@ -253,18 +326,7 @@
         flatpickr('#end_date', flatpickrConfig);
 
         // =========================================================
-        // Event: status & gudang → auto-submit saat berubah
-        // =========================================================
-        statusSel.addEventListener('change', function () {
-            submitFilter();
-        });
-
-        warehouseSel.addEventListener('change', function () {
-            submitFilter();
-        });
-
-        // =========================================================
-        // Validasi saat form di-submit manual (safety net)
+        // Safety net: validasi saat form di-submit manual
         // =========================================================
         filterForm.addEventListener('submit', function (e) {
             const start = parseDate(startInput.value);

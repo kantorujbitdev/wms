@@ -107,87 +107,121 @@ class Laporan extends MY_Controller
         $this->output->set_content_type('application/json');
         echo json_encode($response);
     }
+    // ============================================================
+    // Controller: Laporan::stok_card()
+    // ============================================================
+
     public function stok_card()
     {
         $this->check_permission('laporan', 'view');
-        // Set title
-        $this->data['title'] = 'Stock Card';
+
+        $this->data['title'] = 'Kartu Stok';
         $this->data['active_menu'] = 'laporan';
         $this->data['active_submenu'] = 'laporan_stok_card';
 
         $user_role = $this->session->userdata('role');
         $warehouse_id = $this->session->userdata('warehouse_id');
-        $data = data_login_user();
+        $base_data = data_login_user();
 
-        // Get filter parameters
+        // -------------------------
+        // Ambil & normalisasi parameter filter
+        // -------------------------
         $filter_warehouse = $this->input->get('warehouse_id');
         $filter_product = $this->input->get('stock_id');
         $filter_date_start = $this->input->get('date_start');
         $filter_date_end = $this->input->get('date_end');
 
-        // Konversi format dd/mm/yyyy ke Y-m-d jika ada
+        // Normalisasi string kosong → null
+        if ($filter_warehouse === '' || $filter_warehouse === 'all')
+            $filter_warehouse = null;
+        if ($filter_product === '' || $filter_product === 'all')
+            $filter_product = null;
+
+        // Konversi format dd/mm/yyyy → Y-m-d
         if (!empty($filter_date_start) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_start)) {
-            $date_parts = explode('/', $filter_date_start);
-            $filter_date_start = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+            $parts = explode('/', $filter_date_start);
+            $filter_date_start = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
         }
-
         if (!empty($filter_date_end) && preg_match('/\d{2}\/\d{2}\/\d{4}/', $filter_date_end)) {
-            $date_parts = explode('/', $filter_date_end);
-            $filter_date_end = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
+            $parts = explode('/', $filter_date_end);
+            $filter_date_end = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
         }
 
-        // Jika tidak ada parameter, set default ke tanggal 1 bulan ini sampai hari ini
-        if (empty($filter_date_start)) {
+        // Default: awal bulan ini s/d hari ini
+        if (empty($filter_date_start))
             $filter_date_start = date('Y-m-01');
-        }
-        if (empty($filter_date_end)) {
+        if (empty($filter_date_end))
             $filter_date_end = date('Y-m-d');
-        }
 
-        // Get warehouses for filter (superadmin can see all)
-        if ($user_role == 'superadmin') {
-            $warehouse_response = $this->Api_model->get_all_gudang($data);
+        // -------------------------
+        // Ambil data gudang & produk untuk dropdown filter
+        //
+        // FIX: superadmin ambil produk per gudang via get_stock_all agar
+        // response punya field warehouse_id untuk filter JS.
+        // Non-superadmin ambil produk dari gudang session mereka.
+        // -------------------------
+        if ($user_role === 'superadmin') {
+            $warehouse_response = $this->Api_model->get_all_gudang($base_data);
             $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
-            // Untuk superadmin, ambil semua produk
-            $products_response = $this->Api_model->get_stock_all($data);
+            // Ambil semua stok (semua gudang) untuk populate dropdown produk
+            // Response harus punya: stock_id, product_code, product_name,
+            // unit_code, warehouse_id — dipakai JS untuk filter per gudang
+            $products_response = $this->Api_model->get_stock_all($base_data);
             $this->data['products'] = $this->handle_response($products_response);
         } else {
-            // Untuk admin, ambil produk berdasarkan warehouse mereka
-            $products_response = $this->Api_model->get_stock_by_warehouse(data_login_user(['warehouse_id' => $warehouse_id]));
+            $this->data['warehouses'] = [];
+
+            // Non-superadmin: produk dari gudang mereka saja
+            $products_response = $this->Api_model->get_stock_by_warehouse(
+                data_login_user(['warehouse_id' => $warehouse_id])
+            );
             $this->data['products'] = $this->handle_response($products_response);
-            $this->data['warehouses'] = []; // Kosongkan untuk admin
         }
 
-        // Prepare filter data for API
-        $filter_data = $data;
+        // -------------------------
+        // Bangun params untuk get_card_stok
+        // -------------------------
+        $filter_data = $base_data;
 
-        // Apply filters
-        if ($filter_warehouse) {
+        // Scope warehouse
+        if (!empty($filter_warehouse)) {
             $filter_data['warehouse_id'] = $filter_warehouse;
-        } elseif ($warehouse_id && $user_role != 'superadmin') {
-            // Non-superadmin default to their warehouse
+        } elseif (!empty($warehouse_id) && $user_role !== 'superadmin') {
             $filter_data['warehouse_id'] = $warehouse_id;
         }
 
-        if ($filter_product) {
+        // Filter produk
+        if (!empty($filter_product)) {
             $filter_data['stock_id'] = $filter_product;
         }
 
         $filter_data['date_start'] = $filter_date_start;
         $filter_data['date_end'] = $filter_date_end;
 
-        // Get stock card data from API
-        $stock_card_response = $this->Api_model->get_card_stok($filter_data);
+        // -------------------------
+        // Ambil data kartu stok
+        // Untuk superadmin: hanya load jika ada filter warehouse atau produk
+        // agar tidak load semua data saat pertama buka halaman
+        // -------------------------
         $stock_cards = [];
+        $should_load = ($user_role !== 'superadmin')
+            || !empty($filter_warehouse)
+            || !empty($filter_product);
 
-        if (isset($stock_card_response['success']) && $stock_card_response['success']) {
-            $stock_cards = $stock_card_response['data'];
+        if ($should_load) {
+            $stock_card_response = $this->Api_model->get_card_stok($filter_data);
+
+            if (!empty($stock_card_response['success']) && $stock_card_response['success']) {
+                $stock_cards = $stock_card_response['data'] ?? [];
+            }
         }
 
         $this->data['stock_cards'] = $stock_cards;
 
-        // Pass filter values back to view
+        // -------------------------
+        // Kirim filter & user info ke view
+        // -------------------------
         $this->data['filter_warehouse_id'] = $filter_warehouse;
         $this->data['filter_stock_id'] = $filter_product;
         $this->data['filter_date_start'] = $filter_date_start;
@@ -196,7 +230,6 @@ class Laporan extends MY_Controller
         $this->data['user_warehouse_id'] = $warehouse_id;
         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
 
-        // Render view
         $this->render_view('pages/laporan/stok_card');
     }
 
@@ -262,6 +295,12 @@ class Laporan extends MY_Controller
         // Get pengiriman data dengan filter
         $response = $this->Api_model->get_pengiriman($data_request_penerimaan);
         $this->data['pengiriman_list'] = $this->handle_response($response);
+
+        // Jika non-superadmin dan belum ada filter_warehouse_id,
+        // default ke gudang session agar data langsung tampil
+        if ($this->data['user_role'] !== 'superadmin' && empty($warehouse_id)) {
+            $data_request_penerimaan['warehouse_id'] = $this->data['user_warehouse_id'];
+        }
 
         // Kirim filter value ke view untuk form
         $this->data['filter_status'] = $status;
@@ -460,7 +499,7 @@ class Laporan extends MY_Controller
 
         // Validasi: harus ada product_id
         if (empty($product_id) || $product_id === 'all') {
-            show_error('Silakan pilih barang terlebih dahulu.', 400);
+            show_error('Silahkan pilih barang terlebih dahulu.', 400);
             return;
         }
 
@@ -569,7 +608,7 @@ class Laporan extends MY_Controller
 
         // Validasi: harus ada warehouse_id
         if (empty($warehouse_id) || $warehouse_id === 'all') {
-            show_error('Silakan pilih gudang terlebih dahulu.', 400);
+            show_error('Silahkan pilih gudang terlebih dahulu.', 400);
             return;
         }
 

@@ -400,9 +400,9 @@
                         if (res.message) msg = res.message;
                     } catch (e) {
                         if (xhr.status === 403) {
-                            msg = 'Sesi keamanan kedaluwarsa. Silakan refresh halaman dan coba lagi.';
+                            msg = 'Sesi keamanan kedaluwarsa. Silahkan refresh halaman dan coba lagi.';
                         } else if (xhr.responseText.indexOf('<!DOCTYPE') !== -1) {
-                            msg = 'Terjadi kesalahan server. Silakan coba lagi.';
+                            msg = 'Terjadi kesalahan server. Silahkan coba lagi.';
                         }
                     }
 

@@ -1,40 +1,12 @@
 <!-- C:\xampp\htdocs\wms\application\views\pages\laporan\kartu_stok.php -->
 
 <!-- Flatpickr CSS -->
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css') ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css') ?>">
 
 <!-- Select2 CSS -->
-<link href="<?php echo base_url('assets/select2/bootstrap5/select2.min.css'); ?>" rel="stylesheet" />
-<link href="<?php echo base_url('assets/select2/bootstrap5/select2-bootstrap-5-theme.min.css'); ?>" rel="stylesheet" />
-
-<style>
-    /* Fix search box Select2 tertimpa CSS template admin */
-    .select2-container--bootstrap-5 .select2-search--dropdown {
-        display: block !important;
-        padding: 6px;
-    }
-
-    .select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
-        display: block !important;
-        width: 100% !important;
-        height: auto !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        padding: 6px 10px !important;
-        border: 1px solid #ced4da !important;
-        border-radius: 4px !important;
-    }
-
-    .select2-container--bootstrap-5 .select2-dropdown {
-        z-index: 9999;
-    }
-
-    .select2-container--bootstrap-5.select2-container--disabled .select2-selection {
-        background-color: #e9ecef;
-        cursor: not-allowed;
-    }
-</style>
+<link href="<?php echo base_url('assets/select2/select2.min.css') ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2-bootstrap-5-theme.min.css') ?>" rel="stylesheet" />
 
 <div class="container-fluid">
 
@@ -45,12 +17,16 @@
         </div>
         <div class="card-body">
             <form method="get" action="<?= site_url('laporan/stok_card') ?>" id="filterForm">
-                <div class="row align-items-start">
-
+                <div class="row">
                     <!-- Kolom 1: Gudang -->
                     <div class="col-md-3 mb-3">
-                        <label for="warehouse_id" class="form-label">Gudang Asal <span class="text-danger">*</span>
+                        <label for="warehouse_id" class="form-label">
+                            Gudang Asal
+                            <?php if ($user_role == 'superadmin'): ?>
+                                <span class="text-danger">*</span>
+                            <?php endif; ?>
                         </label>
+
                         <?php if ($user_role == 'superadmin'): ?>
                             <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang">
                                 <option value="">-- Pilih Gudang --</option>
@@ -61,7 +37,6 @@
                                 <?php endforeach; ?>
                             </select>
                         <?php else: ?>
-                            <!-- BUG FIX: tambahkan name="warehouse_id" agar terkirim saat form submit -->
                             <input type="hidden" name="warehouse_id" id="warehouse_id" value="<?= $user_warehouse_id ?>">
                             <input type="text" class="form-control bg-light"
                                 value="<?= htmlspecialchars($user_warehouse_name ?? '') ?>" disabled>
@@ -72,7 +47,6 @@
                     <div class="col-md-3 mb-3">
                         <label class="form-label">Nama Produk</label>
                         <?php
-                        // Render opsi produk dari server — konsisten dengan filter aktif
                         $render_products = $products;
                         if ($user_role == 'superadmin' && $filter_warehouse_id) {
                             $render_products = array_filter($products, function ($p) use ($filter_warehouse_id) {
@@ -92,7 +66,6 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-
                     </div>
 
                     <!-- Kolom 3: Tanggal Mulai -->
@@ -119,7 +92,6 @@
                         <a href="<?= site_url('laporan/stok_card') ?>" class="btn btn-outline-secondary w-100">
                             <i class="fas fa-redo"></i> Reset Filter
                         </a>
-                        <span class="filter-hint">&nbsp;</span>
                     </div>
 
                 </div>
@@ -155,7 +127,7 @@
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
                     <?php if ($user_role == 'superadmin' && !$filter_warehouse_id): ?>
-                        Silakan pilih gudang untuk menampilkan data Kartu Stok.
+                        Silahkan pilih gudang untuk menampilkan data Kartu Stok.
                     <?php else: ?>
                         Tidak ada data Kartu Stok untuk periode
                         <?= date('d/m/Y', strtotime($filter_date_start)) ?>
@@ -179,8 +151,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $no = 1; ?>
-                            <?php foreach ($stock_cards as $card): ?>
+                            <?php $no = 1;
+                            foreach ($stock_cards as $card): ?>
                                 <tr>
                                     <td class="text-center"><?= $no++ ?></td>
                                     <td><?= htmlspecialchars($card['movement_date']) ?></td>
@@ -230,22 +202,20 @@
     </div>
 </div>
 
-<!-- Flatpickr & Select2 JS -->
-<script src="<?php echo base_url('assets/flatpickr/flatpickr.js'); ?>"></script>
-<script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
-<script src="<?php echo base_url('assets/select2/select2.min.js'); ?>"></script>
+<!-- Flatpickr JS -->
+<script src="<?= base_url('assets/flatpickr/flatpickr.js') ?>"></script>
+<!-- FIX: path JS Select2 disesuaikan dengan path CSS () -->
+<!-- flatpickr__.js dihapus — locale sudah di-set manual di config -->
+<script src="<?= base_url('assets/select2/select2.min.js') ?>"></script>
 
 <script>
     $(document).ready(function () {
 
-        // =========================================================
-        // Konstanta dari PHP
-        // =========================================================
         const isSuperAdmin = '<?= $user_role ?>' === 'superadmin';
         const allProducts = <?= json_encode(array_values($products)) ?>;
 
         // =========================================================
-        // Helper: parse tanggal d/m/Y → Date (safe cross-browser)
+        // Helper
         // =========================================================
         function parseDate(str) {
             if (!str) return null;
@@ -258,9 +228,6 @@
             document.getElementById('loadingOverlay').style.display = 'block';
         }
 
-        // =========================================================
-        // submitFilter: validasi tanggal lalu submit
-        // =========================================================
         function submitFilter() {
             const start = parseDate($('#date_start').val());
             const end = parseDate($('#date_end').val());
@@ -288,7 +255,6 @@
             dropdownParent: $('body')
         };
 
-        // Init Select2 gudang (superadmin)
         if ($('#warehouse_id').is('select')) {
             $('#warehouse_id').select2({
                 ...select2Config,
@@ -296,7 +262,6 @@
             });
         }
 
-        // Init Select2 produk
         $('#stock_id').select2({
             ...select2Config,
             placeholder: '-- Semua Produk --'
@@ -304,74 +269,51 @@
 
         // =========================================================
         // filterProductsByWarehouse
-        //
-        // BUG FIX 1: check Select2 init pakai .hasClass saja
-        //   ($.fn.dataTable adalah DataTables, bukan Select2)
-        //
-        // BUG FIX 2: saat init dengan data dari server, jangan
-        //   re-render opsi karena sudah di-render PHP. Fungsi ini
-        //   hanya dipanggil saat PERUBAHAN gudang dari user,
-        //   bukan saat halaman pertama load.
+        // Dipanggil saat gudang berubah dari user (bukan saat init)
         // =========================================================
         function filterProductsByWarehouse(warehouseId, submitAfter) {
             const $produk = $('#stock_id');
 
-            // Destroy Select2 sebelum manipulasi DOM
             if ($produk.hasClass('select2-hidden-accessible')) {
                 $produk.select2('destroy');
             }
 
-            // Bersihkan opsi lama (kecuali placeholder)
             $produk.find('option:not(:first)').remove();
 
             if (!warehouseId) {
-                // BUG FIX: gudang dikosongkan → disable produk, tetap submit
-                // agar controller bisa reset (tampilkan pesan pilih gudang)
                 $produk.prop('disabled', true);
             } else {
                 const filtered = allProducts.filter(p => p.warehouse_id == warehouseId);
                 filtered.forEach(function (p) {
-                    const label = p.product_code + ' - ' + p.product_name + ' (Satuan: ' + (p.unit_code || '') + ')';
+                    const label = p.product_code + ' - ' + p.product_name
+                        + ' (Satuan: ' + (p.unit_code || '') + ')';
                     $produk.append(new Option(label, p.stock_id, false, false));
                 });
                 $produk.prop('disabled', false);
             }
 
-            // Re-init Select2 setelah manipulasi DOM
             $produk.select2({
                 ...select2Config,
                 placeholder: '-- Semua Produk --'
             });
 
-            if (submitAfter) {
-                submitFilter();
-            }
+            if (submitAfter) submitFilter();
         }
 
         // =========================================================
-        // EVENT: Gudang berubah (superadmin)
-        //
-        // BUG FIX: ketika gudang dihapus (clear), value = ""
-        // Sebelumnya hanya toastr + return, tidak submit.
-        // Sekarang: selalu submit agar URL berubah ke ?warehouse_id=
-        // dan controller bisa tampilkan state kosong yang benar.
+        // Event: gudang berubah
+        // FIX: saat gudang di-clear (value=""), tetap submit
+        // agar controller reset ke state "pilih gudang dulu"
         // =========================================================
         if (isSuperAdmin) {
             $('#warehouse_id').on('change', function () {
                 const warehouseId = $(this).val() || '';
-
-                if (!warehouseId) {
-                    // Gudang dihapus → filter produk (kosongkan), lalu submit
-                    filterProductsByWarehouse('', true);
-                } else {
-                    // Gudang dipilih → filter produk, lalu submit
-                    filterProductsByWarehouse(warehouseId, true);
-                }
+                filterProductsByWarehouse(warehouseId, true);
             });
         }
 
         // =========================================================
-        // EVENT: Produk berubah → auto-submit
+        // Event: produk berubah
         // =========================================================
         $('#stock_id').on('change', function () {
             if (isSuperAdmin && !$('#warehouse_id').val()) {
@@ -399,9 +341,13 @@
                 }
             },
             onChange: function (selectedDates, dateStr, instance) {
+                // GUARD: instance.clear() memicu onChange lagi dengan selectedDates = [].
+                // Tanpa guard ini terjadi infinite loop → halaman hang.
+                // Cukup return langsung jika tidak ada tanggal yang dipilih.
+                if (selectedDates.length === 0) return;
+
                 if (isSuperAdmin && !$('#warehouse_id').val()) {
                     toastr.warning('Pilih gudang terlebih dahulu', 'Peringatan');
-                    instance.clear();
                     return;
                 }
 
@@ -415,11 +361,10 @@
                             : 'Tanggal akhir tidak boleh lebih kecil dari tanggal awal',
                         'Tanggal Tidak Valid'
                     );
-                    instance.clear();
+                    instance.clear(); // aman karena guard di atas akan menghentikan re-entry
                     return;
                 }
 
-                // Auto-submit hanya jika kedua tanggal sudah terisi
                 if ($('#date_start').val() && $('#date_end').val()) {
                     submitFilter();
                 }
@@ -430,7 +375,7 @@
         flatpickr('#date_end', flatpickrConfig);
 
         // =========================================================
-        // Safety net: validasi saat form di-submit manual
+        // Safety net: validasi saat form submit manual
         // =========================================================
         $('#filterForm').on('submit', function (e) {
             if (isSuperAdmin && !$('#warehouse_id').val()) {
@@ -453,9 +398,8 @@
         });
 
         // =========================================================
-        // Init awal: TIDAK re-render produk dari JS saat halaman load
-        // karena PHP sudah render opsi yang benar berdasarkan filter aktif.
-        // Cukup pastikan state disabled sesuai kondisi.
+        // Init awal: pastikan state disabled produk sesuai kondisi.
+        // PHP sudah render opsi yang benar — JS tidak perlu re-render.
         // =========================================================
         if (isSuperAdmin && !$('#warehouse_id').val()) {
             $('#stock_id').prop('disabled', true).select2('destroy').select2({

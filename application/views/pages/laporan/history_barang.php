@@ -3,8 +3,8 @@
 <link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css'); ?>">
 
 <!-- Select2 CSS -->
-<link href="<?php echo base_url('assets/select2/bootstrap5/select2.min.css'); ?>" rel="stylesheet" />
-<link href="<?php echo base_url('assets/select2/bootstrap5/select2-bootstrap-5-theme.min.css'); ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2.min.css'); ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2-bootstrap-5-theme.min.css'); ?>" rel="stylesheet" />
 <style>
     .select2-container--bootstrap-5 .select2-search--dropdown {
         display: block !important;
@@ -90,7 +90,7 @@
                 <div id="barangDetail" class="mt-4">
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
-                        Silakan pilih barang terlebih dahulu untuk melihat Histori Barang.
+                        Silahkan pilih barang terlebih dahulu untuk melihat Histori Barang.
                     </div>
                 </div>
 
@@ -246,7 +246,7 @@
                 productContainer.innerHTML = `
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    Silakan pilih barang terlebih dahulu untuk melihat Histori Barang.
+                    Silahkan pilih barang terlebih dahulu untuk melihat Histori Barang.
                 </div>`;
                 return;
             }
@@ -334,7 +334,7 @@
                 // BUGFIX: cek terhadap '' (default kosong), bukan 'all'
                 // (option value default select ini adalah "" bukan "all")
                 if (productSelect.value === '') {
-                    toastr.warning('Silakan pilih barang terlebih dahulu', 'Peringatan');
+                    toastr.warning('Silahkan pilih barang terlebih dahulu', 'Peringatan');
                     return;
                 }
                 submitFilter();
@@ -355,7 +355,7 @@
 
             // BUGFIX: cek terhadap '' bukan 'all'
             if (!value || value === '') {
-                toastr.info('Silakan pilih barang untuk menampilkan histori barang', 'Informasi');
+                toastr.info('Silahkan pilih barang untuk menampilkan histori barang', 'Informasi');
                 return;
             }
 

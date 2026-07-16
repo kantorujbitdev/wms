@@ -1,8 +1,8 @@
 <!-- C:\xampp\htdocs\wms\application\views\pages\penerimaan\form.php -->
 
 <!-- Select2 CSS -->
-<link href="<?php echo base_url('assets/select2/bootstrap5/select2.min.css'); ?>" rel="stylesheet" />
-<link href="<?php echo base_url('assets/select2/bootstrap5/select2-bootstrap-5-theme.min.css'); ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2.min.css'); ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2-bootstrap-5-theme.min.css'); ?>" rel="stylesheet" />
 <style>
     .select2-container--bootstrap-5 .select2-search--dropdown {
         display: block !important;
@@ -715,9 +715,9 @@ $(document).ready(function () {
                     if (res.message) msg = res.message;
                 } catch (e) {
                     if (xhr.status === 403) {
-                        msg = 'Sesi keamanan kedaluwarsa. Silakan refresh halaman dan coba lagi.';
+                        msg = 'Sesi keamanan kedaluwarsa. Silahkan refresh halaman dan coba lagi.';
                     } else if (xhr.responseText.indexOf('<!DOCTYPE') !== -1) {
-                        msg = 'Terjadi kesalahan server. Silakan coba lagi.';
+                        msg = 'Terjadi kesalahan server. Silahkan coba lagi.';
                     }
                 }
 

@@ -8,9 +8,9 @@
 </div>
 
 <!-- Flatpickr — asset lokal -->
-<link rel="stylesheet" href="<?= base_url('assets/flatpickr/flatpickr.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('assets/flatpickr/material_blue.css') ?>">
-<script src="<?= base_url('assets/flatpickr/flatpickr.js') ?>"></script>
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/flatpickr.min.css') ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/flatpickr/material_blue.css') ?>">
+<script src="<?php echo base_url('assets/flatpickr/flatpickr.js') ?>"></script>
 <script src="<?php echo base_url('assets/flatpickr/flatpickr__.js'); ?>"></script>
 
 <script>

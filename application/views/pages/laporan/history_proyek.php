@@ -59,7 +59,7 @@
                 <div id="warehouseDetailContainer">
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
-                        Silakan pilih proyek terlebih dahulu untuk melihat Histori Proyek.
+                        Silahkan pilih proyek terlebih dahulu untuk melihat Histori Proyek.
                     </div>
                 </div>
 
@@ -263,7 +263,7 @@
                 warehouseContainer.innerHTML = `
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    Silakan pilih Proyek terlebih dahulu untuk melihat Histori Proyek.
+                    Silahkan pilih Proyek terlebih dahulu untuk melihat Histori Proyek.
                 </div>`;
                 return;
             }
@@ -357,7 +357,7 @@
             },
             onChange: function () {
                 if (warehouseSelect.value === 'all') {
-                    toastr.warning('Silakan pilih Proyek terlebih dahulu', 'Peringatan');
+                    toastr.warning('Silahkan pilih Proyek terlebih dahulu', 'Peringatan');
                     return;
                 }
                 submitFilter();
@@ -373,7 +373,7 @@
             renderWarehouseDetail(this.value);
 
             if (this.value === 'all') {
-                toastr.info('Silakan pilih Proyek untuk menampilkan histori proyek', 'Informasi');
+                toastr.info('Silahkan pilih Proyek untuk menampilkan histori proyek', 'Informasi');
                 return;
             }
 

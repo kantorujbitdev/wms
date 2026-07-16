@@ -112,7 +112,8 @@
                                     <?php foreach ($in_report as $item): ?>
                                         <tr>
                                             <td><?= $no++ ?></td>
-                                            <td><?= isset($item['stockin_date']) ? date('d-m-Y', strtotime($item['stockin_date'])) : '' ?></td>
+                                            <td><?= isset($item['stockin_date']) ? date('d-m-Y', strtotime($item['stockin_date'])) : '' ?>
+                                            </td>
                                             <td><?= $item['stockin_code'] ?? '' ?></td>
                                             <td><?= $item['product_code'] ?? '' ?></td>
                                             <td><?= $item['product_name'] ?? '' ?></td>
@@ -136,7 +137,7 @@
                                 <tr>
                                     <td colspan="11" class="text-center text-muted">
                                         <i class="fas fa-filter fa-2x mb-2"></i><br>
-                                        Silakan pilih filter terlebih dahulu untuk menampilkan data
+                                        Silahkan pilih filter terlebih dahulu untuk menampilkan data
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -199,7 +200,8 @@
                                     <?php foreach ($out_report as $item): ?>
                                         <tr>
                                             <td><?= $no++ ?></td>
-                                            <td><?= isset($item['stockout_date']) ? date('d-m-Y', strtotime($item['stockout_date'])) : '' ?></td>
+                                            <td><?= isset($item['stockout_date']) ? date('d-m-Y', strtotime($item['stockout_date'])) : '' ?>
+                                            </td>
                                             <td><?= $item['stockout_code'] ?? '' ?></td>
                                             <td><?= $item['product_code'] ?? '' ?></td>
                                             <td><?= $item['product_name'] ?? '' ?></td>
@@ -223,7 +225,7 @@
                                 <tr>
                                     <td colspan="11" class="text-center text-muted">
                                         <i class="fas fa-filter fa-2x mb-2"></i><br>
-                                        Silakan pilih filter terlebih dahulu untuk menampilkan data
+                                        Silahkan pilih filter terlebih dahulu untuk menampilkan data
                                     </td>
                                 </tr>
                             <?php endif; ?>
