@@ -143,11 +143,11 @@ if (!function_exists('get_menu_icon')) {
             'user' => 'fas fa-users-cog',
             'pengaturan' => 'fas fa-cog',
             'web_pengaturan' => 'fas fa-globe',
-            'barang_proses' => 'fas fa-spinner',
+            'laporan_barang_proses' => 'fas fa-spinner',
             'api_pengaturan' => 'fas fa-plug',
             'logo_pengaturan' => 'fas fa-image',
-            'history_proyek' => 'fas fa-history',
-            'history_barang' => 'fas fa-search-location'
+            'laporan_history_proyek' => 'fas fa-history',
+            'laporan_history_barang' => 'fas fa-search-location'
         );
 
         return isset($icons[$menu_key]) ? $icons[$menu_key] : 'fas fa-circle';

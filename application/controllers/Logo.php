@@ -17,7 +17,7 @@ class Logo extends MY_Controller
         $data['logo'] = $this->logo_model->get_all();
         $data['title'] = 'Logo Management';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'logo';
+        $data['active_submenu'] = 'logo_pengaturan';
         $this->render_admin_view('pages/logo/index_logo', $data);
     }
 

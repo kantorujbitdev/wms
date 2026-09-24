@@ -16,7 +16,7 @@ class Penerimaan extends MY_Controller
         $this->check_permission('pengguna_penerimaan', 'view');
         $this->data['title'] = 'Penerimaan dari Pengguna';
         $this->data['active_menu'] = 'penerimaan';
-        $this->data['active_submenu'] = 'pengguna';
+        $this->data['active_submenu'] = 'dari_pengguna';
 
         // Ambil parameter filter dari URL
         $start_date = $this->input->get('start_date');
@@ -133,7 +133,7 @@ class Penerimaan extends MY_Controller
         $this->check_permission('supplier_penerimaan', 'view');
         $this->data['title'] = 'Penerimaan dari Supplier';
         $this->data['active_menu'] = 'penerimaan';
-        $this->data['active_submenu'] = 'supplier_penerimaan';
+        $this->data['active_submenu'] = 'dari_supplier';
 
         $warehouse_id = $this->session->userdata('warehouse_id');
 

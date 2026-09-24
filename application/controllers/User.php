@@ -16,7 +16,9 @@ class User extends MY_Controller
         load_appdata_to_session();
         load_menu();
         // Set title
-        $this->data['title'] = 'User Management';
+        $this->data['title'] = 'Akun Login';
+        $this->data['active_menu'] = 'user';
+        $this->data['active_submenu'] = 'user';
         $data = data_login_user();
         $user_role = $this->session->userdata('role');
         if ($user_role != 'superadmin') {

@@ -56,8 +56,9 @@ $config = get_app_config();
             $gudang_access ||
             $barang_access;
         ?>
+
         <?php if ($master_data_access): ?>
-            <li class="sidebar-item master-data-item">
+            <li class="sidebar-item <?= $master_data_open ? 'active' : ''; ?>">
 
                 <!-- MASTER DATA LEVEL 1 -->
                 <a href="#masterDataSubmenu" data-bs-toggle="collapse"
@@ -67,8 +68,7 @@ $config = get_app_config();
                 </a>
 
                 <!-- MASTER DATA LEVEL 2 -->
-                <ul id="masterDataSubmenu"
-                    class="collapse list-unstyled sidebar-submenu <?= $master_data_open ? 'show' : ''; ?>">
+                <ul id="masterDataSubmenu" class="collapse list-unstyled ps-0 <?= $master_data_open ? 'show' : ''; ?>">
 
                     <!-- USER -->
                     <?php if ($can_access_menu('user')): ?>
@@ -130,7 +130,7 @@ $config = get_app_config();
                                 <?php if ($can_access_menu('gudang_utama')): ?>
                                     <li>
                                         <a href="<?= site_url('gudang'); ?>"
-                                            class="sidebar-subsublink <?= ($active_menu == 'gudang' && $active_submenu == 'index') ? 'active' : ''; ?>">
+                                            class="sidebar-subsublink <?= ($active_menu == 'gudang' && $active_submenu == 'gudang_utama') ? 'active' : ''; ?>">
                                             <i class="<?= $get_menu_icon('gudang_utama'); ?> me-2"></i>
                                             <span>Gudang Utama</span>
                                         </a>
@@ -178,7 +178,7 @@ $config = get_app_config();
                                 <?php if ($can_access_menu('produk')): ?>
                                     <li>
                                         <a href="<?= site_url('barang'); ?>"
-                                            class="sidebar-subsublink <?= ($active_menu == 'barang' && $active_submenu == 'index') ? 'active' : ''; ?>">
+                                            class="sidebar-subsublink <?= ($active_menu == 'barang' && $active_submenu == 'produk') ? 'active' : ''; ?>">
                                             <i class="<?= $get_menu_icon('produk'); ?> me-2"></i>
                                             <span><?= $wording['barang']; ?></span>
                                         </a>
@@ -229,7 +229,7 @@ $config = get_app_config();
                     <?php if ($can_access_menu('laporan')): ?>
                         <li>
                             <a href="<?= site_url('laporan/stok'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'stok') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_stok') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('gudang_stok'); ?> me-2"></i>
                                 <span>Stok</span>
                             </a>
@@ -237,7 +237,7 @@ $config = get_app_config();
 
                         <li>
                             <a href="<?= site_url('laporan/stok_card'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'stok_card') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_stok_card') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('laporan_stok_card'); ?> me-2"></i>
                                 <span>Kartu Stok</span>
                             </a>
@@ -245,8 +245,8 @@ $config = get_app_config();
 
                         <li>
                             <a href="<?= site_url('laporan/barang_proses'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'barang_proses') ? 'active' : ''; ?>">
-                                <i class="<?= $get_menu_icon('barang_proses'); ?> me-2"></i>
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_barang_proses') ? 'active' : ''; ?>">
+                                <i class="<?= $get_menu_icon('laporan_barang_proses'); ?> me-2"></i>
                                 <span>Barang Proses</span>
                             </a>
                         </li>
@@ -255,8 +255,8 @@ $config = get_app_config();
                     <?php if ($can_access_menu('laporan_history_proyek')): ?>
                         <li>
                             <a href="<?= site_url('laporan/history_proyek'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'history_proyek') ? 'active' : ''; ?>">
-                                <i class="<?= $get_menu_icon('history_proyek'); ?> me-2"></i>
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_history_proyek') ? 'active' : ''; ?>">
+                                <i class="<?= $get_menu_icon('laporan_history_proyek'); ?> me-2"></i>
                                 <span>Histori Proyek</span>
                             </a>
                         </li>
@@ -265,8 +265,8 @@ $config = get_app_config();
                     <?php if ($can_access_menu('laporan_history_barang')): ?>
                         <li>
                             <a href="<?= site_url('laporan/history_barang'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'history_barang') ? 'active' : ''; ?>">
-                                <i class="<?= $get_menu_icon('history_barang'); ?> me-2"></i>
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_history_barang') ? 'active' : ''; ?>">
+                                <i class="<?= $get_menu_icon('laporan_history_barang'); ?> me-2"></i>
                                 <span>Histori Barang</span>
                             </a>
                         </li>
@@ -293,7 +293,7 @@ $config = get_app_config();
                     <?php if ($can_access_menu('penerimaan_antar_gudang')): ?>
                         <li>
                             <a href="<?= site_url('penerimaan/antar_gudang'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'antar_gudang') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'penerimaan_antar_gudang') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('penerimaan_antar_gudang'); ?> me-2"></i>
                                 <span>Antar Gudang</span>
                             </a>
@@ -315,7 +315,7 @@ $config = get_app_config();
                             <a href="<?= site_url('penerimaan/dari_pengguna'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'dari_pengguna') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('pengguna_penerimaan'); ?> me-2"></i>
-                                <span>Pengguna</span>
+                                <span>Pengguna Proyek</span>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -341,7 +341,7 @@ $config = get_app_config();
                     <?php if ($can_access_menu('pengiriman_antar_gudang')): ?>
                         <li>
                             <a href="<?= site_url('pengiriman/antar_gudang'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'antar_gudang') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'pengiriman_antar_gudang') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('pengiriman_antar_gudang'); ?> me-2"></i>
                                 <span>Antar Gudang</span>
                             </a>
@@ -353,7 +353,7 @@ $config = get_app_config();
                             <a href="<?= site_url('pengiriman/penggunaan'); ?>"
                                 class="sidebar-sublink <?= ($active_submenu == 'penggunaan') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('penggunaan'); ?> me-2"></i>
-                                <span>Pengguna</span>
+                                <span>Pengguna Proyek</span>
                             </a>
                         </li>
                     <?php endif; ?>
@@ -382,7 +382,7 @@ $config = get_app_config();
                     <?php if ($can_access_menu('web_pengaturan')): ?>
                         <li>
                             <a href="<?= site_url('pengaturan'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'index') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'web_pengaturan') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('web_pengaturan'); ?> me-2"></i>
                                 <span>Web</span>
                             </a>
@@ -392,7 +392,7 @@ $config = get_app_config();
                     <?php if ($can_access_menu('api_pengaturan')): ?>
                         <li>
                             <a href="<?= site_url('api'); ?>"
-                                class="sidebar-sublink <?= ($active_menu == 'api') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'api_pengaturan') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('api_pengaturan'); ?> me-2"></i>
                                 <span>API</span>
                             </a>
@@ -402,204 +402,9 @@ $config = get_app_config();
                     <?php if ($can_access_menu('logo_pengaturan')): ?>
                         <li>
                             <a href="<?= site_url('logo'); ?>"
-                                class="sidebar-sublink <?= ($active_menu == 'logo') ? 'active' : ''; ?>">
+                                class="sidebar-sublink <?= ($active_submenu == 'logo_pengaturan') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('logo_pengaturan'); ?> me-2"></i>
                                 <span>Logo</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                </ul>
-            </li>
-        <?php endif; ?>
-
-        <!-- ========================================================= -->
-        <!-- MANAGEMENT ASSETS -->
-        <!-- ========================================================= -->
-        <?php
-        // LEVEL 1
-        $assets_open = ($active_menu == 'management_assets');
-
-        // LEVEL 2
-        $master_assets_open = $assets_open && $active_submenu == 'master_assets';
-        $pendataan_open = $assets_open && $active_submenu == 'pendataan';
-
-        // Permission: parent tidak butuh permission sendiri, cukup salah satu child.
-        $assets_access =
-            $can_access_menu('master_assets') ||
-            $can_access_menu('perusahaan') ||
-            $can_access_menu('departemen') ||
-            $can_access_menu('jenis_assets') ||
-            $can_access_menu('kategori_assets') ||
-            $can_access_menu('lokasi') ||
-            $can_access_menu('daftar_assets') ||
-            $can_access_menu('peminjaman') ||
-            $can_access_menu('pengembalian') ||
-            $can_access_menu('perbaikan_assets') ||
-            $can_access_menu('laporan_assets');
-        ?>
-        <?php if ($assets_access): ?>
-            <li class="sidebar-item <?= $assets_open ? 'active' : ''; ?>">
-
-                <!-- LEVEL 1 -->
-                <a href="#managementAssetsSubmenu" data-bs-toggle="collapse"
-                    aria-expanded="<?= $assets_open ? 'true' : 'false'; ?>" class="sidebar-link dropdown-toggle">
-                    <i class="<?= $get_menu_icon('management_assets'); ?> me-2"></i>
-                    <span>Management Assets</span>
-                </a>
-
-                <!-- LEVEL 2 -->
-                <ul id="managementAssetsSubmenu" class="collapse list-unstyled ps-0 <?= $assets_open ? 'show' : ''; ?>">
-
-                    <!-- MASTER ASSETS -->
-                    <?php
-                    $master_assets_access =
-                        $can_access_menu('master_assets') ||
-                        $can_access_menu('perusahaan') ||
-                        $can_access_menu('departemen') ||
-                        $can_access_menu('jenis_assets') ||
-                        $can_access_menu('kategori_assets') ||
-                        $can_access_menu('lokasi');
-                    ?>
-                    <?php if ($master_assets_access): ?>
-                        <li>
-                            <a href="#masterAssetsSubmenu" data-bs-toggle="collapse"
-                                aria-expanded="<?= $master_assets_open ? 'true' : 'false'; ?>"
-                                class="sidebar-sublink dropdown-toggle">
-                                <i class="<?= $get_menu_icon('master_assets'); ?> me-2"></i>
-                                <span>Master Assets</span>
-                            </a>
-
-                            <!-- LEVEL 3 -->
-                            <ul id="masterAssetsSubmenu"
-                                class="collapse list-unstyled ps-3 <?= $master_assets_open ? 'show' : ''; ?>">
-
-                                <?php if ($can_access_menu('perusahaan')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/master_assets/perusahaan'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'perusahaan') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('perusahaan'); ?> me-2"></i>
-                                            <span>Perusahaan</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('departemen')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/master_assets/departemen'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'departemen') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('departemen'); ?> me-2"></i>
-                                            <span>Departemen</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('jenis_assets')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/master_assets/jenis_assets'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'jenis_assets') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('jenis_assets'); ?> me-2"></i>
-                                            <span>Jenis Assets</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('kategori_assets')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/master_assets/kategori_assets'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'kategori_assets') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('kategori_assets'); ?> me-2"></i>
-                                            <span>Kategori Assets</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('lokasi')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/master_assets/lokasi'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'lokasi') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('lokasi'); ?> me-2"></i>
-                                            <span>Lokasi</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                            </ul>
-                        </li>
-                    <?php endif; ?>
-
-                    <!-- PENDATAAN -->
-                    <?php
-                    $pendataan_access =
-                        $can_access_menu('pendataan') ||
-                        $can_access_menu('daftar_assets') ||
-                        $can_access_menu('peminjaman') ||
-                        $can_access_menu('pengembalian') ||
-                        $can_access_menu('perbaikan_assets');
-                    ?>
-                    <?php if ($pendataan_access): ?>
-                        <li>
-                            <a href="#pendataanSubmenu" data-bs-toggle="collapse"
-                                aria-expanded="<?= $pendataan_open ? 'true' : 'false'; ?>"
-                                class="sidebar-sublink dropdown-toggle">
-                                <i class="<?= $get_menu_icon('pendataan'); ?> me-2"></i>
-                                <span>Pendataan</span>
-                            </a>
-
-                            <!-- LEVEL 3 -->
-                            <ul id="pendataanSubmenu" class="collapse list-unstyled ps-3 <?= $pendataan_open ? 'show' : ''; ?>">
-
-                                <?php if ($can_access_menu('daftar_assets')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/pendataan/daftar_assets'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'daftar_assets') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('daftar_assets'); ?> me-2"></i>
-                                            <span>Daftar Assets</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('peminjaman')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/pendataan/peminjaman'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'peminjaman') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('peminjaman'); ?> me-2"></i>
-                                            <span>Peminjaman</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('pengembalian')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/pendataan/pengembalian'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'pengembalian') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('pengembalian'); ?> me-2"></i>
-                                            <span>Pengembalian</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('perbaikan_assets')): ?>
-                                    <li>
-                                        <a href="<?= site_url('management_assets/pendataan/perbaikan_assets'); ?>"
-                                            class="sidebar-subsublink <?= ($active_subsubmenu == 'perbaikan_assets') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('perbaikan_assets'); ?> me-2"></i>
-                                            <span>Perbaikan Assets</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                            </ul>
-                        </li>
-                    <?php endif; ?>
-
-                    <!-- LAPORAN ASSETS -->
-                    <?php if ($can_access_menu('laporan_assets')): ?>
-                        <li>
-                            <a href="<?= site_url('management_assets/laporan_assets'); ?>"
-                                class="sidebar-sublink <?= ($active_submenu == 'laporan_assets') ? 'active' : ''; ?>">
-                                <i class="<?= $get_menu_icon('laporan_assets'); ?> me-2"></i>
-                                <span>Laporan Assets</span>
                             </a>
                         </li>
                     <?php endif; ?>

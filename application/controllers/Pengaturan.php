@@ -17,7 +17,7 @@ class Pengaturan extends MY_Controller
         $data['pengaturan'] = $this->Pengaturan_model->get_all();
         $data['title'] = 'Pengaturan Aplikasi';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'web';
+        $data['active_submenu'] = 'web_pengaturan';
         $this->render_admin_view('pages/pengaturan/index', $data);
     }
 

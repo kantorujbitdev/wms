@@ -15,7 +15,7 @@ class Api extends MY_Controller
         $data['apis'] = $this->data_api_model->get_all();
         $data['title'] = 'Manajemen API';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'api';
+        $data['active_submenu'] = 'api_pengaturan';
         $this->render_admin_view('pages/api/index', $data);
     }
 

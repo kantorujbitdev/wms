@@ -1812,7 +1812,7 @@ class Laporan extends MY_Controller
                 // Determine jenis pengiriman
                 $jenis = '-';
                 if ($item['to_status'] == '1') {
-                    $jenis = 'Ke Pengguna';
+                    $jenis = 'Ke Pengguna Proyek';
                 } elseif ($item['to_status'] == '3') {
                     $jenis = 'Antar Gudang';
                 }
@@ -1885,7 +1885,7 @@ class Laporan extends MY_Controller
             }
 
             $stats_row++;
-            $sheet->setCellValue('A' . $stats_row, 'Ke Pengguna:');
+            $sheet->setCellValue('A' . $stats_row, 'Ke Pengguna Proyek:');
             $sheet->setCellValue('B' . $stats_row, $ke_pengguna);
 
             $stats_row++;
