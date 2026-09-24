@@ -87,7 +87,7 @@ class Logo extends MY_Controller
 
         $data['title'] = 'Tambah Logo';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'logo';
+        $data['active_submenu'] = 'logo_pengaturan';
 
         $this->render_admin_view('pages/logo/form', $data);
     }
@@ -171,7 +171,7 @@ class Logo extends MY_Controller
         $data['item'] = $item;
         $data['title'] = 'Edit Logo';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'logo';
+        $data['active_submenu'] = 'logo_pengaturan';
 
         $this->render_admin_view(
             'pages/logo/form',

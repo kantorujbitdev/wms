@@ -1,6 +1,6 @@
 <?php
 $back_url = 'penerimaan/dari_supplier';
-if ($active_submenu == 'pengguna')
+if ($active_submenu == 'dari_pengguna')
     $back_url = 'penerimaan/dari_pengguna';
 elseif ($active_submenu == 'penerimaan_antar_gudang')
     $back_url = 'penerimaan/antar_gudang'; ?>

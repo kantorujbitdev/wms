@@ -34,7 +34,7 @@ class Api extends MY_Controller
         }
         $data['title'] = 'Manajemen API - Edit API';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'api';
+        $data['active_submenu'] = 'api_pengaturan';
         $this->render_admin_view('pages/api/form', $data);
     }
 
@@ -60,7 +60,7 @@ class Api extends MY_Controller
         $data['api'] = $api;
         $data['title'] = 'Manajemen API - Edit API';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'api';
+        $data['active_submenu'] = 'api_pengaturan';
         $this->render_admin_view('pages/api/form', $data);
     }
 

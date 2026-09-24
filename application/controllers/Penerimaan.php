@@ -91,7 +91,7 @@ class Penerimaan extends MY_Controller
         $this->check_permission('pengguna_penerimaan', 'edit');
         $this->data['title'] = 'Tambah Penerimaan dari Pengguna';
         $this->data['active_menu'] = 'penerimaan';
-        $this->data['active_submenu'] = 'pengguna';
+        $this->data['active_submenu'] = 'dari_pengguna';
 
         $data_login = data_login_user();
 
@@ -636,7 +636,7 @@ class Penerimaan extends MY_Controller
 
             // Set active submenu dan title berdasarkan from_status
             if ($from_status == '1') {
-                $this->data['active_submenu'] = 'pengguna';
+                $this->data['active_submenu'] = 'dari_pengguna';
                 $this->data['title'] = 'Edit Penerimaan dari Pengguna';
             } elseif ($from_status == '2') {
                 $this->data['active_submenu'] = 'supplier_penerimaan';
@@ -871,10 +871,10 @@ class Penerimaan extends MY_Controller
 
             // Set active submenu dan title berdasarkan from_status
             if ($header['from_Status'] == '1') {
-                $this->data['active_submenu'] = 'pengguna';
+                $this->data['active_submenu'] = 'dari_pengguna';
                 $this->data['title'] = 'Detail Penerimaan dari Pengguna';
             } elseif ($header['from_Status'] == '2') {
-                $this->data['active_submenu'] = 'supplier_penerimaan';
+                $this->data['active_submenu'] = 'dari_supplier';
                 $this->data['title'] = 'Detail Penerimaan dari Supplier';
             } else {
                 $this->data['active_submenu'] = 'penerimaan_antar_gudang';

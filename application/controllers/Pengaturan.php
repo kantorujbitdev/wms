@@ -89,7 +89,7 @@ class Pengaturan extends MY_Controller
         $data['item'] = $item;
         $data['title'] = 'Pengaturan Aplikasi - Edit Pengaturan';
         $data['active_menu'] = 'pengaturan';
-        $data['active_submenu'] = 'web';
+        $data['active_submenu'] = 'web_pengaturan';
         $this->render_admin_view('pages/pengaturan/form', $data);
     }
 
