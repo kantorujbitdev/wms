@@ -2,7 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 $route['default_controller'] = 'auth';
-$route['404_override'] = '';
+$route['404_override'] = 'static_page/not_found';
 $route['translate_uri_dashes'] = FALSE;
 
 // Custom Routes
