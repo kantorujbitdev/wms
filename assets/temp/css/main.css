@@ -172,7 +172,7 @@ body {
 
 .sidebar-sublink {
 	display: block;
-	padding: 0.5rem 1rem 0.5rem 2.5rem;
+	padding: 0.5rem 1rem 0.5rem 1.5rem;
 	color: rgba(255, 255, 255, 0.7);
 	text-decoration: none;
 	transition: all 0.3s ease;
@@ -462,7 +462,7 @@ body {
 	}
 
 	.sidebar-sublink {
-		padding: 0.4rem 1rem 0.4rem 2rem;
+		padding: 0.4rem 1rem 0.4rem 1.5rem;
 		margin: 0.1rem 0.8rem;
 	}
 
@@ -471,7 +471,7 @@ body {
 	}
 
 	.sidebar-subsublink {
-		padding: 0.35rem 0.8rem 0.35rem 1rem;
+		padding: 0.35rem 0.8rem 0.35rem 1.5rem;
 		font-size: 0.78rem;
 	}
 }
