@@ -75,23 +75,30 @@ $wording = [
     'pengiriman_list' => 'Daftar Pengiriman Barang',
 
     // Gudang
-    'gudang' => 'Master Gudang',
+    'gudang' => 'Gudang',
     'gudang_list' => 'Daftar Master Gudang',
     'gudang_add' => 'Tambah Master Gudang',
     'gudang_edit' => 'Edit Master Gudang',
     'gudang_name' => 'Nama Master Gudang',
-    'gudang_form_utama' => 'Form Gudang Utama',
+    'gudang_form_utama' => 'Form Gudang',
     'gudang_code' => 'Kode Master Gudang',
     'gudang_address' => 'Alamat',
     'gudang_capacity' => 'Kapasitas',
     'gudang_stock' => 'Stok Gudang',
-
 
     'gudang_project' => 'Master Gudang Project',
     'gudang_list_project' => 'Daftar Master Gudang Project',
     'gudang_add_project' => 'Tambah Master Gudang Project',
     'gudang_edit_project' => 'Edit Master Gudang Project',
     'gudang_form_project' => 'Form Gudang Project',
+
+    // Proyek
+    'proyek' => 'Proyek',
+    'proyek_master' => 'Master Proyek',
+    'proyek_list_proyek' => 'Daftar Master Proyek',
+    'proyek_add_proyek' => 'Tambah Master Proyek',
+    'proyek_edit_proyek' => 'Edit Master Proyek',
+    'proyek_form_proyek' => 'Form Proyek',
 
     // Transaksi
     'transaksi' => 'Transaksi',
@@ -105,6 +112,10 @@ $wording = [
     'transaksi_notes' => 'Catatan',
     'transaksi_from' => 'Dari',
     'transaksi_to' => 'Ke',
+
+
+    // RAP
+    'rap' => 'RAP',
 
     // Laporan
     'laporan' => 'Laporan',

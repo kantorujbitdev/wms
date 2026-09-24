@@ -9,13 +9,13 @@
         <div class="card-header py-3">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">
-                    <?= $wording['gudang_list_project']; ?>
+                    <?= $wording['proyek_list_proyek']; ?>
                 </h6>
 
                 <a href="<?= site_url('gudang/add_gudang_project') ?>"
                     class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
                     <i class="fas fa-plus fa-sm text-white-50"></i>
-                    <?= $wording['gudang_add_project']; ?>
+                    <?= $wording['proyek_add_proyek']; ?>
                 </a>
             </div>
         </div>

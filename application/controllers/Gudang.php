@@ -11,11 +11,11 @@ class Gudang extends MY_Controller
 
     public function index()
     {
-        $this->check_permission('gudang_utama', 'view');
+        $this->check_permission('gudang', 'view');
         // Set title
         $this->data['title'] = 'Gudang';
         $this->data['active_menu'] = 'gudang';
-        $this->data['active_submenu'] = 'gudang_utama';
+        $this->data['active_submenu'] = 'gudang';
         $data = data_login_user(['warehouse_type' => 0]);
         // Get warehouses from API
         $response = $this->Api_model->get_gudang($data);
@@ -30,8 +30,8 @@ class Gudang extends MY_Controller
         $this->check_permission('gudang_project', 'view');
         // Set title
         $this->data['title'] = 'Gudang Project';
-        $this->data['active_menu'] = 'gudang';
-        $this->data['active_submenu'] = 'gudang_project';
+        $this->data['active_menu'] = 'proyek';
+        $this->data['active_submenu'] = 'proyek';
 
         $data = data_login_user(['warehouse_type' => 1]);
         // Get warehouses from API
@@ -47,8 +47,8 @@ class Gudang extends MY_Controller
         $this->check_permission('gudang_project', 'edit');
         // Set title
         $this->data['title'] = 'Tambah Gudang Project';
-        $this->data['active_menu'] = 'gudang';
-        $this->data['active_submenu'] = 'gudang_project';
+        $this->data['active_menu'] = 'proyek';
+        $this->data['active_submenu'] = 'proyek';
 
         // Render view
         $this->render_view('pages/gudang_project/form');
@@ -60,7 +60,7 @@ class Gudang extends MY_Controller
         // Set title
         $this->data['title'] = 'Tambah Gudang';
         $this->data['active_menu'] = 'gudang';
-        $this->data['active_submenu'] = 'gudang_utama';
+        $this->data['active_submenu'] = 'gudang';
 
         // Render view
         $this->render_view('pages/gudang/form');
@@ -72,7 +72,7 @@ class Gudang extends MY_Controller
         // Set title
         $this->data['title'] = 'Edit Gudang';
         $this->data['active_menu'] = 'gudang';
-        $this->data['active_submenu'] = 'gudang_utama';
+        $this->data['active_submenu'] = 'gudang';
 
         $data = data_login_user(['warehouse_id' => $id]);
         // Get warehouse data from API
@@ -93,8 +93,8 @@ class Gudang extends MY_Controller
         $this->check_permission('gudang_project', 'edit');
         // Set title
         $this->data['title'] = 'Edit Gudang Project';
-        $this->data['active_menu'] = 'gudang';
-        $this->data['active_submenu'] = 'gudang_project';
+        $this->data['active_menu'] = 'proyek';
+        $this->data['active_submenu'] = 'proyek';
 
         $data = data_login_user(['warehouse_id' => $id]);
 
@@ -154,7 +154,7 @@ class Gudang extends MY_Controller
 
         redirect('gudang/gudang_project');
     }
-    public function save_warehouse_utama()
+    public function save_warehouse()
     {
         // Get current user ID from session
         $user_id = $this->session->userdata('user_id');

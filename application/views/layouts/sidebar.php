@@ -33,15 +33,9 @@ $config = get_app_config();
         <!-- MASTER DATA -->
         <!-- ========================================================= -->
         <?php
-        $master_data_open = in_array($active_menu, ['user', 'customer', 'supplier', 'gudang', 'barang']);
+        $master_data_open = in_array($active_menu, ['user', 'customer', 'supplier', 'proyek', 'gudang', 'barang']);
 
-        $gudang_open = ($active_menu == 'gudang');
         $barang_open = ($active_menu == 'barang');
-
-        $gudang_access =
-            $can_access_menu('gudang') ||
-            $can_access_menu('gudang_project') ||
-            $can_access_menu('gudang_utama');
 
         $barang_access =
             $can_access_menu('barang') ||
@@ -53,7 +47,8 @@ $config = get_app_config();
             $can_access_menu('user') ||
             $can_access_menu('customer') ||
             $can_access_menu('supplier') ||
-            $gudang_access ||
+            $can_access_menu('proyek') ||
+            $can_access_menu('gudang') ||
             $barang_access;
         ?>
 
@@ -103,18 +98,39 @@ $config = get_app_config();
                         </li>
                     <?php endif; ?>
 
+                    <!-- PROYEK -->
+                    <?php if ($can_access_menu('gudang_project')): ?>
+                        <li class="sidebar-submenu-item">
+                            <a href="<?= site_url('gudang/gudang_project'); ?>"
+                                class="sidebar-sublink <?= ($active_menu == 'proyek') ? 'active' : ''; ?>">
+                                <i class="<?= $get_menu_icon('gudang_project'); ?> me-2"></i>
+                                <span><?= $wording['proyek']; ?></span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <!-- PROYEK -->
+                    <?php if ($can_access_menu('gudang')): ?>
+                        <li class="sidebar-submenu-item">
+                            <a href="<?= site_url('gudang'); ?>"
+                                class="sidebar-sublink <?= ($active_menu == 'gudang') ? 'active' : ''; ?>">
+                                <i class="<?= $get_menu_icon('gudang'); ?> me-2"></i>
+                                <span><?= $wording['gudang']; ?></span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <!-- GUDANG - LEVEL 2 -->
-                    <?php if ($gudang_access): ?>
+                    <!-- <?php if ($gudang_access): ?>
                         <li class="sidebar-submenu-item">
                             <a href="#gudangSubmenu" data-bs-toggle="collapse"
                                 aria-expanded="<?= $gudang_open ? 'true' : 'false'; ?>"
                                 class="sidebar-sublink dropdown-toggle <?= $gudang_open ? 'parent-active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('gudang'); ?> me-2"></i>
                                 <span>Gudang</span>
-                            </a>
+                            </a> -->
 
-                            <!-- GUDANG LEVEL 3 -->
-                            <ul id="gudangSubmenu"
+                        <!-- GUDANG LEVEL 3 -->
+                        <!-- <ul id="gudangSubmenu"
                                 class="collapse list-unstyled sidebar-subsublink-container <?= $gudang_open ? 'show' : ''; ?>">
 
                                 <?php if ($can_access_menu('gudang_project')): ?>
@@ -127,11 +143,11 @@ $config = get_app_config();
                                     </li>
                                 <?php endif; ?>
 
-                                <?php if ($can_access_menu('gudang_utama')): ?>
+                                <?php if ($can_access_menu('gudang')): ?>
                                     <li>
                                         <a href="<?= site_url('gudang'); ?>"
-                                            class="sidebar-subsublink <?= ($active_menu == 'gudang' && $active_submenu == 'gudang_utama') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('gudang_utama'); ?> me-2"></i>
+                                            class="sidebar-subsublink <?= ($active_menu == 'gudang' && $active_submenu == 'gudang') ? 'active' : ''; ?>">
+                                            <i class="<?= $get_menu_icon('gudang'); ?> me-2"></i>
                                             <span>Gudang Utama</span>
                                         </a>
                                     </li>
@@ -139,7 +155,7 @@ $config = get_app_config();
 
                             </ul>
                         </li>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
 
                     <!-- BARANG - LEVEL 2 -->
                     <?php if ($barang_access): ?>
@@ -190,6 +206,19 @@ $config = get_app_config();
                     <?php endif; ?>
 
                 </ul>
+            </li>
+        <?php endif; ?>
+
+
+        <!-- ========================================================= -->
+        <!-- RAP -->
+        <!-- ========================================================= -->
+        <?php if ($can_access_menu('rap')): ?>
+            <li class="sidebar-item <?= ($active_menu == 'rap') ? 'active' : ''; ?>">
+                <a href="<?= site_url('rap'); ?>" class="sidebar-link">
+                    <i class="<?= $get_menu_icon('rap'); ?> me-2"></i>
+                    <span><?= $wording['rap']; ?></span>
+                </a>
             </li>
         <?php endif; ?>
 
