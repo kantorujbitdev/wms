@@ -120,6 +120,28 @@ class MY_Controller extends CI_Controller
     /**
      * Fungsi untuk set data umum yang akan digunakan di semua view
      */
+    // protected function set_common_data()
+    // {
+    //     // Set title default
+    //     $this->data['title'] = $this->config->item('app_name');
+
+    //     // Set user data
+    //     $this->data['user'] = $this->user;
+
+    //     // Set active menu berdasarkan controller
+    //     $this->data['active_menu'] = strtolower($this->router->class);
+
+    //     // Set active submenu berdasarkan method
+    //     $this->data['active_submenu'] = strtolower($this->router->method);
+
+    //     $this->data['can_access_menu'] = function ($menu_key) {
+    //         return can_access_menu($menu_key);
+    //     };
+
+    //     $this->data['get_menu_icon'] = function ($menu_key) {
+    //         return get_menu_icon($menu_key);
+    //     };
+    // }
     protected function set_common_data()
     {
         // Set title default
@@ -128,11 +150,16 @@ class MY_Controller extends CI_Controller
         // Set user data
         $this->data['user'] = $this->user;
 
-        // Set active menu berdasarkan controller
+        // Level 1
         $this->data['active_menu'] = strtolower($this->router->class);
 
-        // Set active submenu berdasarkan method
+        // Level 2
         $this->data['active_submenu'] = strtolower($this->router->method);
+
+        // Level 3
+        $this->data['active_subsubmenu'] = strtolower(
+            $this->router->method
+        );
 
         $this->data['can_access_menu'] = function ($menu_key) {
             return can_access_menu($menu_key);
@@ -189,6 +216,14 @@ class MY_Controller extends CI_Controller
         return has_permission($menu_key, 'view');
     }
 
-
+    protected function set_active_menu(
+        $menu = null,
+        $submenu = null,
+        $subsubmenu = null
+    ) {
+        $this->data['active_menu'] = $menu;
+        $this->data['active_submenu'] = $submenu;
+        $this->data['active_subsubmenu'] = $subsubmenu;
+    }
 
 }

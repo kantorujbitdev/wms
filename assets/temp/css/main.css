@@ -191,6 +191,40 @@ body {
 	font-weight: 600;
 }
 
+/* Level 3 sidebar links (e.g. Gudang Project, Tipe Produk) */
+.sidebar-subsublink-container {
+	border-left: 1px solid rgba(255, 255, 255, 0.15);
+	margin-left: 2.5rem;
+	padding-left: 0;
+}
+
+.sidebar-subsublink {
+	display: block;
+	padding: 0.45rem 1rem 0.45rem 1.25rem;
+	color: rgba(255, 255, 255, 0.6);
+	text-decoration: none;
+	transition: all 0.3s ease;
+	border-radius: 0.25rem;
+	margin: 0.1rem 0.75rem 0.1rem 0;
+	font-size: 0.82rem;
+}
+
+.sidebar-subsublink i {
+	font-size: 0.75rem;
+	width: 1rem;
+}
+
+.sidebar-subsublink:hover {
+	color: #fff;
+	background-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-subsublink.active {
+	color: #fff;
+	background-color: var(--sidebar-active-alt);
+	font-weight: 600;
+}
+
 /* =========================================================
    CONTENT AREA
 ========================================================= */
@@ -431,6 +465,15 @@ body {
 		padding: 0.4rem 1rem 0.4rem 2rem;
 		margin: 0.1rem 0.8rem;
 	}
+
+	.sidebar-subsublink-container {
+		margin-left: 2rem;
+	}
+
+	.sidebar-subsublink {
+		padding: 0.35rem 0.8rem 0.35rem 1rem;
+		font-size: 0.78rem;
+	}
 }
 
 @media (max-width: 576px) {
@@ -475,6 +518,15 @@ body {
 		padding: 0.3rem 1rem 0.3rem 1.8rem;
 		margin: 0.1rem 0.6rem;
 		font-size: 0.8rem;
+	}
+
+	.sidebar-subsublink-container {
+		margin-left: 1.5rem;
+	}
+
+	.sidebar-subsublink {
+		padding: 0.3rem 0.6rem 0.3rem 0.8rem;
+		font-size: 0.75rem;
 	}
 }
 

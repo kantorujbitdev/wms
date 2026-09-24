@@ -191,11 +191,30 @@ $(document).ready(function () {
 	// Initialize sidebar functionality
 	initializeSidebar();
 
-	// Add active class to submenu items
+	// Add active class to submenu items (level 2)
 	$(".sidebar-sublink").each(function () {
 		if ($(this).attr("href") === window.location.pathname) {
 			$(this).addClass("active");
 			$(this).closest(".collapse").addClass("show");
+			$(this).closest(".sidebar-item").addClass("active");
+		}
+	});
+
+	// Add active class to submenu items (level 3)
+	$(".sidebar-subsublink").each(function () {
+		if ($(this).attr("href") === window.location.pathname) {
+			$(this).addClass("active");
+
+			// Expand every parent .collapse up the tree (level 3 -> level 2 -> level 1)
+			$(this).parents(".collapse").addClass("show");
+
+			// Mark the level-2 toggle (parent link) as parent-active
+			$(this)
+				.closest(".collapse")
+				.prev(".sidebar-sublink.dropdown-toggle")
+				.addClass("parent-active");
+
+			// Mark the top-level sidebar-item as active
 			$(this).closest(".sidebar-item").addClass("active");
 		}
 	});
