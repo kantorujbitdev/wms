@@ -119,44 +119,6 @@ $config = get_app_config();
                         </li>
                     <?php endif; ?>
 
-                    <!-- GUDANG - LEVEL 2 -->
-                    <!-- <?php if ($gudang_access): ?>
-                        <li class="sidebar-submenu-item">
-                            <a href="#gudangSubmenu" data-bs-toggle="collapse"
-                                aria-expanded="<?= $gudang_open ? 'true' : 'false'; ?>"
-                                class="sidebar-sublink dropdown-toggle <?= $gudang_open ? 'parent-active' : ''; ?>">
-                                <i class="<?= $get_menu_icon('gudang'); ?> me-2"></i>
-                                <span>Gudang</span>
-                            </a> -->
-
-                        <!-- GUDANG LEVEL 3 -->
-                        <!-- <ul id="gudangSubmenu"
-                                class="collapse list-unstyled sidebar-subsublink-container <?= $gudang_open ? 'show' : ''; ?>">
-
-                                <?php if ($can_access_menu('gudang_project')): ?>
-                                    <li>
-                                        <a href="<?= site_url('gudang/gudang_project'); ?>"
-                                            class="sidebar-subsublink <?= ($active_menu == 'gudang' && $active_submenu == 'gudang_project') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('gudang_project'); ?> me-2"></i>
-                                            <span>Gudang Project</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ($can_access_menu('gudang')): ?>
-                                    <li>
-                                        <a href="<?= site_url('gudang'); ?>"
-                                            class="sidebar-subsublink <?= ($active_menu == 'gudang' && $active_submenu == 'gudang') ? 'active' : ''; ?>">
-                                            <i class="<?= $get_menu_icon('gudang'); ?> me-2"></i>
-                                            <span>Gudang Utama</span>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                            </ul>
-                        </li>
-                    <?php endif; ?> -->
-
                     <!-- BARANG - LEVEL 2 -->
                     <?php if ($barang_access): ?>
                         <li class="sidebar-submenu-item">
