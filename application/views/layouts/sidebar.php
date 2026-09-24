@@ -108,7 +108,8 @@ $config = get_app_config();
                             </a>
                         </li>
                     <?php endif; ?>
-                    <!-- PROYEK -->
+
+                    <!-- GUDANG -->
                     <?php if ($can_access_menu('gudang')): ?>
                         <li class="sidebar-submenu-item">
                             <a href="<?= site_url('gudang'); ?>"
