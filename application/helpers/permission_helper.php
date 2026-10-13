@@ -148,6 +148,7 @@ if (!function_exists('get_menu_icon')) {
             'logo_pengaturan' => 'fas fa-image',
             'laporan_history_proyek' => 'fas fa-history',
             'laporan_history_barang' => 'fas fa-search-location',
+            'laporan_penggunaan_material' => 'fas fa-tools',
             'rap' => 'fas fa-file-alt'
         );
 

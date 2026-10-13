@@ -90,6 +90,10 @@ class Api_model extends CI_Model
     {
         return api_request('GET', 'history barang', $data);
     }
+    public function penggunaan_material($data)
+    {
+        return api_request('GET', 'penggunaan material', $data);
+    }
     public function delete_pengiriman($data)
     {
         return api_request('DELETE', 'pengiriman', $data);
@@ -299,6 +303,44 @@ class Api_model extends CI_Model
     {
         return api_request('DELETE', 'Customer', $data);
     }
+
+    // ---- RAP ----
+    public function get_rap($data)
+    {
+        return api_request('GET', 'RAP', $data);
+    }
+    public function add_rap($data)
+    {
+        return api_request('POST', 'RAP', $data);
+    }
+    public function update_rap($data)
+    {
+        return api_request('PUT', 'RAP', $data);
+    }
+    public function delete_rap($data)
+    {
+        return api_request('DELETE', 'RAP', $data);
+    }
+
+
+    // ---- RAP ----
+    public function get_rap_category($data)
+    {
+        return api_request('GET', 'RAP Kategori', $data);
+    }
+    public function add_rap_category($data)
+    {
+        return api_request('POST', 'RAP Kategori', $data);
+    }
+    public function update_rap_category($data)
+    {
+        return api_request('PUT', 'RAP Kategori', $data);
+    }
+    public function delete_rap_category($data)
+    {
+        return api_request('DELETE', 'RAP Kategori', $data);
+    }
+
 
     // ---- Supplier ----
     public function get_supplier($data)

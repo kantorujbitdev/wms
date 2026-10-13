@@ -1,0 +1,378 @@
+<!-- application/views/pages/laporan/penggunaan_material.php -->
+
+<!-- Select2 CSS -->
+<link href="<?php echo base_url('assets/select2/select2.min.css') ?>" rel="stylesheet" />
+<link href="<?php echo base_url('assets/select2/select2-bootstrap-5-theme.min.css') ?>" rel="stylesheet" />
+
+<div class="container-fluid">
+
+    <!-- Filter Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Daftar</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" action="<?= site_url('laporan/penggunaan_material') ?>" id="filterForm">
+                <div class="row align-items-end">
+
+                    <div class="col-md-5 mb-3">
+                        <label for="warehouse_id" class="form-label">
+                            Nama Proyek
+                            <?php if ($user_role == 'superadmin'): ?>
+                                <span class="text-danger">*</span>
+                            <?php endif; ?>
+                        </label>
+
+                        <?php if ($user_role == 'superadmin'): ?>
+                            <select name="warehouse_id" id="warehouse_id" class="form-control select2-gudang">
+                                <option value="">-- Pilih Proyek --</option>
+                                <?php foreach ($warehouse_list as $warehouse): ?>
+                                    <option value="<?= $warehouse['warehouse_id'] ?>" <?= isset($filter_warehouse_id) && $filter_warehouse_id == $warehouse['warehouse_id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($warehouse['warehouse_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <!-- name wajib ada agar terkirim saat submit -->
+                            <input type="hidden" name="warehouse_id" id="warehouse_id"
+                                value="<?= htmlspecialchars($user_warehouse_id ?? '') ?>">
+                            <input type="text" class="form-control bg-light"
+                                value="<?= htmlspecialchars($user_warehouse_name ?? '') ?>" disabled>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Filter Status -->
+                    <div class="col-md-3 mb-3">
+                        <label for="status" class="form-label">Status Barang</label>
+                        <select name="status" id="status" class="form-control">
+                            <option value="0" <?= (int) $filter_status === 0 ? 'selected' : '' ?>>Semua Barang</option>
+                            <option value="1" <?= (int) $filter_status === 1 ? 'selected' : '' ?>>Barang Tersedia</option>
+                            <option value="2" <?= (int) $filter_status === 2 ? 'selected' : '' ?>>Barang Habis</option>
+                        </select>
+                    </div>
+
+                    <!-- Reset -->
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <a href="<?= site_url('laporan/penggunaan_material') ?>" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Reset Filter
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Detail Proyek/Gudang -->
+                <div id="warehouseDetailContainer">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Silahkan pilih proyek terlebih dahulu untuk melihat Penggunaan Material.
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <?php if ($is_filtered): ?>
+
+        <?php
+        // ------------------------------------------------------------
+        // Helper format angka: 5740.00 -> "5.740", 12.50 -> "12,5", ".00" -> "0"
+        // ------------------------------------------------------------
+        $fmt_qty = function ($v) {
+            $s = number_format((float) $v, 2, ',', '.');
+            return rtrim(rtrim($s, '0'), ',');
+        };
+
+        // ------------------------------------------------------------
+        // Summary (dihitung controller dari SELURUH data proyek,
+        // jadi angkanya tidak berubah saat filter status dipakai)
+        // ------------------------------------------------------------
+        $total_produk = $summary['total'];
+        $total_tersedia = $summary['tersedia'];
+        $total_habis = $summary['habis'];
+        ?>
+
+        <!-- Summary Cards -->
+        <div class="row mb-3">
+            <div class="col-xl-4 col-md-4 mb-3">
+                <div class="card border-left-primary shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Jenis Barang</div>
+                        <div class="h4 mb-0 font-weight-bold text-gray-800"><?= number_format($total_produk) ?></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-4 mb-3">
+                <div class="card border-left-success shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Stok Tersedia</div>
+                        <div class="h4 mb-0 font-weight-bold text-success"><?= number_format($total_tersedia) ?></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-4 mb-3">
+                <div class="card border-left-warning shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Stok Habis</div>
+                        <div class="h4 mb-0 font-weight-bold text-warning"><?= number_format($total_habis) ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Penggunaan Material -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Daftar Penggunaan Material</h6>
+                    <?php if (!empty($penggunaan_material_list)): ?>
+                        <button type="button" id="exportPdfBtn" class="btn btn-danger btn-sm mt-2 mt-md-0">
+                            <i class="fas fa-file-pdf mr-1"></i> Export PDF
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="card-body">
+                <?php if (empty($penggunaan_material_list)): ?>
+                    <div class="alert alert-info">Tidak ada data Penggunaan Material.</div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="thead-light text-center">
+                                <tr>
+                                    <th width="40">No</th>
+                                    <th width="90">Kode</th>
+                                    <th>Nama Barang</th>
+                                    <th width="60">Satuan</th>
+                                    <th width="70">Total<br>Masuk</th>
+                                    <th width="70">Total<br>Terpakai</th>
+                                    <th width="70">Stok<br>Saat Ini</th>
+                                    <th width="85">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $no = 1; ?>
+                                <?php foreach ($penggunaan_material_list as $row): ?>
+                                    <?php $stok = (float) $row['current_stock']; ?>
+                                    <tr>
+                                        <td class="text-center"><?= $no++ ?></td>
+                                        <td><strong><?= htmlspecialchars($row['product_code']) ?></strong></td>
+                                        <td><?= htmlspecialchars($row['product_name']) ?></td>
+                                        <td class="text-center"><?= htmlspecialchars($row['unit']) ?></td>
+
+                                        <td class="text-right" data-order="<?= (float) $row['total_qty_in'] ?>">
+                                            <?= $fmt_qty($row['total_qty_in']) ?>
+                                        </td>
+
+                                        <td class="text-right" data-order="<?= (float) $row['total_used_qty'] ?>">
+                                            <?php if ((float) $row['total_used_qty'] > 0): ?>
+                                                <span
+                                                    class="font-weight-bold text-danger"><?= $fmt_qty($row['total_used_qty']) ?></span>
+                                            <?php else: ?>
+                                                <span class="text-muted">0</span>
+                                            <?php endif; ?>
+                                        </td>
+
+                                        <td class="text-right" data-order="<?= $stok ?>">
+                                            <?php if ($stok < 0): ?>
+                                                <span class="font-weight-bold text-danger"><?= $fmt_qty($stok) ?></span>
+                                            <?php elseif ($stok == 0): ?>
+                                                <span class="text-muted">0</span>
+                                            <?php else: ?>
+                                                <span class="font-weight-bold text-success"><?= $fmt_qty($stok) ?></span>
+                                            <?php endif; ?>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <?php if ($stok <= 0): ?>
+                                                <span class="badge bg-warning"><i class="fas fa-box-open"></i> Habis</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-success"><i class="fas fa-check"></i> Tersedia</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    <?php endif; ?>
+
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(255,255,255,0.8); z-index:9999;">
+    <div class="d-flex flex-column justify-content-center align-items-center h-100">
+        <div class="spinner-border text-primary" style="width:3rem; height:3rem;" role="status"></div>
+        <h5 class="mt-3 mb-0">Memuat data...</h5>
+    </div>
+</div>
+
+<script src="<?= base_url('assets/select2/select2.min.js') ?>"></script>
+
+<script>
+    // Data gudang untuk render detail card
+    const warehouseData = <?= json_encode($warehouse_list) ?>;
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        const isSuperAdmin = '<?= $user_role ?>' === 'superadmin';
+        const filterForm = document.getElementById('filterForm');
+        const warehouseContainer = document.getElementById('warehouseDetailContainer');
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'block';
+        }
+
+        // =========================================================
+        // Render detail card proyek/gudang
+        // =========================================================
+        function renderWarehouseDetail(warehouseId) {
+            if (!warehouseId || warehouseId === '') {
+                warehouseContainer.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Silahkan pilih proyek terlebih dahulu untuk melihat Penggunaan Material.
+                </div>`;
+                return;
+            }
+
+            const warehouse = warehouseData.find(item => item.warehouse_id == warehouseId);
+            if (!warehouse) return;
+
+            const isAktif = warehouse.warehouse_status == '0';
+            const badgeClass = isAktif ? 'badge-success' : 'badge-danger';
+            const badgeText = isAktif
+                ? '<i class="fas fa-check-circle mr-1"></i> Aktif'
+                : '<i class="fas fa-times-circle mr-1"></i> Tidak Aktif';
+
+            warehouseContainer.innerHTML = `
+            <div class="card shadow-sm border-left-primary mb-3">
+                <div class="card-body py-3 px-4">
+                    <div class="row align-items-center">
+                        <div class="col-lg-10">
+                            <h4 class="text-primary font-weight-bold mb-2">
+                                <i class="fas fa-warehouse mr-2"></i>
+                                ${warehouse.warehouse_name}
+                            </h4>
+                            <div class="text-muted" style="font-size:15px; line-height:1.8;">
+                                <span class="mr-4">
+                                    <i class="fas fa-barcode text-secondary mr-1"></i>
+                                    ${warehouse.warehouse_code}
+                                </span>
+                                <span class="mr-4">
+                                    <i class="fas fa-layer-group text-info mr-1"></i>
+                                    ${warehouse.warehouse_type_name}
+                                </span>
+                                <span class="mr-4">
+                                    <i class="fas fa-user text-success mr-1"></i>
+                                    ${warehouse.contact_person || '-'}
+                                </span>
+                                <span>
+                                    <i class="fas fa-phone text-warning mr-1"></i>
+                                    ${warehouse.phone || '-'}
+                                </span>
+                            </div>
+                            <div class="mt-2" style="font-size:15px;">
+                                <i class="fas fa-map-marker-alt text-danger mr-1"></i>
+                                ${warehouse.warehouse_address || '-'}
+                            </div>
+                        </div>
+                        <div class="col-lg-2 text-lg-right mt-3 mt-lg-0">
+                            <span class="badge ${badgeClass} px-4 py-2" style="font-size:14px;">
+                                ${badgeText}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // =========================================================
+        // Select2 gudang (superadmin saja) — auto submit saat dipilih
+        // =========================================================
+        if (isSuperAdmin && $('#warehouse_id').is('select')) {
+            $('#warehouse_id').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                allowClear: true,
+                minimumResultsForSearch: 0,
+                placeholder: '-- Pilih Proyek --',
+                dropdownParent: $('body')
+            });
+
+            $('#warehouse_id').on('change', function () {
+                const val = $(this).val() || '';
+                renderWarehouseDetail(val);
+
+                if (!val) {
+                    toastr.info('Silahkan pilih proyek untuk menampilkan penggunaan material', 'Informasi');
+                    return;
+                }
+
+                showLoading();
+                filterForm.submit();
+            });
+
+            renderWarehouseDetail($('#warehouse_id').val() || '');
+
+        } else {
+            // Non-superadmin: render langsung dari value hidden input
+            const hiddenEl = document.getElementById('warehouse_id');
+            renderWarehouseDetail(hiddenEl ? hiddenEl.value : '');
+        }
+
+        // =========================================================
+        // Filter status — auto submit
+        // =========================================================
+        document.getElementById('status').addEventListener('change', function () {
+            const warehouseVal = $('#warehouse_id').val() || '';
+            if (!warehouseVal) {
+                toastr.warning('Silahkan pilih proyek terlebih dahulu', 'Peringatan');
+                return;
+            }
+            showLoading();
+            filterForm.submit();
+        });
+
+        // =========================================================
+        // Safety net: validasi saat form submit manual
+        // =========================================================
+        filterForm.addEventListener('submit', function (e) {
+            const warehouseVal = $('#warehouse_id').val() || '';
+            if (isSuperAdmin && !warehouseVal) {
+                e.preventDefault();
+                toastr.warning('Silahkan pilih proyek terlebih dahulu', 'Peringatan');
+            }
+        });
+
+        // =========================================================
+        // Export PDF — warehouse_id + status
+        // =========================================================
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        if (exportPdfBtn) {
+            exportPdfBtn.addEventListener('click', function () {
+                const warehouseId = document.getElementById('warehouse_id').value || '';
+                if (!warehouseId) {
+                    toastr.warning('Silahkan pilih proyek terlebih dahulu', 'Peringatan');
+                    return;
+                }
+                const status = document.getElementById('status').value || '0';
+                window.open(
+                    '<?= site_url("laporan/export_penggunaan_material_pdf") ?>'
+                    + '?warehouse_id=' + encodeURIComponent(warehouseId)
+                    + '&status=' + encodeURIComponent(status),
+                    '_blank'
+                );
+            });
+        }
+
+    });
+</script>

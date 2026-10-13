@@ -116,6 +116,10 @@ $wording = [
 
     // RAP
     'rap' => 'RAP',
+    'rap_list' => 'Daftar RAP',
+    'rap_add' => 'Tambah RAP',
+    'rap_edit' => 'Edit RAP',
+    'rap_form' => 'Form RAP',
 
     // Laporan
     'laporan' => 'Laporan',

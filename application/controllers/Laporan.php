@@ -153,20 +153,10 @@ class Laporan extends MY_Controller
         if (empty($filter_date_end))
             $filter_date_end = date('Y-m-d');
 
-        // -------------------------
-        // Ambil data gudang & produk untuk dropdown filter
-        //
-        // FIX: superadmin ambil produk per gudang via get_stock_all agar
-        // response punya field warehouse_id untuk filter JS.
-        // Non-superadmin ambil produk dari gudang session mereka.
-        // -------------------------
         if ($user_role === 'superadmin') {
             $warehouse_response = $this->Api_model->get_all_gudang($base_data);
             $this->data['warehouses'] = $this->handle_response($warehouse_response);
 
-            // Ambil semua stok (semua gudang) untuk populate dropdown produk
-            // Response harus punya: stock_id, product_code, product_name,
-            // unit_code, warehouse_id — dipakai JS untuk filter per gudang
             $products_response = $this->Api_model->get_stock_all($base_data);
             $this->data['products'] = $this->handle_response($products_response);
         } else {
@@ -296,10 +286,11 @@ class Laporan extends MY_Controller
         $response = $this->Api_model->get_pengiriman($data_request_penerimaan);
         $this->data['pengiriman_list'] = $this->handle_response($response);
 
-        // Jika non-superadmin dan belum ada filter_warehouse_id,
-        // default ke gudang session agar data langsung tampil
-        if ($this->data['user_role'] !== 'superadmin' && empty($warehouse_id)) {
-            $data_request_penerimaan['warehouse_id'] = $this->data['user_warehouse_id'];
+        $user_role = $this->session->userdata('role');
+        $user_warehouse_id = $this->session->userdata('warehouse_id');
+
+        if ($user_role !== 'superadmin' && empty($warehouse_id)) {
+            $data_request_penerimaan['warehouse_id'] = $user_warehouse_id;
         }
 
         // Kirim filter value ke view untuk form
@@ -308,7 +299,7 @@ class Laporan extends MY_Controller
         $this->data['filter_date_start'] = $filter_date_start;
         $this->data['filter_date_end'] = $filter_date_end;
         $this->data['user_role'] = $user_role;
-        $this->data['user_warehouse_id'] = $warehouse_id;
+        $this->data['user_warehouse_id'] = $user_warehouse_id;
         $this->data['user_warehouse_name'] = $this->session->userdata('warehouse_name');
 
         // Render view
@@ -473,6 +464,237 @@ class Laporan extends MY_Controller
         $this->render_view('pages/laporan/history_barang');
     }
 
+    // =====================================================================
+    // Helper: normalisasi status filter (0=semua, 1=tersedia, 2=habis)
+    // =====================================================================
+    private function _normalize_status_penggunaan($status)
+    {
+        $status = (string) $status;
+        return in_array($status, ['0', '1', '2'], true) ? (int) $status : 0;
+    }
+
+    // Helper: label status untuk PDF
+    private function _status_label_penggunaan($status)
+    {
+        $labels = [
+            0 => 'Semua Barang',
+            1 => 'Barang Tersedia',
+            2 => 'Barang Habis',
+        ];
+        return $labels[$status] ?? $labels[0];
+    }
+
+    // Helper: hitung summary dari SELURUH data (bukan hasil filter)
+    private function _summary_penggunaan(array $list)
+    {
+        $summary = ['total' => count($list), 'tersedia' => 0, 'habis' => 0];
+
+        foreach ($list as $row) {
+            if ((float) $row['current_stock'] > 0) {
+                $summary['tersedia']++;
+            } else {
+                $summary['habis']++; // stok 0 atau negatif
+            }
+        }
+        return $summary;
+    }
+
+    // Helper: filter list berdasarkan status
+    private function _filter_status_penggunaan(array $list, $status)
+    {
+        if ($status === 0) {
+            return $list;
+        }
+
+        $filtered = array_filter($list, function ($row) use ($status) {
+            $tersedia = (float) $row['current_stock'] > 0;
+            return $status === 1 ? $tersedia : !$tersedia;
+        });
+
+        return array_values($filtered); // reset index
+    }
+
+
+    // =====================================================================
+    // Halaman Penggunaan Material
+    // =====================================================================
+    public function penggunaan_material()
+    {
+        $user_role = $this->session->userdata('role');
+        $this->data['user_role'] = $user_role;
+
+        $this->check_permission('laporan', 'view');
+
+        $this->data['title'] = 'Penggunaan Material';
+        $this->data['active_menu'] = 'laporan';
+        $this->data['active_submenu'] = 'laporan_penggunaan_material';
+
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // List gudang (dropdown + detail card)
+        $warehouse_response = $this->Api_model->get_all_gudang(data_login_user());
+        $warehouse_list = $this->handle_response($warehouse_response);
+        $this->data['warehouse_list'] = $warehouse_list;
+
+        // Superadmin: pilih dari GET. User lain: dikunci ke gudang miliknya.
+        $warehouse_id = ($user_role === 'superadmin')
+            ? $this->input->get('warehouse_id')
+            : $warehouse_id_session;
+
+        // Filter status
+        $filter_status = $this->_normalize_status_penggunaan($this->input->get('status'));
+
+        // Info gudang user non-superadmin (dipakai view untuk input readonly)
+        $user_warehouse_name = '';
+        if ($user_role !== 'superadmin') {
+            foreach ($warehouse_list as $w) {
+                if ($w['warehouse_id'] == $warehouse_id_session) {
+                    $user_warehouse_name = $w['warehouse_name'];
+                    break;
+                }
+            }
+        }
+        $this->data['user_warehouse_id'] = $warehouse_id_session;
+        $this->data['user_warehouse_name'] = $user_warehouse_name;
+
+        // Ambil data penggunaan material
+        $this->data['penggunaan_material_list'] = [];
+        $this->data['summary'] = ['total' => 0, 'tersedia' => 0, 'habis' => 0];
+        $is_filtered = !empty($warehouse_id) && $warehouse_id !== 'all';
+
+        if ($is_filtered) {
+            $data_request = data_login_user([
+                'status' => null,
+                'warehouse_id' => $warehouse_id,
+            ]);
+
+            $response = $this->Api_model->penggunaan_material($data_request);
+            $full_list = $this->handle_response($response);
+            if (!is_array($full_list)) {
+                $full_list = [];
+            }
+
+            // Summary dari semua data, tabel dari data yang sudah difilter status
+            $this->data['summary'] = $this->_summary_penggunaan($full_list);
+            $this->data['penggunaan_material_list'] = $this->_filter_status_penggunaan($full_list, $filter_status);
+        }
+
+        $this->data['is_filtered'] = $is_filtered;
+        $this->data['filter_warehouse_id'] = $warehouse_id;
+        $this->data['filter_status'] = $filter_status;
+
+        $this->render_view('pages/laporan/penggunaan_material');
+    }
+
+
+    // =====================================================================
+    // Export PDF Penggunaan Material (per proyek + filter status)
+    // =====================================================================
+    public function export_penggunaan_material_pdf()
+    {
+        $this->check_permission('laporan', 'view');
+
+        $user_role = $this->session->userdata('role');
+        $warehouse_id_session = $this->session->userdata('warehouse_id');
+
+        // Superadmin: dari GET. User lain: dikunci ke gudang miliknya.
+        $warehouse_id = ($user_role === 'superadmin')
+            ? $this->input->get('warehouse_id')
+            : $warehouse_id_session;
+
+        if (empty($warehouse_id) || $warehouse_id === 'all') {
+            show_error('Silahkan pilih proyek terlebih dahulu.', 400);
+            return;
+        }
+
+        $filter_status = $this->_normalize_status_penggunaan($this->input->get('status'));
+
+        // -------------------------
+        // Info gudang/proyek
+        // -------------------------
+        $warehouse_response = $this->Api_model->get_all_gudang(data_login_user());
+        $warehouse_list = $this->handle_response($warehouse_response);
+
+        $warehouse_info = null;
+        foreach ($warehouse_list as $w) {
+            if ($w['warehouse_id'] == $warehouse_id) {
+                $warehouse_info = $w;
+                break;
+            }
+        }
+
+        if (!$warehouse_info) {
+            show_error('Proyek tidak ditemukan.', 404);
+            return;
+        }
+
+        // -------------------------
+        // Data penggunaan material
+        // -------------------------
+        $data_request = data_login_user([
+            'status' => null,
+            'warehouse_id' => $warehouse_id,
+        ]);
+
+        $response = $this->Api_model->penggunaan_material($data_request);
+        $full_list = $this->handle_response($response);
+        if (!is_array($full_list)) {
+            $full_list = [];
+        }
+
+        $summary = $this->_summary_penggunaan($full_list);
+        $penggunaan_material_list = $this->_filter_status_penggunaan($full_list, $filter_status);
+        $status_label = $this->_status_label_penggunaan($filter_status);
+
+        // -------------------------
+        // Render HTML untuk PDF
+        // -------------------------
+        $html = $this->load->view(
+            'pages/laporan/export_penggunaan_material_pdf',
+            [
+                'warehouse_info' => $warehouse_info,
+                'penggunaan_material_list' => $penggunaan_material_list,
+                'summary' => $summary,
+                'status_label' => $status_label,
+            ],
+            true
+        );
+
+        // -------------------------
+        // Generate PDF dengan mPDF
+        // -------------------------
+        require_once FCPATH . 'vendor/autoload.php';
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'margin_top' => 10,
+            'margin_bottom' => 15,
+            'margin_left' => 10,
+            'margin_right' => 10,
+        ]);
+
+        $printed_by = htmlspecialchars((string) $this->session->userdata('name'));
+
+        $mpdf->SetTitle('Penggunaan Material - ' . $warehouse_info['warehouse_name']);
+        $mpdf->SetHTMLFooter(
+            '<table width="100%" style="font-size:7.5pt; color:#888; border-top:1px solid #ccc;">
+                <tr>
+                    <td>Dicetak Oleh: ' . $printed_by . '</td>
+                    <td style="text-align:right;">Halaman <b>{PAGENO}</b> dari <b>{nbpg}</b></td>
+                </tr>
+            </table>'
+        );
+        $mpdf->WriteHTML($html);
+
+        $slug = preg_replace('/[^A-Za-z0-9_]/', '_', $warehouse_info['warehouse_name']);
+        $status_slug = ['semua', 'tersedia', 'habis'][$filter_status];
+        $filename = 'penggunaan_material_' . $slug . '_' . $status_slug . '_' . date('Ymd') . '.pdf';
+
+        $mpdf->Output($filename, \Mpdf\Output\Destination::DOWNLOAD);
+        exit;
+    }
+
     public function export_history_barang_pdf()
     {
         $this->check_permission('laporan', 'view');
@@ -579,7 +801,6 @@ class Laporan extends MY_Controller
         $mpdf->Output($filename, \Mpdf\Output\Destination::DOWNLOAD);
         exit;
     }
-
     public function export_history_proyek_pdf()
     {
         $this->check_permission('laporan', 'view');

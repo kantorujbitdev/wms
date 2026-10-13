@@ -206,7 +206,8 @@ $config = get_app_config();
         $laporan_access =
             $can_access_menu('laporan') ||
             $can_access_menu('laporan_history_proyek') ||
-            $can_access_menu('laporan_history_barang');
+            $can_access_menu('laporan_history_barang') ||
+            $can_access_menu('laporan_penggunaan_material');
         ?>
         <?php if ($laporan_access): ?>
             <li class="sidebar-item <?= $laporan_open ? 'active' : ''; ?>">
@@ -260,6 +261,16 @@ $config = get_app_config();
                                 class="sidebar-sublink <?= ($active_submenu == 'laporan_history_barang') ? 'active' : ''; ?>">
                                 <i class="<?= $get_menu_icon('laporan_history_barang'); ?> me-2"></i>
                                 <span>Histori Barang</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($can_access_menu('laporan_penggunaan_material')): ?>
+                        <li>
+                            <a href="<?= site_url('laporan/penggunaan_material'); ?>"
+                                class="sidebar-sublink <?= ($active_submenu == 'laporan_penggunaan_material') ? 'active' : ''; ?>">
+                                <i class="<?= $get_menu_icon('laporan_penggunaan_material'); ?> me-2"></i>
+                                <span>Penggunaan Material</span>
                             </a>
                         </li>
                     <?php endif; ?>
